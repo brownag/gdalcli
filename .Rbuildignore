@@ -1,0 +1,11 @@
+^\.github$
+^QUICK_REFERENCE\.md$
+^\.gitignore$
+^\.Rproj\.user$
+^\.Rproj$
+^\.DS_Store$
+^vignettes/\.DS_Store$
+^man/figures/.*\.png$
+^build/$
+^Makefile$
+^\.gdal_doc_cache$

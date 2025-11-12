@@ -1,0 +1,360 @@
+---
+title: "Dynamic GDAL API"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Dynamic GDAL API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+The gdalcli package provides two ways to access GDAL commands in R:
+
+1. **Static API** - Pre-generated functions like `gdal_raster_info()`, `gdal_vector_convert()`, etc.
+2. **Dynamic API** - Runtime-generated `gdal` object with hierarchical access like `gdal$raster$info()`
+
+This vignette focuses on the **dynamic API**, which adapts to your installed GDAL version automatically.
+
+## Why Dynamic?
+
+The static API has limitations:
+
+- **Fixed at build time** - Only includes commands known when package is built
+- **Version mismatch** - May include commands your GDAL doesn't support
+- **Maintenance burden** - Package must be rebuilt when GDAL adds commands
+- **Platform constraints** - Hard to distribute via CRAN (requires system GDAL)
+
+The dynamic API solves these by **building the API at runtime** from whatever GDAL is installed.
+
+## Requirements
+
+The dynamic API requires:
+
+- **GDAL >= 3.11** - Uses RFC 104 unified CLI
+- **gdalraster package** - Provides GDAL bindings
+- **R >= 3.6** - For R6 classes
+
+Check your setup:
+
+```{r, eval=FALSE}
+# Install gdalraster if needed
+install.packages("gdalraster")
+
+# Check GDAL version
+gdalraster::gdal_version()
+
+# Load gdalcli (dynamic API initializes in .onLoad)
+library(gdalcli)
+
+# Access the dynamic API
+gdal
+```
+
+## Basic Usage
+
+### Accessing Command Groups
+
+The top level provides command groups:
+
+```{r, eval=FALSE}
+gdal$raster      # Raster operations
+gdal$vector      # Vector operations
+gdal$mdim        # Multidimensional data
+gdal$vsi         # Virtual File System
+gdal$driver      # Driver-specific tools
+```
+
+### Accessing Commands
+
+Commands are nested under groups:
+
+```{r, eval=FALSE}
+# Get raster information
+gdal$raster$info(input = "data.tif")
+
+# Convert vector format
+gdal$vector$convert(
+  input = "input.shp",
+  output = "output.gpkg",
+  f = "GPKG"
+)
+
+# Reproject raster
+gdal$raster$reproject(
+  input = "input.tif",
+  output = "output_proj.tif",
+  t_srs = "EPSG:4326"
+)
+```
+
+### IDE Autocompletion
+
+The dynamic API supports full IDE autocompletion:
+
+- RStudio: Type `gdal$` and press Tab
+- VSCode: Same - Tab shows available groups
+- Emacs: ESS provides completions
+
+This works via S3 methods `.DollarNames.GdalApi` and `.DollarNames.GdalApiSub`.
+
+## Lazy Evaluation
+
+All GDAL commands return `gdal_job` objects - they don't execute immediately.
+
+This enables composable pipelines:
+
+```{r, eval=FALSE}
+# Build a job with multiple options
+job <- gdal$raster$convert(
+  input = "input.tif",
+  output = "output.tif"
+) |>
+  gdal_with_co("COMPRESS=LZW", "BLOCKSIZE=256") |>
+  gdal_with_config("GDAL_NUM_THREADS=4")
+
+# Review the job (prints command that will be executed)
+print(job)
+
+# Execute it
+result <- gdal_run(job)
+```
+
+## Choosing Backend
+
+By default, gdalcli uses processx to call the `gdal` CLI. You can use gdalraster instead:
+
+```{r, eval=FALSE}
+# Use gdalraster backend (native C++ bindings)
+result <- gdal_run(job, backend = "gdalraster")
+
+# Use processx backend (system call)
+result <- gdal_run(job, backend = "processx")
+
+# Auto-select (uses gdalraster if available, falls back to processx)
+result <- gdal_run(job)
+```
+
+### Backend Comparison
+
+| Feature | processx | gdalraster |
+|---------|----------|-----------|
+| Requires system GDAL install | Yes | No |
+| Works on Windows (no GDAL) | No | Yes |
+| Performance | Good | Excellent |
+| Output streaming | Supported | Limited |
+| Uses | CLI executable | Direct C++ bindings |
+
+## Examples
+
+### Raster Operations
+
+```{r, eval=FALSE}
+# Get raster metadata
+info <- gdal$raster$info(input = "dem.tif") |>
+  gdal_run(stream_out = "text")
+
+# Create overview pyramids
+gdal$raster$overview_add(
+  input = "large.tif",
+  levels = "2 4 8"
+) |>
+  gdal_run()
+
+# Calculate hillshade
+gdal$raster$hillshade(
+  input = "dem.tif",
+  output = "hillshade.tif",
+  z = 1.0,
+  s = 1.0
+) |>
+  gdal_with_co("COMPRESS=DEFLATE") |>
+  gdal_run()
+```
+
+### Vector Operations
+
+```{r, eval=FALSE}
+# Convert shapefile to GeoPackage
+gdal$vector$convert(
+  input = "data.shp",
+  output = "data.gpkg",
+  f = "GPKG"
+) |>
+  gdal_run()
+
+# Reproject vector data
+gdal$vector$reproject(
+  input = "input.gpkg",
+  output = "output_proj.gpkg",
+  s_srs = "EPSG:3857",
+  t_srs = "EPSG:4326"
+) |>
+  gdal_run()
+
+# Create vector buffer
+gdal$vector$geom_buffer(
+  input = "points.gpkg",
+  output = "buffered.gpkg",
+  distance = 100
+) |>
+  gdal_run()
+```
+
+### Virtual File Systems
+
+```{r, eval=FALSE}
+# Work with cloud storage
+gdal$raster$info(
+  input = "/vsis3/bucket/key.tif"
+) |>
+  gdal_run()
+
+# Copy from S3
+gdal$vsi_copy(
+  source = "/vsis3/bucket/input.tif",
+  destination = "local.tif"
+) |>
+  gdal_with_config("AWS_ACCESS_KEY_ID=...", "AWS_SECRET_ACCESS_KEY=...") |>
+  gdal_run()
+```
+
+## Performance
+
+The dynamic API includes version-aware caching:
+
+- **First load** (~5-10 seconds): Builds API tree from GDAL introspection
+- **Subsequent loads** (<100ms): Loads from cache
+- **Auto-invalidation**: Cache rebuilds if GDAL version changes
+
+Cache location: `tools::R_user_dir("gdalcli", "cache")`
+
+## Troubleshooting
+
+### "Dynamic GDAL API will not be available"
+
+Cause: gdalraster package not installed.
+
+Solution:
+```{r, eval=FALSE}
+install.packages("gdalraster")
+library(gdalcli)  # Reload package
+```
+
+### "GDAL version ... detected. Dynamic GDAL API requires GDAL >= 3.11"
+
+Cause: Your GDAL installation is too old.
+
+Solution: Update GDAL to 3.11+ or use the static API instead.
+
+### Autocompletion not working in RStudio
+
+Cause: RStudio's R6 autocompletion has a known bug with `NextMethod()`.
+
+Solution: This is already handled - gdalcli uses direct S3 method calls to work around the bug.
+
+## Comparing with Static API
+
+The static API still works alongside the dynamic API:
+
+```{r, eval=FALSE}
+# Static API (pre-generated functions)
+gdal_raster_info(input = "data.tif")
+
+# Dynamic API (runtime-generated)
+gdal$raster$info(input = "data.tif")
+
+# Both return gdal_job objects
+# Both work with gdal_run() and modifiers
+```
+
+Use whichever you prefer:
+
+- **Static API**: If you prefer traditional function names
+- **Dynamic API**: If you want IDE autocompletion and version-adaptive behavior
+
+## Technical Details
+
+### How It Works
+
+1. **Package load** (`.onLoad` hook):
+   - Check gdalraster availability
+   - Verify GDAL version >= 3.11
+   - Check for cached API
+
+2. **API building** (if not cached):
+   - Call `gdalraster::gdal_commands()` for all available commands
+   - Group by first level (raster, vector, etc.)
+   - For each group, create `GdalApiSub` R6 instance
+   - For each command, create dynamic function via `rlang::new_function()`
+
+3. **Caching**:
+   - Serialize API tree to RDS file
+   - Hash cache filename by GDAL version
+   - Cache location: `~/.cache/R/gdalcli/` (or platform equivalent)
+
+4. **Autocompletion**:
+   - S3 methods `.DollarNames.GdalApi()` and `.DollarNames.GdalApiSub()`
+   - Called by IDE when you type `gdal$` or `gdal$raster$`
+   - Return list of available subcommands
+
+### Architecture
+
+```
+GdalApi (R6 class)
+├── gdalraster (GdalApiSub)
+│   ├── info (function)
+│   ├── convert (function)
+│   └── ...
+├── vector (GdalApiSub)
+│   ├── convert (function)
+│   ├── info (function)
+│   └── ...
+└── mdim (GdalApiSub)
+    └── ...
+```
+
+Each function:
+- Accepts named arguments from usage text parsing
+- Captures call via `match.call()`
+- Returns `gdal_job` object with command path and arguments
+- Integrates with existing gdal_run() and modifiers
+
+## Known Limitations
+
+1. **Parser Coverage** - Regex-based usage text parser handles ~80% of cases
+   - Complex argument patterns may need manual refinement
+   - Future: More sophisticated parsing (AST-based)
+
+2. **Argument Autocompletion** - IDE can show subcommands but not arguments
+   - Works: `gdal$raster$` (shows info, convert, etc.)
+   - Limited: `gdal$raster$info(` (depends on dynamically generated formals)
+
+3. **Output Streaming** - Limited support with gdalraster backend
+   - Works fully with processx backend
+   - gdalraster backend returns success indication only
+
+## Future Enhancements
+
+Planned improvements:
+
+- [ ] Improve usage text parser for edge cases
+- [ ] Add argument name autocompletion in IDEs
+- [ ] Support for older GDAL versions with fallback
+- [ ] Binary cache format (protobuf) for faster loading
+- [ ] Web-scraped documentation for dynamic functions
+- [ ] Generate `.Rd` files on-the-fly for help text
+
+## See Also
+
+- [gdal_run()] - Execute GDAL jobs
+- [gdal_with_co()] - Add creation options
+- [gdal_with_config()] - Add GDAL config options
+- [new_gdal_job()] - Create jobs manually
