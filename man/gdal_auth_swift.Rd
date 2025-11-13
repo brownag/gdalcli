@@ -75,10 +75,10 @@ job <- gdal_gdal_vector_convert(
 
 Credentials are \strong{intentionally not accepted as function arguments} because:
 \itemize{
-\item ✓ Prevents accidental hardcoding of secrets in R scripts
-\item ✓ Reduces risk of leaking credentials via version control or logs
-\item ✓ Encourages secure credential management via .Renviron
-\item ✓ Follows security best practices (12-factor app)
+\item OK Prevents accidental hardcoding of secrets in R scripts
+\item OK Reduces risk of leaking credentials via version control or logs
+\item OK Encourages secure credential management via .Renviron
+\item OK Follows security best practices (12-factor app)
 }
 }
 

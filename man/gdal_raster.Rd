@@ -4,10 +4,12 @@
 \alias{gdal_raster}
 \title{Raster commands.}
 \usage{
-gdal_raster(drivers = FALSE)
+gdal_raster(job = NULL, drivers = FALSE)
 }
 \arguments{
-\item{drivers}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
+
+\item{drivers}{Display raster driver list as JSON document (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -15,11 +17,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Raster commands.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster(drivers = TRUE)
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

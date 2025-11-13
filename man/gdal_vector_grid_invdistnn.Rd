@@ -5,15 +5,22 @@
 \title{Create a regular grid from scattered points using weighted inverse distance interpolation nearest neighbour.}
 \usage{
 gdal_vector_grid_invdistnn(
-  output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  smoothing = NULL,
+  min_points = NULL,
+  max_points = NULL,
+  min_points_per_quadrant = NULL,
+  max_points_per_quadrant = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
   creation_option = NULL,
   extent,
   resolution,
   size,
-  output_data_type = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
@@ -23,65 +30,64 @@ gdal_vector_grid_invdistnn(
   zoffset = NULL,
   zmultiply = NULL,
   power = NULL,
-  smoothing = NULL,
   radius = NULL,
-  min_points = NULL,
-  max_points = NULL,
-  min_points_per_quadrant = NULL,
-  max_points_per_quadrant = NULL,
   nodata = NULL
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{smoothing}{Smoothing parameter (Default: \code{0})}
 
-\item{creation_option}{GDAL argument}
+\item{min_points}{Minimum number of data points to use (Integer) (Default: \code{0})}
 
-\item{extent}{GDAL argument}
+\item{max_points}{Maximum number of data points to use (Integer) (Default: \code{12})}
 
-\item{resolution}{GDAL argument}
+\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer) (Default: \code{0})}
 
-\item{size}{GDAL argument}
+\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
 
-\item{output_data_type}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{crs}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{overwrite}{GDAL argument}
+\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Float64})}
 
-\item{layer}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{sql}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{bbox}{GDAL argument}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
-\item{zfield}{GDAL argument}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
 
-\item{zoffset}{GDAL argument}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
-\item{zmultiply}{GDAL argument}
+\item{crs}{Override the projection for the output file}
 
-\item{power}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{smoothing}{GDAL argument}
+\item{layer}{Layer name (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{radius}{GDAL argument}
+\item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
 
-\item{min_points}{GDAL argument}
+\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
 
-\item{max_points}{GDAL argument}
+\item{zfield}{Field name from which to get Z values.}
 
-\item{min_points_per_quadrant}{GDAL argument}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
 
-\item{max_points_per_quadrant}{GDAL argument}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
 
-\item{nodata}{GDAL argument}
+\item{power}{Weighting power (Default: \code{2})}
+
+\item{radius}{Radius of the search circle}
+
+\item{nodata}{Target nodata value (Default: \code{0})}
 }
 \value{
 A \link{gdal_job} object.
@@ -89,11 +95,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Create a regular grid from scattered points using weighted inverse distance interpolation nearest neighbour.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_invdistnn.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_grid_invdistnn(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_grid_invdistnn(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

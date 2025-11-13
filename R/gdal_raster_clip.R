@@ -7,35 +7,44 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Clip a raster dataset.
-#' @param input_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param bbox GDAL argument
-#' @param bbox_crs GDAL argument
-#' @param geometry GDAL argument
-#' @param geometry_crs GDAL argument
-#' @param like GDAL argument
-#' @param like_sql GDAL argument
-#' @param like_layer GDAL argument
-#' @param like_where GDAL argument
-#' @param only_bbox GDAL argument
-#' @param allow_bbox_outside_source GDAL argument
-#' @param add_alpha GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_clip.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param allow_bbox_outside_source Allow clipping box to include pixels outside input dataset (Logical)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param bbox Clipping bounding box as xmin,ymin,xmax,ymax. Exactly `4` value(s)
+#' @param bbox_crs CRS of clipping bounding box
+#' @param geometry Clipping geometry (WKT or GeoJSON)
+#' @param geometry_crs CRS of clipping geometry
+#' @param like Dataset to use as a template for bounds (Dataset path). Format: `DATASET`
+#' @param like_sql SELECT statement to run on the 'like' dataset. Format: `SELECT-STATEMENT`
+#' @param like_layer Name of the layer of the 'like' dataset. Format: `LAYER-NAME`
+#' @param like_where WHERE SQL clause to run on the 'like' dataset. Format: `WHERE-EXPRESSION`
+#' @param only_bbox For 'geometry' and 'like', only consider their bounding box (Logical)
+#' @param add_alpha Adds an alpha mask band to the destination when the source raster have none. (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_clip(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_clip(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_clip <- function(input_format = NULL,
-  open_option = NULL,
+gdal_raster_clip <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  allow_bbox_outside_source = FALSE,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   bbox,
@@ -47,28 +56,36 @@ gdal_raster_clip <- function(input_format = NULL,
   like_layer = NULL,
   like_where = NULL,
   only_bbox = FALSE,
-  allow_bbox_outside_source = FALSE,
   add_alpha = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(bbox)) args[["bbox"]] <- bbox
-  if (!missing(bbox_crs)) args[["bbox_crs"]] <- bbox_crs
-  if (!missing(geometry)) args[["geometry"]] <- geometry
-  if (!missing(geometry_crs)) args[["geometry_crs"]] <- geometry_crs
-  if (!missing(like)) args[["like"]] <- like
-  if (!missing(like_sql)) args[["like_sql"]] <- like_sql
-  if (!missing(like_layer)) args[["like_layer"]] <- like_layer
-  if (!missing(like_where)) args[["like_where"]] <- like_where
-  if (!missing(only_bbox)) args[["only_bbox"]] <- only_bbox
-  if (!missing(allow_bbox_outside_source)) args[["allow_bbox_outside_source"]] <- allow_bbox_outside_source
-  if (!missing(add_alpha)) args[["add_alpha"]] <- add_alpha
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(allow_bbox_outside_source)) new_args[["allow_bbox_outside_source"]] <- allow_bbox_outside_source
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(bbox)) new_args[["bbox"]] <- bbox
+  if (!missing(bbox_crs)) new_args[["bbox_crs"]] <- bbox_crs
+  if (!missing(geometry)) new_args[["geometry"]] <- geometry
+  if (!missing(geometry_crs)) new_args[["geometry_crs"]] <- geometry_crs
+  if (!missing(like)) new_args[["like"]] <- like
+  if (!missing(like_sql)) new_args[["like_sql"]] <- like_sql
+  if (!missing(like_layer)) new_args[["like_layer"]] <- like_layer
+  if (!missing(like_where)) new_args[["like_where"]] <- like_where
+  if (!missing(only_bbox)) new_args[["only_bbox"]] <- only_bbox
+  if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
+  job_input <- handle_job_input(job, new_args, c("raster", "clip"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "clip"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "clip"), arguments = args)
+  new_gdal_job(command_path = c("raster", "clip"), arguments = merged_args)
 }
 

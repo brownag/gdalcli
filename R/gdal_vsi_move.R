@@ -7,23 +7,37 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
-#' @param source GDAL argument
-#' @param destination GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vsi_move.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param source Source file or directory name (required)
+#' @param destination Destination file or directory name (required)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vsi_move(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vsi_move(source = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vsi_move <- function(source = NULL,
+gdal_vsi_move <- function(job = NULL,
+  source = NULL,
   destination = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(source)) args[["source"]] <- source
-  if (!missing(destination)) args[["destination"]] <- destination
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(source)) new_args[["source"]] <- source
+  if (!missing(destination)) new_args[["destination"]] <- destination
+  job_input <- handle_job_input(job, new_args, c("vsi", "move"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vsi", "move"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vsi", "move"), arguments = args)
+  new_gdal_job(command_path = c("vsi", "move"), arguments = merged_args)
 }
 

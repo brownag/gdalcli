@@ -5,29 +5,32 @@
 \title{Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.}
 \usage{
 gdal_vsi_sozip_optimize(
+  job = NULL,
   input = NULL,
+  sozip_min_file_size = NULL,
   output = NULL,
+  stdout = FALSE,
   overwrite = FALSE,
   enable_sozip = NULL,
-  sozip_chunk_size = NULL,
-  sozip_min_file_size = NULL,
-  stdout = FALSE
+  sozip_chunk_size = NULL
 )
 }
 \arguments{
-\item{input}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{output}{GDAL argument}
+\item{input}{Input ZIP filename (Character vector) (required). \code{0} to \code{1} value(s)}
 
-\item{overwrite}{GDAL argument}
+\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
 
-\item{enable_sozip}{GDAL argument}
+\item{output}{Output ZIP filename (required)}
 
-\item{sozip_chunk_size}{GDAL argument}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 
-\item{sozip_min_file_size}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{stdout}{GDAL argument}
+\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP optimization. Choices: auto, yes, no (Default: \code{auto})}
+
+\item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix} (Default: \code{32768})}
 }
 \value{
 A \link{gdal_job} object.
@@ -35,11 +38,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_sozip_optimize(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_sozip_optimize(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

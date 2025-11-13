@@ -7,26 +7,40 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Deleting overviews.
-#' @param open_option GDAL argument
-#' @param dataset GDAL argument
-#' @param external GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param dataset Dataset (to be updated in-place, unless --read-only) (Dataset path) (required)
+#' @param external Delete external overviews (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_overview_delete(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_overview_delete(open_option = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_overview_delete <- function(open_option = NULL,
+gdal_raster_overview_delete <- function(job = NULL,
+  open_option = NULL,
   dataset = NULL,
   external = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(dataset)) args[["dataset"]] <- dataset
-  if (!missing(external)) args[["external"]] <- external
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(dataset)) new_args[["dataset"]] <- dataset
+  if (!missing(external)) new_args[["external"]] <- external
+  job_input <- handle_job_input(job, new_args, c("raster", "overview", "delete"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "overview", "delete"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "overview", "delete"), arguments = args)
+  new_gdal_job(command_path = c("raster", "overview", "delete"), arguments = merged_args)
 }
 

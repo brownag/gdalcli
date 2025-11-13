@@ -6,6 +6,15 @@
 ^\.DS_Store$
 ^vignettes/\.DS_Store$
 ^man/figures/.*\.png$
-^build/$
+^build$
 ^Makefile$
 ^\.gdal_doc_cache$
+^LICENSE\.md$
+^docs$
+^\.\.Rcheck$
+^\.test_cache$
+^\.git$
+\.git
+\.gdal_doc_cache
+\.test_cache
+\.\.Rcheck

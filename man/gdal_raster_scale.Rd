@@ -5,50 +5,56 @@
 \title{Scale the values of the bands of a raster dataset.}
 \usage{
 gdal_raster_scale(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
-  output_format = NULL,
-  creation_option = NULL,
-  overwrite = FALSE,
-  output_data_type = NULL,
-  band = NULL,
+  input_format = NULL,
   src_min = NULL,
   src_max = NULL,
   dst_min = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
   dst_max = NULL,
+  open_option = NULL,
+  creation_option = NULL,
+  overwrite = FALSE,
+  band = NULL,
   exponent = NULL,
   no_clip = FALSE
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{src_min}{Minimum value of the source range}
 
-\item{creation_option}{GDAL argument}
+\item{src_max}{Maximum value of the source range}
 
-\item{overwrite}{GDAL argument}
+\item{dst_min}{Minimum value of the destination range}
 
-\item{output_data_type}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{band}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{src_min}{GDAL argument}
+\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
 
-\item{src_max}{GDAL argument}
+\item{dst_max}{Maximum value of the destination range}
 
-\item{dst_min}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{dst_max}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{exponent}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{no_clip}{GDAL argument}
+\item{band}{Select band to restrict the scaling (1-based index) (Integer)}
+
+\item{exponent}{Exponent to apply non-linear scaling with a power function}
+
+\item{no_clip}{Do not clip input values to [srcmin, srcmax] (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -56,11 +62,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Scale the values of the bands of a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_scale.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_scale(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_scale(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -5,6 +5,7 @@
 \title{Edit a raster dataset.}
 \usage{
 gdal_raster_edit(
+  job = NULL,
   dataset = NULL,
   auxiliary = FALSE,
   crs = NULL,
@@ -18,25 +19,27 @@ gdal_raster_edit(
 )
 }
 \arguments{
-\item{dataset}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{auxiliary}{GDAL argument}
+\item{dataset}{Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required)}
 
-\item{crs}{GDAL argument}
+\item{auxiliary}{Ask for an auxiliary .aux.xml file to be edited (Logical)}
 
-\item{bbox}{GDAL argument}
+\item{crs}{Override CRS (without reprojection)}
 
-\item{nodata}{GDAL argument}
+\item{bbox}{Bounding box as xmin,ymin,xmax,ymax. Exactly \code{4} value(s)}
 
-\item{metadata}{GDAL argument}
+\item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')}
 
-\item{unset_metadata}{GDAL argument}
+\item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{stats}{GDAL argument}
+\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}. \code{0} to \code{2147483647} value(s)}
 
-\item{approx_stats}{GDAL argument}
+\item{stats}{Compute statistics, using all pixels (Logical)}
 
-\item{hist}{GDAL argument}
+\item{approx_stats}{Compute statistics, using a subset of pixels (Logical)}
+
+\item{hist}{Compute histogram (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -44,11 +47,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Edit a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_edit(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_edit(dataset = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

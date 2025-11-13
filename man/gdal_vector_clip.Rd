@@ -5,18 +5,20 @@
 \title{Clip a vector dataset.}
 \usage{
 gdal_vector_clip(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input,
+  input_format = NULL,
   input_layer = NULL,
+  output = NULL,
   output_format = NULL,
+  output_layer = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  output_layer = NULL,
   active_layer = NULL,
   bbox,
   bbox_crs = NULL,
@@ -29,47 +31,51 @@ gdal_vector_clip(
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{GDAL argument}
+\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{output_format}{GDAL argument}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{layer_creation_option}{GDAL argument}
+\item{output_layer}{Output layer name}
 
-\item{overwrite}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{update}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite_layer}{GDAL argument}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{append}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{output_layer}{GDAL argument}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{active_layer}{GDAL argument}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{bbox}{GDAL argument}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{bbox_crs}{GDAL argument}
+\item{active_layer}{Set active layer (if not specified, all)}
 
-\item{geometry}{GDAL argument}
+\item{bbox}{Clipping bounding box as xmin,ymin,xmax,ymax. Exactly \code{4} value(s)}
 
-\item{geometry_crs}{GDAL argument}
+\item{bbox_crs}{CRS of clipping bounding box}
 
-\item{like}{GDAL argument}
+\item{geometry}{Clipping geometry (WKT or GeoJSON)}
 
-\item{like_sql}{GDAL argument}
+\item{geometry_crs}{CRS of clipping geometry}
 
-\item{like_layer}{GDAL argument}
+\item{like}{Dataset to use as a template for bounds (Dataset path). Format: \code{DATASET}}
 
-\item{like_where}{GDAL argument}
+\item{like_sql}{SELECT statement to run on the 'like' dataset. Format: \code{SELECT-STATEMENT}}
+
+\item{like_layer}{Name of the layer of the 'like' dataset. Format: \code{LAYER-NAME}}
+
+\item{like_where}{WHERE SQL clause to run on the 'like' dataset. Format: \code{WHERE-EXPRESSION}}
 }
 \value{
 A \link{gdal_job} object.
@@ -77,11 +83,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Clip a vector dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_clip.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_clip(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_clip(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

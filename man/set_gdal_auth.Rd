@@ -120,7 +120,7 @@ or using VSI URLs.
 \details{
 \subsection{azure: Microsoft Azure Blob Storage}{
 
-\strong{GDAL Version:} ≥ 3.0.0 (3.6.1+ recommended)
+\strong{GDAL Version:} \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 
 \strong{Authentication Methods (choose exactly one):}
 \enumerate{
@@ -156,7 +156,7 @@ Note: Leading \verb{?} or \code{&} and trailing \code{&} are automatically strip
 
 \subsection{gs: Google Cloud Storage}{
 
-\strong{GDAL Version:} ≥ 3.0.0 (3.6.1+ recommended)
+\strong{GDAL Version:} \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 
 \strong{Recommended Method: Service Account JSON File}
 
@@ -179,7 +179,7 @@ credentials file (downloaded from Google Cloud Console).
 
 \subsection{oss: Alibaba Cloud OSS}{
 
-\strong{GDAL Version:} ≥ 3.0.0 (3.6.1+ recommended)
+\strong{GDAL Version:} \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 
 \strong{Environment Variables Set:}
 \itemize{
@@ -202,7 +202,7 @@ credentials file (downloaded from Google Cloud Console).
 
 \subsection{swift_v3: OpenStack Swift (Keystone V3 Authentication)}{
 
-\strong{GDAL Version:} ≥ 3.0.0
+\strong{GDAL Version:} \eqn{\ge} 3.0.0
 
 \strong{Environment Variables Set:}
 \itemize{
@@ -226,7 +226,7 @@ credentials file (downloaded from Google Cloud Console).
 
 \subsection{swift_v1: OpenStack Swift (Auth V1)}{
 
-\strong{GDAL Version:} ≥ 3.0.0
+\strong{GDAL Version:} \eqn{\ge} 3.0.0
 
 \strong{Environment Variables Set:}
 \itemize{

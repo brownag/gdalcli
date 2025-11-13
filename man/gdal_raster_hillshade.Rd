@@ -5,10 +5,12 @@
 \title{Generate a shaded relief map}
 \usage{
 gdal_raster_hillshade(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
@@ -23,35 +25,39 @@ gdal_raster_hillshade(
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{overwrite}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{band}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{zfactor}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{xscale}{GDAL argument}
+\item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
-\item{yscale}{GDAL argument}
+\item{zfactor}{Vertical exaggeration used to pre-multiply the elevations. Minimum: \code{0}}
 
-\item{azimuth}{GDAL argument}
+\item{xscale}{Ratio of vertical units to horizontal X axis units. Minimum: \code{0}}
 
-\item{altitude}{GDAL argument}
+\item{yscale}{Ratio of vertical units to horizontal Y axis units. Minimum: \code{0}}
 
-\item{gradient_alg}{GDAL argument}
+\item{azimuth}{Azimuth of the light, in degrees (Default: \code{315})}
 
-\item{variant}{GDAL argument}
+\item{altitude}{Altitude of the light, in degrees (Default: \code{45}). Range: (\code{0} to \code{90})}
 
-\item{no_edges}{GDAL argument}
+\item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: Horn, ZevenbergenThorne (Default: \code{Horn})}
+
+\item{variant}{Variant of the hillshading algorithm. Choices: regular, combined, multidirectional, Igor (Default: \code{regular})}
+
+\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -59,11 +65,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Generate a shaded relief map
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_hillshade(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_hillshade(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

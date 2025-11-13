@@ -7,50 +7,67 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Combine together input bands into a multi-band output, either virtual (VRT) or materialized.
-#' @param output_format GDAL argument
-#' @param input GDAL argument
-#' @param creation_option GDAL argument
-#' @param band GDAL argument
-#' @param overwrite GDAL argument
-#' @param resolution GDAL argument
-#' @param bbox GDAL argument
-#' @param target_aligned_pixels GDAL argument
-#' @param src_nodata GDAL argument
-#' @param dst_nodata GDAL argument
-#' @param hide_nodata GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_stack.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster datasets (or specify a @<filename> to point to a file containing filenames). Format: `INPUTS`. `1` to `2147483647` value(s)
+#' @param src_nodata Set nodata values for input bands.. `1` to `2147483647` value(s)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param dst_nodata Set nodata values at the destination band level.. `1` to `2147483647` value(s)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param band Input band(s) (1-based index) (Integer vector). `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param resolution Target resolution (in destination CRS units). Format: `<xres>,<yres>|same|average|common|highest|lowest` (Default: `same`)
+#' @param bbox Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Exactly `4` value(s)
+#' @param target_aligned_pixels Round target extent to target resolution (Logical)
+#' @param hide_nodata Makes the destination band not report the NoData. (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_stack(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_stack(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_stack <- function(output_format = NULL,
+gdal_raster_stack <- function(job = NULL,
   input,
+  src_nodata,
+  output = NULL,
+  output_format = NULL,
+  dst_nodata,
   creation_option = NULL,
   band = NULL,
   overwrite = FALSE,
   resolution = NULL,
   bbox,
   target_aligned_pixels = FALSE,
-  src_nodata,
-  dst_nodata,
   hide_nodata = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(resolution)) args[["resolution"]] <- resolution
-  if (!missing(bbox)) args[["bbox"]] <- bbox
-  if (!missing(target_aligned_pixels)) args[["target_aligned_pixels"]] <- target_aligned_pixels
-  if (!missing(src_nodata)) args[["src_nodata"]] <- src_nodata
-  if (!missing(dst_nodata)) args[["dst_nodata"]] <- dst_nodata
-  if (!missing(hide_nodata)) args[["hide_nodata"]] <- hide_nodata
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(src_nodata)) new_args[["src_nodata"]] <- src_nodata
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(resolution)) new_args[["resolution"]] <- resolution
+  if (!missing(bbox)) new_args[["bbox"]] <- bbox
+  if (!missing(target_aligned_pixels)) new_args[["target_aligned_pixels"]] <- target_aligned_pixels
+  if (!missing(hide_nodata)) new_args[["hide_nodata"]] <- hide_nodata
+  job_input <- handle_job_input(job, new_args, c("raster", "stack"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "stack"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "stack"), arguments = args)
+  new_gdal_job(command_path = c("raster", "stack"), arguments = merged_args)
 }
 

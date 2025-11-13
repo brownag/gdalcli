@@ -7,29 +7,43 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Copy files located on GDAL Virtual System Interface (VSI).
-#' @param source GDAL argument
-#' @param destination GDAL argument
-#' @param recursive GDAL argument
-#' @param skip_errors GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vsi_copy.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param source Source file or directory name (required)
+#' @param destination Destination file or directory name (required)
+#' @param recursive Copy subdirectories recursively (Logical)
+#' @param skip_errors Skip errors (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vsi_copy(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vsi_copy(source = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vsi_copy <- function(source = NULL,
+gdal_vsi_copy <- function(job = NULL,
+  source = NULL,
   destination = NULL,
   recursive = FALSE,
   skip_errors = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(source)) args[["source"]] <- source
-  if (!missing(destination)) args[["destination"]] <- destination
-  if (!missing(recursive)) args[["recursive"]] <- recursive
-  if (!missing(skip_errors)) args[["skip_errors"]] <- skip_errors
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(source)) new_args[["source"]] <- source
+  if (!missing(destination)) new_args[["destination"]] <- destination
+  if (!missing(recursive)) new_args[["recursive"]] <- recursive
+  if (!missing(skip_errors)) new_args[["skip_errors"]] <- skip_errors
+  job_input <- handle_job_input(job, new_args, c("vsi", "copy"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vsi", "copy"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vsi", "copy"), arguments = args)
+  new_gdal_job(command_path = c("vsi", "copy"), arguments = merged_args)
 }
 

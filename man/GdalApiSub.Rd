@@ -2,52 +2,19 @@
 % Please edit documentation in R/core-gdal-api-classes.R
 \name{GdalApiSub}
 \alias{GdalApiSub}
-\title{GdalApiSub R6 Class}
+\title{GdalApiSub Class}
+\usage{
+GdalApiSub(group_name, command_list)
+}
+\arguments{
+\item{group_name}{Character string of the command group name (e.g., "raster", "vector").}
+
+\item{command_list}{List of command paths for this group.}
+}
+\value{
+The object provides access to GDAL commands via \code{$} operator.
+}
 \description{
-Intermediate node representing a command group (e.g., \code{gdal$raster}).
+Intermediate node representing a command group (e.g., \code{gdal.alg$raster}).
 }
 \keyword{internal}
-\section{Methods}{
-\subsection{Public methods}{
-\itemize{
-\item \href{#method-GdalApiSub-new}{\code{GdalApiSub$new()}}
-\item \href{#method-GdalApiSub-get_subcommands}{\code{GdalApiSub$get_subcommands()}}
-\item \href{#method-GdalApiSub-clone}{\code{GdalApiSub$clone()}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-GdalApiSub-new"></a>}}
-\if{latex}{\out{\hypertarget{method-GdalApiSub-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{GdalApiSub$new(group_name, command_list)}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-GdalApiSub-get_subcommands"></a>}}
-\if{latex}{\out{\hypertarget{method-GdalApiSub-get_subcommands}{}}}
-\subsection{Method \code{get_subcommands()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{GdalApiSub$get_subcommands()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-GdalApiSub-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-GdalApiSub-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{GdalApiSub$clone(deep = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
-}

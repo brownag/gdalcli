@@ -7,49 +7,59 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Burns vector geometries into a raster.
-#' @param output_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param creation_option GDAL argument
-#' @param band GDAL argument
-#' @param invert GDAL argument
-#' @param all_touched GDAL argument
-#' @param burn GDAL argument
-#' @param attribute_name GDAL argument
-#' @param X3d GDAL argument
-#' @param add GDAL argument
-#' @param layer_name GDAL argument
-#' @param where GDAL argument
-#' @param sql GDAL argument
-#' @param dialect GDAL argument
-#' @param nodata GDAL argument
-#' @param init GDAL argument
-#' @param crs GDAL argument
-#' @param transformer_option GDAL argument
-#' @param extent GDAL argument
-#' @param resolution GDAL argument
-#' @param target_aligned_pixels GDAL argument
-#' @param size GDAL argument
-#' @param output_data_type GDAL argument
-#' @param optimization GDAL argument
-#' @param update GDAL argument
-#' @param overwrite GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input vector dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param invert Invert the rasterization (Logical) (Default: `false`)
+#' @param init Pre-initialize output bands with specified value. `0` to `2147483647` value(s)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param band The band(s) to burn values into (1-based index) (Integer vector). `0` to `2147483647` value(s)
+#' @param all_touched Enables the ALL_TOUCHED rasterization option (Logical)
+#' @param burn Burn value. `0` to `2147483647` value(s)
+#' @param attribute_name Attribute name
+#' @param X3d Indicates that a burn value should be extracted from the Z values of the feature (Logical)
+#' @param add Add to existing raster (Logical) (Default: `false`)
+#' @param layer_name Layer name
+#' @param where SQL where clause
+#' @param sql SQL select statement
+#' @param dialect SQL dialect
+#' @param nodata Assign a specified nodata value to output bands
+#' @param crs Override the projection for the output file
+#' @param transformer_option Set a transformer option suitable to pass to GDALCreateGenImgProjTransformer2 (Character vector). Format: `<NAME>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param extent Set the target georeferenced extent. Format: `<xmin>,<ymin>,<xmax>,<ymax>`. Exactly `4` value(s)
+#' @param resolution Set the target resolution. Format: `<xres>,<yres>`. Exactly `2` value(s)
+#' @param target_aligned_pixels (target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical)
+#' @param size Set the target size in pixels and lines (Integer vector). Format: `<xsize>,<ysize>`. Exactly `2` value(s)
+#' @param optimization Force the algorithm used (results are identical). Choices: AUTO, RASTER, VECTOR (Default: `AUTO`)
+#' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vector_rasterize(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vector_rasterize(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vector_rasterize <- function(output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+gdal_vector_rasterize <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  invert = FALSE,
+  init = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
   creation_option = NULL,
   band = NULL,
-  invert = FALSE,
   all_touched = FALSE,
   burn = NULL,
   attribute_name = NULL,
@@ -60,48 +70,55 @@ gdal_vector_rasterize <- function(output_format = NULL,
   sql = NULL,
   dialect = NULL,
   nodata = NULL,
-  init = NULL,
   crs = NULL,
   transformer_option = NULL,
-  extent,
-  resolution,
+  extent = NULL,
+  resolution = NULL,
   target_aligned_pixels = FALSE,
-  size,
-  output_data_type = NULL,
+  size = NULL,
   optimization = NULL,
   update = FALSE,
   overwrite = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(invert)) args[["invert"]] <- invert
-  if (!missing(all_touched)) args[["all_touched"]] <- all_touched
-  if (!missing(burn)) args[["burn"]] <- burn
-  if (!missing(attribute_name)) args[["attribute_name"]] <- attribute_name
-  if (!missing(X3d)) args[["X3d"]] <- X3d
-  if (!missing(add)) args[["add"]] <- add
-  if (!missing(layer_name)) args[["layer_name"]] <- layer_name
-  if (!missing(where)) args[["where"]] <- where
-  if (!missing(sql)) args[["sql"]] <- sql
-  if (!missing(dialect)) args[["dialect"]] <- dialect
-  if (!missing(nodata)) args[["nodata"]] <- nodata
-  if (!missing(init)) args[["init"]] <- init
-  if (!missing(crs)) args[["crs"]] <- crs
-  if (!missing(transformer_option)) args[["transformer_option"]] <- transformer_option
-  if (!missing(extent)) args[["extent"]] <- extent
-  if (!missing(resolution)) args[["resolution"]] <- resolution
-  if (!missing(target_aligned_pixels)) args[["target_aligned_pixels"]] <- target_aligned_pixels
-  if (!missing(size)) args[["size"]] <- size
-  if (!missing(output_data_type)) args[["output_data_type"]] <- output_data_type
-  if (!missing(optimization)) args[["optimization"]] <- optimization
-  if (!missing(update)) args[["update"]] <- update
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(invert)) new_args[["invert"]] <- invert
+  if (!missing(init)) new_args[["init"]] <- init
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(all_touched)) new_args[["all_touched"]] <- all_touched
+  if (!missing(burn)) new_args[["burn"]] <- burn
+  if (!missing(attribute_name)) new_args[["attribute_name"]] <- attribute_name
+  if (!missing(X3d)) new_args[["X3d"]] <- X3d
+  if (!missing(add)) new_args[["add"]] <- add
+  if (!missing(layer_name)) new_args[["layer_name"]] <- layer_name
+  if (!missing(where)) new_args[["where"]] <- where
+  if (!missing(sql)) new_args[["sql"]] <- sql
+  if (!missing(dialect)) new_args[["dialect"]] <- dialect
+  if (!missing(nodata)) new_args[["nodata"]] <- nodata
+  if (!missing(crs)) new_args[["crs"]] <- crs
+  if (!missing(transformer_option)) new_args[["transformer_option"]] <- transformer_option
+  if (!missing(extent)) new_args[["extent"]] <- extent
+  if (!missing(resolution)) new_args[["resolution"]] <- resolution
+  if (!missing(target_aligned_pixels)) new_args[["target_aligned_pixels"]] <- target_aligned_pixels
+  if (!missing(size)) new_args[["size"]] <- size
+  if (!missing(optimization)) new_args[["optimization"]] <- optimization
+  if (!missing(update)) new_args[["update"]] <- update
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  job_input <- handle_job_input(job, new_args, c("vector", "rasterize"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vector", "rasterize"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vector", "rasterize"), arguments = args)
+  new_gdal_job(command_path = c("vector", "rasterize"), arguments = merged_args)
 }
 

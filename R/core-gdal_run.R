@@ -14,6 +14,10 @@
 #'
 #' @param x An S3 object to be executed. Typically a [gdal_job].
 #' @param ... Additional arguments passed to specific methods.
+#' @param backend Character string specifying the backend to use: `"processx"` (default,
+#'   uses processx::run), `"gdalraster"` (uses gdalraster's C++ bindings, if available),
+#'   or `"reticulate"` (uses Python's osgeo.gdal via reticulate, if available).
+#'   If `NULL` (default), dispatches to the appropriate S3 method based on `x`'s class.
 #' @param stream_in An R object to be streamed to `/vsistdin/`. Can be `NULL`,
 #'   a character string, or raw vector. If provided, overrides `x$stream_in`.
 #' @param stream_out_format Character string: `NULL` (default, no streaming),
@@ -62,8 +66,17 @@ gdal_run <- function(x, ..., backend = NULL) {
   if (!is.null(backend)) {
     if (backend == "gdalraster" && requireNamespace("gdalraster", quietly = TRUE)) {
       return(gdal_run_gdalraster(x, ...))
+    } else if (backend == "reticulate" && requireNamespace("reticulate", quietly = TRUE)) {
+      return(gdal_run_reticulate(x, ...))
     } else if (backend == "processx") {
       return(gdal_run.gdal_job(x, ...))
+    } else {
+      cli::cli_abort(
+        c(
+          "Unknown backend: {backend}",
+          "i" = "Supported backends: 'processx', 'gdalraster', 'reticulate'"
+        )
+      )
     }
   }
 
@@ -79,6 +92,11 @@ gdal_run.gdal_job <- function(x,
                               env = NULL,
                               verbose = FALSE,
                               ...) {
+  # If this job has a pipeline history, run the pipeline instead
+  if (!is.null(x$pipeline)) {
+    return(gdal_run(x$pipeline, ..., verbose = verbose))
+  }
+
   # Resolve streaming parameters (explicit args override job specs)
   stream_in_final <- if (!is.null(stream_in)) stream_in else x$stream_in
   stream_out_final <- if (!is.null(stream_out_format)) stream_out_format else x$stream_out_format
@@ -138,7 +156,13 @@ gdal_run.gdal_job <- function(x,
 #'
 #' @keywords internal
 .serialize_gdal_job <- function(job) {
-  args <- c(job$command_path)
+  # Skip the "gdal" prefix if present
+  command_parts <- if (length(job$command_path) > 0 && job$command_path[1] == "gdal") job$command_path[-1] else job$command_path
+  args <- command_parts
+
+  # Separate positional and option arguments
+  positional_args_list <- list()
+  option_args <- character()
 
   # Process regular arguments
   for (i in seq_along(job$arguments)) {
@@ -150,24 +174,68 @@ gdal_run.gdal_job <- function(x,
       next
     }
 
-    # Convert argument name from snake_case to kebab-case
-    cli_flag <- paste0("--", gsub("_", "-", arg_name))
+    # Check if this is a positional argument (no -- prefix needed)
+    positional_arg_names <- c("input", "output", "src_dataset", "dest_dataset", "dataset")
+    is_positional <- arg_name %in% positional_arg_names
 
-    # Handle different value types
-    if (is.logical(arg_value)) {
-      if (arg_value) {
-        args <- c(args, cli_flag)
-      }
-    } else if (length(arg_value) > 1) {
-      # Repeatable arguments (e.g., -co, -oo)
-      for (val in arg_value) {
-        args <- c(args, cli_flag, as.character(val))
-      }
+    if (is_positional) {
+      # Store positional arguments to add in correct order later
+      positional_args_list[[arg_name]] <- arg_value
     } else {
-      # Single-value arguments
-      args <- c(args, cli_flag, as.character(arg_value))
+      # Option arguments: add --flag
+      # Special flag mappings for arguments that use different CLI flags
+      flag_mapping <- c(
+        "resolution" = "--resolution",
+        "size" = "--ts",
+        "extent" = "--te"
+      )
+      cli_flag <- if (arg_name %in% names(flag_mapping)) flag_mapping[arg_name] else paste0("--", gsub("_", "-", arg_name))
+
+      # Handle different value types
+      if (is.logical(arg_value)) {
+        if (arg_value) {
+          option_args <- c(option_args, cli_flag)
+        }
+      } else if (length(arg_value) > 1) {
+        # Handle multi-value vs repeatable arguments
+        multi_value_args <- c("resolution", "extent", "size", "bbox")
+        comma_separated_args <- c("resolution", "extent", "bbox")  # These need comma separation
+        if (arg_name %in% comma_separated_args) {
+          # Comma-separated multi-value arguments: --flag val1,val2,...
+          option_args <- c(option_args, cli_flag, paste(as.character(arg_value), collapse = ","))
+        } else if (arg_name %in% multi_value_args) {
+          # Space-separated multi-value arguments: --flag val1 val2 ...
+          option_args <- c(option_args, cli_flag, as.character(arg_value))
+        } else {
+          # Repeatable arguments: --flag val1 --flag val2 ...
+          for (val in arg_value) {
+            option_args <- c(option_args, cli_flag, as.character(val))
+          }
+        }
+      } else {
+        # Single-value arguments
+        option_args <- c(option_args, cli_flag, as.character(arg_value))
+      }
     }
   }
+
+  # Add positional arguments in correct order: inputs first, then outputs
+  # Most GDAL commands follow: [options] input [input2 ...] output
+  positional_order <- c("input", "src_dataset", "dataset", "output", "dest_dataset")
+  for (arg_name in positional_order) {
+    if (arg_name %in% names(positional_args_list)) {
+      arg_value <- positional_args_list[[arg_name]]
+      if (length(arg_value) > 1) {
+        # Multiple positional values (rare)
+        args <- c(args, arg_value)
+      } else {
+        args <- c(args, as.character(arg_value))
+      }
+    }
+  }
+
+  # Add option arguments
+  args <- c(args, option_args)
 
   args
 }
@@ -332,6 +400,79 @@ gdal_run_gdalraster <- function(job,
         c(
           "GDAL command failed via gdalraster",
           "x" = conditionMessage(e)
+        )
+      )
+    }
+  )
+}
+
+#' Execute GDAL Job via Reticulate (Python)
+#'
+#' Backend that uses Python's osgeo.gdal module via reticulate.
+#' This allows use of gdal.alg Python API alongside gdalcli.
+#'
+#' @param job A [gdal_job] object
+#' @param ... Additional arguments (ignored)
+#'
+#' @keywords internal
+#' @noRd
+gdal_run_reticulate <- function(job,
+                               stream_in = NULL,
+                               stream_out_format = NULL,
+                               env = NULL,
+                               verbose = FALSE,
+                               ...) {
+  # Check reticulate is available
+  if (!requireNamespace("reticulate", quietly = TRUE)) {
+    cli::cli_abort(
+      c(
+        "reticulate package required for this operation",
+        "i" = "Install with: install.packages('reticulate')"
+      )
+    )
+  }
+
+  # Build command string from path and arguments
+  cmd_parts <- job$command_path
+  
+  # Serialize arguments
+  args <- .serialize_gdal_job(job)
+  
+  # Print command if verbose
+  if (verbose) {
+    cli::cli_alert_info(sprintf("Executing (reticulate): gdal %s", paste(args, collapse = " ")))
+  }
+  
+  # Prepare environment variables
+  env_final <- .merge_env_vars(job$env_vars, env, job$config_options)
+  
+  # Set environment variables
+  if (length(env_final) > 0) {
+    old_env <- Sys.getenv(names(env_final))
+    on.exit(do.call(Sys.setenv, as.list(old_env)), add = TRUE)
+    do.call(Sys.setenv, as.list(env_final))
+  }
+  
+  tryCatch(
+    {
+      # Import GDAL Python module
+      gdal_py <- reticulate::import("osgeo.gdal")
+      
+      # Build command string
+      full_cmd <- paste(c(cmd_parts, args[-seq_along(cmd_parts)]), collapse = " ")
+      
+      # Execute via Python GDAL
+      # Note: gdal.alg.compute() expects command as string
+      result <- gdal_py$alg$compute(full_cmd, quiet = !verbose)
+      
+      invisible(TRUE)
+    },
+    error = function(e) {
+      cli::cli_abort(
+        c(
+          "GDAL command failed via reticulate",
+          "x" = conditionMessage(e),
+          "i" = "Make sure Python osgeo package is installed: pip install GDAL"
         )
       )
     }

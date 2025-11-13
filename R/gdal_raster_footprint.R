@@ -7,89 +7,106 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Compute the footprint of a raster dataset.
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param output_layer GDAL argument
-#' @param creation_option GDAL argument
-#' @param layer_creation_option GDAL argument
-#' @param append GDAL argument
-#' @param overwrite GDAL argument
-#' @param band GDAL argument
-#' @param combine_bands GDAL argument
-#' @param overview GDAL argument
-#' @param src_nodata GDAL argument
-#' @param coordinate_system GDAL argument
-#' @param dst_crs GDAL argument
-#' @param split_multipolygons GDAL argument
-#' @param convex_hull GDAL argument
-#' @param densify_distance GDAL argument
-#' @param simplify_tolerance GDAL argument
-#' @param min_ring_area GDAL argument
-#' @param max_points GDAL argument
-#' @param location_field GDAL argument
-#' @param no_location_field GDAL argument
-#' @param absolute_path GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param combine_bands Defines how the mask bands of the selected bands are combined to generate a single mask band, before being vectorized.. Choices: union, intersection (Default: `union`)
+#' @param src_nodata Set nodata values for input bands.. `1` to `2147483647` value(s)
+#' @param coordinate_system Target coordinate system. Choices: georeferenced, pixel
+#' @param min_ring_area Minimum value for the area of a ring. Minimum: `0`
+#' @param max_points Maximum number of points of each output geometry (Default: `100`)
+#' @param output Output vector dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param output_layer Output layer name (Default: `footprint`)
+#' @param dst_crs Destination CRS
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param append Whether to append to an existing dataset (Logical) (Default: `false`)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param band Input band(s) (1-based index) (Integer vector). `0` to `2147483647` value(s)
+#' @param overview Which overview level of source file must be used (Integer). Minimum: `0`
+#' @param split_multipolygons Whether to split multipolygons as several features each with one single polygon (Logical)
+#' @param convex_hull Whether to compute the convex hull of the footprint (Logical)
+#' @param densify_distance Maximum distance between 2 consecutive points of the output geometry.. Minimum: `0`
+#' @param simplify_tolerance Tolerance used to merge consecutive points of the output geometry.. Minimum: `0`
+#' @param location_field Name of the field where the path of the input dataset will be stored. (Default: `location`)
+#' @param no_location_field Disable creating a field with the path of the input dataset (Logical)
+#' @param absolute_path Whether the path to the input dataset should be stored as an absolute path (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_footprint(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_footprint(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_footprint <- function(open_option = NULL,
-  input_format = NULL,
+gdal_raster_footprint <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  combine_bands = NULL,
+  src_nodata,
+  coordinate_system = NULL,
+  min_ring_area = NULL,
+  max_points = NULL,
+  output = NULL,
   output_format = NULL,
   output_layer = NULL,
+  dst_crs = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   append = FALSE,
   overwrite = FALSE,
   band = NULL,
-  combine_bands = NULL,
   overview = NULL,
-  src_nodata,
-  coordinate_system = NULL,
-  dst_crs = NULL,
   split_multipolygons = FALSE,
   convex_hull = FALSE,
   densify_distance = NULL,
   simplify_tolerance = NULL,
-  min_ring_area = NULL,
-  max_points = NULL,
   location_field = NULL,
   no_location_field = FALSE,
   absolute_path = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(output_layer)) args[["output_layer"]] <- output_layer
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(layer_creation_option)) args[["layer_creation_option"]] <- layer_creation_option
-  if (!missing(append)) args[["append"]] <- append
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(combine_bands)) args[["combine_bands"]] <- combine_bands
-  if (!missing(overview)) args[["overview"]] <- overview
-  if (!missing(src_nodata)) args[["src_nodata"]] <- src_nodata
-  if (!missing(coordinate_system)) args[["coordinate_system"]] <- coordinate_system
-  if (!missing(dst_crs)) args[["dst_crs"]] <- dst_crs
-  if (!missing(split_multipolygons)) args[["split_multipolygons"]] <- split_multipolygons
-  if (!missing(convex_hull)) args[["convex_hull"]] <- convex_hull
-  if (!missing(densify_distance)) args[["densify_distance"]] <- densify_distance
-  if (!missing(simplify_tolerance)) args[["simplify_tolerance"]] <- simplify_tolerance
-  if (!missing(min_ring_area)) args[["min_ring_area"]] <- min_ring_area
-  if (!missing(max_points)) args[["max_points"]] <- max_points
-  if (!missing(location_field)) args[["location_field"]] <- location_field
-  if (!missing(no_location_field)) args[["no_location_field"]] <- no_location_field
-  if (!missing(absolute_path)) args[["absolute_path"]] <- absolute_path
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(combine_bands)) new_args[["combine_bands"]] <- combine_bands
+  if (!missing(src_nodata)) new_args[["src_nodata"]] <- src_nodata
+  if (!missing(coordinate_system)) new_args[["coordinate_system"]] <- coordinate_system
+  if (!missing(min_ring_area)) new_args[["min_ring_area"]] <- min_ring_area
+  if (!missing(max_points)) new_args[["max_points"]] <- max_points
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
+  if (!missing(dst_crs)) new_args[["dst_crs"]] <- dst_crs
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
+  if (!missing(append)) new_args[["append"]] <- append
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(overview)) new_args[["overview"]] <- overview
+  if (!missing(split_multipolygons)) new_args[["split_multipolygons"]] <- split_multipolygons
+  if (!missing(convex_hull)) new_args[["convex_hull"]] <- convex_hull
+  if (!missing(densify_distance)) new_args[["densify_distance"]] <- densify_distance
+  if (!missing(simplify_tolerance)) new_args[["simplify_tolerance"]] <- simplify_tolerance
+  if (!missing(location_field)) new_args[["location_field"]] <- location_field
+  if (!missing(no_location_field)) new_args[["no_location_field"]] <- no_location_field
+  if (!missing(absolute_path)) new_args[["absolute_path"]] <- absolute_path
+  job_input <- handle_job_input(job, new_args, c("raster", "footprint"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "footprint"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "footprint"), arguments = args)
+  new_gdal_job(command_path = c("raster", "footprint"), arguments = merged_args)
 }
 

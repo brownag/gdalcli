@@ -12,7 +12,7 @@
 \description{
 S3 methods that enable IDE autocompletion for the dynamic GDAL API.
 These methods are called by RStudio, VSCode, and Emacs to provide
-tab-completion suggestions when typing \verb{gdal$} or \verb{gdal$raster$}.
+tab-completion suggestions when typing \verb{gdal.alg$} or \verb{gdal.alg$raster$}.
 }
 \details{
 The \code{.DollarNames} S3 generic is part of the R autocompletion system.

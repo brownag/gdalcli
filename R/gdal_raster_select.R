@@ -7,41 +7,58 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Select a subset of bands from a raster dataset.
-#' @param input_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param band GDAL argument
-#' @param mask GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_select.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param band Band(s) (1-based index, 'mask' or 'mask:<band>') (Character vector) (required). `1` to `2147483647` value(s)
+#' @param mask Mask band (1-based index, 'mask', 'mask:<band>' or 'none')
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_select(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_select(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_select <- function(input_format = NULL,
-  open_option = NULL,
+gdal_raster_select <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band,
   mask = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(mask)) args[["mask"]] <- mask
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(mask)) new_args[["mask"]] <- mask
+  job_input <- handle_job_input(job, new_args, c("raster", "select"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "select"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "select"), arguments = args)
+  new_gdal_job(command_path = c("raster", "select"), arguments = merged_args)
 }
 

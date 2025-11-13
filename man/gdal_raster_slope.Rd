@@ -5,10 +5,12 @@
 \title{Generate a slope map}
 \usage{
 gdal_raster_slope(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
@@ -20,29 +22,33 @@ gdal_raster_slope(
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{overwrite}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{band}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{unit}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{xscale}{GDAL argument}
+\item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
-\item{yscale}{GDAL argument}
+\item{unit}{Unit in which to express slopes. Choices: degree, percent (Default: \code{degree})}
 
-\item{gradient_alg}{GDAL argument}
+\item{xscale}{Ratio of vertical units to horizontal X axis units. Minimum: \code{0}}
 
-\item{no_edges}{GDAL argument}
+\item{yscale}{Ratio of vertical units to horizontal Y axis units. Minimum: \code{0}}
+
+\item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: Horn, ZevenbergenThorne (Default: \code{Horn})}
+
+\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -50,11 +56,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Generate a slope map
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_slope.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_slope(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_slope(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

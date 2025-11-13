@@ -7,45 +7,53 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Create a regular grid from scattered points using nearest neighbor interpolation.
-#' @param output_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param creation_option GDAL argument
-#' @param extent GDAL argument
-#' @param resolution GDAL argument
-#' @param size GDAL argument
-#' @param output_data_type GDAL argument
-#' @param crs GDAL argument
-#' @param overwrite GDAL argument
-#' @param layer GDAL argument
-#' @param sql GDAL argument
-#' @param bbox GDAL argument
-#' @param zfield GDAL argument
-#' @param zoffset GDAL argument
-#' @param zmultiply GDAL argument
-#' @param radius GDAL argument
-#' @param radius1 GDAL argument
-#' @param radius2 GDAL argument
-#' @param angle GDAL argument
-#' @param nodata GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_nearest.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input vector dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: `Float64`)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param extent Set the target georeferenced extent. Format: `<xmin>,<ymin>,<xmax>,<ymax>`. Exactly `4` value(s)
+#' @param resolution Set the target resolution. Format: `<xres>,<yres>`. Exactly `2` value(s)
+#' @param size Set the target size in pixels and lines (Integer vector). Format: `<xsize>,<ysize>`. Exactly `2` value(s)
+#' @param crs Override the projection for the output file
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param layer Layer name (Character vector). `0` to `2147483647` value(s)
+#' @param sql SQL statement. Format: `<statement>|@<filename>`
+#' @param bbox Select only points contained within the specified bounding box. Exactly `4` value(s)
+#' @param zfield Field name from which to get Z values.
+#' @param zoffset Value to add to the Z field value (applied before zmultiply) (Default: `0`)
+#' @param zmultiply Multiplication factor for the Z field value (applied after zoffset) (Default: `1`)
+#' @param radius Radius of the search circle
+#' @param radius1 First axis of the search ellipse
+#' @param radius2 Second axis of the search ellipse
+#' @param angle Angle of search ellipse rotation in degrees (counter clockwise) (Default: `0`)
+#' @param nodata Target nodata value (Default: `0`)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vector_grid_nearest(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vector_grid_nearest(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vector_grid_nearest <- function(output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+gdal_vector_grid_nearest <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
   creation_option = NULL,
   extent,
   resolution,
   size,
-  output_data_type = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
@@ -59,31 +67,40 @@ gdal_vector_grid_nearest <- function(output_format = NULL,
   radius2 = NULL,
   angle = NULL,
   nodata = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(extent)) args[["extent"]] <- extent
-  if (!missing(resolution)) args[["resolution"]] <- resolution
-  if (!missing(size)) args[["size"]] <- size
-  if (!missing(output_data_type)) args[["output_data_type"]] <- output_data_type
-  if (!missing(crs)) args[["crs"]] <- crs
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(layer)) args[["layer"]] <- layer
-  if (!missing(sql)) args[["sql"]] <- sql
-  if (!missing(bbox)) args[["bbox"]] <- bbox
-  if (!missing(zfield)) args[["zfield"]] <- zfield
-  if (!missing(zoffset)) args[["zoffset"]] <- zoffset
-  if (!missing(zmultiply)) args[["zmultiply"]] <- zmultiply
-  if (!missing(radius)) args[["radius"]] <- radius
-  if (!missing(radius1)) args[["radius1"]] <- radius1
-  if (!missing(radius2)) args[["radius2"]] <- radius2
-  if (!missing(angle)) args[["angle"]] <- angle
-  if (!missing(nodata)) args[["nodata"]] <- nodata
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(extent)) new_args[["extent"]] <- extent
+  if (!missing(resolution)) new_args[["resolution"]] <- resolution
+  if (!missing(size)) new_args[["size"]] <- size
+  if (!missing(crs)) new_args[["crs"]] <- crs
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(layer)) new_args[["layer"]] <- layer
+  if (!missing(sql)) new_args[["sql"]] <- sql
+  if (!missing(bbox)) new_args[["bbox"]] <- bbox
+  if (!missing(zfield)) new_args[["zfield"]] <- zfield
+  if (!missing(zoffset)) new_args[["zoffset"]] <- zoffset
+  if (!missing(zmultiply)) new_args[["zmultiply"]] <- zmultiply
+  if (!missing(radius)) new_args[["radius"]] <- radius
+  if (!missing(radius1)) new_args[["radius1"]] <- radius1
+  if (!missing(radius2)) new_args[["radius2"]] <- radius2
+  if (!missing(angle)) new_args[["angle"]] <- angle
+  if (!missing(nodata)) new_args[["nodata"]] <- nodata
+  job_input <- handle_job_input(job, new_args, c("vector", "grid", "nearest"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vector", "grid", "nearest"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vector", "grid", "nearest"), arguments = args)
+  new_gdal_job(command_path = c("vector", "grid", "nearest"), arguments = merged_args)
 }
 

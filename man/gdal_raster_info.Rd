@@ -5,65 +5,68 @@
 \title{Return information on a raster dataset.}
 \usage{
 gdal_raster_info(
-  output_format = NULL,
+  job = NULL,
+  input = NULL,
   min_max = FALSE,
+  input_format = NULL,
+  metadata_domain = NULL,
+  output_format = NULL,
+  stdout = FALSE,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE,
   open_option = NULL,
-  input_format = NULL,
   no_gcp = FALSE,
   no_md = FALSE,
   no_ct = FALSE,
   no_fl = FALSE,
   checksum = FALSE,
   list_mdd = FALSE,
-  metadata_domain = NULL,
   no_nodata = FALSE,
   no_mask = FALSE,
-  subdataset = NULL,
-  input = NULL,
-  stdout = FALSE
+  subdataset = NULL
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{min_max}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{stats}{GDAL argument}
+\item{min_max}{Compute minimum and maximum value (Logical)}
 
-\item{approx_stats}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{hist}{GDAL argument}
+\item{metadata_domain}{Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)}
 
-\item{open_option}{GDAL argument}
+\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
 
-\item{input_format}{GDAL argument}
+\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
 
-\item{no_gcp}{GDAL argument}
+\item{stats}{Retrieve or compute statistics, using all pixels (Logical)}
 
-\item{no_md}{GDAL argument}
+\item{approx_stats}{Retrieve or compute statistics, using a subset of pixels (Logical)}
 
-\item{no_ct}{GDAL argument}
+\item{hist}{Retrieve or compute histogram (Logical)}
 
-\item{no_fl}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{checksum}{GDAL argument}
+\item{no_gcp}{Suppress ground control points list printing (Logical) (Advanced)}
 
-\item{list_mdd}{GDAL argument}
+\item{no_md}{Suppress metadata printing (Logical) (Advanced)}
 
-\item{metadata_domain}{GDAL argument}
+\item{no_ct}{Suppress color table printing (Logical) (Advanced)}
 
-\item{no_nodata}{GDAL argument}
+\item{no_fl}{Suppress file list printing (Logical) (Advanced)}
 
-\item{no_mask}{GDAL argument}
+\item{checksum}{Compute pixel checksum (Logical) (Advanced)}
 
-\item{subdataset}{GDAL argument}
+\item{list_mdd}{List all metadata domains available for the dataset (Logical) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{no_nodata}{Suppress retrieving nodata value (Logical) (Esoteric)}
 
-\item{stdout}{GDAL argument}
+\item{no_mask}{Suppress mask band information (Logical) (Esoteric)}
+
+\item{subdataset}{Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: \code{1} (Esoteric)}
 }
 \value{
 A \link{gdal_job} object.
@@ -71,11 +74,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Return information on a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_info.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_info(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_info(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

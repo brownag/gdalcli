@@ -1,12 +1,12 @@
 #' Dynamic GDAL API Object
 #'
 #' @description
-#' The `gdal` object is the main entry point for the dynamic GDAL API.
+#' The `gdal.alg` object is the main entry point for the dynamic GDAL API.
 #' It provides hierarchical access to all GDAL commands via R6-based
 #' nested objects.
 #'
 #' @details
-#' The `gdal` object is created automatically when gdalcli is loaded
+#' The `gdal.alg` object is created automatically when gdalcli is loaded
 #' (requires GDAL >= 3.11 and gdalraster package). It mirrors the structure
 #' of Python's `gdal.alg` module.
 #'
@@ -16,17 +16,17 @@
 #'
 #' ```r
 #' # Top level: access command groups
-#' gdal$raster
-#' gdal$vector
-#' gdal$mdim
+#' gdal.alg$raster
+#' gdal.alg$vector
+#' gdal.alg$mdim
 #'
 #' # Second level: access specific commands
-#' gdal$raster$info
-#' gdal$raster$convert
-#' gdal$vector$translate
+#' gdal.alg$raster$info
+#' gdal.alg$raster$convert
+#' gdal.alg$vector$translate
 #'
 #' # Call commands to create lazy-evaluated jobs
-#' job <- gdal$raster$info(input = "data.tif")
+#' job <- gdal.alg$raster$info(input = "data.tif")
 #' result <- gdal_run(job)
 #' ```
 #'
@@ -45,7 +45,7 @@
 #' Compose jobs using pipe (`|>`) and helper functions:
 #'
 #' ```r
-#' gdal$raster$convert(input = "in.tif", output = "out.tif") |>
+#' gdal.alg$raster$convert(input = "in.tif", output = "out.tif") |>
 #'   gdal_with_co("COMPRESS=LZW") |>
 #'   gdal_with_config("GDAL_NUM_THREADS=4") |>
 #'   gdal_run()
@@ -53,13 +53,13 @@
 #'
 #' ## IDE Autocompletion
 #'
-#' The `gdal` object supports full IDE autocompletion in:
+#' The `gdal.alg` object supports full IDE autocompletion in:
 #' - RStudio
 #' - VSCode with R extension
 #' - Emacs with ESS
 #'
-#' Type `gdal$` and press Tab to see available groups,
-#' then type `gdal$raster$` and press Tab for available commands.
+#' Type `gdal.alg$` and press Tab to see available groups,
+#' then type `gdal.alg$raster$` and press Tab for available commands.
 #'
 #' @format
 #' An [R6::R6Class] object with reference semantics.
@@ -71,14 +71,21 @@
 #' @examples
 #' \dontrun{
 #'   # Check available command groups
-#'   gdal
+#'   gdal.alg
 #'
 #'   # Create a raster info job
-#'   job <- gdal$raster$info(input = "data.tif")
+#'   job <- gdal.alg()$raster$info(input = "data.tif")
 #'
 #'   # Execute with gdal_run
 #'   result <- gdal_run(job)
 #' }
 #'
 #' @export
-"gdal"
+gdal.alg <- function() {
+  if (!requireNamespace("gdalraster", quietly = TRUE)) {
+    stop("gdalraster package required for dynamic API. Install with: install.packages('gdalraster')")
+  }
+
+  # Create a new instance each time (disk caching makes this fast)
+  GdalApi()
+}

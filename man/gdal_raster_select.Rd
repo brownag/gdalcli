@@ -5,10 +5,12 @@
 \title{Select a subset of bands from a raster dataset.}
 \usage{
 gdal_raster_select(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band,
@@ -16,21 +18,25 @@ gdal_raster_select(
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{overwrite}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{band}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{mask}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
+\item{band}{Band(s) (1-based index, 'mask' or 'mask:\if{html}{\out{<band>}}') (Character vector) (required). \code{1} to \code{2147483647} value(s)}
+
+\item{mask}{Mask band (1-based index, 'mask', 'mask:\if{html}{\out{<band>}}' or 'none')}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,11 +44,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Select a subset of bands from a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_select.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_select(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_select(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

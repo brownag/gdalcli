@@ -1,6 +1,6 @@
-#' Path-Based VSI Handler Methods
+#' Path-Based VSI Handler Functions
 #'
-#' S3 methods for simple path-based VSI handlers (cloud storage, network, utilities).
+#' Internal functions for simple path-based VSI handlers (cloud storage, network, utilities).
 #' Each handler corresponds to a GDAL VSI prefix and composes URLs by concatenating
 #' path components. These handlers support the `streaming` parameter to toggle between
 #' random-access (default, efficient) and streaming-only variants.
@@ -8,14 +8,13 @@
 #' @keywords internal
 #' @name path_handlers
 
-
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsis3: AWS S3 and S3-Compatible Storage
+#' ## vsis3_url: AWS S3 and S3-Compatible Storage
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Syntax:** `/vsis3/bucket/key` or `/vsis3_streaming/bucket/key`
 #'
@@ -28,8 +27,7 @@
 #' **Parameters:**
 #' - `bucket`: S3 bucket name (e.g., "sentinel-pds")
 #' - `key`: Object key / path within bucket (e.g., "tiles/10/S/DG/2015/12/7/0/B01.jp2")
-#' - `streaming`: Logical. Use `/vsis3_streaming/` for sequential-only access (not recommended
-#'   for Cloud Optimized GeoTIFF). Default FALSE.
+#' - `streaming`: Logical. Use `/vsis3_streaming/` for sequential-only access (not recommended for Cloud Optimized GeoTIFF). Default FALSE.
 #' - `validate`: Logical. If TRUE, check that bucket and key are non-empty. Default FALSE.
 #'
 #' @examples
@@ -41,7 +39,11 @@
 #'
 #' # Private bucket (requires authentication via set_gdal_auth("s3", ...))
 #' vsi_url("vsis3", bucket = "my-private-bucket", key = "data/file.tif")
-vsi_url.vsis3 <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsis3_url(bucket = "sentinel-pds", key = "tiles/10/S/DG/2015/12/7/0/B01.jp2")
+#'
+vsis3_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
     key <- validate_path_component(key, "key", allow_empty = FALSE)
@@ -53,12 +55,12 @@ vsi_url.vsis3 <- function(bucket, key, ..., streaming = FALSE, validate = FALSE)
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsigs: Google Cloud Storage
+#' ## vsigs_url: Google Cloud Storage
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Syntax:** `/vsigs/bucket/key` or `/vsigs_streaming/bucket/key`
 #'
@@ -76,7 +78,10 @@ vsi_url.vsis3 <- function(bucket, key, ..., streaming = FALSE, validate = FALSE)
 #' @examples
 #' # Public GCS data
 #' vsi_url("vsigs", bucket = "gcs-bucket", key = "path/to/file.tif")
-vsi_url.vsigs <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsigs_url(bucket = "gcs-bucket", key = "path/to/file.tif")
+vsigs_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
     key <- validate_path_component(key, "key", allow_empty = FALSE)
@@ -88,12 +93,12 @@ vsi_url.vsigs <- function(bucket, key, ..., streaming = FALSE, validate = FALSE)
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsiaz: Microsoft Azure Blob Storage
+#' ## vsiaz_url: Microsoft Azure Blob Storage
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Syntax:** `/vsiaz/container/key` or `/vsiaz_streaming/container/key`
 #'
@@ -112,7 +117,10 @@ vsi_url.vsigs <- function(bucket, key, ..., streaming = FALSE, validate = FALSE)
 #' @examples
 #' # Azure Blob Storage
 #' vsi_url("vsiaz", container = "mycontainer", key = "data/shapefile.shp")
-vsi_url.vsiaz <- function(container, key, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsiaz_url(container = "mycontainer", key = "data/shapefile.shp")
+vsiaz_url <- function(container, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     container <- validate_path_component(container, "container", allow_empty = FALSE)
     key <- validate_path_component(key, "key", allow_empty = FALSE)
@@ -124,12 +132,12 @@ vsi_url.vsiaz <- function(container, key, ..., streaming = FALSE, validate = FAL
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsiadls: Microsoft Azure Data Lake Storage Gen2
+#' ## vsiadls_url: Microsoft Azure Data Lake Storage Gen2
 #'
-#' **GDAL Version:** ≥ 3.3.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.3.0 (3.6.1+ recommended)
 #'
 #' **Syntax:** `/vsiadls/filesystem/path/to/file`
 #'
@@ -144,7 +152,10 @@ vsi_url.vsiaz <- function(container, key, ..., streaming = FALSE, validate = FAL
 #' @examples
 #' # Azure Data Lake Storage Gen2
 #' vsi_url("vsiadls", filesystem = "myfs", path = "dir/file.parquet")
-vsi_url.vsiadls <- function(filesystem, path, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsiadls_url(filesystem = "myfs", path = "dir/file.parquet")
+vsiadls_url <- function(filesystem, path, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     filesystem <- validate_path_component(filesystem, "filesystem", allow_empty = FALSE)
     path <- validate_path_component(path, "path", allow_empty = FALSE)
@@ -156,12 +167,12 @@ vsi_url.vsiadls <- function(filesystem, path, ..., streaming = FALSE, validate =
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsioss: Alibaba Cloud Object Storage Service
+#' ## vsioss_url: Alibaba Cloud Object Storage Service
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Syntax:** `/vsioss/bucket/key` or `/vsioss_streaming/bucket/key`
 #'
@@ -180,7 +191,10 @@ vsi_url.vsiadls <- function(filesystem, path, ..., streaming = FALSE, validate =
 #' @examples
 #' # Alibaba Cloud OSS
 #' vsi_url("vsioss", bucket = "my-bucket", key = "data/file.tif")
-vsi_url.vsioss <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsioss_url(bucket = "my-bucket", key = "data/file.tif")
+vsioss_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
     key <- validate_path_component(key, "key", allow_empty = FALSE)
@@ -192,12 +206,12 @@ vsi_url.vsioss <- function(bucket, key, ..., streaming = FALSE, validate = FALSE
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsiswift: OpenStack Swift
+#' ## vsiswift_url: OpenStack Swift
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Syntax:** `/vsiswift/bucket/key` or `/vsiswift_streaming/bucket/key`
 #'
@@ -215,7 +229,10 @@ vsi_url.vsioss <- function(bucket, key, ..., streaming = FALSE, validate = FALSE
 #' @examples
 #' # OpenStack Swift
 #' vsi_url("vsiswift", bucket = "container", key = "data/file.tif")
-vsi_url.vsiswift <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsiswift_url(bucket = "container", key = "data/file.tif")
+vsiswift_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
     key <- validate_path_component(key, "key", allow_empty = FALSE)
@@ -227,12 +244,12 @@ vsi_url.vsiswift <- function(bucket, key, ..., streaming = FALSE, validate = FAL
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsicurl: HTTP, HTTPS, FTP
+#' ## vsicurl_url: HTTP, HTTPS, FTP
 #'
-#' **GDAL Version:** ≥ Pre-3.0 (mature in all 3.x versions)
+#' **GDAL Version:** \eqn{\ge} Pre-3.0 (mature in all 3.x versions)
 #'
 #' **Syntax:** `/vsicurl/http://...` or `/vsicurl/https://...` or `/vsicurl/ftp://...`
 #'
@@ -250,7 +267,10 @@ vsi_url.vsiswift <- function(bucket, key, ..., streaming = FALSE, validate = FAL
 #' @examples
 #' # HTTP(S) URL
 #' vsi_url("vsicurl", url = "https://example.com/data/file.tif")
-vsi_url.vsicurl <- function(url, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsicurl_url(url = "https://example.com/data/file.tif")
+vsicurl_url <- function(url, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     url <- validate_path_component(url, "url", allow_empty = FALSE)
   }
@@ -261,12 +281,12 @@ vsi_url.vsicurl <- function(url, ..., streaming = FALSE, validate = FALSE) {
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsigzip: GZip-Compressed Files
+#' ## vsigzip_url: GZip-Compressed Files
 #'
-#' **GDAL Version:** ≥ Pre-3.0 (requires zlib)
+#' **GDAL Version:** \eqn{\ge} Pre-3.0 (requires zlib)
 #'
 #' **Syntax:** `/vsigzip/path/to/file.gz`
 #'
@@ -284,7 +304,10 @@ vsi_url.vsicurl <- function(url, ..., streaming = FALSE, validate = FALSE) {
 #'
 #' # Remote gzip file
 #' vsi_url("vsigzip", path = "/vsicurl/https://example.com/file.tif.gz")
-vsi_url.vsigzip <- function(path, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsigzip_url(path = "data/file.tif.gz")
+vsigzip_url <- function(path, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     path <- validate_path_component(path, "path", allow_empty = FALSE)
   }
@@ -295,12 +318,12 @@ vsi_url.vsigzip <- function(path, ..., streaming = FALSE, validate = FALSE) {
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsimem: In-Memory Files
+#' ## vsimem_url: In-Memory Files
 #'
-#' **GDAL Version:** ≥ Pre-3.0
+#' **GDAL Version:** \eqn{\ge} Pre-3.0
 #'
 #' **Syntax:** `/vsimem/filename`
 #'
@@ -318,7 +341,10 @@ vsi_url.vsigzip <- function(path, ..., streaming = FALSE, validate = FALSE) {
 #'
 #' # Nested path in memory
 #' vsi_url("vsimem", filename = "temp/subdir/layer.vrt")
-vsi_url.vsimem <- function(filename, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsimem_url(filename = "temp.tif")
+vsimem_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     filename <- validate_path_component(filename, "filename", allow_empty = FALSE)
   }
@@ -328,12 +354,12 @@ vsi_url.vsimem <- function(filename, ..., streaming = FALSE, validate = FALSE) {
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsihdfs: Hadoop HDFS (Native Protocol)
+#' ## vsihdfs_url: Hadoop HDFS (Native Protocol)
 #'
-#' **GDAL Version:** ≥ Pre-3.0
+#' **GDAL Version:** \eqn{\ge} Pre-3.0
 #'
 #' **Syntax:** `/vsihdfs/hdfs://hostname:port/path/to/file`
 #'
@@ -347,7 +373,10 @@ vsi_url.vsimem <- function(filename, ..., streaming = FALSE, validate = FALSE) {
 #' @examples
 #' # HDFS path
 #' vsi_url("vsihdfs", path = "hdfs://namenode:8020/user/data/file.tif")
-vsi_url.vsihdfs <- function(path, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsihdfs_url(path = "hdfs://namenode:8020/user/data/file.tif")
+vsihdfs_url <- function(path, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     path <- validate_path_component(path, "path", allow_empty = FALSE)
   }
@@ -358,12 +387,12 @@ vsi_url.vsihdfs <- function(path, ..., streaming = FALSE, validate = FALSE) {
 
 
 #' @export
-#' @rdname vsi_url
+#' @rdname path_handlers
 #'
 #' @details
-#' ## vsiwebhdfs: Hadoop WebHDFS (REST API)
+#' ## vsiwebhdfs_url: Hadoop WebHDFS (REST API)
 #'
-#' **GDAL Version:** ≥ Pre-3.0
+#' **GDAL Version:** \eqn{\ge} Pre-3.0
 #'
 #' **Syntax:** `/vsiwebhdfs/http://hostname:port/webhdfs/v1/path/to/file`
 #'
@@ -377,7 +406,10 @@ vsi_url.vsihdfs <- function(path, ..., streaming = FALSE, validate = FALSE) {
 #' @examples
 #' # WebHDFS path
 #' vsi_url("vsiwebhdfs", url = "http://namenode:50070/webhdfs/v1/data/file.tif")
-vsi_url.vsiwebhdfs <- function(url, ..., streaming = FALSE, validate = FALSE) {
+#'
+#' # Direct function call
+#' vsiwebhdfs_url(url = "http://namenode:50070/webhdfs/v1/data/file.tif")
+vsiwebhdfs_url <- function(url, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     url <- validate_path_component(url, "url", allow_empty = FALSE)
   }

@@ -4,10 +4,12 @@
 \alias{gdal_vsi_sozip_list}
 \title{List content of a ZIP file, with SOZIP related information.}
 \usage{
-gdal_vsi_sozip_list(input = NULL)
+gdal_vsi_sozip_list(job = NULL, input = NULL)
 }
 \arguments{
-\item{input}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
+
+\item{input}{Input ZIP filename (required)}
 }
 \value{
 A \link{gdal_job} object.
@@ -15,11 +17,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 List content of a ZIP file, with SOZIP related information.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_sozip_list(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_sozip_list(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

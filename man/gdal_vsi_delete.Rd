@@ -4,12 +4,14 @@
 \alias{gdal_vsi_delete}
 \title{Delete files located on GDAL Virtual System Interface (VSI).}
 \usage{
-gdal_vsi_delete(filename = NULL, recursive = FALSE)
+gdal_vsi_delete(job = NULL, filename = NULL, recursive = FALSE)
 }
 \arguments{
-\item{filename}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{recursive}{GDAL argument}
+\item{filename}{File or directory name to delete (required)}
+
+\item{recursive}{Delete directories recursively (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -17,11 +19,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Delete files located on GDAL Virtual System Interface (VSI).
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_delete(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_delete(filename = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

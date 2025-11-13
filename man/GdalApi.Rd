@@ -2,73 +2,60 @@
 % Please edit documentation in R/core-gdal-api-classes.R
 \name{GdalApi}
 \alias{GdalApi}
-\title{GDAL Dynamic API R6 Classes}
+\title{GDAL Dynamic API Classes}
+\usage{
+GdalApi()
+}
+\value{
+The object provides access to GDAL command groups via \code{$} operator.
+}
 \description{
-Internal R6 classes that form the dynamic API structure for gdalcli.
+Custom classes that form the dynamic API structure for gdalcli.
 These classes provide the runtime-adaptive interface that mirrors Python's
 \code{gdal.alg} module structure while integrating with the lazy evaluation
 framework.
 }
 \details{
-\strong{GdalApi} is the top-level object accessible as \code{gdal} in the namespace.
+\strong{GdalApi} is the top-level object accessible as \code{gdal.alg} in the namespace.
 It contains GdalApiSub instances for each command group (raster, vector, etc.).
 Each GdalApiSub contains dynamically created functions for GDAL commands.
 
-This implementation uses R6 reference semantics to allow dynamic member
+This implementation uses environments with custom \code{$} methods to allow dynamic member
 addition at runtime, which is not possible with S3 or S7 classes.
 }
+\keyword{(e.g.,}
+\keyword{API}
 \keyword{API.}
 \keyword{Class}
+\keyword{Each}
 \keyword{GDAL}
 \keyword{GdalApi}
-\keyword{R6}
+\keyword{Provides}
+\keyword{The}
 \keyword{Top-level}
+\keyword{`gdal.alg$raster`,}
+\keyword{`gdal.alg$vector`).}
+\keyword{access}
+\keyword{as}
+\keyword{based}
+\keyword{cached}
+\keyword{command}
+\keyword{commands.}
+\keyword{contains}
+\keyword{created}
 \keyword{dynamic}
+\keyword{dynamically}
 \keyword{for}
+\keyword{functions}
+\keyword{group}
+\keyword{groups}
 \keyword{internal}
+\keyword{is}
+\keyword{member}
 \keyword{object}
+\keyword{objects}
+\keyword{on}
+\keyword{performance.}
 \keyword{the}
-\section{Methods}{
-\subsection{Public methods}{
-\itemize{
-\item \href{#method-GdalApi-new}{\code{GdalApi$new()}}
-\item \href{#method-GdalApi-get_groups}{\code{GdalApi$get_groups()}}
-\item \href{#method-GdalApi-clone}{\code{GdalApi$clone()}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-GdalApi-new"></a>}}
-\if{latex}{\out{\hypertarget{method-GdalApi-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{GdalApi$new()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-GdalApi-get_groups"></a>}}
-\if{latex}{\out{\hypertarget{method-GdalApi-get_groups}{}}}
-\subsection{Method \code{get_groups()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{GdalApi$get_groups()}\if{html}{\out{</div>}}
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-GdalApi-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-GdalApi-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{GdalApi$clone(deep = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
-}
+\keyword{to}
+\keyword{version}

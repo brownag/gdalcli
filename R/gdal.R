@@ -7,20 +7,92 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Main gdal entry point.
-#' @param drivers GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal.html} for detailed GDAL documentation.
+#' @param x A filename (for 'gdal info'), a pipeline string (for 'gdal pipeline'), a command vector, or a gdal_job object from a piped operation
+#' @param drivers Display driver list as JSON document (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_utilities
 #' @examples
-#' \dontrun{
-#' gdal(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal(drivers = TRUE)
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal <- function(drivers = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(drivers)) args[["drivers"]] <- drivers
+gdal <- function(x = NULL,
+  drivers = FALSE) {
+  # Handle shortcuts for base gdal function
+  if (!is.null(x)) {
+    # Check if x is a piped gdal_job
+    if (inherits(x, 'gdal_job')) {
+      # Merge arguments from piped job
+      merged_args <- merge_gdal_job_arguments(x$arguments, list(
+        drivers = drivers
+      ))
+      return(new_gdal_job(command_path = x$command_path, arguments = merged_args))
+    }
+    
+    # Handle shortcut: filename -> gdal info filename
+    if (is.character(x) && length(x) == 1 && !grepl('\\s', x)) {
+      # Single string without spaces - treat as filename for gdal info
+      merged_args <- list(input = x)
+      return(new_gdal_job(command_path = c('info'), arguments = merged_args))
+    }
+    
+    # Handle shortcut: pipeline string -> gdal pipeline
+    if (is.character(x) && length(x) == 1 && grepl('!', x)) {
+      # Contains ! - treat as pipeline
+      merged_args <- list(pipeline = x)
+      return(new_gdal_job(command_path = c('pipeline'), arguments = merged_args))
+    }
+    
+    # Handle shortcut: command vector -> execute as gdal command
+    if (is.character(x) && length(x) > 1) {
+      # Vector of strings - treat as command arguments
+      merged_args <- list()
+      # First element is subcommand, rest are arguments
+      command_path <- c(x[1])
+      if (length(x) > 1) {
+        # Parse remaining arguments
+        for (i in 2:length(x)) {
+          arg <- x[i]
+          if (grepl('^--', arg)) {
+            # Long option
+            opt_name <- sub('^--', '', arg)
+            if (i < length(x) && !grepl('^-', x[i+1])) {
+              merged_args[[opt_name]] <- x[i+1]
+              i <- i + 1
+            } else {
+              merged_args[[opt_name]] <- TRUE
+            }
+          } else if (grepl('^-', arg)) {
+            # Short option
+            opt_name <- sub('^-', '', arg)
+            if (i < length(x) && !grepl('^-', x[i+1])) {
+              merged_args[[opt_name]] <- x[i+1]
+              i <- i + 1
+            } else {
+              merged_args[[opt_name]] <- TRUE
+            }
+          } else {
+            # Positional argument
+            merged_args[['input']] <- arg
+          }
+        }
+      }
+      return(new_gdal_job(command_path = command_path, arguments = merged_args))
+    }
+    
+    # Invalid x argument
+    rlang::abort('x must be a filename string, pipeline string, command vector, or gdal_job object')
+  }
+  
+  # No shortcut - handle as regular command
+  merged_args <- list()
+  if (!missing(drivers)) merged_args[["drivers"]] <- drivers
 
-  new_gdal_job(command_path = c("gdal"), arguments = args)
+  new_gdal_job(command_path = c("gdal"), arguments = merged_args)
 }
 

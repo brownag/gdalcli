@@ -7,44 +7,58 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Return information on a pixel of a raster dataset.
-#' @param output_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param band GDAL argument
-#' @param overview GDAL argument
-#' @param position GDAL argument
-#' @param position_crs GDAL argument
-#' @param resampling GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param resampling Resampling algorithm for interpolation. Choices: nearest, bilinear, cubic, cubicspline (Default: `nearest`)
+#' @param output_format Output format. Choices: geojson, csv (Default: `geojson`)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param band Input band(s) (1-based index) (Integer vector). `0` to `2147483647` value(s)
+#' @param overview Which overview level of source file must be used (Integer). Minimum: `0`
+#' @param position Pixel position. Format: `<column,line> or <X,Y>`. `0` to `2147483647` value(s)
+#' @param position_crs CRS of position (Default: `pixel`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_pixel_info(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_pixel_info(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_pixel_info <- function(output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+gdal_raster_pixel_info <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  resampling = NULL,
+  output_format = NULL,
+  open_option = NULL,
   band = NULL,
   overview = NULL,
   position = NULL,
-  position_crs = NULL,
-  resampling = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(overview)) args[["overview"]] <- overview
-  if (!missing(position)) args[["position"]] <- position
-  if (!missing(position_crs)) args[["position_crs"]] <- position_crs
-  if (!missing(resampling)) args[["resampling"]] <- resampling
+  position_crs = NULL) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(resampling)) new_args[["resampling"]] <- resampling
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(overview)) new_args[["overview"]] <- overview
+  if (!missing(position)) new_args[["position"]] <- position
+  if (!missing(position_crs)) new_args[["position_crs"]] <- position_crs
+  job_input <- handle_job_input(job, new_args, c("raster", "pixel-info"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "pixel-info"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "pixel-info"), arguments = args)
+  new_gdal_job(command_path = c("raster", "pixel-info"), arguments = merged_args)
 }
 

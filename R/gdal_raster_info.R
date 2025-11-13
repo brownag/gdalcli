@@ -7,74 +7,88 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Return information on a raster dataset.
-#' @param output_format GDAL argument
-#' @param min_max GDAL argument
-#' @param stats GDAL argument
-#' @param approx_stats GDAL argument
-#' @param hist GDAL argument
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param no_gcp GDAL argument
-#' @param no_md GDAL argument
-#' @param no_ct GDAL argument
-#' @param no_fl GDAL argument
-#' @param checksum GDAL argument
-#' @param list_mdd GDAL argument
-#' @param metadata_domain GDAL argument
-#' @param no_nodata GDAL argument
-#' @param no_mask GDAL argument
-#' @param subdataset GDAL argument
-#' @param input GDAL argument
-#' @param stdout GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_info.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param min_max Compute minimum and maximum value (Logical)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param metadata_domain Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)
+#' @param output_format Output format. Choices: json, text (Default: `json`)
+#' @param stdout Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)
+#' @param stats Retrieve or compute statistics, using all pixels (Logical)
+#' @param approx_stats Retrieve or compute statistics, using a subset of pixels (Logical)
+#' @param hist Retrieve or compute histogram (Logical)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param no_gcp Suppress ground control points list printing (Logical) (Advanced)
+#' @param no_md Suppress metadata printing (Logical) (Advanced)
+#' @param no_ct Suppress color table printing (Logical) (Advanced)
+#' @param no_fl Suppress file list printing (Logical) (Advanced)
+#' @param checksum Compute pixel checksum (Logical) (Advanced)
+#' @param list_mdd List all metadata domains available for the dataset (Logical) (Advanced)
+#' @param no_nodata Suppress retrieving nodata value (Logical) (Esoteric)
+#' @param no_mask Suppress mask band information (Logical) (Esoteric)
+#' @param subdataset Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: `1` (Esoteric)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_info(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_info(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_info <- function(output_format = NULL,
+gdal_raster_info <- function(job = NULL,
+  input = NULL,
   min_max = FALSE,
+  input_format = NULL,
+  metadata_domain = NULL,
+  output_format = NULL,
+  stdout = FALSE,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE,
   open_option = NULL,
-  input_format = NULL,
   no_gcp = FALSE,
   no_md = FALSE,
   no_ct = FALSE,
   no_fl = FALSE,
   checksum = FALSE,
   list_mdd = FALSE,
-  metadata_domain = NULL,
   no_nodata = FALSE,
   no_mask = FALSE,
-  subdataset = NULL,
-  input = NULL,
-  stdout = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(min_max)) args[["min_max"]] <- min_max
-  if (!missing(stats)) args[["stats"]] <- stats
-  if (!missing(approx_stats)) args[["approx_stats"]] <- approx_stats
-  if (!missing(hist)) args[["hist"]] <- hist
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(no_gcp)) args[["no_gcp"]] <- no_gcp
-  if (!missing(no_md)) args[["no_md"]] <- no_md
-  if (!missing(no_ct)) args[["no_ct"]] <- no_ct
-  if (!missing(no_fl)) args[["no_fl"]] <- no_fl
-  if (!missing(checksum)) args[["checksum"]] <- checksum
-  if (!missing(list_mdd)) args[["list_mdd"]] <- list_mdd
-  if (!missing(metadata_domain)) args[["metadata_domain"]] <- metadata_domain
-  if (!missing(no_nodata)) args[["no_nodata"]] <- no_nodata
-  if (!missing(no_mask)) args[["no_mask"]] <- no_mask
-  if (!missing(subdataset)) args[["subdataset"]] <- subdataset
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(stdout)) args[["stdout"]] <- stdout
+  subdataset = NULL) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(min_max)) new_args[["min_max"]] <- min_max
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(metadata_domain)) new_args[["metadata_domain"]] <- metadata_domain
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(stdout)) new_args[["stdout"]] <- stdout
+  if (!missing(stats)) new_args[["stats"]] <- stats
+  if (!missing(approx_stats)) new_args[["approx_stats"]] <- approx_stats
+  if (!missing(hist)) new_args[["hist"]] <- hist
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(no_gcp)) new_args[["no_gcp"]] <- no_gcp
+  if (!missing(no_md)) new_args[["no_md"]] <- no_md
+  if (!missing(no_ct)) new_args[["no_ct"]] <- no_ct
+  if (!missing(no_fl)) new_args[["no_fl"]] <- no_fl
+  if (!missing(checksum)) new_args[["checksum"]] <- checksum
+  if (!missing(list_mdd)) new_args[["list_mdd"]] <- list_mdd
+  if (!missing(no_nodata)) new_args[["no_nodata"]] <- no_nodata
+  if (!missing(no_mask)) new_args[["no_mask"]] <- no_mask
+  if (!missing(subdataset)) new_args[["subdataset"]] <- subdataset
+  job_input <- handle_job_input(job, new_args, c("raster", "info"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "info"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "info"), arguments = args)
+  new_gdal_job(command_path = c("raster", "info"), arguments = merged_args)
 }
 

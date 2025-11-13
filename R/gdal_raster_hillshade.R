@@ -7,33 +7,41 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Generate a shaded relief map
-#' @param input_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param band GDAL argument
-#' @param zfactor GDAL argument
-#' @param xscale GDAL argument
-#' @param yscale GDAL argument
-#' @param azimuth GDAL argument
-#' @param altitude GDAL argument
-#' @param gradient_alg GDAL argument
-#' @param variant GDAL argument
-#' @param no_edges GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param band Input band (1-based index) (Integer) (Default: `1`)
+#' @param zfactor Vertical exaggeration used to pre-multiply the elevations. Minimum: `0`
+#' @param xscale Ratio of vertical units to horizontal X axis units. Minimum: `0`
+#' @param yscale Ratio of vertical units to horizontal Y axis units. Minimum: `0`
+#' @param azimuth Azimuth of the light, in degrees (Default: `315`)
+#' @param altitude Altitude of the light, in degrees (Default: `45`). Range: (`0` to `90`)
+#' @param gradient_alg Algorithm used to compute terrain gradient. Choices: Horn, ZevenbergenThorne (Default: `Horn`)
+#' @param variant Variant of the hillshading algorithm. Choices: regular, combined, multidirectional, Igor (Default: `regular`)
+#' @param no_edges Do not try to interpolate values at dataset edges or close to nodata values (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_hillshade(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_hillshade(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_hillshade <- function(input_format = NULL,
-  open_option = NULL,
+gdal_raster_hillshade <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
@@ -45,24 +53,33 @@ gdal_raster_hillshade <- function(input_format = NULL,
   gradient_alg = NULL,
   variant = NULL,
   no_edges = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(zfactor)) args[["zfactor"]] <- zfactor
-  if (!missing(xscale)) args[["xscale"]] <- xscale
-  if (!missing(yscale)) args[["yscale"]] <- yscale
-  if (!missing(azimuth)) args[["azimuth"]] <- azimuth
-  if (!missing(altitude)) args[["altitude"]] <- altitude
-  if (!missing(gradient_alg)) args[["gradient_alg"]] <- gradient_alg
-  if (!missing(variant)) args[["variant"]] <- variant
-  if (!missing(no_edges)) args[["no_edges"]] <- no_edges
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(zfactor)) new_args[["zfactor"]] <- zfactor
+  if (!missing(xscale)) new_args[["xscale"]] <- xscale
+  if (!missing(yscale)) new_args[["yscale"]] <- yscale
+  if (!missing(azimuth)) new_args[["azimuth"]] <- azimuth
+  if (!missing(altitude)) new_args[["altitude"]] <- altitude
+  if (!missing(gradient_alg)) new_args[["gradient_alg"]] <- gradient_alg
+  if (!missing(variant)) new_args[["variant"]] <- variant
+  if (!missing(no_edges)) new_args[["no_edges"]] <- no_edges
+  job_input <- handle_job_input(job, new_args, c("raster", "hillshade"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "hillshade"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "hillshade"), arguments = args)
+  new_gdal_job(command_path = c("raster", "hillshade"), arguments = merged_args)
 }
 

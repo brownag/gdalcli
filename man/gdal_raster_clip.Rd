@@ -5,10 +5,13 @@
 \title{Clip a raster dataset.}
 \usage{
 gdal_raster_clip(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  allow_bbox_outside_source = FALSE,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   bbox,
@@ -20,44 +23,47 @@ gdal_raster_clip(
   like_layer = NULL,
   like_where = NULL,
   only_bbox = FALSE,
-  allow_bbox_outside_source = FALSE,
   add_alpha = FALSE
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{allow_bbox_outside_source}{Allow clipping box to include pixels outside input dataset (Logical)}
 
-\item{creation_option}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{overwrite}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{bbox}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{bbox_crs}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{geometry}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{geometry_crs}{GDAL argument}
+\item{bbox}{Clipping bounding box as xmin,ymin,xmax,ymax. Exactly \code{4} value(s)}
 
-\item{like}{GDAL argument}
+\item{bbox_crs}{CRS of clipping bounding box}
 
-\item{like_sql}{GDAL argument}
+\item{geometry}{Clipping geometry (WKT or GeoJSON)}
 
-\item{like_layer}{GDAL argument}
+\item{geometry_crs}{CRS of clipping geometry}
 
-\item{like_where}{GDAL argument}
+\item{like}{Dataset to use as a template for bounds (Dataset path). Format: \code{DATASET}}
 
-\item{only_bbox}{GDAL argument}
+\item{like_sql}{SELECT statement to run on the 'like' dataset. Format: \code{SELECT-STATEMENT}}
 
-\item{allow_bbox_outside_source}{GDAL argument}
+\item{like_layer}{Name of the layer of the 'like' dataset. Format: \code{LAYER-NAME}}
 
-\item{add_alpha}{GDAL argument}
+\item{like_where}{WHERE SQL clause to run on the 'like' dataset. Format: \code{WHERE-EXPRESSION}}
+
+\item{only_bbox}{For 'geometry' and 'like', only consider their bounding box (Logical)}
+
+\item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -65,11 +71,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Clip a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_clip.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_clip(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_clip(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -7,47 +7,64 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Generate a RGB or RGBA dataset from a single band, using a color map
-#' @param input_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param band GDAL argument
-#' @param color_map GDAL argument
-#' @param add_alpha GDAL argument
-#' @param color_selection GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param band Input band (1-based index) (Integer) (Default: `1`)
+#' @param color_map Color map filename
+#' @param add_alpha Adds an alpha mask band to the destination. (Logical)
+#' @param color_selection How to compute output colors from input values. Choices: interpolate, exact, nearest (Default: `interpolate`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_color_map(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_color_map(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_color_map <- function(input_format = NULL,
-  open_option = NULL,
+gdal_raster_color_map <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
   color_map = NULL,
   add_alpha = FALSE,
   color_selection = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(color_map)) args[["color_map"]] <- color_map
-  if (!missing(add_alpha)) args[["add_alpha"]] <- add_alpha
-  if (!missing(color_selection)) args[["color_selection"]] <- color_selection
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(color_map)) new_args[["color_map"]] <- color_map
+  if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
+  if (!missing(color_selection)) new_args[["color_selection"]] <- color_selection
+  job_input <- handle_job_input(job, new_args, c("raster", "color-map"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "color-map"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "color-map"), arguments = args)
+  new_gdal_job(command_path = c("raster", "color-map"), arguments = merged_args)
 }
 

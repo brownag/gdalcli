@@ -7,20 +7,34 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Repack a FileGeoDatabase dataset
-#' @param dataset GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param dataset FileGeoDatabase dataset (Dataset path) (required)
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
-#' \dontrun{
-#' gdal_driver_openfilegdb_repack(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_driver_openfilegdb_repack(dataset = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_driver_openfilegdb_repack <- function(dataset = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(dataset)) args[["dataset"]] <- dataset
+gdal_driver_openfilegdb_repack <- function(job = NULL,
+  dataset = NULL) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(dataset)) new_args[["dataset"]] <- dataset
+  job_input <- handle_job_input(job, new_args, c("driver", "openfilegdb", "repack"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("driver", "openfilegdb", "repack"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "driver", "openfilegdb", "repack"), arguments = args)
+  new_gdal_job(command_path = c("driver", "openfilegdb", "repack"), arguments = merged_args)
 }
 

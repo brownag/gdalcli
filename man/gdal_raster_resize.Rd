@@ -5,32 +5,38 @@
 \title{Resize a raster dataset without changing the georeferenced extents.}
 \usage{
 gdal_raster_resize(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  resampling = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  size,
-  resampling = NULL
+  size
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
 
-\item{creation_option}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{overwrite}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{size}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{resampling}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
+\item{size}{Target size in pixels (or percentage if using '\%' suffix) (Character vector). Format: \verb{<width[\%]>,<height[\%]>} (required). Minimum: \code{0}. Exactly \code{2} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,11 +44,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Resize a raster dataset without changing the georeferenced extents.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_resize.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_resize(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_resize(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

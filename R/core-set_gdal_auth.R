@@ -159,7 +159,7 @@ set_gdal_auth.s3 <- function(handler, access_key_id = NULL, secret_access_key = 
 #' @details
 #' ## azure: Microsoft Azure Blob Storage
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Authentication Methods (choose exactly one):**
 #'
@@ -259,7 +259,7 @@ set_gdal_auth.azure <- function(handler, connection_string = NULL, account = NUL
 #' @details
 #' ## gs: Google Cloud Storage
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Recommended Method: Service Account JSON File**
 #'
@@ -324,7 +324,7 @@ set_gdal_auth.gs <- function(handler, credentials_file = NULL, no_sign_request =
 #' @details
 #' ## oss: Alibaba Cloud OSS
 #'
-#' **GDAL Version:** ≥ 3.0.0 (3.6.1+ recommended)
+#' **GDAL Version:** \eqn{\ge} 3.0.0 (3.6.1+ recommended)
 #'
 #' **Environment Variables Set:**
 #' - `OSS_ENDPOINT` (required)
@@ -391,7 +391,7 @@ set_gdal_auth.oss <- function(handler, endpoint = NULL, access_key_id = NULL,
 #' @details
 #' ## swift_v3: OpenStack Swift (Keystone V3 Authentication)
 #'
-#' **GDAL Version:** ≥ 3.0.0
+#' **GDAL Version:** \eqn{\ge} 3.0.0
 #'
 #' **Environment Variables Set:**
 #' - `OS_IDENTITY_API_VERSION=3` (required for V3)
@@ -439,7 +439,7 @@ set_gdal_auth.swift_v3 <- function(handler, auth_url, username, password, projec
 #' @details
 #' ## swift_v1: OpenStack Swift (Auth V1)
 #'
-#' **GDAL Version:** ≥ 3.0.0
+#' **GDAL Version:** \eqn{\ge} 3.0.0
 #'
 #' **Environment Variables Set:**
 #' - `SWIFT_AUTH_V1_URL`

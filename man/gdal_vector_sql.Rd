@@ -5,10 +5,13 @@
 \title{Apply SQL statement(s) to a dataset.}
 \usage{
 gdal_vector_sql(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  output_layer = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
@@ -16,36 +19,39 @@ gdal_vector_sql(
   overwrite_layer = FALSE,
   append = FALSE,
   sql = NULL,
-  output_layer = NULL,
   dialect = NULL
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{layer_creation_option}{GDAL argument}
+\item{output_layer}{Output layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{update}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite_layer}{GDAL argument}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{append}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{sql}{GDAL argument}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{output_layer}{GDAL argument}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{dialect}{GDAL argument}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+
+\item{sql}{SQL statement(s) (Character vector). Format: \verb{<statement>|@<filename>} (required). \code{0} to \code{2147483647} value(s)}
+
+\item{dialect}{SQL dialect (e.g. OGRSQL, SQLITE)}
 }
 \value{
 A \link{gdal_job} object.
@@ -53,11 +59,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Apply SQL statement(s) to a dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_sql.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_sql(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_sql(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

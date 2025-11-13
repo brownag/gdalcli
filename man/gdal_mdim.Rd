@@ -4,10 +4,12 @@
 \alias{gdal_mdim}
 \title{Multidimensional commands.}
 \usage{
-gdal_mdim(drivers = FALSE)
+gdal_mdim(job = NULL, drivers = FALSE)
 }
 \arguments{
-\item{drivers}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
+
+\item{drivers}{Display multidimensional driver list as JSON document (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -15,11 +17,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Multidimensional commands.
+
+See \url{https://gdal.org/en/stable/programs/gdal_mdim.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_mdim(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_mdim(drivers = TRUE)
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_mdim_utilities: 

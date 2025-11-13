@@ -7,20 +7,34 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Multidimensional commands.
-#' @param drivers GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_mdim.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param drivers Display multidimensional driver list as JSON document (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_mdim_utilities
 #' @examples
-#' \dontrun{
-#' gdal_mdim(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_mdim(drivers = TRUE)
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_mdim <- function(drivers = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(drivers)) args[["drivers"]] <- drivers
+gdal_mdim <- function(job = NULL,
+  drivers = FALSE) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(drivers)) new_args[["drivers"]] <- drivers
+  job_input <- handle_job_input(job, new_args, c("mdim"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("mdim"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "mdim"), arguments = args)
+  new_gdal_job(command_path = c("mdim"), arguments = merged_args)
 }
 

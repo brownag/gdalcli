@@ -7,23 +7,37 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' List layers of a PDF dataset
-#' @param input GDAL argument
-#' @param output_format GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster or vector dataset (Dataset path) (required)
+#' @param output_format Output format. Choices: json, text (Default: `json`)
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
-#' \dontrun{
-#' gdal_driver_pdf_list_layers(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_driver_pdf_list_layers(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_driver_pdf_list_layers <- function(input = NULL,
+gdal_driver_pdf_list_layers <- function(job = NULL,
+  input = NULL,
   output_format = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  job_input <- handle_job_input(job, new_args, c("driver", "pdf", "list-layers"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("driver", "pdf", "list-layers"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "driver", "pdf", "list-layers"), arguments = args)
+  new_gdal_job(command_path = c("driver", "pdf", "list-layers"), arguments = merged_args)
 }
 

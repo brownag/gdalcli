@@ -5,20 +5,22 @@
 \title{Creates a vector contour from a raster elevation model (DEM).}
 \usage{
 gdal_raster_contour(
+  job = NULL,
+  input = NULL,
+  input_format = NULL,
+  min_name = NULL,
+  src_nodata = NULL,
+  interval = NULL,
+  output = NULL,
   output_format = NULL,
   open_option = NULL,
-  input_format = NULL,
-  input = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   band = NULL,
   layer = NULL,
   elevation_name = NULL,
-  min_name = NULL,
   max_name = NULL,
   X3d = FALSE,
-  src_nodata = NULL,
-  interval = NULL,
   levels = NULL,
   exp_base = NULL,
   offset = NULL,
@@ -28,45 +30,49 @@ gdal_raster_contour(
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{min_name}{Name of the minimum elevation field}
 
-\item{creation_option}{GDAL argument}
+\item{src_nodata}{Input pixel value to treat as 'nodata'}
 
-\item{layer_creation_option}{GDAL argument}
+\item{interval}{Elevation interval between contours. Minimum: \code{0}}
 
-\item{band}{GDAL argument}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{layer}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{elevation_name}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{min_name}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{max_name}{GDAL argument}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{X3d}{GDAL argument}
+\item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
-\item{src_nodata}{GDAL argument}
+\item{layer}{Layer name}
 
-\item{interval}{GDAL argument}
+\item{elevation_name}{Name of the elevation field}
 
-\item{levels}{GDAL argument}
+\item{max_name}{Name of the maximum elevation field}
 
-\item{exp_base}{GDAL argument}
+\item{X3d}{Force production of 3D vectors instead of 2D (Logical)}
 
-\item{offset}{GDAL argument}
+\item{levels}{List of contour levels (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{polygonize}{GDAL argument}
+\item{exp_base}{Base for exponential contour level generation (Integer)}
 
-\item{group_transactions}{GDAL argument}
+\item{offset}{Offset to apply to contour levels}
 
-\item{overwrite}{GDAL argument}
+\item{polygonize}{Create polygons instead of lines (Logical)}
+
+\item{group_transactions}{Group n features per transaction (default 100 000) (Integer). Minimum: \code{0}}
+
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.
@@ -74,11 +80,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Creates a vector contour from a raster elevation model (DEM).
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_contour(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_contour(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

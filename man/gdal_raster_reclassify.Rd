@@ -5,32 +5,38 @@
 \title{Reclassify values in a raster dataset}
 \usage{
 gdal_raster_reclassify(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
-  output_format = NULL,
-  creation_option = NULL,
-  overwrite = FALSE,
+  input_format = NULL,
   mapping = NULL,
-  output_data_type = NULL
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
+  creation_option = NULL,
+  overwrite = FALSE
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{mapping}{Reclassification mappings (or specify a @\if{html}{\out{<filename>}} to point to a file containing mappings (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{overwrite}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{mapping}{GDAL argument}
+\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
 
-\item{output_data_type}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,11 +44,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Reclassify values in a raster dataset
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_reclassify.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_reclassify(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_reclassify(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

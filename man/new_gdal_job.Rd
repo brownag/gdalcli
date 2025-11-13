@@ -11,7 +11,8 @@ new_gdal_job(
   config_options = character(),
   env_vars = character(),
   stream_in = NULL,
-  stream_out_format = NULL
+  stream_out_format = NULL,
+  pipeline = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ Example: \code{c("vector", "convert")} for the \verb{gdal vector convert} comman
 \item{stream_in}{An R object for input streaming. Default \code{NULL}.}
 
 \item{stream_out_format}{Character string specifying output format or \code{NULL}. Default \code{NULL}.}
+
+\item{pipeline}{A \code{gdal_pipeline} object containing the sequence of jobs that led to this job, or \code{NULL}. Default \code{NULL}.}
 }
 \value{
 An S3 object of class \code{gdal_job}.
@@ -57,6 +60,8 @@ a character string, or raw vector.
 \item \strong{stream_out_format} (\code{character(1)}): Specifies output streaming format:
 \code{NULL} (default, no output streaming), \code{"text"} (capture stdout as character string),
 or \code{"raw"} (capture as raw bytes).
+\item \strong{pipeline} (\code{gdal_pipeline} or \code{NULL}): A pipeline object containing the sequence
+of jobs that were executed prior to this job, or \code{NULL} if this is a standalone job.
 }
 }
 
@@ -72,13 +77,13 @@ End users typically interact with high-level constructor functions, not \code{ne
 # Low-level constructor (typically used internally by auto-generated functions)
 job <- new_gdal_job(
   command_path = c("vector", "convert"),
-  arguments = list(input = "/path/to/input.shp", output = "/path/to/output.gpkg")
+  arguments = list(input = "/path/to/input.shp", output_layer = "output")
 )
 
 # High-level constructor (end-user API)
 job <- gdal_vector_convert(
   input = "/path/to/input.shp",
-  output = "/path/to/output.gpkg"
+  output_layer = "output"
 )
 
 # Modify with piping

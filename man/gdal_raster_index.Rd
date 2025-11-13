@@ -5,8 +5,14 @@
 \title{Create a vector index of raster datasets.}
 \usage{
 gdal_raster_index(
+  job = NULL,
   input = NULL,
+  min_pixel_size = NULL,
+  source_crs_field_name = NULL,
+  source_crs_format = NULL,
+  output = NULL,
   output_format = NULL,
+  dst_crs = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
@@ -16,54 +22,54 @@ gdal_raster_index(
   layer = NULL,
   recursive = FALSE,
   filename_filter = NULL,
-  min_pixel_size = NULL,
   max_pixel_size = NULL,
   location_name = NULL,
   absolute_path = FALSE,
-  dst_crs = NULL,
-  metadata = NULL,
-  source_crs_field_name = NULL,
-  source_crs_format = NULL
+  metadata = NULL
 )
 }
 \arguments{
-\item{input}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{output_format}{GDAL argument}
+\item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s)}
 
-\item{creation_option}{GDAL argument}
+\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
 
-\item{layer_creation_option}{GDAL argument}
+\item{source_crs_field_name}{Name of the field to store the CRS of each dataset}
 
-\item{overwrite}{GDAL argument}
+\item{source_crs_format}{Format in which the CRS of each dataset must be written. Choices: auto, WKT, EPSG, PROJ (Default: \code{auto})}
 
-\item{update}{GDAL argument}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{overwrite_layer}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{append}{GDAL argument}
+\item{dst_crs}{Destination CRS}
 
-\item{layer}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{recursive}{GDAL argument}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{filename_filter}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{min_pixel_size}{GDAL argument}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{max_pixel_size}{GDAL argument}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{location_name}{GDAL argument}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{absolute_path}{GDAL argument}
+\item{layer}{Layer name}
 
-\item{dst_crs}{GDAL argument}
+\item{recursive}{Whether input directories should be explored recursively. (Logical)}
 
-\item{metadata}{GDAL argument}
+\item{filename_filter}{Pattern that the filenames in input directories should follow ('*' and '?' wildcard) (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{source_crs_field_name}{GDAL argument}
+\item{max_pixel_size}{Maximum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
 
-\item{source_crs_format}{GDAL argument}
+\item{location_name}{Name of the field with the raster path (Default: \code{location})}
+
+\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
+
+\item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -71,11 +77,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Create a vector index of raster datasets.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_index.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_index(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_index(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

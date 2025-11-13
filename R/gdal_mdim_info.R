@@ -7,44 +7,58 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Return information on a multidimensional dataset.
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param detailed GDAL argument
-#' @param array GDAL argument
-#' @param limit GDAL argument
-#' @param array_option GDAL argument
-#' @param stats GDAL argument
-#' @param stdout GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input multidimensional raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param detailed Most verbose output. Report attribute data types and array values. (Logical)
+#' @param array Name of the array, used to restrict the output to the specified array.
+#' @param limit Number of values in each dimension that is used to limit the display of array values. (Integer)
+#' @param array_option Option passed to GDALGroup::GetMDArrayNames() to filter reported arrays. (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param stats Read and display image statistics. (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_mdim_utilities
 #' @examples
-#' \dontrun{
-#' gdal_mdim_info(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_mdim_info(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_mdim_info <- function(open_option = NULL,
-  input_format = NULL,
+gdal_mdim_info <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  stdout = FALSE,
+  open_option = NULL,
   detailed = FALSE,
   array = NULL,
   limit = NULL,
   array_option = NULL,
-  stats = FALSE,
-  stdout = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(detailed)) args[["detailed"]] <- detailed
-  if (!missing(array)) args[["array"]] <- array
-  if (!missing(limit)) args[["limit"]] <- limit
-  if (!missing(array_option)) args[["array_option"]] <- array_option
-  if (!missing(stats)) args[["stats"]] <- stats
-  if (!missing(stdout)) args[["stdout"]] <- stdout
+  stats = FALSE) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(stdout)) new_args[["stdout"]] <- stdout
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(detailed)) new_args[["detailed"]] <- detailed
+  if (!missing(array)) new_args[["array"]] <- array
+  if (!missing(limit)) new_args[["limit"]] <- limit
+  if (!missing(array_option)) new_args[["array_option"]] <- array_option
+  if (!missing(stats)) new_args[["stats"]] <- stats
+  job_input <- handle_job_input(job, new_args, c("mdim", "info"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("mdim", "info"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "mdim", "info"), arguments = args)
+  new_gdal_job(command_path = c("mdim", "info"), arguments = merged_args)
 }
 

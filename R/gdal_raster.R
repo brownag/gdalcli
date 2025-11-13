@@ -7,20 +7,34 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Raster commands.
-#' @param drivers GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param drivers Display raster driver list as JSON document (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster(drivers = TRUE)
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster <- function(drivers = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(drivers)) args[["drivers"]] <- drivers
+gdal_raster <- function(job = NULL,
+  drivers = FALSE) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(drivers)) new_args[["drivers"]] <- drivers
+  job_input <- handle_job_input(job, new_args, c("raster"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster"), arguments = args)
+  new_gdal_job(command_path = c("raster"), arguments = merged_args)
 }
 

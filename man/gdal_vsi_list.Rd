@@ -5,32 +5,35 @@
 \title{List files of one of the GDAL Virtual System Interface (VSI).}
 \usage{
 gdal_vsi_list(
-  filename = NULL,
-  output_format = NULL,
+  job = NULL,
   long_listing = FALSE,
+  output_format = NULL,
+  stdout = FALSE,
+  filename = NULL,
   recursive = FALSE,
   depth = NULL,
   absolute_path = FALSE,
-  tree = FALSE,
-  stdout = FALSE
+  tree = FALSE
 )
 }
 \arguments{
-\item{filename}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{output_format}{GDAL argument}
+\item{long_listing}{Use a long listing format (Logical)}
 
-\item{long_listing}{GDAL argument}
+\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
 
-\item{recursive}{GDAL argument}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 
-\item{depth}{GDAL argument}
+\item{filename}{File or directory name (required)}
 
-\item{absolute_path}{GDAL argument}
+\item{recursive}{List subdirectories recursively (Logical)}
 
-\item{tree}{GDAL argument}
+\item{depth}{Maximum depth in recursive mode (Integer). Minimum: \code{1}}
 
-\item{stdout}{GDAL argument}
+\item{absolute_path}{Display absolute path (Logical)}
+
+\item{tree}{Use a hierarchical presentation for JSON output (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,11 +41,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 List files of one of the GDAL Virtual System Interface (VSI).
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_list.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_list(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_list(long_listing = TRUE)
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

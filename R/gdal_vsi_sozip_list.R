@@ -7,20 +7,34 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' List content of a ZIP file, with SOZIP related information.
-#' @param input GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input ZIP filename (required)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vsi_sozip_list(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vsi_sozip_list(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vsi_sozip_list <- function(input = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input)) args[["input"]] <- input
+gdal_vsi_sozip_list <- function(job = NULL,
+  input = NULL) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  job_input <- handle_job_input(job, new_args, c("vsi", "sozip", "list"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vsi", "sozip", "list"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vsi", "sozip", "list"), arguments = args)
+  new_gdal_job(command_path = c("vsi", "sozip", "list"), arguments = merged_args)
 }
 

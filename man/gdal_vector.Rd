@@ -4,10 +4,12 @@
 \alias{gdal_vector}
 \title{Vector commands.}
 \usage{
-gdal_vector(drivers = FALSE)
+gdal_vector(job = NULL, drivers = FALSE)
 }
 \arguments{
-\item{drivers}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
+
+\item{drivers}{Display vector driver list as JSON document and exit (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -15,11 +17,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Vector commands.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector(drivers = TRUE)
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

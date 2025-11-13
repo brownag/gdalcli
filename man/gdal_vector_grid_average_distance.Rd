@@ -5,15 +5,20 @@
 \title{Create a regular grid from scattered points using the average distance between the grid node (center of the search ellipse) and all of the data points in the search ellipse.}
 \usage{
 gdal_vector_grid_average_distance(
-  output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  min_points = NULL,
+  min_points_per_quadrant = NULL,
+  max_points_per_quadrant = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
   creation_option = NULL,
   extent,
   resolution,
   size,
-  output_data_type = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
@@ -26,62 +31,63 @@ gdal_vector_grid_average_distance(
   radius1 = NULL,
   radius2 = NULL,
   angle = NULL,
-  min_points = NULL,
-  min_points_per_quadrant = NULL,
-  max_points_per_quadrant = NULL,
   nodata = NULL
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{min_points}{Minimum number of data points to use (Integer) (Default: \code{0})}
 
-\item{creation_option}{GDAL argument}
+\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer) (Default: \code{0})}
 
-\item{extent}{GDAL argument}
+\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
 
-\item{resolution}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{size}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{output_data_type}{GDAL argument}
+\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Float64})}
 
-\item{crs}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{overwrite}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{layer}{GDAL argument}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
-\item{sql}{GDAL argument}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
 
-\item{bbox}{GDAL argument}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
-\item{zfield}{GDAL argument}
+\item{crs}{Override the projection for the output file}
 
-\item{zoffset}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{zmultiply}{GDAL argument}
+\item{layer}{Layer name (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{radius}{GDAL argument}
+\item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
 
-\item{radius1}{GDAL argument}
+\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
 
-\item{radius2}{GDAL argument}
+\item{zfield}{Field name from which to get Z values.}
 
-\item{angle}{GDAL argument}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
 
-\item{min_points}{GDAL argument}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
 
-\item{min_points_per_quadrant}{GDAL argument}
+\item{radius}{Radius of the search circle}
 
-\item{max_points_per_quadrant}{GDAL argument}
+\item{radius1}{First axis of the search ellipse}
 
-\item{nodata}{GDAL argument}
+\item{radius2}{Second axis of the search ellipse}
+
+\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise) (Default: \code{0})}
+
+\item{nodata}{Target nodata value (Default: \code{0})}
 }
 \value{
 A \link{gdal_job} object.
@@ -89,11 +95,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Create a regular grid from scattered points using the average distance between the grid node (center of the search ellipse) and all of the data points in the search ellipse.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_average-distance.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_grid_average_distance(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_grid_average_distance(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

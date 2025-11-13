@@ -5,41 +5,47 @@
 \title{Combine together input bands into a multi-band output, either virtual (VRT) or materialized.}
 \usage{
 gdal_raster_stack(
-  output_format = NULL,
+  job = NULL,
   input,
+  src_nodata,
+  output = NULL,
+  output_format = NULL,
+  dst_nodata,
   creation_option = NULL,
   band = NULL,
   overwrite = FALSE,
   resolution = NULL,
   bbox,
   target_aligned_pixels = FALSE,
-  src_nodata,
-  dst_nodata,
   hide_nodata = FALSE
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{input}{GDAL argument}
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s)}
 
-\item{creation_option}{GDAL argument}
+\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
 
-\item{band}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{overwrite}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{resolution}{GDAL argument}
+\item{dst_nodata}{Set nodata values at the destination band level.. \code{1} to \code{2147483647} value(s)}
 
-\item{bbox}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{target_aligned_pixels}{GDAL argument}
+\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
-\item{src_nodata}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{dst_nodata}{GDAL argument}
+\item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>|same|average|common|highest|lowest} (Default: \code{same})}
 
-\item{hide_nodata}{GDAL argument}
+\item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Exactly \code{4} value(s)}
+
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
+
+\item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -47,11 +53,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Combine together input bands into a multi-band output, either virtual (VRT) or materialized.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_stack.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_stack(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_stack(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

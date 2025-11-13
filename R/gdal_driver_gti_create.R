@@ -7,42 +7,54 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param layer_creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param update GDAL argument
-#' @param overwrite_layer GDAL argument
-#' @param append GDAL argument
-#' @param layer GDAL argument
-#' @param recursive GDAL argument
-#' @param filename_filter GDAL argument
-#' @param min_pixel_size GDAL argument
-#' @param max_pixel_size GDAL argument
-#' @param location_name GDAL argument
-#' @param absolute_path GDAL argument
-#' @param dst_crs GDAL argument
-#' @param metadata GDAL argument
-#' @param xml_filename GDAL argument
-#' @param resolution GDAL argument
-#' @param bbox GDAL argument
-#' @param output_data_type GDAL argument
-#' @param band_count GDAL argument
-#' @param nodata GDAL argument
-#' @param color_interpretation GDAL argument
-#' @param mask GDAL argument
-#' @param fetch_metadata GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_driver_gti_create.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster datasets (required). `0` to `2147483647` value(s)
+#' @param min_pixel_size Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: `0`
+#' @param color_interpretation Color interpretation(s) of the bands of the virtual mosaic (Character vector). Choices: red, green, blue, alpha, gray, .... `0` to `2147483647` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param dst_crs Destination CRS
+#' @param output_data_type Datatype of the virtual mosaic. Choices: Byte, Int8, UInt16, Int16, UInt32, ...
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
+#' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
+#' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
+#' @param layer Layer name
+#' @param recursive Whether input directories should be explored recursively. (Logical)
+#' @param filename_filter Pattern that the filenames in input directories should follow ('*' and '?' wildcard) (Character vector). `0` to `2147483647` value(s)
+#' @param max_pixel_size Maximum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: `0`
+#' @param location_name Name of the field with the raster path (Default: `location`)
+#' @param absolute_path Whether the path to the input datasets should be stored as an absolute path (Logical)
+#' @param metadata Add dataset metadata item (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param xml_filename Filename of the XML Virtual Tile Index file to generate, that can be used as an input for the GDAL GTI / Virtual Raster Tile Index driver
+#' @param resolution Resolution (in destination CRS units) of the virtual mosaic. Format: `<xres>,<yres>`. Minimum: `0`. Exactly `2` value(s)
+#' @param bbox Bounding box (in destination CRS units) of the virtual mosaic. Exactly `4` value(s)
+#' @param band_count Number of bands of the virtual mosaic (Integer). Minimum: `1`
+#' @param nodata Nodata value(s) of the bands of the virtual mosaic. `0` to `2147483647` value(s)
+#' @param mask Defines that the virtual mosaic has a mask band (Logical)
+#' @param fetch_metadata Fetch a metadata item from source rasters and write it as a field in the index. (Character vector). Format: `<gdal-metadata-name>,<field-name>,<field-type>`. `0` to `2147483647` value(s)
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
-#' \dontrun{
-#' gdal_driver_gti_create(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_driver_gti_create(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_driver_gti_create <- function(input = NULL,
+gdal_driver_gti_create <- function(job = NULL,
+  input = NULL,
+  min_pixel_size = NULL,
+  color_interpretation = NULL,
+  output = NULL,
   output_format = NULL,
+  dst_crs = NULL,
+  output_data_type = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
@@ -52,50 +64,55 @@ gdal_driver_gti_create <- function(input = NULL,
   layer = NULL,
   recursive = FALSE,
   filename_filter = NULL,
-  min_pixel_size = NULL,
   max_pixel_size = NULL,
   location_name = NULL,
   absolute_path = FALSE,
-  dst_crs = NULL,
   metadata = NULL,
   xml_filename = NULL,
   resolution,
   bbox,
-  output_data_type = NULL,
   band_count = NULL,
   nodata = NULL,
-  color_interpretation = NULL,
   mask = FALSE,
   fetch_metadata = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(layer_creation_option)) args[["layer_creation_option"]] <- layer_creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(update)) args[["update"]] <- update
-  if (!missing(overwrite_layer)) args[["overwrite_layer"]] <- overwrite_layer
-  if (!missing(append)) args[["append"]] <- append
-  if (!missing(layer)) args[["layer"]] <- layer
-  if (!missing(recursive)) args[["recursive"]] <- recursive
-  if (!missing(filename_filter)) args[["filename_filter"]] <- filename_filter
-  if (!missing(min_pixel_size)) args[["min_pixel_size"]] <- min_pixel_size
-  if (!missing(max_pixel_size)) args[["max_pixel_size"]] <- max_pixel_size
-  if (!missing(location_name)) args[["location_name"]] <- location_name
-  if (!missing(absolute_path)) args[["absolute_path"]] <- absolute_path
-  if (!missing(dst_crs)) args[["dst_crs"]] <- dst_crs
-  if (!missing(metadata)) args[["metadata"]] <- metadata
-  if (!missing(xml_filename)) args[["xml_filename"]] <- xml_filename
-  if (!missing(resolution)) args[["resolution"]] <- resolution
-  if (!missing(bbox)) args[["bbox"]] <- bbox
-  if (!missing(output_data_type)) args[["output_data_type"]] <- output_data_type
-  if (!missing(band_count)) args[["band_count"]] <- band_count
-  if (!missing(nodata)) args[["nodata"]] <- nodata
-  if (!missing(color_interpretation)) args[["color_interpretation"]] <- color_interpretation
-  if (!missing(mask)) args[["mask"]] <- mask
-  if (!missing(fetch_metadata)) args[["fetch_metadata"]] <- fetch_metadata
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(min_pixel_size)) new_args[["min_pixel_size"]] <- min_pixel_size
+  if (!missing(color_interpretation)) new_args[["color_interpretation"]] <- color_interpretation
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(dst_crs)) new_args[["dst_crs"]] <- dst_crs
+  if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(update)) new_args[["update"]] <- update
+  if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
+  if (!missing(append)) new_args[["append"]] <- append
+  if (!missing(layer)) new_args[["layer"]] <- layer
+  if (!missing(recursive)) new_args[["recursive"]] <- recursive
+  if (!missing(filename_filter)) new_args[["filename_filter"]] <- filename_filter
+  if (!missing(max_pixel_size)) new_args[["max_pixel_size"]] <- max_pixel_size
+  if (!missing(location_name)) new_args[["location_name"]] <- location_name
+  if (!missing(absolute_path)) new_args[["absolute_path"]] <- absolute_path
+  if (!missing(metadata)) new_args[["metadata"]] <- metadata
+  if (!missing(xml_filename)) new_args[["xml_filename"]] <- xml_filename
+  if (!missing(resolution)) new_args[["resolution"]] <- resolution
+  if (!missing(bbox)) new_args[["bbox"]] <- bbox
+  if (!missing(band_count)) new_args[["band_count"]] <- band_count
+  if (!missing(nodata)) new_args[["nodata"]] <- nodata
+  if (!missing(mask)) new_args[["mask"]] <- mask
+  if (!missing(fetch_metadata)) new_args[["fetch_metadata"]] <- fetch_metadata
+  job_input <- handle_job_input(job, new_args, c("driver", "gti", "create"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("driver", "gti", "create"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "driver", "gti", "create"), arguments = args)
+  new_gdal_job(command_path = c("driver", "gti", "create"), arguments = merged_args)
 }
 

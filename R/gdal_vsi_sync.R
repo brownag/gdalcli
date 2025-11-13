@@ -7,32 +7,46 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
-#' @param source GDAL argument
-#' @param destination GDAL argument
-#' @param recursive GDAL argument
-#' @param strategy GDAL argument
-#' @param num_threads GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param source Source file or directory name (required)
+#' @param destination Destination file or directory name (required)
+#' @param recursive Synchronize recursively (Logical)
+#' @param strategy Synchronization strategy. Choices: timestamp, ETag, overwrite (Default: `timestamp`)
+#' @param num_threads Number of jobs (or ALL_CPUS)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vsi_sync(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vsi_sync(source = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vsi_sync <- function(source = NULL,
+gdal_vsi_sync <- function(job = NULL,
+  source = NULL,
   destination = NULL,
   recursive = FALSE,
   strategy = NULL,
   num_threads = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(source)) args[["source"]] <- source
-  if (!missing(destination)) args[["destination"]] <- destination
-  if (!missing(recursive)) args[["recursive"]] <- recursive
-  if (!missing(strategy)) args[["strategy"]] <- strategy
-  if (!missing(num_threads)) args[["num_threads"]] <- num_threads
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(source)) new_args[["source"]] <- source
+  if (!missing(destination)) new_args[["destination"]] <- destination
+  if (!missing(recursive)) new_args[["recursive"]] <- recursive
+  if (!missing(strategy)) new_args[["strategy"]] <- strategy
+  if (!missing(num_threads)) new_args[["num_threads"]] <- num_threads
+  job_input <- handle_job_input(job, new_args, c("vsi", "sync"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vsi", "sync"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vsi", "sync"), arguments = args)
+  new_gdal_job(command_path = c("vsi", "sync"), arguments = merged_args)
 }
 

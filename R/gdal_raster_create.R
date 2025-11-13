@@ -7,41 +7,49 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Create a new raster dataset.
-#' @param output_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param append GDAL argument
-#' @param size GDAL argument
-#' @param band_count GDAL argument
-#' @param output_data_type GDAL argument
-#' @param nodata GDAL argument
-#' @param burn GDAL argument
-#' @param crs GDAL argument
-#' @param bbox GDAL argument
-#' @param metadata GDAL argument
-#' @param copy_metadata GDAL argument
-#' @param copy_overviews GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_create.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: `Byte`)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param append Append as a subdataset to existing output (Logical) (Default: `false`)
+#' @param size Output size in pixels (Integer vector). Format: `<width>,<height>`. Minimum: `0`. Exactly `2` value(s)
+#' @param band_count Number of bands (Integer) (Default: `1`). Minimum: `0`
+#' @param nodata Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')
+#' @param burn Burn value. `0` to `2147483647` value(s)
+#' @param crs Set CRS
+#' @param bbox Bounding box as xmin,ymin,xmax,ymax. Exactly `4` value(s)
+#' @param metadata Add metadata item (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param copy_metadata Copy metadata from input dataset (Logical)
+#' @param copy_overviews Create same overview levels as input dataset (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_create(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_create(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_create <- function(output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+gdal_raster_create <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   append = FALSE,
   size,
   band_count = NULL,
-  output_data_type = NULL,
   nodata = NULL,
   burn = NULL,
   crs = NULL,
@@ -49,26 +57,35 @@ gdal_raster_create <- function(output_format = NULL,
   metadata = NULL,
   copy_metadata = FALSE,
   copy_overviews = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(append)) args[["append"]] <- append
-  if (!missing(size)) args[["size"]] <- size
-  if (!missing(band_count)) args[["band_count"]] <- band_count
-  if (!missing(output_data_type)) args[["output_data_type"]] <- output_data_type
-  if (!missing(nodata)) args[["nodata"]] <- nodata
-  if (!missing(burn)) args[["burn"]] <- burn
-  if (!missing(crs)) args[["crs"]] <- crs
-  if (!missing(bbox)) args[["bbox"]] <- bbox
-  if (!missing(metadata)) args[["metadata"]] <- metadata
-  if (!missing(copy_metadata)) args[["copy_metadata"]] <- copy_metadata
-  if (!missing(copy_overviews)) args[["copy_overviews"]] <- copy_overviews
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(append)) new_args[["append"]] <- append
+  if (!missing(size)) new_args[["size"]] <- size
+  if (!missing(band_count)) new_args[["band_count"]] <- band_count
+  if (!missing(nodata)) new_args[["nodata"]] <- nodata
+  if (!missing(burn)) new_args[["burn"]] <- burn
+  if (!missing(crs)) new_args[["crs"]] <- crs
+  if (!missing(bbox)) new_args[["bbox"]] <- bbox
+  if (!missing(metadata)) new_args[["metadata"]] <- metadata
+  if (!missing(copy_metadata)) new_args[["copy_metadata"]] <- copy_metadata
+  if (!missing(copy_overviews)) new_args[["copy_overviews"]] <- copy_overviews
+  job_input <- handle_job_input(job, new_args, c("raster", "create"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "create"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "create"), arguments = args)
+  new_gdal_job(command_path = c("raster", "create"), arguments = merged_args)
 }
 

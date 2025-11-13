@@ -4,10 +4,12 @@
 \alias{gdal_driver_openfilegdb_repack}
 \title{Repack a FileGeoDatabase dataset}
 \usage{
-gdal_driver_openfilegdb_repack(dataset = NULL)
+gdal_driver_openfilegdb_repack(job = NULL, dataset = NULL)
 }
 \arguments{
-\item{dataset}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
+
+\item{dataset}{FileGeoDatabase dataset (Dataset path) (required)}
 }
 \value{
 A \link{gdal_job} object.
@@ -15,11 +17,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Repack a FileGeoDatabase dataset
+
+See \url{https://gdal.org/en/stable/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_driver_openfilegdb_repack(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_driver_openfilegdb_repack(dataset = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_driver_utilities: 

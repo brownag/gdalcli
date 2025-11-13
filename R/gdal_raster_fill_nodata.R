@@ -7,47 +7,64 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Fill nodata raster regions by interpolation from edges.
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param band GDAL argument
-#' @param max_distance GDAL argument
-#' @param smoothing_iterations GDAL argument
-#' @param mask GDAL argument
-#' @param strategy GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param smoothing_iterations The number of 3x3 average filter smoothing iterations to run after the interpolation to dampen artifacts. The default is zero smoothing iterations. (Integer). Format: `SMOOTHING_ITERATIONS` (Default: `0`)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param band Input band (1-based index) (Integer) (Default: `1`)
+#' @param max_distance The maximum distance (in pixels) that the algorithm will search out for values to interpolate. (Integer). Format: `MAX_DISTANCE` (Default: `100`)
+#' @param mask Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path)
+#' @param strategy By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: invdist, nearest (Default: `invdist`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_fill_nodata(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_fill_nodata(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_fill_nodata <- function(input_format = NULL,
+gdal_raster_fill_nodata <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  smoothing_iterations = NULL,
+  output = NULL,
   output_format = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
   max_distance = NULL,
-  smoothing_iterations = NULL,
   mask = NULL,
   strategy = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(max_distance)) args[["max_distance"]] <- max_distance
-  if (!missing(smoothing_iterations)) args[["smoothing_iterations"]] <- smoothing_iterations
-  if (!missing(mask)) args[["mask"]] <- mask
-  if (!missing(strategy)) args[["strategy"]] <- strategy
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(smoothing_iterations)) new_args[["smoothing_iterations"]] <- smoothing_iterations
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(max_distance)) new_args[["max_distance"]] <- max_distance
+  if (!missing(mask)) new_args[["mask"]] <- mask
+  if (!missing(strategy)) new_args[["strategy"]] <- strategy
+  job_input <- handle_job_input(job, new_args, c("raster", "fill-nodata"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "fill-nodata"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "fill-nodata"), arguments = args)
+  new_gdal_job(command_path = c("raster", "fill-nodata"), arguments = merged_args)
 }
 

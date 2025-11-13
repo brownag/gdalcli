@@ -5,26 +5,29 @@
 \title{Adding overviews.}
 \usage{
 gdal_raster_overview_add(
+  job = NULL,
+  resampling = NULL,
+  min_size = NULL,
   open_option = NULL,
   dataset = NULL,
   external = FALSE,
-  resampling = NULL,
-  levels = NULL,
-  min_size = NULL
+  levels = NULL
 )
 }
 \arguments{
-\item{open_option}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{dataset}{GDAL argument}
+\item{resampling}{Resampling method. Choices: nearest, average, cubic, cubicspline, lanczos, ...}
 
-\item{external}{GDAL argument}
+\item{min_size}{Maximum width or height of the smallest overview level. (Integer). Minimum: \code{1}}
 
-\item{resampling}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{levels}{GDAL argument}
+\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path) (required)}
 
-\item{min_size}{GDAL argument}
+\item{external}{Add external overviews (Logical)}
+
+\item{levels}{Levels / decimation factors (Integer vector). Minimum: \code{2}. \code{0} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -32,11 +35,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Adding overviews.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_overview_add(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_overview_add(resampling = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

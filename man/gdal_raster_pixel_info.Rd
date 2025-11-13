@@ -5,35 +5,38 @@
 \title{Return information on a pixel of a raster dataset.}
 \usage{
 gdal_raster_pixel_info(
+  job = NULL,
+  input = NULL,
+  input_format = NULL,
+  resampling = NULL,
   output_format = NULL,
   open_option = NULL,
-  input_format = NULL,
-  input = NULL,
   band = NULL,
   overview = NULL,
   position = NULL,
-  position_crs = NULL,
-  resampling = NULL
+  position_crs = NULL
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{resampling}{Resampling algorithm for interpolation. Choices: nearest, bilinear, cubic, cubicspline (Default: \code{nearest})}
 
-\item{band}{GDAL argument}
+\item{output_format}{Output format. Choices: geojson, csv (Default: \code{geojson})}
 
-\item{overview}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{position}{GDAL argument}
+\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
-\item{position_crs}{GDAL argument}
+\item{overview}{Which overview level of source file must be used (Integer). Minimum: \code{0}}
 
-\item{resampling}{GDAL argument}
+\item{position}{Pixel position. Format: \verb{<column,line> or <X,Y>}. \code{0} to \code{2147483647} value(s)}
+
+\item{position_crs}{CRS of position (Default: \code{pixel})}
 }
 \value{
 A \link{gdal_job} object.
@@ -41,11 +44,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Return information on a pixel of a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_pixel_info(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_pixel_info(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

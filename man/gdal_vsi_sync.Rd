@@ -5,6 +5,7 @@
 \title{Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).}
 \usage{
 gdal_vsi_sync(
+  job = NULL,
   source = NULL,
   destination = NULL,
   recursive = FALSE,
@@ -13,15 +14,17 @@ gdal_vsi_sync(
 )
 }
 \arguments{
-\item{source}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{destination}{GDAL argument}
+\item{source}{Source file or directory name (required)}
 
-\item{recursive}{GDAL argument}
+\item{destination}{Destination file or directory name (required)}
 
-\item{strategy}{GDAL argument}
+\item{recursive}{Synchronize recursively (Logical)}
 
-\item{num_threads}{GDAL argument}
+\item{strategy}{Synchronization strategy. Choices: timestamp, ETag, overwrite (Default: \code{timestamp})}
+
+\item{num_threads}{Number of jobs (or ALL_CPUS)}
 }
 \value{
 A \link{gdal_job} object.
@@ -29,11 +32,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_sync(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_sync(source = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

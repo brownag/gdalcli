@@ -5,15 +5,17 @@
 \title{Create a regular grid from scattered points using linear/barycentric interpolation.}
 \usage{
 gdal_vector_grid_linear(
-  output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
   creation_option = NULL,
   extent,
   resolution,
   size,
-  output_data_type = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
@@ -27,43 +29,47 @@ gdal_vector_grid_linear(
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{extent}{GDAL argument}
+\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Float64})}
 
-\item{resolution}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{size}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{output_data_type}{GDAL argument}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
-\item{crs}{GDAL argument}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
 
-\item{overwrite}{GDAL argument}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
-\item{layer}{GDAL argument}
+\item{crs}{Override the projection for the output file}
 
-\item{sql}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{bbox}{GDAL argument}
+\item{layer}{Layer name (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{zfield}{GDAL argument}
+\item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
 
-\item{zoffset}{GDAL argument}
+\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
 
-\item{zmultiply}{GDAL argument}
+\item{zfield}{Field name from which to get Z values.}
 
-\item{radius}{GDAL argument}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
 
-\item{nodata}{GDAL argument}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
+
+\item{radius}{Radius of the search circle (Default: \code{Inf})}
+
+\item{nodata}{Target nodata value (Default: \code{0})}
 }
 \value{
 A \link{gdal_job} object.
@@ -71,11 +77,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Create a regular grid from scattered points using linear/barycentric interpolation.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_linear.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_grid_linear(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_grid_linear(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

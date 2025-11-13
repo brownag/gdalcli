@@ -4,10 +4,12 @@
 \alias{gdal_driver_gpkg_repack}
 \title{Repack/vacuum in-place a GeoPackage dataset}
 \usage{
-gdal_driver_gpkg_repack(dataset = NULL)
+gdal_driver_gpkg_repack(job = NULL, dataset = NULL)
 }
 \arguments{
-\item{dataset}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
+
+\item{dataset}{GeoPackage dataset (Dataset path) (required)}
 }
 \value{
 A \link{gdal_job} object.
@@ -15,11 +17,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Repack/vacuum in-place a GeoPackage dataset
+
+See \url{https://gdal.org/en/stable/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_driver_gpkg_repack(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_driver_gpkg_repack(dataset = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_driver_utilities: 

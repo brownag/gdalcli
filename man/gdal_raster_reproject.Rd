@@ -5,22 +5,24 @@
 \title{Reproject a raster dataset.}
 \usage{
 gdal_raster_reproject(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  src_crs = NULL,
+  resampling = NULL,
+  src_nodata,
+  output = NULL,
   output_format = NULL,
+  dst_crs = NULL,
+  dst_nodata,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  src_crs = NULL,
-  dst_crs = NULL,
-  resampling = NULL,
   resolution,
   size,
   bbox,
   bbox_crs = NULL,
   target_aligned_pixels = FALSE,
-  src_nodata,
-  dst_nodata,
   add_alpha = FALSE,
   warp_option = NULL,
   transform_option = NULL,
@@ -28,45 +30,49 @@ gdal_raster_reproject(
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{src_crs}{Source CRS}
 
-\item{creation_option}{GDAL argument}
+\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
 
-\item{overwrite}{GDAL argument}
+\item{src_nodata}{Set nodata values for input bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
 
-\item{src_crs}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{dst_crs}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{resampling}{GDAL argument}
+\item{dst_crs}{Destination CRS}
 
-\item{resolution}{GDAL argument}
+\item{dst_nodata}{Set nodata values for output bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
 
-\item{size}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{bbox}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{bbox_crs}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{target_aligned_pixels}{GDAL argument}
+\item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>}. Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{src_nodata}{GDAL argument}
+\item{size}{Target size in pixels (Integer vector). Format: \verb{<width>,<height>}. Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{dst_nodata}{GDAL argument}
+\item{bbox}{Target bounding box (in destination CRS units). Exactly \code{4} value(s)}
 
-\item{add_alpha}{GDAL argument}
+\item{bbox_crs}{CRS of target bounding box}
 
-\item{warp_option}{GDAL argument}
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Advanced)}
 
-\item{transform_option}{GDAL argument}
+\item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical) (Advanced)}
 
-\item{error_threshold}{GDAL argument}
+\item{warp_option}{Warping option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{error_threshold}{Error threshold (Advanced)}
 }
 \value{
 A \link{gdal_job} object.
@@ -74,11 +80,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Reproject a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_reproject(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_reproject(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

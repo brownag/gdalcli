@@ -5,10 +5,12 @@
 \title{Convert a multidimensional dataset.}
 \usage{
 gdal_mdim_convert(
+  job = NULL,
+  input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
   open_option = NULL,
-  input_format = NULL,
-  input = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   array = NULL,
@@ -20,29 +22,33 @@ gdal_mdim_convert(
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input raster or multidimensional raster dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{output}{Output multidimensional raster dataset (Dataset path) (required)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{overwrite}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{array}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{array_option}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{group}{GDAL argument}
+\item{array}{Select a single array instead of converting the whole dataset. (Character vector). Format: \code{ARRAY-SPEC}. \code{0} to \code{2147483647} value(s)}
 
-\item{subset}{GDAL argument}
+\item{array_option}{Option passed to GDALGroup::GetMDArrayNames() to filter arrays. (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{scale_axes}{GDAL argument}
+\item{group}{Select a single group instead of converting the whole dataset. (Character vector). Format: \code{GROUP-SPEC}. \code{0} to \code{2147483647} value(s)}
 
-\item{strict}{GDAL argument}
+\item{subset}{Select a subset of the data. (Character vector). Format: \code{SUBSET-SPEC}. \code{0} to \code{2147483647} value(s)}
+
+\item{scale_axes}{Applies a integral scale factor to one or several dimensions (Character vector). Format: \code{SCALEAXES-SPEC}. \code{0} to \code{2147483647} value(s)}
+
+\item{strict}{Turn warnings into failures. (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -50,11 +56,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Convert a multidimensional dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_mdim_convert(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_mdim_convert(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_mdim_utilities: 

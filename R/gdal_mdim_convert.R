@@ -7,30 +7,38 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Convert a multidimensional dataset.
-#' @param output_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param array GDAL argument
-#' @param array_option GDAL argument
-#' @param group GDAL argument
-#' @param subset GDAL argument
-#' @param scale_axes GDAL argument
-#' @param strict GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster or multidimensional raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output multidimensional raster dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param array Select a single array instead of converting the whole dataset. (Character vector). Format: `ARRAY-SPEC`. `0` to `2147483647` value(s)
+#' @param array_option Option passed to GDALGroup::GetMDArrayNames() to filter arrays. (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param group Select a single group instead of converting the whole dataset. (Character vector). Format: `GROUP-SPEC`. `0` to `2147483647` value(s)
+#' @param subset Select a subset of the data. (Character vector). Format: `SUBSET-SPEC`. `0` to `2147483647` value(s)
+#' @param scale_axes Applies a integral scale factor to one or several dimensions (Character vector). Format: `SCALEAXES-SPEC`. `0` to `2147483647` value(s)
+#' @param strict Turn warnings into failures. (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_mdim_utilities
 #' @examples
-#' \dontrun{
-#' gdal_mdim_convert(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_mdim_convert(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_mdim_convert <- function(output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+gdal_mdim_convert <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
+  output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   array = NULL,
@@ -39,21 +47,30 @@ gdal_mdim_convert <- function(output_format = NULL,
   subset = NULL,
   scale_axes = NULL,
   strict = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(array)) args[["array"]] <- array
-  if (!missing(array_option)) args[["array_option"]] <- array_option
-  if (!missing(group)) args[["group"]] <- group
-  if (!missing(subset)) args[["subset"]] <- subset
-  if (!missing(scale_axes)) args[["scale_axes"]] <- scale_axes
-  if (!missing(strict)) args[["strict"]] <- strict
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(array)) new_args[["array"]] <- array
+  if (!missing(array_option)) new_args[["array_option"]] <- array_option
+  if (!missing(group)) new_args[["group"]] <- group
+  if (!missing(subset)) new_args[["subset"]] <- subset
+  if (!missing(scale_axes)) new_args[["scale_axes"]] <- scale_axes
+  if (!missing(strict)) new_args[["strict"]] <- strict
+  job_input <- handle_job_input(job, new_args, c("mdim", "convert"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("mdim", "convert"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "mdim", "convert"), arguments = args)
+  new_gdal_job(command_path = c("mdim", "convert"), arguments = merged_args)
 }
 

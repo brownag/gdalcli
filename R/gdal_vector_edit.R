@@ -7,45 +7,53 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Edit metadata of a vector dataset.
-#' @param input_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input GDAL argument
-#' @param input_layer GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param layer_creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param update GDAL argument
-#' @param overwrite_layer GDAL argument
-#' @param append GDAL argument
-#' @param output_layer GDAL argument
-#' @param active_layer GDAL argument
-#' @param geometry_type GDAL argument
-#' @param crs GDAL argument
-#' @param metadata GDAL argument
-#' @param unset_metadata GDAL argument
-#' @param layer_metadata GDAL argument
-#' @param unset_layer_metadata GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vector_edit.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input vector datasets (required). Exactly `1` value(s)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param output_layer Output layer name
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
+#' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
+#' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
+#' @param active_layer Set active layer (if not specified, all)
+#' @param geometry_type Layer geometry type
+#' @param crs Override CRS (without reprojection)
+#' @param metadata Add/update dataset metadata item (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param unset_metadata Remove dataset metadata item (Character vector). Format: `KEY`. `0` to `2147483647` value(s)
+#' @param layer_metadata Add/update layer metadata item (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param unset_layer_metadata Remove layer metadata item (Character vector). Format: `KEY`. `0` to `2147483647` value(s)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vector_edit(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vector_edit(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vector_edit <- function(input_format = NULL,
-  open_option = NULL,
+gdal_vector_edit <- function(job = NULL,
   input,
+  input_format = NULL,
   input_layer = NULL,
+  output = NULL,
   output_format = NULL,
+  output_layer = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  output_layer = NULL,
   active_layer = NULL,
   geometry_type = NULL,
   crs = NULL,
@@ -53,28 +61,37 @@ gdal_vector_edit <- function(input_format = NULL,
   unset_metadata = NULL,
   layer_metadata = NULL,
   unset_layer_metadata = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(input_layer)) args[["input_layer"]] <- input_layer
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(layer_creation_option)) args[["layer_creation_option"]] <- layer_creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(update)) args[["update"]] <- update
-  if (!missing(overwrite_layer)) args[["overwrite_layer"]] <- overwrite_layer
-  if (!missing(append)) args[["append"]] <- append
-  if (!missing(output_layer)) args[["output_layer"]] <- output_layer
-  if (!missing(active_layer)) args[["active_layer"]] <- active_layer
-  if (!missing(geometry_type)) args[["geometry_type"]] <- geometry_type
-  if (!missing(crs)) args[["crs"]] <- crs
-  if (!missing(metadata)) args[["metadata"]] <- metadata
-  if (!missing(unset_metadata)) args[["unset_metadata"]] <- unset_metadata
-  if (!missing(layer_metadata)) args[["layer_metadata"]] <- layer_metadata
-  if (!missing(unset_layer_metadata)) args[["unset_layer_metadata"]] <- unset_layer_metadata
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(update)) new_args[["update"]] <- update
+  if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
+  if (!missing(append)) new_args[["append"]] <- append
+  if (!missing(active_layer)) new_args[["active_layer"]] <- active_layer
+  if (!missing(geometry_type)) new_args[["geometry_type"]] <- geometry_type
+  if (!missing(crs)) new_args[["crs"]] <- crs
+  if (!missing(metadata)) new_args[["metadata"]] <- metadata
+  if (!missing(unset_metadata)) new_args[["unset_metadata"]] <- unset_metadata
+  if (!missing(layer_metadata)) new_args[["layer_metadata"]] <- layer_metadata
+  if (!missing(unset_layer_metadata)) new_args[["unset_layer_metadata"]] <- unset_layer_metadata
+  job_input <- handle_job_input(job, new_args, c("vector", "edit"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vector", "edit"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vector", "edit"), arguments = args)
+  new_gdal_job(command_path = c("vector", "edit"), arguments = merged_args)
 }
 

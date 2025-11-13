@@ -5,8 +5,14 @@
 \title{Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.}
 \usage{
 gdal_driver_gti_create(
+  job = NULL,
   input = NULL,
+  min_pixel_size = NULL,
+  color_interpretation = NULL,
+  output = NULL,
   output_format = NULL,
+  dst_crs = NULL,
+  output_data_type = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
@@ -16,75 +22,75 @@ gdal_driver_gti_create(
   layer = NULL,
   recursive = FALSE,
   filename_filter = NULL,
-  min_pixel_size = NULL,
   max_pixel_size = NULL,
   location_name = NULL,
   absolute_path = FALSE,
-  dst_crs = NULL,
   metadata = NULL,
   xml_filename = NULL,
   resolution,
   bbox,
-  output_data_type = NULL,
   band_count = NULL,
   nodata = NULL,
-  color_interpretation = NULL,
   mask = FALSE,
   fetch_metadata = NULL
 )
 }
 \arguments{
-\item{input}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{output_format}{GDAL argument}
+\item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s)}
 
-\item{creation_option}{GDAL argument}
+\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
 
-\item{layer_creation_option}{GDAL argument}
+\item{color_interpretation}{Color interpretation(s) of the bands of the virtual mosaic (Character vector). Choices: red, green, blue, alpha, gray, .... \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{GDAL argument}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{update}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{overwrite_layer}{GDAL argument}
+\item{dst_crs}{Destination CRS}
 
-\item{append}{GDAL argument}
+\item{output_data_type}{Datatype of the virtual mosaic. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
 
-\item{layer}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{recursive}{GDAL argument}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{filename_filter}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{min_pixel_size}{GDAL argument}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{max_pixel_size}{GDAL argument}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{location_name}{GDAL argument}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{absolute_path}{GDAL argument}
+\item{layer}{Layer name}
 
-\item{dst_crs}{GDAL argument}
+\item{recursive}{Whether input directories should be explored recursively. (Logical)}
 
-\item{metadata}{GDAL argument}
+\item{filename_filter}{Pattern that the filenames in input directories should follow ('*' and '?' wildcard) (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{xml_filename}{GDAL argument}
+\item{max_pixel_size}{Maximum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
 
-\item{resolution}{GDAL argument}
+\item{location_name}{Name of the field with the raster path (Default: \code{location})}
 
-\item{bbox}{GDAL argument}
+\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
 
-\item{output_data_type}{GDAL argument}
+\item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{band_count}{GDAL argument}
+\item{xml_filename}{Filename of the XML Virtual Tile Index file to generate, that can be used as an input for the GDAL GTI / Virtual Raster Tile Index driver}
 
-\item{nodata}{GDAL argument}
+\item{resolution}{Resolution (in destination CRS units) of the virtual mosaic. Format: \verb{<xres>,<yres>}. Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{color_interpretation}{GDAL argument}
+\item{bbox}{Bounding box (in destination CRS units) of the virtual mosaic. Exactly \code{4} value(s)}
 
-\item{mask}{GDAL argument}
+\item{band_count}{Number of bands of the virtual mosaic (Integer). Minimum: \code{1}}
 
-\item{fetch_metadata}{GDAL argument}
+\item{nodata}{Nodata value(s) of the bands of the virtual mosaic. \code{0} to \code{2147483647} value(s)}
+
+\item{mask}{Defines that the virtual mosaic has a mask band (Logical)}
+
+\item{fetch_metadata}{Fetch a metadata item from source rasters and write it as a field in the index. (Character vector). Format: \verb{<gdal-metadata-name>,<field-name>,<field-type>}. \code{0} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -92,11 +98,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.
+
+See \url{https://gdal.org/en/stable/programs/gdal_driver_gti_create.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_driver_gti_create(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_driver_gti_create(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_driver_utilities: 

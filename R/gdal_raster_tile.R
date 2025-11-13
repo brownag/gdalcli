@@ -7,74 +7,80 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Generate tiles in separate files from a raster dataset.
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param output GDAL argument
-#' @param tiling_scheme GDAL argument
-#' @param min_zoom GDAL argument
-#' @param max_zoom GDAL argument
-#' @param min_x GDAL argument
-#' @param max_x GDAL argument
-#' @param min_y GDAL argument
-#' @param max_y GDAL argument
-#' @param no_intersection_ok GDAL argument
-#' @param resampling GDAL argument
-#' @param overview_resampling GDAL argument
-#' @param convention GDAL argument
-#' @param tile_size GDAL argument
-#' @param add_alpha GDAL argument
-#' @param no_alpha GDAL argument
-#' @param dst_nodata GDAL argument
-#' @param skip_blank GDAL argument
-#' @param metadata GDAL argument
-#' @param copy_src_metadata GDAL argument
-#' @param aux_xml GDAL argument
-#' @param kml GDAL argument
-#' @param resume GDAL argument
-#' @param num_threads GDAL argument
-#' @param excluded_values GDAL argument
-#' @param excluded_values_pct_threshold GDAL argument
-#' @param nodata_values_pct_threshold GDAL argument
-#' @param webviewer GDAL argument
-#' @param url GDAL argument
-#' @param title GDAL argument
-#' @param copyright GDAL argument
-#' @param mapml_template GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_tile.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param tiling_scheme Tiling scheme. Choices: raster, WebMercatorQuad, WorldCRS84Quad, WorldMercatorWGS84Quad, GoogleCRS84Quad, ... (Default: `WebMercatorQuad`)
+#' @param min_zoom Minimum zoom level (Integer). Minimum: `0`
+#' @param min_x Minimum tile X coordinate (Integer). Minimum: `0`
+#' @param min_y Minimum tile Y coordinate (Integer). Minimum: `0`
+#' @param no_intersection_ok Whether dataset extent not intersecting tile matrix is only a warning (Logical)
+#' @param resampling Resampling method for max zoom. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: `cubic`)
+#' @param overview_resampling Resampling method for overviews. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ...
+#' @param copy_src_metadata Whether to copy metadata from source dataset (Logical)
+#' @param output_format Output format (Default: `PNG`)
+#' @param output Output directory (required)
+#' @param dst_nodata Destination nodata value
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param max_zoom Maximum zoom level (Integer). Minimum: `0`
+#' @param max_x Maximum tile X coordinate (Integer). Minimum: `0`
+#' @param max_y Maximum tile Y coordinate (Integer). Minimum: `0`
+#' @param convention Tile numbering convention: xyz (from top) or tms (from bottom). Choices: xyz, tms (Default: `xyz`)
+#' @param tile_size Override default tile size (Integer). Range: (`64` to `32768`)
+#' @param add_alpha Whether to force adding an alpha channel (Logical)
+#' @param no_alpha Whether to disable adding an alpha channel (Logical)
+#' @param skip_blank Do not generate blank tiles (Logical)
+#' @param metadata Add metadata item to output tiles (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param aux_xml Generate .aux.xml sidecar files when needed (Logical)
+#' @param kml Generate KML files (Logical)
+#' @param resume Generate only missing files (Logical)
+#' @param num_threads Number of jobs (or ALL_CPUS) (Default: `ALL_CPUS`)
+#' @param excluded_values Tuples of values (e.g. <R>,<G>,<B> or (<R1>,<G1>,<B1>),(<R2>,<G2>,<B2>)) that must beignored as contributing source pixels during (average) resampling (Advanced Resampling)
+#' @param excluded_values_pct_threshold Minimum percentage of source pixels that must be set at one of the --excluded-values to cause the excluded value to be used as the target pixel value (Default: `50`). Range: (`0` to `100`) (Advanced Resampling)
+#' @param nodata_values_pct_threshold Minimum percentage of source pixels that must be set at one of nodata (or alpha=0 or any other way to express transparent pixelto cause the target pixel value to be transparent (Default: `100`). Range: (`0` to `100`) (Advanced Resampling)
+#' @param webviewer Web viewer to generate (Character vector). Choices: none, all, leaflet, openlayers, mapml (Default: `all`). `0` to `2147483647` value(s) (Publication)
+#' @param url URL address where the generated tiles are going to be published (Publication)
+#' @param title Title of the map (Publication)
+#' @param copyright Copyright for the map (Publication)
+#' @param mapml_template Filename of a template mapml file where variables will be substituted (Publication)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_tile(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_tile(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_tile <- function(open_option = NULL,
-  input_format = NULL,
+gdal_raster_tile <- function(job = NULL,
   input = NULL,
-  output_format = NULL,
-  creation_option = NULL,
-  output = NULL,
+  input_format = NULL,
   tiling_scheme = NULL,
   min_zoom = NULL,
-  max_zoom = NULL,
   min_x = NULL,
-  max_x = NULL,
   min_y = NULL,
-  max_y = NULL,
   no_intersection_ok = FALSE,
   resampling = NULL,
   overview_resampling = NULL,
+  copy_src_metadata = FALSE,
+  output_format = NULL,
+  output = NULL,
+  dst_nodata = NULL,
+  open_option = NULL,
+  creation_option = NULL,
+  max_zoom = NULL,
+  max_x = NULL,
+  max_y = NULL,
   convention = NULL,
   tile_size = NULL,
   add_alpha = FALSE,
   no_alpha = FALSE,
-  dst_nodata = NULL,
   skip_blank = FALSE,
   metadata = NULL,
-  copy_src_metadata = FALSE,
   aux_xml = FALSE,
   kml = FALSE,
   resume = FALSE,
@@ -87,45 +93,53 @@ gdal_raster_tile <- function(open_option = NULL,
   title = NULL,
   copyright = NULL,
   mapml_template = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(output)) args[["output"]] <- output
-  if (!missing(tiling_scheme)) args[["tiling_scheme"]] <- tiling_scheme
-  if (!missing(min_zoom)) args[["min_zoom"]] <- min_zoom
-  if (!missing(max_zoom)) args[["max_zoom"]] <- max_zoom
-  if (!missing(min_x)) args[["min_x"]] <- min_x
-  if (!missing(max_x)) args[["max_x"]] <- max_x
-  if (!missing(min_y)) args[["min_y"]] <- min_y
-  if (!missing(max_y)) args[["max_y"]] <- max_y
-  if (!missing(no_intersection_ok)) args[["no_intersection_ok"]] <- no_intersection_ok
-  if (!missing(resampling)) args[["resampling"]] <- resampling
-  if (!missing(overview_resampling)) args[["overview_resampling"]] <- overview_resampling
-  if (!missing(convention)) args[["convention"]] <- convention
-  if (!missing(tile_size)) args[["tile_size"]] <- tile_size
-  if (!missing(add_alpha)) args[["add_alpha"]] <- add_alpha
-  if (!missing(no_alpha)) args[["no_alpha"]] <- no_alpha
-  if (!missing(dst_nodata)) args[["dst_nodata"]] <- dst_nodata
-  if (!missing(skip_blank)) args[["skip_blank"]] <- skip_blank
-  if (!missing(metadata)) args[["metadata"]] <- metadata
-  if (!missing(copy_src_metadata)) args[["copy_src_metadata"]] <- copy_src_metadata
-  if (!missing(aux_xml)) args[["aux_xml"]] <- aux_xml
-  if (!missing(kml)) args[["kml"]] <- kml
-  if (!missing(resume)) args[["resume"]] <- resume
-  if (!missing(num_threads)) args[["num_threads"]] <- num_threads
-  if (!missing(excluded_values)) args[["excluded_values"]] <- excluded_values
-  if (!missing(excluded_values_pct_threshold)) args[["excluded_values_pct_threshold"]] <- excluded_values_pct_threshold
-  if (!missing(nodata_values_pct_threshold)) args[["nodata_values_pct_threshold"]] <- nodata_values_pct_threshold
-  if (!missing(webviewer)) args[["webviewer"]] <- webviewer
-  if (!missing(url)) args[["url"]] <- url
-  if (!missing(title)) args[["title"]] <- title
-  if (!missing(copyright)) args[["copyright"]] <- copyright
-  if (!missing(mapml_template)) args[["mapml_template"]] <- mapml_template
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(tiling_scheme)) new_args[["tiling_scheme"]] <- tiling_scheme
+  if (!missing(min_zoom)) new_args[["min_zoom"]] <- min_zoom
+  if (!missing(min_x)) new_args[["min_x"]] <- min_x
+  if (!missing(min_y)) new_args[["min_y"]] <- min_y
+  if (!missing(no_intersection_ok)) new_args[["no_intersection_ok"]] <- no_intersection_ok
+  if (!missing(resampling)) new_args[["resampling"]] <- resampling
+  if (!missing(overview_resampling)) new_args[["overview_resampling"]] <- overview_resampling
+  if (!missing(copy_src_metadata)) new_args[["copy_src_metadata"]] <- copy_src_metadata
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(max_zoom)) new_args[["max_zoom"]] <- max_zoom
+  if (!missing(max_x)) new_args[["max_x"]] <- max_x
+  if (!missing(max_y)) new_args[["max_y"]] <- max_y
+  if (!missing(convention)) new_args[["convention"]] <- convention
+  if (!missing(tile_size)) new_args[["tile_size"]] <- tile_size
+  if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
+  if (!missing(no_alpha)) new_args[["no_alpha"]] <- no_alpha
+  if (!missing(skip_blank)) new_args[["skip_blank"]] <- skip_blank
+  if (!missing(metadata)) new_args[["metadata"]] <- metadata
+  if (!missing(aux_xml)) new_args[["aux_xml"]] <- aux_xml
+  if (!missing(kml)) new_args[["kml"]] <- kml
+  if (!missing(resume)) new_args[["resume"]] <- resume
+  if (!missing(num_threads)) new_args[["num_threads"]] <- num_threads
+  if (!missing(excluded_values)) new_args[["excluded_values"]] <- excluded_values
+  if (!missing(excluded_values_pct_threshold)) new_args[["excluded_values_pct_threshold"]] <- excluded_values_pct_threshold
+  if (!missing(nodata_values_pct_threshold)) new_args[["nodata_values_pct_threshold"]] <- nodata_values_pct_threshold
+  if (!missing(webviewer)) new_args[["webviewer"]] <- webviewer
+  if (!missing(url)) new_args[["url"]] <- url
+  if (!missing(title)) new_args[["title"]] <- title
+  if (!missing(copyright)) new_args[["copyright"]] <- copyright
+  if (!missing(mapml_template)) new_args[["mapml_template"]] <- mapml_template
+  job_input <- handle_job_input(job, new_args, c("raster", "tile"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "tile"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "tile"), arguments = args)
+  new_gdal_job(command_path = c("raster", "tile"), arguments = merged_args)
 }
 

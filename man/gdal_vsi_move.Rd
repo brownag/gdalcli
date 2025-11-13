@@ -4,12 +4,14 @@
 \alias{gdal_vsi_move}
 \title{Move/rename a file/directory located on GDAL Virtual System Interface (VSI).}
 \usage{
-gdal_vsi_move(source = NULL, destination = NULL)
+gdal_vsi_move(job = NULL, source = NULL, destination = NULL)
 }
 \arguments{
-\item{source}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{destination}{GDAL argument}
+\item{source}{Source file or directory name (required)}
+
+\item{destination}{Destination file or directory name (required)}
 }
 \value{
 A \link{gdal_job} object.
@@ -17,11 +19,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_move.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_move(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_move(source = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

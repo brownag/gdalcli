@@ -7,25 +7,31 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Edit a raster dataset.
-#' @param dataset GDAL argument
-#' @param auxiliary GDAL argument
-#' @param crs GDAL argument
-#' @param bbox GDAL argument
-#' @param nodata GDAL argument
-#' @param metadata GDAL argument
-#' @param unset_metadata GDAL argument
-#' @param stats GDAL argument
-#' @param approx_stats GDAL argument
-#' @param hist GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_edit.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param dataset Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required)
+#' @param auxiliary Ask for an auxiliary .aux.xml file to be edited (Logical)
+#' @param crs Override CRS (without reprojection)
+#' @param bbox Bounding box as xmin,ymin,xmax,ymax. Exactly `4` value(s)
+#' @param nodata Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')
+#' @param metadata Add/update dataset metadata item (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param unset_metadata Remove dataset metadata item (Character vector). Format: `KEY`. `0` to `2147483647` value(s)
+#' @param stats Compute statistics, using all pixels (Logical)
+#' @param approx_stats Compute statistics, using a subset of pixels (Logical)
+#' @param hist Compute histogram (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_edit(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_edit(dataset = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_edit <- function(dataset = NULL,
+gdal_raster_edit <- function(job = NULL,
+  dataset = NULL,
   auxiliary = FALSE,
   crs = NULL,
   bbox,
@@ -35,19 +41,27 @@ gdal_raster_edit <- function(dataset = NULL,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(dataset)) args[["dataset"]] <- dataset
-  if (!missing(auxiliary)) args[["auxiliary"]] <- auxiliary
-  if (!missing(crs)) args[["crs"]] <- crs
-  if (!missing(bbox)) args[["bbox"]] <- bbox
-  if (!missing(nodata)) args[["nodata"]] <- nodata
-  if (!missing(metadata)) args[["metadata"]] <- metadata
-  if (!missing(unset_metadata)) args[["unset_metadata"]] <- unset_metadata
-  if (!missing(stats)) args[["stats"]] <- stats
-  if (!missing(approx_stats)) args[["approx_stats"]] <- approx_stats
-  if (!missing(hist)) args[["hist"]] <- hist
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(dataset)) new_args[["dataset"]] <- dataset
+  if (!missing(auxiliary)) new_args[["auxiliary"]] <- auxiliary
+  if (!missing(crs)) new_args[["crs"]] <- crs
+  if (!missing(bbox)) new_args[["bbox"]] <- bbox
+  if (!missing(nodata)) new_args[["nodata"]] <- nodata
+  if (!missing(metadata)) new_args[["metadata"]] <- metadata
+  if (!missing(unset_metadata)) new_args[["unset_metadata"]] <- unset_metadata
+  if (!missing(stats)) new_args[["stats"]] <- stats
+  if (!missing(approx_stats)) new_args[["approx_stats"]] <- approx_stats
+  if (!missing(hist)) new_args[["hist"]] <- hist
+  job_input <- handle_job_input(job, new_args, c("raster", "edit"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "edit"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "edit"), arguments = args)
+  new_gdal_job(command_path = c("raster", "edit"), arguments = merged_args)
 }
 

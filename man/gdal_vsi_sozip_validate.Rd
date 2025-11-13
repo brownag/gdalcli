@@ -4,12 +4,14 @@
 \alias{gdal_vsi_sozip_validate}
 \title{Validate a ZIP file, possibly using SOZIP optimization.}
 \usage{
-gdal_vsi_sozip_validate(input = NULL, stdout = FALSE)
+gdal_vsi_sozip_validate(job = NULL, input = NULL, stdout = FALSE)
 }
 \arguments{
-\item{input}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{stdout}{GDAL argument}
+\item{input}{Input ZIP filename (required)}
+
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -17,11 +19,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Validate a ZIP file, possibly using SOZIP optimization.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_sozip_validate(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_sozip_validate(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

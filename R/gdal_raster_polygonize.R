@@ -7,32 +7,40 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Create a polygon feature dataset from a raster band.
-#' @param output_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param creation_option GDAL argument
-#' @param layer_creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param update GDAL argument
-#' @param overwrite_layer GDAL argument
-#' @param append GDAL argument
-#' @param band GDAL argument
-#' @param layer GDAL argument
-#' @param attribute_name GDAL argument
-#' @param connect_diagonal_pixels GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output vector dataset (Dataset path) (required)
+#' @param output_format Output format
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
+#' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
+#' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
+#' @param band Input band (1-based index) (Integer) (Default: `1`)
+#' @param layer Layer name (Default: `polygonize`)
+#' @param attribute_name Name of the field with the pixel value (Default: `DN`)
+#' @param connect_diagonal_pixels Consider diagonal pixels as connected (Logical) (Default: `false`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_polygonize(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_polygonize(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_polygonize <- function(output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+gdal_raster_polygonize <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
+  output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
@@ -43,23 +51,32 @@ gdal_raster_polygonize <- function(output_format = NULL,
   layer = NULL,
   attribute_name = NULL,
   connect_diagonal_pixels = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(layer_creation_option)) args[["layer_creation_option"]] <- layer_creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(update)) args[["update"]] <- update
-  if (!missing(overwrite_layer)) args[["overwrite_layer"]] <- overwrite_layer
-  if (!missing(append)) args[["append"]] <- append
-  if (!missing(band)) args[["band"]] <- band
-  if (!missing(layer)) args[["layer"]] <- layer
-  if (!missing(attribute_name)) args[["attribute_name"]] <- attribute_name
-  if (!missing(connect_diagonal_pixels)) args[["connect_diagonal_pixels"]] <- connect_diagonal_pixels
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(update)) new_args[["update"]] <- update
+  if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
+  if (!missing(append)) new_args[["append"]] <- append
+  if (!missing(band)) new_args[["band"]] <- band
+  if (!missing(layer)) new_args[["layer"]] <- layer
+  if (!missing(attribute_name)) new_args[["attribute_name"]] <- attribute_name
+  if (!missing(connect_diagonal_pixels)) new_args[["connect_diagonal_pixels"]] <- connect_diagonal_pixels
+  job_input <- handle_job_input(job, new_args, c("raster", "polygonize"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "polygonize"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "polygonize"), arguments = args)
+  new_gdal_job(command_path = c("raster", "polygonize"), arguments = merged_args)
 }
 

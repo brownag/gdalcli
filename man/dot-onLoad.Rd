@@ -2,18 +2,12 @@
 % Please edit documentation in R/zzz.R
 \name{.onLoad}
 \alias{.onLoad}
-\title{Package Load Hook for Dynamic GDAL API}
+\title{Package Load Hook}
 \usage{
 .onLoad(libname, pkgname)
 }
 \description{
-This file contains the \code{.onLoad} hook that initializes the dynamic GDAL API
-when the gdalcli package is loaded. It handles:
-\itemize{
-\item Dependency validation (gdalraster availability)
-\item GDAL version checking (>= 3.11)
-\item Version-aware caching for fast subsequent loads
-\item Namespace assignment of the \code{gdal} object
-}
+Minimal onLoad hook. The gdalcli package uses a static API of pre-generated
+functions for a specific GDAL version. No runtime API generation occurs.
 }
 \keyword{internal}

@@ -5,32 +5,38 @@
 \title{Perform raster algebra}
 \usage{
 gdal_raster_calc(
+  job = NULL,
   input,
+  output = NULL,
   output_format = NULL,
+  output_data_type = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  output_data_type = NULL,
   no_check_srs = FALSE,
   no_check_extent = FALSE,
   calc
 )
 }
 \arguments{
-\item{input}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{output_format}{GDAL argument}
+\item{input}{Input raster datasets (Character vector). Format: \code{INPUTS} (required). \code{1} to \code{2147483647} value(s)}
 
-\item{creation_option}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{overwrite}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_data_type}{GDAL argument}
+\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
 
-\item{no_check_srs}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{no_check_extent}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{calc}{GDAL argument}
+\item{no_check_srs}{Do not check consistency of input spatial reference systems (Logical)}
+
+\item{no_check_extent}{Do not check consistency of input extents (Logical)}
+
+\item{calc}{Expression(s) to evaluate (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,11 +44,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Perform raster algebra
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_calc.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_calc(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_calc(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

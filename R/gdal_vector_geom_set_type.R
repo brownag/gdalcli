@@ -7,86 +7,103 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Modify the geometry type of a vector dataset.
-#' @param input_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input GDAL argument
-#' @param input_layer GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param layer_creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param update GDAL argument
-#' @param overwrite_layer GDAL argument
-#' @param append GDAL argument
-#' @param output_layer GDAL argument
-#' @param active_layer GDAL argument
-#' @param active_geometry GDAL argument
-#' @param layer_only GDAL argument
-#' @param feature_only GDAL argument
-#' @param geometry_type GDAL argument
-#' @param multi GDAL argument
-#' @param single GDAL argument
-#' @param linear GDAL argument
-#' @param curve GDAL argument
-#' @param dim GDAL argument
-#' @param skip GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_set-type.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input vector datasets (required). Exactly `1` value(s)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
+#' @param single Force geometries to non-MULTI geometry types (Logical)
+#' @param linear Convert curve geometries to linear types (Logical)
+#' @param output Output vector dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param output_layer Output layer name
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
+#' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
+#' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
+#' @param active_layer Set active layer (if not specified, all)
+#' @param active_geometry Geometry field name to which to restrict the processing (if not specified, all)
+#' @param layer_only Only modify the layer geometry type (Logical)
+#' @param feature_only Only modify the geometry type of features (Logical)
+#' @param geometry_type Geometry type
+#' @param multi Force geometries to MULTI geometry types (Logical)
+#' @param curve Convert linear geometries to curve types (Logical)
+#' @param dim Force geometries to the specified dimension. Choices: XY, XYZ, XYM, XYZM
+#' @param skip Skip feature when change of feature geometry type failed (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vector_geom_set_type(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vector_geom_set_type(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vector_geom_set_type <- function(input_format = NULL,
-  open_option = NULL,
+gdal_vector_geom_set_type <- function(job = NULL,
   input,
+  input_format = NULL,
   input_layer = NULL,
+  single = FALSE,
+  linear = FALSE,
+  output = NULL,
   output_format = NULL,
+  output_layer = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  output_layer = NULL,
   active_layer = NULL,
   active_geometry = NULL,
   layer_only = FALSE,
   feature_only = FALSE,
   geometry_type = NULL,
   multi = FALSE,
-  single = FALSE,
-  linear = FALSE,
   curve = FALSE,
   dim = NULL,
   skip = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(input_layer)) args[["input_layer"]] <- input_layer
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(layer_creation_option)) args[["layer_creation_option"]] <- layer_creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(update)) args[["update"]] <- update
-  if (!missing(overwrite_layer)) args[["overwrite_layer"]] <- overwrite_layer
-  if (!missing(append)) args[["append"]] <- append
-  if (!missing(output_layer)) args[["output_layer"]] <- output_layer
-  if (!missing(active_layer)) args[["active_layer"]] <- active_layer
-  if (!missing(active_geometry)) args[["active_geometry"]] <- active_geometry
-  if (!missing(layer_only)) args[["layer_only"]] <- layer_only
-  if (!missing(feature_only)) args[["feature_only"]] <- feature_only
-  if (!missing(geometry_type)) args[["geometry_type"]] <- geometry_type
-  if (!missing(multi)) args[["multi"]] <- multi
-  if (!missing(single)) args[["single"]] <- single
-  if (!missing(linear)) args[["linear"]] <- linear
-  if (!missing(curve)) args[["curve"]] <- curve
-  if (!missing(dim)) args[["dim"]] <- dim
-  if (!missing(skip)) args[["skip"]] <- skip
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
+  if (!missing(single)) new_args[["single"]] <- single
+  if (!missing(linear)) new_args[["linear"]] <- linear
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(update)) new_args[["update"]] <- update
+  if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
+  if (!missing(append)) new_args[["append"]] <- append
+  if (!missing(active_layer)) new_args[["active_layer"]] <- active_layer
+  if (!missing(active_geometry)) new_args[["active_geometry"]] <- active_geometry
+  if (!missing(layer_only)) new_args[["layer_only"]] <- layer_only
+  if (!missing(feature_only)) new_args[["feature_only"]] <- feature_only
+  if (!missing(geometry_type)) new_args[["geometry_type"]] <- geometry_type
+  if (!missing(multi)) new_args[["multi"]] <- multi
+  if (!missing(curve)) new_args[["curve"]] <- curve
+  if (!missing(dim)) new_args[["dim"]] <- dim
+  if (!missing(skip)) new_args[["skip"]] <- skip
+  job_input <- handle_job_input(job, new_args, c("vector", "geom", "set-type"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vector", "geom", "set-type"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vector", "geom", "set-type"), arguments = args)
+  new_gdal_job(command_path = c("vector", "geom", "set-type"), arguments = merged_args)
 }
 

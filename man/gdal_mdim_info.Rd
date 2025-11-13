@@ -5,35 +5,38 @@
 \title{Return information on a multidimensional dataset.}
 \usage{
 gdal_mdim_info(
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  stdout = FALSE,
+  open_option = NULL,
   detailed = FALSE,
   array = NULL,
   limit = NULL,
   array_option = NULL,
-  stats = FALSE,
-  stdout = FALSE
+  stats = FALSE
 )
 }
 \arguments{
-\item{open_option}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{input_format}{GDAL argument}
+\item{input}{Input multidimensional raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{detailed}{GDAL argument}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 
-\item{array}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{limit}{GDAL argument}
+\item{detailed}{Most verbose output. Report attribute data types and array values. (Logical)}
 
-\item{array_option}{GDAL argument}
+\item{array}{Name of the array, used to restrict the output to the specified array.}
 
-\item{stats}{GDAL argument}
+\item{limit}{Number of values in each dimension that is used to limit the display of array values. (Integer)}
 
-\item{stdout}{GDAL argument}
+\item{array_option}{Option passed to GDALGroup::GetMDArrayNames() to filter reported arrays. (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+
+\item{stats}{Read and display image statistics. (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -41,11 +44,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Return information on a multidimensional dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_mdim_info(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_mdim_info(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_mdim_utilities: 

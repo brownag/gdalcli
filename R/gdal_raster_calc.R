@@ -7,41 +7,58 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Perform raster algebra
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param output_data_type GDAL argument
-#' @param no_check_srs GDAL argument
-#' @param no_check_extent GDAL argument
-#' @param calc GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_calc.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster datasets (Character vector). Format: `INPUTS` (required). `1` to `2147483647` value(s)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param no_check_srs Do not check consistency of input spatial reference systems (Logical)
+#' @param no_check_extent Do not check consistency of input extents (Logical)
+#' @param calc Expression(s) to evaluate (Character vector) (required). `1` to `2147483647` value(s)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_calc(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_calc(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_calc <- function(input,
+gdal_raster_calc <- function(job = NULL,
+  input,
+  output = NULL,
   output_format = NULL,
+  output_data_type = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  output_data_type = NULL,
   no_check_srs = FALSE,
   no_check_extent = FALSE,
   calc) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(output_data_type)) args[["output_data_type"]] <- output_data_type
-  if (!missing(no_check_srs)) args[["no_check_srs"]] <- no_check_srs
-  if (!missing(no_check_extent)) args[["no_check_extent"]] <- no_check_extent
-  if (!missing(calc)) args[["calc"]] <- calc
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(no_check_srs)) new_args[["no_check_srs"]] <- no_check_srs
+  if (!missing(no_check_extent)) new_args[["no_check_extent"]] <- no_check_extent
+  if (!missing(calc)) new_args[["calc"]] <- calc
+  job_input <- handle_job_input(job, new_args, c("raster", "calc"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "calc"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "calc"), arguments = args)
+  new_gdal_job(command_path = c("raster", "calc"), arguments = merged_args)
 }
 

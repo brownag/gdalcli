@@ -5,30 +5,31 @@
 \title{Generate tiles in separate files from a raster dataset.}
 \usage{
 gdal_raster_tile(
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
-  output_format = NULL,
-  creation_option = NULL,
-  output = NULL,
+  input_format = NULL,
   tiling_scheme = NULL,
   min_zoom = NULL,
-  max_zoom = NULL,
   min_x = NULL,
-  max_x = NULL,
   min_y = NULL,
-  max_y = NULL,
   no_intersection_ok = FALSE,
   resampling = NULL,
   overview_resampling = NULL,
+  copy_src_metadata = FALSE,
+  output_format = NULL,
+  output = NULL,
+  dst_nodata = NULL,
+  open_option = NULL,
+  creation_option = NULL,
+  max_zoom = NULL,
+  max_x = NULL,
+  max_y = NULL,
   convention = NULL,
   tile_size = NULL,
   add_alpha = FALSE,
   no_alpha = FALSE,
-  dst_nodata = NULL,
   skip_blank = FALSE,
   metadata = NULL,
-  copy_src_metadata = FALSE,
   aux_xml = FALSE,
   kml = FALSE,
   resume = FALSE,
@@ -44,77 +45,79 @@ gdal_raster_tile(
 )
 }
 \arguments{
-\item{open_option}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{input_format}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{tiling_scheme}{Tiling scheme. Choices: raster, WebMercatorQuad, WorldCRS84Quad, WorldMercatorWGS84Quad, GoogleCRS84Quad, ... (Default: \code{WebMercatorQuad})}
 
-\item{creation_option}{GDAL argument}
+\item{min_zoom}{Minimum zoom level (Integer). Minimum: \code{0}}
 
-\item{output}{GDAL argument}
+\item{min_x}{Minimum tile X coordinate (Integer). Minimum: \code{0}}
 
-\item{tiling_scheme}{GDAL argument}
+\item{min_y}{Minimum tile Y coordinate (Integer). Minimum: \code{0}}
 
-\item{min_zoom}{GDAL argument}
+\item{no_intersection_ok}{Whether dataset extent not intersecting tile matrix is only a warning (Logical)}
 
-\item{max_zoom}{GDAL argument}
+\item{resampling}{Resampling method for max zoom. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{cubic})}
 
-\item{min_x}{GDAL argument}
+\item{overview_resampling}{Resampling method for overviews. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ...}
 
-\item{max_x}{GDAL argument}
+\item{copy_src_metadata}{Whether to copy metadata from source dataset (Logical)}
 
-\item{min_y}{GDAL argument}
+\item{output_format}{Output format (Default: \code{PNG})}
 
-\item{max_y}{GDAL argument}
+\item{output}{Output directory (required)}
 
-\item{no_intersection_ok}{GDAL argument}
+\item{dst_nodata}{Destination nodata value}
 
-\item{resampling}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{overview_resampling}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{convention}{GDAL argument}
+\item{max_zoom}{Maximum zoom level (Integer). Minimum: \code{0}}
 
-\item{tile_size}{GDAL argument}
+\item{max_x}{Maximum tile X coordinate (Integer). Minimum: \code{0}}
 
-\item{add_alpha}{GDAL argument}
+\item{max_y}{Maximum tile Y coordinate (Integer). Minimum: \code{0}}
 
-\item{no_alpha}{GDAL argument}
+\item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: xyz, tms (Default: \code{xyz})}
 
-\item{dst_nodata}{GDAL argument}
+\item{tile_size}{Override default tile size (Integer). Range: (\code{64} to \code{32768})}
 
-\item{skip_blank}{GDAL argument}
+\item{add_alpha}{Whether to force adding an alpha channel (Logical)}
 
-\item{metadata}{GDAL argument}
+\item{no_alpha}{Whether to disable adding an alpha channel (Logical)}
 
-\item{copy_src_metadata}{GDAL argument}
+\item{skip_blank}{Do not generate blank tiles (Logical)}
 
-\item{aux_xml}{GDAL argument}
+\item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{kml}{GDAL argument}
+\item{aux_xml}{Generate .aux.xml sidecar files when needed (Logical)}
 
-\item{resume}{GDAL argument}
+\item{kml}{Generate KML files (Logical)}
 
-\item{num_threads}{GDAL argument}
+\item{resume}{Generate only missing files (Logical)}
 
-\item{excluded_values}{GDAL argument}
+\item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{ALL_CPUS})}
 
-\item{excluded_values_pct_threshold}{GDAL argument}
+\item{excluded_values}{Tuples of values (e.g. \if{html}{\out{<R>}},\if{html}{\out{<G>}},\if{html}{\out{<B>}} or (\if{html}{\out{<R1>}},\if{html}{\out{<G1>}},\if{html}{\out{<B1>}}),(\if{html}{\out{<R2>}},\if{html}{\out{<G2>}},\if{html}{\out{<B2>}})) that must beignored as contributing source pixels during (average) resampling (Advanced Resampling)}
 
-\item{nodata_values_pct_threshold}{GDAL argument}
+\item{excluded_values_pct_threshold}{Minimum percentage of source pixels that must be set at one of the --excluded-values to cause the excluded value to be used as the target pixel value (Default: \code{50}). Range: (\code{0} to \code{100}) (Advanced Resampling)}
 
-\item{webviewer}{GDAL argument}
+\item{nodata_values_pct_threshold}{Minimum percentage of source pixels that must be set at one of nodata (or alpha=0 or any other way to express transparent pixelto cause the target pixel value to be transparent (Default: \code{100}). Range: (\code{0} to \code{100}) (Advanced Resampling)}
 
-\item{url}{GDAL argument}
+\item{webviewer}{Web viewer to generate (Character vector). Choices: none, all, leaflet, openlayers, mapml (Default: \code{all}). \code{0} to \code{2147483647} value(s) (Publication)}
 
-\item{title}{GDAL argument}
+\item{url}{URL address where the generated tiles are going to be published (Publication)}
 
-\item{copyright}{GDAL argument}
+\item{title}{Title of the map (Publication)}
 
-\item{mapml_template}{GDAL argument}
+\item{copyright}{Copyright for the map (Publication)}
+
+\item{mapml_template}{Filename of a template mapml file where variables will be substituted (Publication)}
 }
 \value{
 A \link{gdal_job} object.
@@ -122,11 +125,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Generate tiles in separate files from a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_tile.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_tile(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_tile(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

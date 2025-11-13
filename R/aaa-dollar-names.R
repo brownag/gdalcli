@@ -3,7 +3,7 @@
 #' @description
 #' S3 methods that enable IDE autocompletion for the dynamic GDAL API.
 #' These methods are called by RStudio, VSCode, and Emacs to provide
-#' tab-completion suggestions when typing `gdal$` or `gdal$raster$`.
+#' tab-completion suggestions when typing `gdal.alg$` or `gdal.alg$raster$`.
 #'
 #' @details
 #' The `.DollarNames` S3 generic is part of the R autocompletion system.
@@ -12,6 +12,8 @@
 #'
 #' **Important:** We avoid calling `NextMethod()` to work around a known
 #' RStudio bug with R6 method dispatch in autocompletion context.
+#'
+#' @importFrom utils .DollarNames
 #'
 #' @keywords internal
 

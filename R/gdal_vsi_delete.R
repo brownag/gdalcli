@@ -7,23 +7,37 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Delete files located on GDAL Virtual System Interface (VSI).
-#' @param filename GDAL argument
-#' @param recursive GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param filename File or directory name to delete (required)
+#' @param recursive Delete directories recursively (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vsi_delete(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vsi_delete(filename = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vsi_delete <- function(filename = NULL,
+gdal_vsi_delete <- function(job = NULL,
+  filename = NULL,
   recursive = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(filename)) args[["filename"]] <- filename
-  if (!missing(recursive)) args[["recursive"]] <- recursive
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(filename)) new_args[["filename"]] <- filename
+  if (!missing(recursive)) new_args[["recursive"]] <- recursive
+  job_input <- handle_job_input(job, new_args, c("vsi", "delete"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vsi", "delete"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vsi", "delete"), arguments = args)
+  new_gdal_job(command_path = c("vsi", "delete"), arguments = merged_args)
 }
 

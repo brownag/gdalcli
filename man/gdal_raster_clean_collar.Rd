@@ -5,10 +5,12 @@
 \title{Clean the collar of a raster dataset, removing noise.}
 \usage{
 gdal_raster_clean_collar(
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   update = FALSE,
@@ -21,31 +23,35 @@ gdal_raster_clean_collar(
 )
 }
 \arguments{
-\item{open_option}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{input_format}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path)}
 
-\item{creation_option}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{overwrite}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{update}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{color}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{color_threshold}{GDAL argument}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{pixel_distance}{GDAL argument}
+\item{color}{Transparent color(s): tuple of integer (like 'r,g,b'), 'black', 'white' (Character vector) (Default: \code{black}). \code{0} to \code{2147483647} value(s)}
 
-\item{add_alpha}{GDAL argument}
+\item{color_threshold}{Select how far from specified transparent colors the pixel values are considered transparent. (Integer) (Default: \code{15}). Minimum: \code{0}}
 
-\item{add_mask}{GDAL argument}
+\item{pixel_distance}{Number of consecutive transparent pixels that can be encountered before the giving up search inwards. (Integer) (Default: \code{2}). Minimum: \code{0}}
 
-\item{algorithm}{GDAL argument}
+\item{add_alpha}{Adds an alpha band to the output dataset. (Logical)}
+
+\item{add_mask}{Adds a mask band to the output dataset. (Logical)}
+
+\item{algorithm}{Algorithm to apply. Choices: floodfill, twopasses (Default: \code{floodfill})}
 }
 \value{
 A \link{gdal_job} object.
@@ -53,11 +59,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Clean the collar of a raster dataset, removing noise.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_clean_collar(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_clean_collar(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

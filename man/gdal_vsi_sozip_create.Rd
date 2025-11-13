@@ -5,38 +5,41 @@
 \title{Create a Seek-optimized ZIP (SOZIP) file.}
 \usage{
 gdal_vsi_sozip_create(
+  job = NULL,
   input = NULL,
+  sozip_min_file_size = NULL,
   output = NULL,
+  stdout = FALSE,
   overwrite = FALSE,
   recursive = FALSE,
   no_paths = FALSE,
   enable_sozip = NULL,
   sozip_chunk_size = NULL,
-  sozip_min_file_size = NULL,
-  content_type = NULL,
-  stdout = FALSE
+  content_type = NULL
 )
 }
 \arguments{
-\item{input}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{output}{GDAL argument}
+\item{input}{Input filenames (Character vector) (required). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{GDAL argument}
+\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
 
-\item{recursive}{GDAL argument}
+\item{output}{Output ZIP filename (required)}
 
-\item{no_paths}{GDAL argument}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 
-\item{enable_sozip}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{sozip_chunk_size}{GDAL argument}
+\item{recursive}{Travels the directory structure of the specified directories recursively (Logical)}
 
-\item{sozip_min_file_size}{GDAL argument}
+\item{no_paths}{Store just the name of a saved file, and do not store directory names (Logical)}
 
-\item{content_type}{GDAL argument}
+\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP optimization. Choices: auto, yes, no (Default: \code{auto})}
 
-\item{stdout}{GDAL argument}
+\item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix} (Default: \code{32768})}
+
+\item{content_type}{Store the Content-Type of the file being added.}
 }
 \value{
 A \link{gdal_job} object.
@@ -44,11 +47,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Create a Seek-optimized ZIP (SOZIP) file.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_create.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_sozip_create(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_sozip_create(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

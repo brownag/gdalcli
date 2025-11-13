@@ -5,80 +5,86 @@
 \title{Compute the footprint of a raster dataset.}
 \usage{
 gdal_raster_footprint(
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  combine_bands = NULL,
+  src_nodata,
+  coordinate_system = NULL,
+  min_ring_area = NULL,
+  max_points = NULL,
+  output = NULL,
   output_format = NULL,
   output_layer = NULL,
+  dst_crs = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   append = FALSE,
   overwrite = FALSE,
   band = NULL,
-  combine_bands = NULL,
   overview = NULL,
-  src_nodata,
-  coordinate_system = NULL,
-  dst_crs = NULL,
   split_multipolygons = FALSE,
   convex_hull = FALSE,
   densify_distance = NULL,
   simplify_tolerance = NULL,
-  min_ring_area = NULL,
-  max_points = NULL,
   location_field = NULL,
   no_location_field = FALSE,
   absolute_path = FALSE
 )
 }
 \arguments{
-\item{open_option}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{input_format}{GDAL argument}
+\item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{GDAL argument}
+\item{combine_bands}{Defines how the mask bands of the selected bands are combined to generate a single mask band, before being vectorized.. Choices: union, intersection (Default: \code{union})}
 
-\item{output_layer}{GDAL argument}
+\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
 
-\item{creation_option}{GDAL argument}
+\item{coordinate_system}{Target coordinate system. Choices: georeferenced, pixel}
 
-\item{layer_creation_option}{GDAL argument}
+\item{min_ring_area}{Minimum value for the area of a ring. Minimum: \code{0}}
 
-\item{append}{GDAL argument}
+\item{max_points}{Maximum number of points of each output geometry (Default: \code{100})}
 
-\item{overwrite}{GDAL argument}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{band}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{combine_bands}{GDAL argument}
+\item{output_layer}{Output layer name (Default: \code{footprint})}
 
-\item{overview}{GDAL argument}
+\item{dst_crs}{Destination CRS}
 
-\item{src_nodata}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{coordinate_system}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{dst_crs}{GDAL argument}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{split_multipolygons}{GDAL argument}
+\item{append}{Whether to append to an existing dataset (Logical) (Default: \code{false})}
 
-\item{convex_hull}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{densify_distance}{GDAL argument}
+\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
-\item{simplify_tolerance}{GDAL argument}
+\item{overview}{Which overview level of source file must be used (Integer). Minimum: \code{0}}
 
-\item{min_ring_area}{GDAL argument}
+\item{split_multipolygons}{Whether to split multipolygons as several features each with one single polygon (Logical)}
 
-\item{max_points}{GDAL argument}
+\item{convex_hull}{Whether to compute the convex hull of the footprint (Logical)}
 
-\item{location_field}{GDAL argument}
+\item{densify_distance}{Maximum distance between 2 consecutive points of the output geometry.. Minimum: \code{0}}
 
-\item{no_location_field}{GDAL argument}
+\item{simplify_tolerance}{Tolerance used to merge consecutive points of the output geometry.. Minimum: \code{0}}
 
-\item{absolute_path}{GDAL argument}
+\item{location_field}{Name of the field where the path of the input dataset will be stored. (Default: \code{location})}
+
+\item{no_location_field}{Disable creating a field with the path of the input dataset (Logical)}
+
+\item{absolute_path}{Whether the path to the input dataset should be stored as an absolute path (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -86,11 +92,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Compute the footprint of a raster dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_raster_footprint(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_raster_footprint(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -5,77 +5,83 @@
 \title{Modify the geometry type of a vector dataset.}
 \usage{
 gdal_vector_geom_set_type(
-  input_format = NULL,
-  open_option = NULL,
+  job = NULL,
   input,
+  input_format = NULL,
   input_layer = NULL,
+  single = FALSE,
+  linear = FALSE,
+  output = NULL,
   output_format = NULL,
+  output_layer = NULL,
+  open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  output_layer = NULL,
   active_layer = NULL,
   active_geometry = NULL,
   layer_only = FALSE,
   feature_only = FALSE,
   geometry_type = NULL,
   multi = FALSE,
-  single = FALSE,
-  linear = FALSE,
   curve = FALSE,
   dim = NULL,
   skip = FALSE
 )
 }
 \arguments{
-\item{input_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
-\item{input}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{GDAL argument}
+\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{output_format}{GDAL argument}
+\item{single}{Force geometries to non-MULTI geometry types (Logical)}
 
-\item{creation_option}{GDAL argument}
+\item{linear}{Convert curve geometries to linear types (Logical)}
 
-\item{layer_creation_option}{GDAL argument}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{overwrite}{GDAL argument}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{update}{GDAL argument}
+\item{output_layer}{Output layer name}
 
-\item{overwrite_layer}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{append}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{output_layer}{GDAL argument}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{active_layer}{GDAL argument}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{active_geometry}{GDAL argument}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{layer_only}{GDAL argument}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{feature_only}{GDAL argument}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{geometry_type}{GDAL argument}
+\item{active_layer}{Set active layer (if not specified, all)}
 
-\item{multi}{GDAL argument}
+\item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
 
-\item{single}{GDAL argument}
+\item{layer_only}{Only modify the layer geometry type (Logical)}
 
-\item{linear}{GDAL argument}
+\item{feature_only}{Only modify the geometry type of features (Logical)}
 
-\item{curve}{GDAL argument}
+\item{geometry_type}{Geometry type}
 
-\item{dim}{GDAL argument}
+\item{multi}{Force geometries to MULTI geometry types (Logical)}
 
-\item{skip}{GDAL argument}
+\item{curve}{Convert linear geometries to curve types (Logical)}
+
+\item{dim}{Force geometries to the specified dimension. Choices: XY, XYZ, XYM, XYZM}
+
+\item{skip}{Skip feature when change of feature geometry type failed (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -83,11 +89,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Modify the geometry type of a vector dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_set-type.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_geom_set_type(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_geom_set_type(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

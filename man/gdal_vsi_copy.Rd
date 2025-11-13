@@ -5,6 +5,7 @@
 \title{Copy files located on GDAL Virtual System Interface (VSI).}
 \usage{
 gdal_vsi_copy(
+  job = NULL,
   source = NULL,
   destination = NULL,
   recursive = FALSE,
@@ -12,13 +13,15 @@ gdal_vsi_copy(
 )
 }
 \arguments{
-\item{source}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{destination}{GDAL argument}
+\item{source}{Source file or directory name (required)}
 
-\item{recursive}{GDAL argument}
+\item{destination}{Destination file or directory name (required)}
 
-\item{skip_errors}{GDAL argument}
+\item{recursive}{Copy subdirectories recursively (Logical)}
+
+\item{skip_errors}{Skip errors (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -26,11 +29,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Copy files located on GDAL Virtual System Interface (VSI).
+
+See \url{https://gdal.org/en/stable/programs/gdal_vsi_copy.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vsi_copy(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vsi_copy(source = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

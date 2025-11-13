@@ -7,41 +7,55 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' List files of one of the GDAL Virtual System Interface (VSI).
-#' @param filename GDAL argument
-#' @param output_format GDAL argument
-#' @param long_listing GDAL argument
-#' @param recursive GDAL argument
-#' @param depth GDAL argument
-#' @param absolute_path GDAL argument
-#' @param tree GDAL argument
-#' @param stdout GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_vsi_list.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param long_listing Use a long listing format (Logical)
+#' @param output_format Output format. Choices: json, text (Default: `json`)
+#' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
+#' @param filename File or directory name (required)
+#' @param recursive List subdirectories recursively (Logical)
+#' @param depth Maximum depth in recursive mode (Integer). Minimum: `1`
+#' @param absolute_path Display absolute path (Logical)
+#' @param tree Use a hierarchical presentation for JSON output (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' \dontrun{
-#' gdal_vsi_list(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_vsi_list(long_listing = TRUE)
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_vsi_list <- function(filename = NULL,
-  output_format = NULL,
+gdal_vsi_list <- function(job = NULL,
   long_listing = FALSE,
+  output_format = NULL,
+  stdout = FALSE,
+  filename = NULL,
   recursive = FALSE,
   depth = NULL,
   absolute_path = FALSE,
-  tree = FALSE,
-  stdout = FALSE) {
-  # Collect arguments
-  args <- list()
-  if (!missing(filename)) args[["filename"]] <- filename
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(long_listing)) args[["long_listing"]] <- long_listing
-  if (!missing(recursive)) args[["recursive"]] <- recursive
-  if (!missing(depth)) args[["depth"]] <- depth
-  if (!missing(absolute_path)) args[["absolute_path"]] <- absolute_path
-  if (!missing(tree)) args[["tree"]] <- tree
-  if (!missing(stdout)) args[["stdout"]] <- stdout
+  tree = FALSE) {
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(long_listing)) new_args[["long_listing"]] <- long_listing
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(stdout)) new_args[["stdout"]] <- stdout
+  if (!missing(filename)) new_args[["filename"]] <- filename
+  if (!missing(recursive)) new_args[["recursive"]] <- recursive
+  if (!missing(depth)) new_args[["depth"]] <- depth
+  if (!missing(absolute_path)) new_args[["absolute_path"]] <- absolute_path
+  if (!missing(tree)) new_args[["tree"]] <- tree
+  job_input <- handle_job_input(job, new_args, c("vsi", "list"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("vsi", "list"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "vsi", "list"), arguments = args)
+  new_gdal_job(command_path = c("vsi", "list"), arguments = merged_args)
 }
 

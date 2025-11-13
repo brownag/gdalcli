@@ -5,13 +5,17 @@
 \title{Burns vector geometries into a raster.}
 \usage{
 gdal_vector_rasterize(
-  output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  invert = FALSE,
+  init = NULL,
+  output = NULL,
+  output_format = NULL,
+  output_data_type = NULL,
+  open_option = NULL,
   creation_option = NULL,
   band = NULL,
-  invert = FALSE,
   all_touched = FALSE,
   burn = NULL,
   attribute_name = NULL,
@@ -22,75 +26,77 @@ gdal_vector_rasterize(
   sql = NULL,
   dialect = NULL,
   nodata = NULL,
-  init = NULL,
   crs = NULL,
   transformer_option = NULL,
   extent,
   resolution,
   target_aligned_pixels = FALSE,
   size,
-  output_data_type = NULL,
   optimization = NULL,
   update = FALSE,
   overwrite = FALSE
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{invert}{Invert the rasterization (Logical) (Default: \code{false})}
 
-\item{creation_option}{GDAL argument}
+\item{init}{Pre-initialize output bands with specified value. \code{0} to \code{2147483647} value(s)}
 
-\item{band}{GDAL argument}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{invert}{GDAL argument}
+\item{output_format}{Output format}
 
-\item{all_touched}{GDAL argument}
+\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
 
-\item{burn}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{attribute_name}{GDAL argument}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{X3d}{GDAL argument}
+\item{band}{The band(s) to burn values into (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
-\item{add}{GDAL argument}
+\item{all_touched}{Enables the ALL_TOUCHED rasterization option (Logical)}
 
-\item{layer_name}{GDAL argument}
+\item{burn}{Burn value. \code{0} to \code{2147483647} value(s)}
 
-\item{where}{GDAL argument}
+\item{attribute_name}{Attribute name}
 
-\item{sql}{GDAL argument}
+\item{X3d}{Indicates that a burn value should be extracted from the Z values of the feature (Logical)}
 
-\item{dialect}{GDAL argument}
+\item{add}{Add to existing raster (Logical) (Default: \code{false})}
 
-\item{nodata}{GDAL argument}
+\item{layer_name}{Layer name}
 
-\item{init}{GDAL argument}
+\item{where}{SQL where clause}
 
-\item{crs}{GDAL argument}
+\item{sql}{SQL select statement}
 
-\item{transformer_option}{GDAL argument}
+\item{dialect}{SQL dialect}
 
-\item{extent}{GDAL argument}
+\item{nodata}{Assign a specified nodata value to output bands}
 
-\item{resolution}{GDAL argument}
+\item{crs}{Override the projection for the output file}
 
-\item{target_aligned_pixels}{GDAL argument}
+\item{transformer_option}{Set a transformer option suitable to pass to GDALCreateGenImgProjTransformer2 (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{size}{GDAL argument}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
-\item{output_data_type}{GDAL argument}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
 
-\item{optimization}{GDAL argument}
+\item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical)}
 
-\item{update}{GDAL argument}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
-\item{overwrite}{GDAL argument}
+\item{optimization}{Force the algorithm used (results are identical). Choices: AUTO, RASTER, VECTOR (Default: \code{AUTO})}
+
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.
@@ -98,11 +104,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Burns vector geometries into a raster.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_rasterize(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_rasterize(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

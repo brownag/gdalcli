@@ -7,31 +7,39 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Clean the collar of a raster dataset, removing noise.
-#' @param open_option GDAL argument
-#' @param input_format GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param update GDAL argument
-#' @param color GDAL argument
-#' @param color_threshold GDAL argument
-#' @param pixel_distance GDAL argument
-#' @param add_alpha GDAL argument
-#' @param add_mask GDAL argument
-#' @param algorithm GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path)
+#' @param output_format Output format
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
+#' @param color Transparent color(s): tuple of integer (like 'r,g,b'), 'black', 'white' (Character vector) (Default: `black`). `0` to `2147483647` value(s)
+#' @param color_threshold Select how far from specified transparent colors the pixel values are considered transparent. (Integer) (Default: `15`). Minimum: `0`
+#' @param pixel_distance Number of consecutive transparent pixels that can be encountered before the giving up search inwards. (Integer) (Default: `2`). Minimum: `0`
+#' @param add_alpha Adds an alpha band to the output dataset. (Logical)
+#' @param add_mask Adds a mask band to the output dataset. (Logical)
+#' @param algorithm Algorithm to apply. Choices: floodfill, twopasses (Default: `floodfill`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_clean_collar(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_clean_collar(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_clean_collar <- function(open_option = NULL,
-  input_format = NULL,
+gdal_raster_clean_collar <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  output = NULL,
   output_format = NULL,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   update = FALSE,
@@ -41,22 +49,31 @@ gdal_raster_clean_collar <- function(open_option = NULL,
   add_alpha = FALSE,
   add_mask = FALSE,
   algorithm = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(update)) args[["update"]] <- update
-  if (!missing(color)) args[["color"]] <- color
-  if (!missing(color_threshold)) args[["color_threshold"]] <- color_threshold
-  if (!missing(pixel_distance)) args[["pixel_distance"]] <- pixel_distance
-  if (!missing(add_alpha)) args[["add_alpha"]] <- add_alpha
-  if (!missing(add_mask)) args[["add_mask"]] <- add_mask
-  if (!missing(algorithm)) args[["algorithm"]] <- algorithm
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(update)) new_args[["update"]] <- update
+  if (!missing(color)) new_args[["color"]] <- color
+  if (!missing(color_threshold)) new_args[["color_threshold"]] <- color_threshold
+  if (!missing(pixel_distance)) new_args[["pixel_distance"]] <- pixel_distance
+  if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
+  if (!missing(add_mask)) new_args[["add_mask"]] <- add_mask
+  if (!missing(algorithm)) new_args[["algorithm"]] <- algorithm
+  job_input <- handle_job_input(job, new_args, c("raster", "clean-collar"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "clean-collar"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "clean-collar"), arguments = args)
+  new_gdal_job(command_path = c("raster", "clean-collar"), arguments = merged_args)
 }
 

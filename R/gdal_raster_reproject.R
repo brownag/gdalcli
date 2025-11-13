@@ -7,77 +7,94 @@
 #' @description
 #' Auto-generated GDAL CLI wrapper.
 #' Reproject a raster dataset.
-#' @param input_format GDAL argument
-#' @param open_option GDAL argument
-#' @param input GDAL argument
-#' @param output_format GDAL argument
-#' @param creation_option GDAL argument
-#' @param overwrite GDAL argument
-#' @param src_crs GDAL argument
-#' @param dst_crs GDAL argument
-#' @param resampling GDAL argument
-#' @param resolution GDAL argument
-#' @param size GDAL argument
-#' @param bbox GDAL argument
-#' @param bbox_crs GDAL argument
-#' @param target_aligned_pixels GDAL argument
-#' @param src_nodata GDAL argument
-#' @param dst_nodata GDAL argument
-#' @param add_alpha GDAL argument
-#' @param warp_option GDAL argument
-#' @param transform_option GDAL argument
-#' @param error_threshold GDAL argument
+#' 
+#' See \url{https://gdal.org/en/stable/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
+#' @param job A gdal_job object from a piped operation, or NULL
+#' @param input Input raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param src_crs Source CRS
+#' @param resampling Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: `nearest`)
+#' @param src_nodata Set nodata values for input bands ('None' to unset). (Character vector). `1` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
+#' @param output_format Output format ("GDALG" allowed)
+#' @param dst_crs Destination CRS
+#' @param dst_nodata Set nodata values for output bands ('None' to unset). (Character vector). `1` to `2147483647` value(s) (Advanced)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param resolution Target resolution (in destination CRS units). Format: `<xres>,<yres>`. Minimum: `0`. Exactly `2` value(s)
+#' @param size Target size in pixels (Integer vector). Format: `<width>,<height>`. Minimum: `0`. Exactly `2` value(s)
+#' @param bbox Target bounding box (in destination CRS units). Exactly `4` value(s)
+#' @param bbox_crs CRS of target bounding box
+#' @param target_aligned_pixels Round target extent to target resolution (Logical) (Advanced)
+#' @param add_alpha Adds an alpha mask band to the destination when the source raster have none. (Logical) (Advanced)
+#' @param warp_option Warping option(s) (Character vector). Format: `<NAME>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param transform_option Transform option(s) (Character vector). Format: `<NAME>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param error_threshold Error threshold (Advanced)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' \dontrun{
-#' gdal_raster_reproject(...) |> gdal_run()
-#' }
+#' # Create a GDAL job (not executed)
+#' job <- gdal_raster_reproject(input = "data.tif")
+#' #
+#' # Inspect the job (optional)
+#' # print(job)
 
 #' @export
-gdal_raster_reproject <- function(input_format = NULL,
-  open_option = NULL,
+gdal_raster_reproject <- function(job = NULL,
   input = NULL,
+  input_format = NULL,
+  src_crs = NULL,
+  resampling = NULL,
+  src_nodata,
+  output = NULL,
   output_format = NULL,
+  dst_crs = NULL,
+  dst_nodata,
+  open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  src_crs = NULL,
-  dst_crs = NULL,
-  resampling = NULL,
   resolution,
   size,
   bbox,
   bbox_crs = NULL,
   target_aligned_pixels = FALSE,
-  src_nodata,
-  dst_nodata,
   add_alpha = FALSE,
   warp_option = NULL,
   transform_option = NULL,
   error_threshold = NULL) {
-  # Collect arguments
-  args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
-  if (!missing(open_option)) args[["open_option"]] <- open_option
-  if (!missing(input)) args[["input"]] <- input
-  if (!missing(output_format)) args[["output_format"]] <- output_format
-  if (!missing(creation_option)) args[["creation_option"]] <- creation_option
-  if (!missing(overwrite)) args[["overwrite"]] <- overwrite
-  if (!missing(src_crs)) args[["src_crs"]] <- src_crs
-  if (!missing(dst_crs)) args[["dst_crs"]] <- dst_crs
-  if (!missing(resampling)) args[["resampling"]] <- resampling
-  if (!missing(resolution)) args[["resolution"]] <- resolution
-  if (!missing(size)) args[["size"]] <- size
-  if (!missing(bbox)) args[["bbox"]] <- bbox
-  if (!missing(bbox_crs)) args[["bbox_crs"]] <- bbox_crs
-  if (!missing(target_aligned_pixels)) args[["target_aligned_pixels"]] <- target_aligned_pixels
-  if (!missing(src_nodata)) args[["src_nodata"]] <- src_nodata
-  if (!missing(dst_nodata)) args[["dst_nodata"]] <- dst_nodata
-  if (!missing(add_alpha)) args[["add_alpha"]] <- add_alpha
-  if (!missing(warp_option)) args[["warp_option"]] <- warp_option
-  if (!missing(transform_option)) args[["transform_option"]] <- transform_option
-  if (!missing(error_threshold)) args[["error_threshold"]] <- error_threshold
+  # Collect function arguments
+  new_args <- list()
+  if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(src_crs)) new_args[["src_crs"]] <- src_crs
+  if (!missing(resampling)) new_args[["resampling"]] <- resampling
+  if (!missing(src_nodata)) new_args[["src_nodata"]] <- src_nodata
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(dst_crs)) new_args[["dst_crs"]] <- dst_crs
+  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
+  if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
+  if (!missing(resolution)) new_args[["resolution"]] <- resolution
+  if (!missing(size)) new_args[["size"]] <- size
+  if (!missing(bbox)) new_args[["bbox"]] <- bbox
+  if (!missing(bbox_crs)) new_args[["bbox_crs"]] <- bbox_crs
+  if (!missing(target_aligned_pixels)) new_args[["target_aligned_pixels"]] <- target_aligned_pixels
+  if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
+  if (!missing(warp_option)) new_args[["warp_option"]] <- warp_option
+  if (!missing(transform_option)) new_args[["transform_option"]] <- transform_option
+  if (!missing(error_threshold)) new_args[["error_threshold"]] <- error_threshold
+  job_input <- handle_job_input(job, new_args, c("raster", "reproject"))
+  if (job_input$should_extend) {
+    # Extend pipeline from existing job
+    return(extend_gdal_pipeline(job_input$job, c("raster", "reproject"), new_args))
+  } else {
+    # Create new job with merged arguments
+    merged_args <- job_input$merged_args
+  }
 
-  new_gdal_job(command_path = c("gdal", "raster", "reproject"), arguments = args)
+  new_gdal_job(command_path = c("raster", "reproject"), arguments = merged_args)
 }
 

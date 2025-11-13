@@ -5,41 +5,44 @@
 \title{Return information on a vector dataset.}
 \usage{
 gdal_vector_info(
-  output_format = NULL,
-  open_option = NULL,
-  input_format = NULL,
+  job = NULL,
   input = NULL,
+  input_format = NULL,
+  output_format = NULL,
+  stdout = FALSE,
+  open_option = NULL,
   layer = NULL,
   features = FALSE,
   sql = NULL,
   where = NULL,
   dialect = NULL,
-  update = FALSE,
-  stdout = FALSE
+  update = FALSE
 )
 }
 \arguments{
-\item{output_format}{GDAL argument}
+\item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{open_option}{GDAL argument}
+\item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{GDAL argument}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{GDAL argument}
+\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
 
-\item{layer}{GDAL argument}
+\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
 
-\item{features}{GDAL argument}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{sql}{GDAL argument}
+\item{layer}{Layer name (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{where}{GDAL argument}
+\item{features}{List all features (beware of RAM consumption on large layers) (Logical)}
 
-\item{dialect}{GDAL argument}
+\item{sql}{Execute the indicated SQL statement and return the result. Format: \verb{<statement>|@<filename>}}
 
-\item{update}{GDAL argument}
+\item{where}{Attribute query in a restricted form of the queries used in the SQL WHERE statement. Format: \verb{<WHERE>|@<filename>}}
 
-\item{stdout}{GDAL argument}
+\item{dialect}{SQL dialect}
+
+\item{update}{Open the dataset in update mode (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -47,11 +50,15 @@ A \link{gdal_job} object.
 \description{
 Auto-generated GDAL CLI wrapper.
 Return information on a vector dataset.
+
+See \url{https://gdal.org/en/stable/programs/gdal_vector_info.html} for detailed GDAL documentation.
 }
 \examples{
-\dontrun{
-gdal_vector_info(...) |> gdal_run()
-}
+# Create a GDAL job (not executed)
+job <- gdal_vector_info(input = "data.tif")
+#
+# Inspect the job (optional)
+# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

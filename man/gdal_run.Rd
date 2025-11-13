@@ -21,6 +21,11 @@ gdal_run(x, ..., backend = NULL)
 
 \item{...}{Additional arguments passed to specific methods.}
 
+\item{backend}{Character string specifying the backend to use: \code{"processx"} (default,
+uses processx::run), \code{"gdalraster"} (uses gdalraster's C++ bindings, if available),
+or \code{"reticulate"} (uses Python's osgeo.gdal via reticulate, if available).
+If \code{NULL} (default), dispatches to the appropriate S3 method based on \code{x}'s class.}
+
 \item{stream_in}{An R object to be streamed to \verb{/vsistdin/}. Can be \code{NULL},
 a character string, or raw vector. If provided, overrides \code{x$stream_in}.}
 
