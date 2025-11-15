@@ -3,19 +3,17 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Return information on a raster dataset.
+#' @title info: Return information on a raster dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Return information on a raster dataset.
+#' `gdal raster info` lists various information about a GDAL supported
+#' raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_info.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
-#' @param min_max Compute minimum and maximum value (Logical)
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
-#' @param metadata_domain Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)
 #' @param output_format Output format. Choices: json, text (Default: `json`)
-#' @param stdout Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)
+#' @param min_max Compute minimum and maximum value (Logical)
 #' @param stats Retrieve or compute statistics, using all pixels (Logical)
 #' @param approx_stats Retrieve or compute statistics, using a subset of pixels (Logical)
 #' @param hist Retrieve or compute histogram (Logical)
@@ -26,26 +24,20 @@
 #' @param no_fl Suppress file list printing (Logical) (Advanced)
 #' @param checksum Compute pixel checksum (Logical) (Advanced)
 #' @param list_mdd List all metadata domains available for the dataset (Logical) (Advanced)
+#' @param metadata_domain Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)
 #' @param no_nodata Suppress retrieving nodata value (Logical) (Esoteric)
 #' @param no_mask Suppress mask band information (Logical) (Esoteric)
 #' @param subdataset Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: `1` (Esoteric)
+#' @param stdout Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_info(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_info <- function(job = NULL,
-  input = NULL,
-  min_max = FALSE,
+  input,
   input_format = NULL,
-  metadata_domain = NULL,
   output_format = NULL,
-  stdout = FALSE,
+  min_max = FALSE,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE,
@@ -56,17 +48,16 @@ gdal_raster_info <- function(job = NULL,
   no_fl = FALSE,
   checksum = FALSE,
   list_mdd = FALSE,
+  metadata_domain = NULL,
   no_nodata = FALSE,
   no_mask = FALSE,
-  subdataset = NULL) {
-  # Collect function arguments
+  subdataset = NULL,
+  stdout = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(min_max)) new_args[["min_max"]] <- min_max
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
-  if (!missing(metadata_domain)) new_args[["metadata_domain"]] <- metadata_domain
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
-  if (!missing(stdout)) new_args[["stdout"]] <- stdout
+  if (!missing(min_max)) new_args[["min_max"]] <- min_max
   if (!missing(stats)) new_args[["stats"]] <- stats
   if (!missing(approx_stats)) new_args[["approx_stats"]] <- approx_stats
   if (!missing(hist)) new_args[["hist"]] <- hist
@@ -77,15 +68,15 @@ gdal_raster_info <- function(job = NULL,
   if (!missing(no_fl)) new_args[["no_fl"]] <- no_fl
   if (!missing(checksum)) new_args[["checksum"]] <- checksum
   if (!missing(list_mdd)) new_args[["list_mdd"]] <- list_mdd
+  if (!missing(metadata_domain)) new_args[["metadata_domain"]] <- metadata_domain
   if (!missing(no_nodata)) new_args[["no_nodata"]] <- no_nodata
   if (!missing(no_mask)) new_args[["no_mask"]] <- no_mask
   if (!missing(subdataset)) new_args[["subdataset"]] <- subdataset
+  if (!missing(stdout)) new_args[["stdout"]] <- stdout
   job_input <- handle_job_input(job, new_args, c("raster", "info"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "info"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

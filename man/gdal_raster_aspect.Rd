@@ -2,13 +2,13 @@
 % Please edit documentation in R/gdal_raster_aspect.R
 \name{gdal_raster_aspect}
 \alias{gdal_raster_aspect}
-\title{Generate an aspect map}
+\title{aspect: Generate an aspect map}
 \usage{
 gdal_raster_aspect(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -25,9 +25,9 @@ gdal_raster_aspect(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -51,17 +51,9 @@ gdal_raster_aspect(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Generate an aspect map
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_aspect.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_aspect(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

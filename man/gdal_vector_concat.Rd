@@ -2,20 +2,18 @@
 % Please edit documentation in R/gdal_vector_concat.R
 \name{gdal_vector_concat}
 \alias{gdal_vector_concat}
-\title{Concatenate vector datasets.}
+\title{concat: Concatenate vector datasets}
 \usage{
 gdal_vector_concat(
   job = NULL,
   input,
+  output,
   input_format = NULL,
   input_layer = NULL,
   source_layer_field_name = NULL,
   source_layer_field_content = NULL,
-  src_crs = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
-  dst_crs = NULL,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -24,13 +22,17 @@ gdal_vector_concat(
   overwrite_layer = FALSE,
   append = FALSE,
   mode = NULL,
-  field_strategy = NULL
+  field_strategy = NULL,
+  src_crs = NULL,
+  dst_crs = NULL
 )
 }
 \arguments{
 \item{job}{A gdal_job object from a piped operation, or NULL}
 
 \item{input}{Input vector datasets (required). \code{1} to \code{2147483647} value(s)}
+
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -40,15 +42,9 @@ gdal_vector_concat(
 
 \item{source_layer_field_content}{A string, possibly using \{AUTO_NAME\}, \{DS_NAME\}, \{DS_BASENAME\}, \{DS_INDEX\}, \{LAYER_NAME\}, \{LAYER_INDEX\}}
 
-\item{src_crs}{Source CRS}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
-
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{output_layer}{Name of the output vector layer (single mode), or template to name the output vector layers (stack mode)}
-
-\item{dst_crs}{Destination CRS}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -67,22 +63,18 @@ gdal_vector_concat(
 \item{mode}{Determine the strategy to create output layers from source layers . Choices: merge-per-layer-name, stack, single (Default: \code{merge-per-layer-name})}
 
 \item{field_strategy}{How to determine target fields from source fields. Choices: union, intersection (Default: \code{union})}
+
+\item{src_crs}{Source CRS}
+
+\item{dst_crs}{Destination CRS}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Concatenate vector datasets.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_concat.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_concat(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

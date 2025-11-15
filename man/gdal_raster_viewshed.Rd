@@ -2,28 +2,28 @@
 % Please edit documentation in R/gdal_raster_viewshed.R
 \name{gdal_raster_viewshed}
 \alias{gdal_raster_viewshed}
-\title{Compute the viewshed of a raster dataset.}
+\title{viewshed: Compute the viewshed of a raster dataset}
 \usage{
 gdal_raster_viewshed(
   job = NULL,
-  input = NULL,
+  input,
+  output,
+  position,
   input_format = NULL,
-  invisible_value = NULL,
-  observer_spacing = NULL,
-  output = NULL,
   output_format = NULL,
-  out_of_range_value = NULL,
-  dst_nodata = NULL,
+  target_height = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  position,
-  target_height = NULL,
   mode = NULL,
   max_distance = NULL,
   curvature_coefficient = NULL,
   band = NULL,
   visible_value = NULL,
+  invisible_value = NULL,
+  out_of_range_value = NULL,
+  dst_nodata = NULL,
+  observer_spacing = NULL,
   num_threads = NULL
 )
 }
@@ -32,29 +32,21 @@ gdal_raster_viewshed(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{invisible_value}{Pixel value to set for invisible areas (Integer) (Default: \code{0}). Range: (\code{0} to \code{255})}
-
-\item{observer_spacing}{Cell Spacing between observers (Integer) (Default: \code{10}). Minimum: \code{1}}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>} (required). \code{2} to \code{3} value(s)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
-\item{out_of_range_value}{Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Integer) (Default: \code{0}). Range: (\code{0} to \code{255})}
-
-\item{dst_nodata}{The value to be set for the cells in the output raster that have no data. (Integer). Range: (\code{0} to \code{255})}
+\item{target_height}{Height of the target above the DEM surface in the height unit of the DEM. (Default: \code{0})}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>} (required). \code{2} to \code{3} value(s)}
-
-\item{target_height}{Height of the target above the DEM surface in the height unit of the DEM. (Default: \code{0})}
 
 \item{mode}{Sets what information the output contains.. Choices: normal, DEM, ground, cumulative (Default: \code{normal})}
 
@@ -66,23 +58,23 @@ gdal_raster_viewshed(
 
 \item{visible_value}{Pixel value to set for visible areas (Integer) (Default: \code{255}). Range: (\code{0} to \code{255})}
 
+\item{invisible_value}{Pixel value to set for invisible areas (Integer) (Default: \code{0}). Range: (\code{0} to \code{255})}
+
+\item{out_of_range_value}{Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Integer) (Default: \code{0}). Range: (\code{0} to \code{255})}
+
+\item{dst_nodata}{The value to be set for the cells in the output raster that have no data. (Integer). Range: (\code{0} to \code{255})}
+
+\item{observer_spacing}{Cell Spacing between observers (Integer) (Default: \code{10}). Minimum: \code{1}}
+
 \item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{3})}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Compute the viewshed of a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_viewshed(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

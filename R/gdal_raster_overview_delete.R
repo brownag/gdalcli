@@ -3,41 +3,33 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Deleting overviews.
+#' @title delete: Deleting overviews
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Deleting overviews.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
-#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param dataset Dataset (to be updated in-place, unless --read-only) (Dataset path) (required)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param external Delete external overviews (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_overview_delete(open_option = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
+#' # Example usage
+#' job <- gdal_raster_overview_delete(dataset = "my.tif")
 #' @export
 gdal_raster_overview_delete <- function(job = NULL,
+  dataset,
   open_option = NULL,
-  dataset = NULL,
   external = FALSE) {
-  # Collect function arguments
   new_args <- list()
-  if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(external)) new_args[["external"]] <- external
   job_input <- handle_job_input(job, new_args, c("raster", "overview", "delete"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "overview", "delete"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

@@ -2,14 +2,14 @@
 % Please edit documentation in R/gdal_vector_clip.R
 \name{gdal_vector_clip}
 \alias{gdal_vector_clip}
-\title{Clip a vector dataset.}
+\title{clip: Clip a vector dataset}
 \usage{
 gdal_vector_clip(
   job = NULL,
   input,
+  output,
   input_format = NULL,
   input_layer = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -20,7 +20,7 @@ gdal_vector_clip(
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  bbox,
+  bbox = NULL,
   bbox_crs = NULL,
   geometry = NULL,
   geometry_crs = NULL,
@@ -35,11 +35,11 @@ gdal_vector_clip(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -81,17 +81,9 @@ gdal_vector_clip(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Clip a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_clip.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_clip(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

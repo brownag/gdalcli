@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdal_raster.R
 \name{gdal_raster}
 \alias{gdal_raster}
-\title{Raster commands.}
+\title{raster: Raster commands}
 \usage{
 gdal_raster(job = NULL, drivers = FALSE)
 }
@@ -15,17 +15,9 @@ gdal_raster(job = NULL, drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Raster commands.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster(drivers = TRUE)
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

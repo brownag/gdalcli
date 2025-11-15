@@ -3,59 +3,49 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Resize a raster dataset without changing the georeferenced extents.
+#' @title resize: Resize a raster dataset without changing the georeferenced extents
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Resize a raster dataset without changing the georeferenced extents.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_resize.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
-#' @param resampling Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: `nearest`)
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param size Target size in pixels (or percentage if using '%' suffix) (Character vector). Format: `<width[%]>,<height[%]>` (required). Minimum: `0`. Exactly `2` value(s)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
-#' @param size Target size in pixels (or percentage if using '%' suffix) (Character vector). Format: `<width[%]>,<height[%]>` (required). Minimum: `0`. Exactly `2` value(s)
+#' @param resampling Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: `nearest`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_resize(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_resize <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
+  size,
   input_format = NULL,
-  resampling = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  size) {
-  # Collect function arguments
+  resampling = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
-  if (!missing(resampling)) new_args[["resampling"]] <- resampling
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(size)) new_args[["size"]] <- size
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
-  if (!missing(size)) new_args[["size"]] <- size
+  if (!missing(resampling)) new_args[["resampling"]] <- resampling
   job_input <- handle_job_input(job, new_args, c("raster", "resize"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "resize"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

@@ -3,71 +3,61 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Build a mosaic, either virtual (VRT) or materialized.
+#' @title mosaic: Build a mosaic, either virtual (VRT) or materialized
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Build a mosaic, either virtual (VRT) or materialized.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster datasets (or specify a @<filename> to point to a file containing filenames). Format: `INPUTS`. `1` to `2147483647` value(s)
-#' @param src_nodata Set nodata values for input bands.. `1` to `2147483647` value(s)
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param input Input raster datasets (or specify a @<filename> to point to a file containing filenames). Format: `INPUTS`. `1` to `2147483647` value(s)
 #' @param output_format Output format ("GDALG" allowed)
-#' @param dst_nodata Set nodata values at the destination band level.. `1` to `2147483647` value(s)
+#' @param target_aligned_pixels Round target extent to target resolution (Logical)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param band Input band(s) (1-based index) (Integer vector). `0` to `2147483647` value(s)
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
 #' @param resolution Target resolution (in destination CRS units). Format: `<xres>,<yres>|same|average|common|highest|lowest` (Default: `same`)
 #' @param bbox Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Exactly `4` value(s)
-#' @param target_aligned_pixels Round target extent to target resolution (Logical)
+#' @param src_nodata Set nodata values for input bands.. `1` to `2147483647` value(s)
+#' @param dst_nodata Set nodata values at the destination band level.. `1` to `2147483647` value(s)
 #' @param hide_nodata Makes the destination band not report the NoData. (Logical)
 #' @param add_alpha Adds an alpha mask band to the destination when the source raster have none. (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_mosaic(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_mosaic <- function(job = NULL,
-  input,
-  src_nodata,
-  output = NULL,
+  output,
+  input = NULL,
   output_format = NULL,
-  dst_nodata,
+  target_aligned_pixels = FALSE,
   creation_option = NULL,
   band = NULL,
   overwrite = FALSE,
   resolution = NULL,
-  bbox,
-  target_aligned_pixels = FALSE,
+  bbox = NULL,
+  src_nodata = NULL,
+  dst_nodata = NULL,
   hide_nodata = FALSE,
   add_alpha = FALSE) {
-  # Collect function arguments
   new_args <- list()
-  if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(src_nodata)) new_args[["src_nodata"]] <- src_nodata
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
-  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
+  if (!missing(target_aligned_pixels)) new_args[["target_aligned_pixels"]] <- target_aligned_pixels
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(band)) new_args[["band"]] <- band
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
   if (!missing(resolution)) new_args[["resolution"]] <- resolution
   if (!missing(bbox)) new_args[["bbox"]] <- bbox
-  if (!missing(target_aligned_pixels)) new_args[["target_aligned_pixels"]] <- target_aligned_pixels
+  if (!missing(src_nodata)) new_args[["src_nodata"]] <- src_nodata
+  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
   if (!missing(hide_nodata)) new_args[["hide_nodata"]] <- hide_nodata
   if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
   job_input <- handle_job_input(job, new_args, c("raster", "mosaic"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "mosaic"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

@@ -3,9 +3,8 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Repack/vacuum in-place a GeoPackage dataset
+#' @title repack: Repack/vacuum in-place a GeoPackage dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Repack/vacuum in-place a GeoPackage dataset
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
@@ -14,24 +13,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_driver_gpkg_repack(dataset = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
+#' # Example usage
+#' job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")
 #' @export
 gdal_driver_gpkg_repack <- function(job = NULL,
-  dataset = NULL) {
-  # Collect function arguments
+  dataset) {
   new_args <- list()
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
   job_input <- handle_job_input(job, new_args, c("driver", "gpkg", "repack"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("driver", "gpkg", "repack"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

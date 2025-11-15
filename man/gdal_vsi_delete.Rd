@@ -2,9 +2,9 @@
 % Please edit documentation in R/gdal_vsi_delete.R
 \name{gdal_vsi_delete}
 \alias{gdal_vsi_delete}
-\title{Delete files located on GDAL Virtual System Interface (VSI).}
+\title{delete: Delete files located on GDAL Virtual System Interface (VSI)}
 \usage{
-gdal_vsi_delete(job = NULL, filename = NULL, recursive = FALSE)
+gdal_vsi_delete(job = NULL, filename, recursive = FALSE)
 }
 \arguments{
 \item{job}{A gdal_job object from a piped operation, or NULL}
@@ -17,17 +17,9 @@ gdal_vsi_delete(job = NULL, filename = NULL, recursive = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Delete files located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi delete} delete files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vsi_delete(filename = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

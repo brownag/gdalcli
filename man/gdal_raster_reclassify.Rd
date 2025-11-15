@@ -2,14 +2,14 @@
 % Please edit documentation in R/gdal_raster_reclassify.R
 \name{gdal_raster_reclassify}
 \alias{gdal_raster_reclassify}
-\title{Reclassify values in a raster dataset}
+\title{reclassify: Reclassify values in a raster dataset}
 \usage{
 gdal_raster_reclassify(
   job = NULL,
-  input = NULL,
+  input,
+  output,
+  mapping,
   input_format = NULL,
-  mapping = NULL,
-  output = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
@@ -22,11 +22,11 @@ gdal_raster_reclassify(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{mapping}{Reclassification mappings (or specify a @\if{html}{\out{<filename>}} to point to a file containing mappings (required)}
 
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -42,17 +42,10 @@ gdal_raster_reclassify(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Reclassify values in a raster dataset
+\verb{gdal raster reclassify} reclassifies values in an input dataset.
+A file (or string) specifies the mapping of input pixel values or ranges to output files.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_reclassify.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_reclassify(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

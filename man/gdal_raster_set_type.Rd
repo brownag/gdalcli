@@ -2,15 +2,15 @@
 % Please edit documentation in R/gdal_raster_set_type.R
 \name{gdal_raster_set_type}
 \alias{gdal_raster_set_type}
-\title{Modify the data type of bands of a raster dataset.}
+\title{set-type: Modify the data type of bands of a raster dataset}
 \usage{
 gdal_raster_set_type(
   job = NULL,
-  input = NULL,
+  input,
+  output,
+  output_data_type,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
-  output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE
@@ -21,13 +21,13 @@ gdal_raster_set_type(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
-
 \item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output_format}{Output format ("GDALG" allowed)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -39,17 +39,11 @@ gdal_raster_set_type(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Modify the data type of bands of a raster dataset.
+\verb{gdal raster set-type} can be used to force the output image bands to
+have a specific data type. Values may be truncated or rounded if the output
+data type is "smaller" than the input one.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_set-type.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_set_type(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

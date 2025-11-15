@@ -3,9 +3,8 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Vector commands.
+#' @title vector: Vector commands
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Vector commands.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector.html} for detailed GDAL documentation.
@@ -14,24 +13,15 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector(drivers = TRUE)
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector <- function(job = NULL,
   drivers = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(drivers)) new_args[["drivers"]] <- drivers
   job_input <- handle_job_input(job, new_args, c("vector"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

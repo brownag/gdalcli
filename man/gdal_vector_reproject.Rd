@@ -2,18 +2,17 @@
 % Please edit documentation in R/gdal_vector_reproject.R
 \name{gdal_vector_reproject}
 \alias{gdal_vector_reproject}
-\title{Reproject a vector dataset.}
+\title{reproject: Reproject a vector dataset}
 \usage{
 gdal_vector_reproject(
   job = NULL,
   input,
+  output,
+  dst_crs,
   input_format = NULL,
   input_layer = NULL,
-  src_crs = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
-  dst_crs = NULL,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -21,7 +20,8 @@ gdal_vector_reproject(
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  active_layer = NULL
+  active_layer = NULL,
+  src_crs = NULL
 )
 }
 \arguments{
@@ -29,19 +29,17 @@ gdal_vector_reproject(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
+\item{dst_crs}{Destination CRS (required)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
-\item{src_crs}{Source CRS}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
-
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{output_layer}{Output layer name}
-
-\item{dst_crs}{Destination CRS (required)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -58,22 +56,16 @@ gdal_vector_reproject(
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{active_layer}{Set active layer (if not specified, all)}
+
+\item{src_crs}{Source CRS}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Reproject a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_reproject(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

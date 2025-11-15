@@ -2,14 +2,14 @@
 % Please edit documentation in R/gdal_vector_convert.R
 \name{gdal_vector_convert}
 \alias{gdal_vector_convert}
-\title{Convert a vector dataset.}
+\title{convert: Convert a vector dataset}
 \usage{
 gdal_vector_convert(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
   input_layer = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -26,11 +26,11 @@ gdal_vector_convert(
 
 \item{input}{Input vector dataset (Dataset path) (required)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -54,17 +54,10 @@ gdal_vector_convert(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Convert a vector dataset.
+\verb{gdal vector convert} can be used to convert data data between
+different formats.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_convert.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_convert(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

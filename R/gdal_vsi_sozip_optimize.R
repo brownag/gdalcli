@@ -3,53 +3,43 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
+#' @title optimize: Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
+#' The gdal vsi sozip utility can be used to:
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input ZIP filename (Character vector) (required). `0` to `1` value(s)
-#' @param sozip_min_file_size Minimum file size to decide if a file should be seek-optimized. Format: `value in bytes or with K/M/G suffix` (Default: `1 MB`)
 #' @param output Output ZIP filename (required)
-#' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
 #' @param enable_sozip Whether to automatically/systematically/never apply the SOZIP optimization. Choices: auto, yes, no (Default: `auto`)
 #' @param sozip_chunk_size Chunk size for a seek-optimized file. Format: `value in bytes or with K/M suffix` (Default: `32768`)
+#' @param sozip_min_file_size Minimum file size to decide if a file should be seek-optimized. Format: `value in bytes or with K/M/G suffix` (Default: `1 MB`)
+#' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vsi_sozip_optimize(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vsi_sozip_optimize <- function(job = NULL,
-  input = NULL,
-  sozip_min_file_size = NULL,
-  output = NULL,
-  stdout = FALSE,
+  input,
+  output,
   overwrite = FALSE,
   enable_sozip = NULL,
-  sozip_chunk_size = NULL) {
-  # Collect function arguments
+  sozip_chunk_size = NULL,
+  sozip_min_file_size = NULL,
+  stdout = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(sozip_min_file_size)) new_args[["sozip_min_file_size"]] <- sozip_min_file_size
   if (!missing(output)) new_args[["output"]] <- output
-  if (!missing(stdout)) new_args[["stdout"]] <- stdout
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
   if (!missing(enable_sozip)) new_args[["enable_sozip"]] <- enable_sozip
   if (!missing(sozip_chunk_size)) new_args[["sozip_chunk_size"]] <- sozip_chunk_size
+  if (!missing(sozip_min_file_size)) new_args[["sozip_min_file_size"]] <- sozip_min_file_size
+  if (!missing(stdout)) new_args[["stdout"]] <- stdout
   job_input <- handle_job_input(job, new_args, c("vsi", "sozip", "optimize"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vsi", "sozip", "optimize"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

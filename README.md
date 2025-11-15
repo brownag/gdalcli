@@ -21,9 +21,34 @@ A modern R interface to GDAL's unified command-line interface (GDAL ≥3.11). Pr
 
 ```r
 # Install from GitHub (when available)
-# devtools::install_github("your-org/gdalcli")
+# devtools::install_github("andrewbrown/gdalcli")
 library(gdalcli)
 ```
+
+### Backend Configuration
+
+`gdalcli` supports multiple execution backends. Choose based on your workflow:
+
+**Default (processx)** - Works out of the box for most users:
+```r
+install.packages("gdalcli")  # Includes processx dependency
+gdal_job_run(job)  # Uses processx backend
+```
+
+**gdalraster Backend** - For best performance:
+```r
+install.packages("gdalraster")
+gdal_job_run(job, backend = "gdalraster")
+```
+
+**Python Backend** - For Python integration:
+```r
+install.packages("reticulate")
+# Then install Python GDAL: pip install GDAL
+gdal_job_run(job, backend = "reticulate")
+```
+
+See [`inst/BACKENDS.md`](inst/BACKENDS.md) for detailed backend comparison and setup instructions.
 
 ### Basic Setup: Configure Credentials via .Renviron
 

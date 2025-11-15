@@ -2,14 +2,14 @@
 % Please edit documentation in R/gdal_raster_edit.R
 \name{gdal_raster_edit}
 \alias{gdal_raster_edit}
-\title{Edit a raster dataset.}
+\title{edit: Edit a raster dataset}
 \usage{
 gdal_raster_edit(
   job = NULL,
-  dataset = NULL,
+  dataset,
   auxiliary = FALSE,
   crs = NULL,
-  bbox,
+  bbox = NULL,
   nodata = NULL,
   metadata = NULL,
   unset_metadata = NULL,
@@ -45,17 +45,13 @@ gdal_raster_edit(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Edit a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_edit(dataset = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
+# Example usage
+job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
 }
 \seealso{
 Other gdal_raster_utilities: 

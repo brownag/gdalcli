@@ -2,21 +2,21 @@
 % Please edit documentation in R/gdal_vector_info.R
 \name{gdal_vector_info}
 \alias{gdal_vector_info}
-\title{Return information on a vector dataset.}
+\title{info: Return information on a vector dataset}
 \usage{
 gdal_vector_info(
   job = NULL,
-  input = NULL,
+  input,
   input_format = NULL,
   output_format = NULL,
-  stdout = FALSE,
   open_option = NULL,
   layer = NULL,
   features = FALSE,
   sql = NULL,
   where = NULL,
   dialect = NULL,
-  update = FALSE
+  update = FALSE,
+  stdout = FALSE
 )
 }
 \arguments{
@@ -27,8 +27,6 @@ gdal_vector_info(
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format. Choices: json, text (Default: \code{json})}
-
-\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -43,22 +41,21 @@ gdal_vector_info(
 \item{dialect}{SQL dialect}
 
 \item{update}{Open the dataset in update mode (Logical)}
+
+\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Return information on a vector dataset.
+\verb{gdal vector info} lists various information about a GDAL supported
+vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_info.html} for detailed GDAL documentation.
 }
 \examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_info(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
+# Example usage
+job <- gdal_vector_info(features = "poly.gpkg")
 }
 \seealso{
 Other gdal_vector_utilities: 

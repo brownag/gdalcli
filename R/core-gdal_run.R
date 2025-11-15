@@ -1,7 +1,7 @@
 #' Execute a GDAL Job
 #'
 #' @description
-#' `gdal_run()` is an S3 generic function that executes a GDAL command specification.
+#' `gdal_job_run()` is an S3 generic function that executes a GDAL command specification.
 #' It is the "collector" function in the lazy evaluation framework, taking a [gdal_job] object
 #' and converting it into a running process.
 #'
@@ -45,7 +45,7 @@
 #'   output = "output.gpkg"
 #' ) |>
 #'   gdal_with_co("COMPRESS=LZW")
-#' gdal_run(job)
+#' gdal_job_run(job)
 #'
 #' # With input streaming
 #' geojson_string <- '{type: "FeatureCollection", ...}'
@@ -53,23 +53,23 @@
 #'   input = "/vsistdin/",
 #'   output = "output.gpkg"
 #' )
-#' gdal_run(job, stream_in = geojson_string)
+#' gdal_job_run(job, stream_in = geojson_string)
 #'
 #' # With output streaming
 #' job <- gdal_vector_info("input.gpkg", output_format = "JSON")
-#' json_result <- gdal_run(job, stream_out = "text")
+#' json_result <- gdal_job_run(job, stream_out = "text")
 #' }
 #'
 #' @export
-gdal_run <- function(x, ..., backend = NULL) {
+gdal_job_run <- function(x, ..., backend = NULL) {
   # Allow explicit backend selection
   if (!is.null(backend)) {
     if (backend == "gdalraster" && requireNamespace("gdalraster", quietly = TRUE)) {
-      return(gdal_run_gdalraster(x, ...))
+      return(gdal_job_run_gdalraster(x, ...))
     } else if (backend == "reticulate" && requireNamespace("reticulate", quietly = TRUE)) {
-      return(gdal_run_reticulate(x, ...))
+      return(gdal_job_run_reticulate(x, ...))
     } else if (backend == "processx") {
-      return(gdal_run.gdal_job(x, ...))
+      return(gdal_job_run.gdal_job(x, ...))
     } else {
       cli::cli_abort(
         c(
@@ -80,21 +80,33 @@ gdal_run <- function(x, ..., backend = NULL) {
     }
   }
 
-  UseMethod("gdal_run")
+  UseMethod("gdal_job_run")
 }
 
 
-#' @rdname gdal_run
+#' @rdname gdal_job_run
 #' @export
-gdal_run.gdal_job <- function(x,
+gdal_job_run.gdal_job <- function(x,
                               stream_in = NULL,
                               stream_out_format = NULL,
                               env = NULL,
                               verbose = FALSE,
                               ...) {
+  # Check if processx backend is available
+  if (!requireNamespace("processx", quietly = TRUE)) {
+    cli::cli_abort(
+      c(
+        "processx package required for default execution backend",
+        "i" = "Install with: install.packages('processx')",
+        "i" = "Or specify an alternative backend: backend = 'gdalraster' or 'reticulate'",
+        "i" = "See ?gdal_job_run for backend options and installation guidance"
+      )
+    )
+  }
+
   # If this job has a pipeline history, run the pipeline instead
   if (!is.null(x$pipeline)) {
-    return(gdal_run(x$pipeline, ..., verbose = verbose))
+    return(gdal_job_run(x$pipeline, ..., verbose = verbose))
   }
 
   # Resolve streaming parameters (explicit args override job specs)
@@ -246,12 +258,12 @@ gdal_run.gdal_job <- function(x,
 #' @description
 #' Internal function that combines environment variables from multiple sources:
 #' 1. Base environment variables from the job
-#' 2. Explicit environment variables passed to gdal_run
+#' 2. Explicit environment variables passed to gdal_job_run
 #' 3. GDAL config options (converted to GDAL_CONFIG_* format if needed)
 #' 4. Legacy global environment variables (for backward compatibility)
 #'
 #' @param job_env Named character vector of env vars from the job.
-#' @param explicit_env Named character vector of explicit env vars passed to gdal_run.
+#' @param explicit_env Named character vector of explicit env vars passed to gdal_job_run.
 #' @param config_opts Named character vector of GDAL config options.
 #'
 #' @return A named character vector of all environment variables to pass to processx.
@@ -303,17 +315,17 @@ gdal_run.gdal_job <- function(x,
 }
 
 
-#' Default gdal_run Method
+#' Default gdal_job_run Method
 #'
 #' @keywords internal
 #' @export
-gdal_run.default <- function(x, ...) {
+gdal_job_run.default <- function(x, ...) {
   rlang::abort(
     c(
-      sprintf("No gdal_run method available for class '%s'.", class(x)[1]),
-      "i" = "gdal_run() is designed for gdal_job objects."
+      sprintf("No gdal_job_run method available for class '%s'.", class(x)[1]),
+      "i" = "gdal_job_run() is designed for gdal_job objects."
     ),
-    class = "gdalcli_unsupported_gdal_run"
+    class = "gdalcli_unsupported_gdal_job_run"
   )
 }
 
@@ -336,7 +348,7 @@ gdal_run.default <- function(x, ...) {
 #' - If `stream_out_format = "text"`: Returns stdout as character string
 #'
 #' @keywords internal
-gdal_run_gdalraster <- function(job,
+gdal_job_run_gdalraster <- function(job,
                                stream_in = NULL,
                                stream_out_format = NULL,
                                env = NULL,
@@ -352,59 +364,48 @@ gdal_run_gdalraster <- function(job,
     )
   }
 
-  # Build command string from path and arguments
-  cmd_parts <- job$command_path
-
-  # Serialize arguments
-  args <- .serialize_gdal_job(job)
-
-  # Print command if verbose
-  if (verbose) {
-    cli::cli_alert_info(sprintf("Executing (gdalraster): gdal %s", paste(args, collapse = " ")))
-  }
-
   # Prepare environment variables
   env_final <- .merge_env_vars(job$env_vars, env, job$config_options)
 
-  # Execute via gdalraster
-  # gdalraster::gdal_run() expects command as a string
-  cmd_string <- paste(c(cmd_parts, args[-seq_along(cmd_parts)]), collapse = " ")
+  # Set environment variables temporarily
+  old_env <- Sys.getenv(names(env_final))
+  on.exit(do.call(Sys.setenv, as.list(old_env)), add = TRUE)
+  if (length(env_final) > 0) {
+    do.call(Sys.setenv, as.list(env_final))
+  }
 
-  tryCatch(
-    {
-      # Set environment variables temporarily
-      old_env <- Sys.getenv(names(env_final))
-      on.exit(do.call(Sys.setenv, as.list(old_env)), add = TRUE)
+  # Serialize the job to GDAL CLI arguments
+  args_serialized <- .serialize_gdal_job(job)
+  
+  if (verbose) {
+    cli::cli_alert_info(sprintf("Executing (gdalraster): gdal %s", paste(args_serialized, collapse = " ")))
+  }
 
-      if (length(env_final) > 0) {
-        do.call(Sys.setenv, as.list(env_final))
-      }
-
-      # Execute command via gdalraster
-      result <- gdalraster::gdal_run(
-        cmd = cmd_string,
-        output_file = if (!is.null(stream_out_format)) tempfile() else NULL
-      )
-
-      # Handle output
-      if (!is.null(stream_out_format) && stream_out_format == "text") {
-        # gdalraster doesn't capture stdout in same way as processx
-        # For now, just return success indication
+  # Use gdalraster::gdal_alg() to execute the command
+  tryCatch({
+    # Call gdalraster::gdal_alg() with the serialized arguments
+    result <- gdalraster::gdal_alg(paste(args_serialized, collapse = " "))
+    
+    # Handle output based on streaming format
+    if (!is.null(stream_out_format)) {
+      if (stream_out_format == "text") {
         return(result)
+      } else if (stream_out_format == "raw") {
+        return(charToRaw(result))
       }
-
-      invisible(TRUE)
-    },
-    error = function(e) {
-      cli::cli_abort(
-        c(
-          "GDAL command failed via gdalraster",
-          "x" = conditionMessage(e)
-        )
-      )
     }
-  )
+    
+    invisible(TRUE)
+  }, error = function(e) {
+    cli::cli_abort(
+      c(
+        "GDAL command failed via gdalraster",
+        "x" = conditionMessage(e)
+      )
+    )
+  })
 }
+
 
 #' Execute GDAL Job via Reticulate (Python)
 #'
@@ -416,7 +417,7 @@ gdal_run_gdalraster <- function(job,
 #'
 #' @keywords internal
 #' @noRd
-gdal_run_reticulate <- function(job,
+gdal_job_run_reticulate <- function(job,
                                stream_in = NULL,
                                stream_out_format = NULL,
                                env = NULL,

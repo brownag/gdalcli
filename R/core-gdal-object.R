@@ -27,7 +27,7 @@
 #'
 #' # Call commands to create lazy-evaluated jobs
 #' job <- gdal.alg$raster$info(input = "data.tif")
-#' result <- gdal_run(job)
+#' result <- gdal_job_run(job)
 #' ```
 #'
 #' ## Command Groups
@@ -65,7 +65,7 @@
 #' An [R6::R6Class] object with reference semantics.
 #'
 #' @seealso
-#'   [gdal_run()], [gdal_with_co()], [gdal_with_config()],
+#'   [gdal_job_run()], [gdal_with_co()], [gdal_with_config()],
 #'   [new_gdal_job()]
 #'
 #' @examples
@@ -77,7 +77,7 @@
 #'   job <- gdal.alg()$raster$info(input = "data.tif")
 #'
 #'   # Execute with gdal_run
-#'   result <- gdal_run(job)
+#'   result <- gdal_job_run(job)
 #' }
 #'
 #' @export

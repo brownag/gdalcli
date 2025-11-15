@@ -50,7 +50,7 @@ job <- gdal_vector_convert("in.shp", "out.gpkg") |>
 job <- gdal_vector_convert("in.shp", "out.gpkg") |>
   gdal_with_env(gdal_auth_s3(...))
 
-gdal_run(job)
+gdal_job_run(job)
 }
 
 }

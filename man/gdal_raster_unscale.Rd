@@ -2,13 +2,13 @@
 % Please edit documentation in R/gdal_raster_unscale.R
 \name{gdal_raster_unscale}
 \alias{gdal_raster_unscale}
-\title{Convert scaled values of a raster dataset into unscaled values.}
+\title{unscale: Convert scaled values of a raster dataset into unscaled values}
 \usage{
 gdal_raster_unscale(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
@@ -21,9 +21,9 @@ gdal_raster_unscale(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -39,17 +39,9 @@ gdal_raster_unscale(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Convert scaled values of a raster dataset into unscaled values.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_unscale.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_unscale(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

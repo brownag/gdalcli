@@ -3,16 +3,15 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Generate a slope map
+#' @title slope: Generate a slope map
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Generate a slope map
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_slope.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -26,17 +25,11 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_slope(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_slope <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -47,11 +40,10 @@ gdal_raster_slope <- function(job = NULL,
   yscale = NULL,
   gradient_alg = NULL,
   no_edges = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
@@ -64,10 +56,8 @@ gdal_raster_slope <- function(job = NULL,
   if (!missing(no_edges)) new_args[["no_edges"]] <- no_edges
   job_input <- handle_job_input(job, new_args, c("raster", "slope"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "slope"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

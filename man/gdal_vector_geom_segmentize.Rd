@@ -2,14 +2,15 @@
 % Please edit documentation in R/gdal_vector_geom_segmentize.R
 \name{gdal_vector_geom_segmentize}
 \alias{gdal_vector_geom_segmentize}
-\title{Segmentize geometries of a vector dataset.}
+\title{segmentize: Segmentize geometries of a vector dataset}
 \usage{
 gdal_vector_geom_segmentize(
   job = NULL,
   input,
+  output,
+  max_length,
   input_format = NULL,
   input_layer = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -20,8 +21,7 @@ gdal_vector_geom_segmentize(
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  active_geometry = NULL,
-  max_length = NULL
+  active_geometry = NULL
 )
 }
 \arguments{
@@ -29,11 +29,13 @@ gdal_vector_geom_segmentize(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
+\item{max_length}{Maximum length of a segment (required). Minimum: \code{0}}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -56,24 +58,14 @@ gdal_vector_geom_segmentize(
 \item{active_layer}{Set active layer (if not specified, all)}
 
 \item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
-
-\item{max_length}{Maximum length of a segment (required). Minimum: \code{0}}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Segmentize geometries of a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_segmentize.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_geom_segmentize(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

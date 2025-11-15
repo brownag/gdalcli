@@ -2,16 +2,14 @@
 % Please edit documentation in R/gdal_raster_info.R
 \name{gdal_raster_info}
 \alias{gdal_raster_info}
-\title{Return information on a raster dataset.}
+\title{info: Return information on a raster dataset}
 \usage{
 gdal_raster_info(
   job = NULL,
-  input = NULL,
-  min_max = FALSE,
+  input,
   input_format = NULL,
-  metadata_domain = NULL,
   output_format = NULL,
-  stdout = FALSE,
+  min_max = FALSE,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE,
@@ -22,9 +20,11 @@ gdal_raster_info(
   no_fl = FALSE,
   checksum = FALSE,
   list_mdd = FALSE,
+  metadata_domain = NULL,
   no_nodata = FALSE,
   no_mask = FALSE,
-  subdataset = NULL
+  subdataset = NULL,
+  stdout = FALSE
 )
 }
 \arguments{
@@ -32,15 +32,11 @@ gdal_raster_info(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{min_max}{Compute minimum and maximum value (Logical)}
-
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{metadata_domain}{Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)}
 
 \item{output_format}{Output format. Choices: json, text (Default: \code{json})}
 
-\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
+\item{min_max}{Compute minimum and maximum value (Logical)}
 
 \item{stats}{Retrieve or compute statistics, using all pixels (Logical)}
 
@@ -62,27 +58,24 @@ gdal_raster_info(
 
 \item{list_mdd}{List all metadata domains available for the dataset (Logical) (Advanced)}
 
+\item{metadata_domain}{Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)}
+
 \item{no_nodata}{Suppress retrieving nodata value (Logical) (Esoteric)}
 
 \item{no_mask}{Suppress mask band information (Logical) (Esoteric)}
 
 \item{subdataset}{Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: \code{1} (Esoteric)}
+
+\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Return information on a raster dataset.
+\verb{gdal raster info} lists various information about a GDAL supported
+raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_info.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_info(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

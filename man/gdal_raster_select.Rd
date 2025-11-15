@@ -2,18 +2,18 @@
 % Please edit documentation in R/gdal_raster_select.R
 \name{gdal_raster_select}
 \alias{gdal_raster_select}
-\title{Select a subset of bands from a raster dataset.}
+\title{select: Select a subset of bands from a raster dataset}
 \usage{
 gdal_raster_select(
   job = NULL,
-  input = NULL,
+  input,
+  output,
+  band,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  band,
   mask = NULL
 )
 }
@@ -22,9 +22,11 @@ gdal_raster_select(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{band}{Band(s) (1-based index, 'mask' or 'mask:\if{html}{\out{<band>}}') (Character vector) (required). \code{1} to \code{2147483647} value(s)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -34,25 +36,15 @@ gdal_raster_select(
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{band}{Band(s) (1-based index, 'mask' or 'mask:\if{html}{\out{<band>}}') (Character vector) (required). \code{1} to \code{2147483647} value(s)}
-
 \item{mask}{Mask band (1-based index, 'mask', 'mask:\if{html}{\out{<band>}}' or 'none')}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Select a subset of bands from a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_select.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_select(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

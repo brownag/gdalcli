@@ -2,12 +2,12 @@
 % Please edit documentation in R/gdal_vsi_sync.R
 \name{gdal_vsi_sync}
 \alias{gdal_vsi_sync}
-\title{Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).}
+\title{sync: Synchronize source and target file/directory located on GDAL Virtual System...}
 \usage{
 gdal_vsi_sync(
   job = NULL,
-  source = NULL,
-  destination = NULL,
+  source,
+  destination,
   recursive = FALSE,
   strategy = NULL,
   num_threads = NULL
@@ -30,17 +30,9 @@ gdal_vsi_sync(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi sync} synchronize files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vsi_sync(source = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

@@ -3,9 +3,8 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Main gdal entry point.
+#' @title Main gdal entry point
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Main gdal entry point.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal.html} for detailed GDAL documentation.
@@ -14,12 +13,6 @@
 #' @return A [gdal_job] object.
 #' @family gdal_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal(drivers = TRUE)
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal <- function(x = NULL,
   drivers = FALSE) {

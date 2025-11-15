@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdal.R
 \name{gdal}
 \alias{gdal}
-\title{Main gdal entry point.}
+\title{Main gdal entry point}
 \usage{
 gdal(x = NULL, drivers = FALSE)
 }
@@ -15,16 +15,8 @@ gdal(x = NULL, drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Main gdal entry point.
 
 See \url{https://gdal.org/en/stable/programs/gdal.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal(drivers = TRUE)
-#
-# Inspect the job (optional)
-# print(job)
 }
 \concept{gdal_utilities}

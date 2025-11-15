@@ -1,0 +1,395 @@
+---
+title: "Basic Functionality with gdalcli"
+author: "Andrew Brown"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic Functionality with gdalcli}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  dpi = 100
+)
+```
+
+# Introduction
+
+The `gdalcli` package provides a modern R interface to GDAL's unified command-line interface (GDAL ≥3.11). This vignette demonstrates the core functionality of `gdalcli` using sample datasets from the `gdalraster` package.
+
+## Key Concepts
+
+`gdalcli` implements a **lazy evaluation framework** where GDAL commands are built as specification objects (`gdal_job`) and only executed when needed. This design enables:
+
+- **Composable workflows** using R's native pipe (`|>`)
+- **Job inspection** before execution
+- **Secure credential management** via environment variables
+- **Process isolation** for each command execution
+
+## Package Architecture
+
+`gdalcli` uses a two-layer design:
+
+1. **Frontend Layer**: Auto-generated R functions and composable modifiers
+2. **Engine Layer**: Command execution via pluggable backends
+
+### Execution Backends
+
+`gdalcli` supports multiple execution backends, allowing you to choose the best option for your workflow:
+
+- **processx (default)**: Executes GDAL commands as subprocess calls. Best for integration with command-line tools and maximum compatibility.
+- **gdalraster**: Uses the `gdalraster` package's native GDAL bindings via `gdalraster::gdal_alg()`. Best for performance when `gdalraster` is already in use.
+- **Python/reticulate**: Executes GDAL commands through Python's `osgeo.gdal` module via `reticulate`. Best for workflows that leverage Python geospatial libraries.
+
+By default, `gdal_job_run()` uses the processx backend. You can specify a different backend:
+
+```{r backend-selection, eval=FALSE}
+# Use gdalraster backend
+gdal_job_run(job, backend = "gdalraster")
+
+# Use Python backend (requires reticulate and osgeo.gdal)
+gdal_job_run(job, backend = "reticulate")
+
+# Use default processx backend (equivalent to not specifying)
+gdal_job_run(job, backend = "processx")
+```
+
+All backends produce identical results; the choice is about performance and integration with your existing environment.
+
+## Setup
+
+First, load the required packages and access sample datasets:
+
+```{r load-packages}
+library(gdalcli)
+library(gdalraster)
+```
+
+The `gdalraster` package includes several sample datasets we'll use for demonstration:
+
+```{r sample-data}
+# List available sample datasets
+list.files(system.file("extdata", package = "gdalraster"))
+```
+
+# Lazy Evaluation Basics
+
+The core concept in `gdalcli` is **lazy evaluation**. Commands are built as `gdal_job` objects that specify what should be executed, but nothing actually runs until you call `gdal_run()`.
+
+## Building Job Specifications
+
+Let's start with a simple example using the `byte.tif` sample dataset:
+
+```{r basic-job}
+# Access sample data
+byte_file <- system.file("extdata", "byte.tif", package = "gdalraster")
+
+# Build a job specification (lazy - nothing executes yet)
+job <- gdal_raster_info(input = byte_file)
+
+# Inspect the job before execution
+print(job)
+```
+
+Notice that `gdal_raster_info()` returns a `gdal_job` object, not the actual GDAL output. The job contains the command specification that will be executed later.
+
+## Job Inspection
+
+You can inspect jobs using `print()` or `str()`:
+
+```{r job-inspection}
+# Detailed job structure
+str(job)
+
+# The job contains command path and arguments
+job$command_path
+job$arguments
+```
+
+## Executing Jobs
+
+Execute the job with `gdal_run()`:
+
+```{r execute-job}
+# Now execute the job
+gdalcli::gdal_job_run(job)
+```
+
+# Raster Operations
+
+`gdalcli` provides comprehensive raster processing capabilities through auto-generated functions. Let's explore some common operations.
+
+## Dataset Information
+
+Get detailed information about a raster dataset:
+
+```{r raster-info}
+# Use elevation data from Storm Lake, Montana
+elev_file <- system.file("extdata", "storml_elev.tif", package = "gdalraster")
+
+# Get dataset information
+elev_info <- gdal_raster_info(input = elev_file)
+gdalcli::gdal_job_run(elev_info)
+```
+
+## Format Conversion with Options
+
+Convert raster formats with compression and other options:
+
+```{r raster-convert}
+# Convert to compressed GeoTIFF
+output_file <- tempfile(fileext = ".tif")
+
+convert_job <- gdal_raster_convert(
+  input = elev_file,
+  output = output_file,
+  output_format = "GTiff"
+) |>
+  gdal_with_co("COMPRESS=DEFLATE", "PREDICTOR=2") |>  # Compression options
+  gdal_with_config("GDAL_CACHEMAX=128")           # Memory configuration
+
+gdalcli::gdal_job_run(convert_job)
+
+# Check the output file
+file.info(output_file)
+```
+
+## Spatial Clipping
+
+Clip a raster to a specific spatial extent:
+
+```{r raster-clip}
+# Use tree canopy cover data
+tcc_file <- system.file("extdata", "storml_tcc.tif", package = "gdalraster")
+
+# Define clipping bounds (xmin, ymin, xmax, ymax)
+clip_bounds <- c(323500, 5102000, 325500, 5104000)
+
+clip_job <- gdal_raster_clip(
+  input = tcc_file,
+  output = tempfile(fileext = ".tif"),
+  bbox = clip_bounds
+)
+
+gdalcli::gdal_job_run(clip_job)
+```
+
+# Vector Operations
+
+`gdalcli` also supports vector data processing with similar lazy evaluation patterns.
+
+## Vector Dataset Information
+
+```{r vector-info}
+# Use Yellowstone National Park fire perimeters
+fires_file <- system.file("extdata", "ynp_fires_1984_2022.gpkg", package = "gdalraster")
+
+vector_info <- gdal_vector_info(input = fires_file)
+gdalcli::gdal_job_run(vector_info)
+```
+
+## Vector Format Conversion
+
+Convert between vector formats:
+
+```{r vector-convert}
+convert_vector <- gdal_vector_convert(
+  input = fires_file,
+  output = tempfile(fileext = ".shp"),
+  output_format = "ESRI Shapefile"
+)
+
+gdalcli::gdal_job_run(convert_vector)
+```
+
+# Pipeline Composition
+
+One of the most powerful features of `gdalcli` is the ability to compose complex workflows using R's native pipe operator.
+
+## Chaining Operations
+
+Build multi-step processing pipelines:
+
+```{r pipeline-example}
+# Create a processing pipeline: convert -> clip
+pipeline_job <- gdal_raster_convert(
+  input = tcc_file,
+  output = tempfile(fileext = ".tif"),
+  output_format = "GTiff"
+) |>
+  gdal_raster_clip(
+    bbox = clip_bounds,
+    output = tempfile(fileext = ".tif")
+  ) |>
+  gdal_with_co("COMPRESS=LZW")  # Add compression to the final output
+
+# Execute the entire pipeline
+gdalcli::gdal_job_run(pipeline_job)
+```
+
+## Job Reuse and Modification
+
+Jobs can be reused and modified for different purposes:
+
+```{r job-reuse}
+# Create a base job
+base_info <- gdal_raster_info(input = elev_file)
+
+# Create variations
+info_verbose <- base_info |> gdal_with_config("CPL_DEBUG=ON")
+info_quiet <- base_info |> gdal_with_config("CPL_LOG=OFF")
+
+# Execute different versions
+gdalcli::gdal_job_run(info_verbose)
+gdalcli::gdal_job_run(info_quiet)
+```
+
+# Advanced Features
+
+## Execution Backends in Detail
+
+### Using the gdalraster Backend
+
+If you have the `gdalraster` package installed, you can use its native GDAL bindings for potentially better performance:
+
+```{r gdalraster-backend, eval=FALSE}
+# gdalraster backend uses native GDAL bindings
+job <- gdal_raster_info(input = byte_file)
+gdalcli::gdal_job_run(job, backend = "gdalraster")
+```
+
+**When to use gdalraster backend:**
+- You're already using `gdalraster` in your workflow
+- You need maximum performance for repeated operations
+- You want to minimize subprocess overhead
+
+### Using the Python Backend
+
+For workflows that leverage Python geospatial libraries, you can execute GDAL operations through Python:
+
+```{r python-backend, eval=FALSE}
+# Requires: reticulate package and Python with osgeo.gdal installed
+# pip install GDAL
+
+job <- gdal_raster_convert(
+  input = byte_file,
+  output = tempfile(fileext = ".tif")
+)
+gdalcli::gdal_job_run(job, backend = "reticulate")
+```
+
+**When to use Python backend:**
+- Your pipeline integrates Python geospatial tools (geopandas, rasterio, etc.)
+- You have a Python environment with GDAL configured
+- You need reproducible environments via `conda` or `venv`
+
+**Setup for Python backend:**
+
+1. Create or activate a Python environment with GDAL:
+```bash
+# Using pip
+pip install GDAL==3.11
+
+# Or using conda
+conda install -c conda-forge gdal==3.11
+```
+
+2. Tell reticulate to use your environment:
+```{r python-setup, eval=FALSE}
+# Use a specific virtualenv
+reticulate::use_virtualenv("/path/to/your/venv")
+
+# Or use conda
+reticulate::use_condaenv("myenv")
+```
+
+## Configuration Management
+
+GDAL has many configuration options that can be set per-job:
+
+```{r configuration}
+# Set multiple GDAL configuration options
+configured_job <- gdal_raster_info(input = byte_file) |>
+  gdal_with_config(
+    "GDAL_CACHEMAX=256",
+    "GDAL_DISABLE_READDIR_ON_OPEN=TRUE",
+    "CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.tif,.tiff"
+  )
+
+gdalcli::gdal_job_run(configured_job)
+```
+
+## Error Handling
+
+`gdalcli` provides clear error messages when jobs fail:
+
+```{r error-handling, error=TRUE}
+# This will fail because the file doesn't exist
+bad_job <- gdal_raster_info(input = "nonexistent.tif")
+try(gdalcli::gdal_job_run(bad_job))
+```
+
+# Performance Considerations
+
+## Memory Management
+
+For large datasets, configure GDAL's memory usage:
+
+```{r memory-config}
+# Optimize memory usage for large files
+memory_optimized <- gdal_raster_convert(
+  input = elev_file,
+  output = tempfile(fileext = ".tif")
+) |>
+  gdal_with_config(
+    "GDAL_CACHEMAX=512",  # MB of memory cache
+    "GDAL_DISABLE_READDIR_ON_OPEN=TRUE"  # Avoid directory scans
+  )
+
+gdalcli::gdal_job_run(memory_optimized)
+```
+
+## Batch Processing
+
+Process multiple files efficiently:
+
+```{r batch-processing}
+# Process multiple sample rasters
+sample_files <- c(
+  system.file("extdata", "byte.tif", package = "gdalraster"),
+  system.file("extdata", "storml_elev.tif", package = "gdalraster")
+)
+
+# Create jobs for batch processing
+batch_jobs <- lapply(sample_files, function(file) {
+  gdal_raster_info(input = file) |>
+    gdal_with_config("CPL_LOG=OFF")  # Quiet mode
+})
+
+# Execute all jobs
+lapply(batch_jobs, gdalcli::gdal_job_run)
+```
+
+# Summary
+
+This vignette demonstrated the core functionality of `gdalcli`:
+
+- **Lazy evaluation** with `gdal_job` objects
+- **Composable pipelines** using R's native pipe
+- **Raster and vector operations** with GDAL
+- **Configuration management** for performance and behavior
+- **Job inspection and reuse** for flexible workflows
+
+The `gdalcli` package provides a powerful, secure, and composable interface to GDAL's extensive geospatial processing capabilities.
+
+# Session Information
+
+```{r session-info}
+sessionInfo()
+```

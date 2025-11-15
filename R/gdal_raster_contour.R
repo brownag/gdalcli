@@ -3,19 +3,15 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Creates a vector contour from a raster elevation model (DEM).
+#' @title contour: Creates a vector contour from a raster elevation model (DEM)
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Creates a vector contour from a raster elevation model (DEM).
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
-#' @param min_name Name of the minimum elevation field
-#' @param src_nodata Input pixel value to treat as 'nodata'
-#' @param interval Elevation interval between contours. Minimum: `0`
 #' @param output Output vector dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -23,8 +19,11 @@
 #' @param band Input band (1-based index) (Integer) (Default: `1`)
 #' @param layer Layer name
 #' @param elevation_name Name of the elevation field
+#' @param min_name Name of the minimum elevation field
 #' @param max_name Name of the maximum elevation field
 #' @param X3d Force production of 3D vectors instead of 2D (Logical)
+#' @param src_nodata Input pixel value to treat as 'nodata'
+#' @param interval Elevation interval between contours. Minimum: `0`
 #' @param levels List of contour levels (Character vector). `0` to `2147483647` value(s)
 #' @param exp_base Base for exponential contour level generation (Integer)
 #' @param offset Offset to apply to contour levels
@@ -34,20 +33,11 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_contour(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_contour <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  min_name = NULL,
-  src_nodata = NULL,
-  interval = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -55,22 +45,21 @@ gdal_raster_contour <- function(job = NULL,
   band = NULL,
   layer = NULL,
   elevation_name = NULL,
+  min_name = NULL,
   max_name = NULL,
   X3d = FALSE,
+  src_nodata = NULL,
+  interval = NULL,
   levels = NULL,
   exp_base = NULL,
   offset = NULL,
   polygonize = FALSE,
   group_transactions = NULL,
   overwrite = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
-  if (!missing(min_name)) new_args[["min_name"]] <- min_name
-  if (!missing(src_nodata)) new_args[["src_nodata"]] <- src_nodata
-  if (!missing(interval)) new_args[["interval"]] <- interval
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
@@ -78,8 +67,11 @@ gdal_raster_contour <- function(job = NULL,
   if (!missing(band)) new_args[["band"]] <- band
   if (!missing(layer)) new_args[["layer"]] <- layer
   if (!missing(elevation_name)) new_args[["elevation_name"]] <- elevation_name
+  if (!missing(min_name)) new_args[["min_name"]] <- min_name
   if (!missing(max_name)) new_args[["max_name"]] <- max_name
   if (!missing(X3d)) new_args[["X3d"]] <- X3d
+  if (!missing(src_nodata)) new_args[["src_nodata"]] <- src_nodata
+  if (!missing(interval)) new_args[["interval"]] <- interval
   if (!missing(levels)) new_args[["levels"]] <- levels
   if (!missing(exp_base)) new_args[["exp_base"]] <- exp_base
   if (!missing(offset)) new_args[["offset"]] <- offset
@@ -88,10 +80,8 @@ gdal_raster_contour <- function(job = NULL,
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
   job_input <- handle_job_input(job, new_args, c("raster", "contour"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "contour"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

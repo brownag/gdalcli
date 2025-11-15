@@ -30,7 +30,7 @@ job <- gdal_vector_convert("in.shp", "out.gpkg") |>
   gdal_with_config("OGR_SQL_DIALECT=SQLITE") |>
   gdal_with_config("GDAL_CACHEMAX=512")
 
-gdal_run(job)
+gdal_job_run(job)
 }
 
 }

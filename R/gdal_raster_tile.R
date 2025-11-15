@@ -3,37 +3,36 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Generate tiles in separate files from a raster dataset.
+#' @title tile: Generate tiles in separate files from a raster dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Generate tiles in separate files from a raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_tile.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
+#' @param output Output directory (required)
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output_format Output format (Default: `PNG`)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
+#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param tiling_scheme Tiling scheme. Choices: raster, WebMercatorQuad, WorldCRS84Quad, WorldMercatorWGS84Quad, GoogleCRS84Quad, ... (Default: `WebMercatorQuad`)
 #' @param min_zoom Minimum zoom level (Integer). Minimum: `0`
+#' @param max_zoom Maximum zoom level (Integer). Minimum: `0`
 #' @param min_x Minimum tile X coordinate (Integer). Minimum: `0`
+#' @param max_x Maximum tile X coordinate (Integer). Minimum: `0`
 #' @param min_y Minimum tile Y coordinate (Integer). Minimum: `0`
+#' @param max_y Maximum tile Y coordinate (Integer). Minimum: `0`
 #' @param no_intersection_ok Whether dataset extent not intersecting tile matrix is only a warning (Logical)
 #' @param resampling Resampling method for max zoom. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: `cubic`)
 #' @param overview_resampling Resampling method for overviews. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ...
-#' @param copy_src_metadata Whether to copy metadata from source dataset (Logical)
-#' @param output_format Output format (Default: `PNG`)
-#' @param output Output directory (required)
-#' @param dst_nodata Destination nodata value
-#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
-#' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
-#' @param max_zoom Maximum zoom level (Integer). Minimum: `0`
-#' @param max_x Maximum tile X coordinate (Integer). Minimum: `0`
-#' @param max_y Maximum tile Y coordinate (Integer). Minimum: `0`
 #' @param convention Tile numbering convention: xyz (from top) or tms (from bottom). Choices: xyz, tms (Default: `xyz`)
 #' @param tile_size Override default tile size (Integer). Range: (`64` to `32768`)
 #' @param add_alpha Whether to force adding an alpha channel (Logical)
 #' @param no_alpha Whether to disable adding an alpha channel (Logical)
+#' @param dst_nodata Destination nodata value
 #' @param skip_blank Do not generate blank tiles (Logical)
 #' @param metadata Add metadata item to output tiles (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
+#' @param copy_src_metadata Whether to copy metadata from source dataset (Logical)
 #' @param aux_xml Generate .aux.xml sidecar files when needed (Logical)
 #' @param kml Generate KML files (Logical)
 #' @param resume Generate only missing files (Logical)
@@ -49,38 +48,32 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_tile(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_tile <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
+  output_format = NULL,
+  open_option = NULL,
+  creation_option = NULL,
   tiling_scheme = NULL,
   min_zoom = NULL,
+  max_zoom = NULL,
   min_x = NULL,
+  max_x = NULL,
   min_y = NULL,
+  max_y = NULL,
   no_intersection_ok = FALSE,
   resampling = NULL,
   overview_resampling = NULL,
-  copy_src_metadata = FALSE,
-  output_format = NULL,
-  output = NULL,
-  dst_nodata = NULL,
-  open_option = NULL,
-  creation_option = NULL,
-  max_zoom = NULL,
-  max_x = NULL,
-  max_y = NULL,
   convention = NULL,
   tile_size = NULL,
   add_alpha = FALSE,
   no_alpha = FALSE,
+  dst_nodata = NULL,
   skip_blank = FALSE,
   metadata = NULL,
+  copy_src_metadata = FALSE,
   aux_xml = FALSE,
   kml = FALSE,
   resume = FALSE,
@@ -93,32 +86,31 @@ gdal_raster_tile <- function(job = NULL,
   title = NULL,
   copyright = NULL,
   mapml_template = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
+  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(tiling_scheme)) new_args[["tiling_scheme"]] <- tiling_scheme
   if (!missing(min_zoom)) new_args[["min_zoom"]] <- min_zoom
+  if (!missing(max_zoom)) new_args[["max_zoom"]] <- max_zoom
   if (!missing(min_x)) new_args[["min_x"]] <- min_x
+  if (!missing(max_x)) new_args[["max_x"]] <- max_x
   if (!missing(min_y)) new_args[["min_y"]] <- min_y
+  if (!missing(max_y)) new_args[["max_y"]] <- max_y
   if (!missing(no_intersection_ok)) new_args[["no_intersection_ok"]] <- no_intersection_ok
   if (!missing(resampling)) new_args[["resampling"]] <- resampling
   if (!missing(overview_resampling)) new_args[["overview_resampling"]] <- overview_resampling
-  if (!missing(copy_src_metadata)) new_args[["copy_src_metadata"]] <- copy_src_metadata
-  if (!missing(output_format)) new_args[["output_format"]] <- output_format
-  if (!missing(output)) new_args[["output"]] <- output
-  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
-  if (!missing(open_option)) new_args[["open_option"]] <- open_option
-  if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
-  if (!missing(max_zoom)) new_args[["max_zoom"]] <- max_zoom
-  if (!missing(max_x)) new_args[["max_x"]] <- max_x
-  if (!missing(max_y)) new_args[["max_y"]] <- max_y
   if (!missing(convention)) new_args[["convention"]] <- convention
   if (!missing(tile_size)) new_args[["tile_size"]] <- tile_size
   if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
   if (!missing(no_alpha)) new_args[["no_alpha"]] <- no_alpha
+  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
   if (!missing(skip_blank)) new_args[["skip_blank"]] <- skip_blank
   if (!missing(metadata)) new_args[["metadata"]] <- metadata
+  if (!missing(copy_src_metadata)) new_args[["copy_src_metadata"]] <- copy_src_metadata
   if (!missing(aux_xml)) new_args[["aux_xml"]] <- aux_xml
   if (!missing(kml)) new_args[["kml"]] <- kml
   if (!missing(resume)) new_args[["resume"]] <- resume
@@ -133,10 +125,8 @@ gdal_raster_tile <- function(job = NULL,
   if (!missing(mapml_template)) new_args[["mapml_template"]] <- mapml_template
   job_input <- handle_job_input(job, new_args, c("raster", "tile"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "tile"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

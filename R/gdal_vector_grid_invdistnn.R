@@ -3,21 +3,17 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Create a regular grid from scattered points using weighted inverse distance interpolation nearest neighbour.
+#' @title invdistnn: Create a regular grid from scattered points using weighted inverse distance...
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Create a regular grid from scattered points using weighted inverse distance interpolation nearest neighbour.
+#' This program creates a regular grid (raster) from the scattered data read from
+#' a vector dataset. Input data will be interpolated to fill grid nodes with
+#' values, you can choose from various interpolation methods.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_invdistnn.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
-#' @param smoothing Smoothing parameter (Default: `0`)
-#' @param min_points Minimum number of data points to use (Integer) (Default: `0`)
-#' @param max_points Maximum number of data points to use (Integer) (Default: `12`)
-#' @param min_points_per_quadrant Minimum number of data points to use per quadrant (Integer) (Default: `0`)
-#' @param max_points_per_quadrant Maximum number of data points to use per quadrant (Integer) (Default: `2147483647`)
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format
 #' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: `Float64`)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -34,55 +30,48 @@
 #' @param zoffset Value to add to the Z field value (applied before zmultiply) (Default: `0`)
 #' @param zmultiply Multiplication factor for the Z field value (applied after zoffset) (Default: `1`)
 #' @param power Weighting power (Default: `2`)
+#' @param smoothing Smoothing parameter (Default: `0`)
 #' @param radius Radius of the search circle
+#' @param min_points Minimum number of data points to use (Integer) (Default: `0`)
+#' @param max_points Maximum number of data points to use (Integer) (Default: `12`)
+#' @param min_points_per_quadrant Minimum number of data points to use per quadrant (Integer) (Default: `0`)
+#' @param max_points_per_quadrant Maximum number of data points to use per quadrant (Integer) (Default: `2147483647`)
 #' @param nodata Target nodata value (Default: `0`)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_grid_invdistnn(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector_grid_invdistnn <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  smoothing = NULL,
-  min_points = NULL,
-  max_points = NULL,
-  min_points_per_quadrant = NULL,
-  max_points_per_quadrant = NULL,
-  output = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
-  extent,
-  resolution,
-  size,
+  extent = NULL,
+  resolution = NULL,
+  size = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
   sql = NULL,
-  bbox,
+  bbox = NULL,
   zfield = NULL,
   zoffset = NULL,
   zmultiply = NULL,
   power = NULL,
+  smoothing = NULL,
   radius = NULL,
+  min_points = NULL,
+  max_points = NULL,
+  min_points_per_quadrant = NULL,
+  max_points_per_quadrant = NULL,
   nodata = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
-  if (!missing(smoothing)) new_args[["smoothing"]] <- smoothing
-  if (!missing(min_points)) new_args[["min_points"]] <- min_points
-  if (!missing(max_points)) new_args[["max_points"]] <- max_points
-  if (!missing(min_points_per_quadrant)) new_args[["min_points_per_quadrant"]] <- min_points_per_quadrant
-  if (!missing(max_points_per_quadrant)) new_args[["max_points_per_quadrant"]] <- max_points_per_quadrant
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -99,14 +88,17 @@ gdal_vector_grid_invdistnn <- function(job = NULL,
   if (!missing(zoffset)) new_args[["zoffset"]] <- zoffset
   if (!missing(zmultiply)) new_args[["zmultiply"]] <- zmultiply
   if (!missing(power)) new_args[["power"]] <- power
+  if (!missing(smoothing)) new_args[["smoothing"]] <- smoothing
   if (!missing(radius)) new_args[["radius"]] <- radius
+  if (!missing(min_points)) new_args[["min_points"]] <- min_points
+  if (!missing(max_points)) new_args[["max_points"]] <- max_points
+  if (!missing(min_points_per_quadrant)) new_args[["min_points_per_quadrant"]] <- min_points_per_quadrant
+  if (!missing(max_points_per_quadrant)) new_args[["max_points_per_quadrant"]] <- max_points_per_quadrant
   if (!missing(nodata)) new_args[["nodata"]] <- nodata
   job_input <- handle_job_input(job, new_args, c("vector", "grid", "invdistnn"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "grid", "invdistnn"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

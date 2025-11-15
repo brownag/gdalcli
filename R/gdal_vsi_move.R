@@ -3,10 +3,9 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
+#' @title move: Move/rename a file/directory located on GDAL Virtual System Interface (VSI)
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
+#' `gdal vsi move` move files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_move.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
@@ -15,26 +14,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vsi_move(source = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vsi_move <- function(job = NULL,
-  source = NULL,
-  destination = NULL) {
-  # Collect function arguments
+  source,
+  destination) {
   new_args <- list()
   if (!missing(source)) new_args[["source"]] <- source
   if (!missing(destination)) new_args[["destination"]] <- destination
   job_input <- handle_job_input(job, new_args, c("vsi", "move"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vsi", "move"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

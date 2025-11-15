@@ -2,9 +2,9 @@
 % Please edit documentation in R/gdal_vsi_move.R
 \name{gdal_vsi_move}
 \alias{gdal_vsi_move}
-\title{Move/rename a file/directory located on GDAL Virtual System Interface (VSI).}
+\title{move: Move/rename a file/directory located on GDAL Virtual System Interface (VSI)}
 \usage{
-gdal_vsi_move(job = NULL, source = NULL, destination = NULL)
+gdal_vsi_move(job = NULL, source, destination)
 }
 \arguments{
 \item{job}{A gdal_job object from a piped operation, or NULL}
@@ -17,17 +17,9 @@ gdal_vsi_move(job = NULL, source = NULL, destination = NULL)
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi move} move files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_move.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vsi_move(source = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

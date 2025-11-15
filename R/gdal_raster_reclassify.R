@@ -3,17 +3,17 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Reclassify values in a raster dataset
+#' @title reclassify: Reclassify values in a raster dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Reclassify values in a raster dataset
+#' `gdal raster reclassify` reclassifies values in an input dataset.
+#' A file (or string) specifies the mapping of input pixel values or ranges to output files.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_reclassify.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
-#' @param mapping Reclassification mappings (or specify a @<filename> to point to a file containing mappings (required)
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param mapping Reclassification mappings (or specify a @<filename> to point to a file containing mappings (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -22,29 +22,22 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_reclassify(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_reclassify <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
+  mapping,
   input_format = NULL,
-  mapping = NULL,
-  output = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
-  if (!missing(mapping)) new_args[["mapping"]] <- mapping
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(mapping)) new_args[["mapping"]] <- mapping
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -52,10 +45,8 @@ gdal_raster_reclassify <- function(job = NULL,
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
   job_input <- handle_job_input(job, new_args, c("raster", "reclassify"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "reclassify"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

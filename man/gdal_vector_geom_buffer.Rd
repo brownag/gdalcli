@@ -2,15 +2,15 @@
 % Please edit documentation in R/gdal_vector_geom_buffer.R
 \name{gdal_vector_geom_buffer}
 \alias{gdal_vector_geom_buffer}
-\title{Compute a buffer around geometries of a vector dataset.}
+\title{buffer: Compute a buffer around geometries of a vector dataset}
 \usage{
 gdal_vector_geom_buffer(
   job = NULL,
   input,
+  output,
+  distance,
   input_format = NULL,
   input_layer = NULL,
-  join_style = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -22,8 +22,8 @@ gdal_vector_geom_buffer(
   append = FALSE,
   active_layer = NULL,
   active_geometry = NULL,
-  distance = NULL,
   endcap_style = NULL,
+  join_style = NULL,
   mitre_limit = NULL,
   quadrant_segments = NULL,
   side = NULL
@@ -34,13 +34,13 @@ gdal_vector_geom_buffer(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
+\item{distance}{Distance to which to extend the geometry. (required)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
-
-\item{join_style}{Join style.. Choices: round, mitre, bevel (Default: \code{round})}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -64,9 +64,9 @@ gdal_vector_geom_buffer(
 
 \item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
 
-\item{distance}{Distance to which to extend the geometry. (required)}
-
 \item{endcap_style}{Endcap style.. Choices: round, flat, square (Default: \code{round})}
+
+\item{join_style}{Join style.. Choices: round, mitre, bevel (Default: \code{round})}
 
 \item{mitre_limit}{Mitre ratio limit (only affects mitered join style). (Default: \code{5}). Minimum: \code{0}}
 
@@ -78,17 +78,9 @@ gdal_vector_geom_buffer(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Compute a buffer around geometries of a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_buffer.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_geom_buffer(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

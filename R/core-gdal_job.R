@@ -3,7 +3,7 @@
 #' @description
 #' The `gdal_job` S3 class is the central data structure that encapsulates a GDAL command
 #' specification. It implements the lazy evaluation framework, where commands are constructed
-#' as objects and only executed when passed to [gdal_run()].
+#' as objects and only executed when passed to [gdal_job_run()].
 #'
 #' The class follows the S3 object system and is designed to be composable with the native
 #' R pipe (`|>`). Helper functions like [gdal_with_co()], [gdal_with_config()], etc., all
@@ -49,7 +49,7 @@
 #' An S3 object of class `gdal_job`.
 #'
 #' @seealso
-#' [gdal_run()], [gdal_with_co()], [gdal_with_config()], [gdal_with_env()]
+#' [gdal_job_run()], [gdal_with_co()], [gdal_with_config()], [gdal_with_env()]
 #'
 #' @examples
 #' # Low-level constructor (typically used internally by auto-generated functions)
@@ -191,6 +191,45 @@ print.gdal_job <- function(x, ...) {
   }
 
   invisible(x)
+}
+
+
+#' Str Method for GDAL Jobs
+#'
+#' @description
+#' Provides a compact string representation of a `gdal_job` object for debugging.
+#' Avoids recursive printing that can cause C stack overflow.
+#'
+#' @param object A `gdal_job` object.
+#' @param ... Additional arguments passed to str.default.
+#' @param max.level Maximum level of nesting to display (ignored for gdal_job).
+#' @param vec.len Maximum length of vectors to display (ignored for gdal_job).
+#'
+#' @return Invisibly returns `object`.
+#'
+#' @keywords internal
+#' @export
+str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
+  cat("<gdal_job>")
+  
+  # Show command path
+  if (length(object$command_path) > 0) {
+    cmd_str <- paste(object$command_path, collapse = " ")
+    cat(sprintf(" [Command: gdal %s]", cmd_str))
+  }
+  
+  # Show key arguments count
+  if (length(object$arguments) > 0) {
+    cat(sprintf(" [%d args]", length(object$arguments)))
+  }
+  
+  # Show pipeline info if present
+  if (!is.null(object$pipeline)) {
+    cat(sprintf(" [Pipeline: %d jobs]", length(object$pipeline$jobs)))
+  }
+  
+  cat("\n")
+  invisible(object)
 }
 
 
@@ -435,7 +474,7 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
   
   # Handle convenience methods
   switch(name,
-    "run" = function(...) gdal_run(x, ...),
+    "run" = function(...) gdal_job_run(x, ...),
     "print" = function(...) print(x, ...),
     "with_co" = function(...) gdal_with_co(x, ...),
     "with_config" = function(...) gdal_with_config(x, ...),

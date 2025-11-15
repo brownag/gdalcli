@@ -2,34 +2,34 @@
 % Please edit documentation in R/gdal_raster_tile.R
 \name{gdal_raster_tile}
 \alias{gdal_raster_tile}
-\title{Generate tiles in separate files from a raster dataset.}
+\title{tile: Generate tiles in separate files from a raster dataset}
 \usage{
 gdal_raster_tile(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
+  output_format = NULL,
+  open_option = NULL,
+  creation_option = NULL,
   tiling_scheme = NULL,
   min_zoom = NULL,
+  max_zoom = NULL,
   min_x = NULL,
+  max_x = NULL,
   min_y = NULL,
+  max_y = NULL,
   no_intersection_ok = FALSE,
   resampling = NULL,
   overview_resampling = NULL,
-  copy_src_metadata = FALSE,
-  output_format = NULL,
-  output = NULL,
-  dst_nodata = NULL,
-  open_option = NULL,
-  creation_option = NULL,
-  max_zoom = NULL,
-  max_x = NULL,
-  max_y = NULL,
   convention = NULL,
   tile_size = NULL,
   add_alpha = FALSE,
   no_alpha = FALSE,
+  dst_nodata = NULL,
   skip_blank = FALSE,
   metadata = NULL,
+  copy_src_metadata = FALSE,
   aux_xml = FALSE,
   kml = FALSE,
   resume = FALSE,
@@ -49,39 +49,35 @@ gdal_raster_tile(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
+\item{output}{Output directory (required)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output_format}{Output format (Default: \code{PNG})}
+
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{tiling_scheme}{Tiling scheme. Choices: raster, WebMercatorQuad, WorldCRS84Quad, WorldMercatorWGS84Quad, GoogleCRS84Quad, ... (Default: \code{WebMercatorQuad})}
 
 \item{min_zoom}{Minimum zoom level (Integer). Minimum: \code{0}}
 
+\item{max_zoom}{Maximum zoom level (Integer). Minimum: \code{0}}
+
 \item{min_x}{Minimum tile X coordinate (Integer). Minimum: \code{0}}
 
+\item{max_x}{Maximum tile X coordinate (Integer). Minimum: \code{0}}
+
 \item{min_y}{Minimum tile Y coordinate (Integer). Minimum: \code{0}}
+
+\item{max_y}{Maximum tile Y coordinate (Integer). Minimum: \code{0}}
 
 \item{no_intersection_ok}{Whether dataset extent not intersecting tile matrix is only a warning (Logical)}
 
 \item{resampling}{Resampling method for max zoom. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{cubic})}
 
 \item{overview_resampling}{Resampling method for overviews. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ...}
-
-\item{copy_src_metadata}{Whether to copy metadata from source dataset (Logical)}
-
-\item{output_format}{Output format (Default: \code{PNG})}
-
-\item{output}{Output directory (required)}
-
-\item{dst_nodata}{Destination nodata value}
-
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
-
-\item{max_zoom}{Maximum zoom level (Integer). Minimum: \code{0}}
-
-\item{max_x}{Maximum tile X coordinate (Integer). Minimum: \code{0}}
-
-\item{max_y}{Maximum tile Y coordinate (Integer). Minimum: \code{0}}
 
 \item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: xyz, tms (Default: \code{xyz})}
 
@@ -91,9 +87,13 @@ gdal_raster_tile(
 
 \item{no_alpha}{Whether to disable adding an alpha channel (Logical)}
 
+\item{dst_nodata}{Destination nodata value}
+
 \item{skip_blank}{Do not generate blank tiles (Logical)}
 
 \item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+
+\item{copy_src_metadata}{Whether to copy metadata from source dataset (Logical)}
 
 \item{aux_xml}{Generate .aux.xml sidecar files when needed (Logical)}
 
@@ -123,17 +123,9 @@ gdal_raster_tile(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Generate tiles in separate files from a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_tile.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_tile(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

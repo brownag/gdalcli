@@ -3,9 +3,8 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Multidimensional commands.
+#' @title mdim: Multidimensional commands
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Multidimensional commands.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_mdim.html} for detailed GDAL documentation.
@@ -14,24 +13,15 @@
 #' @return A [gdal_job] object.
 #' @family gdal_mdim_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_mdim(drivers = TRUE)
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_mdim <- function(job = NULL,
   drivers = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(drivers)) new_args[["drivers"]] <- drivers
   job_input <- handle_job_input(job, new_args, c("mdim"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("mdim"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

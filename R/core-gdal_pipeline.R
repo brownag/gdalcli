@@ -33,7 +33,7 @@
 #' An S3 object of class `gdal_pipeline`.
 #'
 #' @seealso
-#' [gdal_job], [gdal_run()], [render_gdal_pipeline()], [render_shell_script()]
+#' [gdal_job], [gdal_job_run()], [render_gdal_pipeline()], [render_shell_script()]
 #'
 #' @examples
 #' \dontrun{
@@ -45,7 +45,7 @@
 #' pipeline <- new_gdal_pipeline(list(job1, job2))
 #'
 #' # Execute pipeline
-#' gdal_run(pipeline)
+#' gdal_job_run(pipeline)
 #' }
 #'
 #' @export
@@ -149,8 +149,47 @@ print.gdal_pipeline <- function(x, ...) {
     cat("\n")
   }
 
-  invisible(x)
+    invisible(x)
 }
+
+
+#' Str Method for GDAL Pipelines
+#'
+#' @description
+#' Provides a compact string representation of a `gdal_pipeline` object.
+#' Avoids recursive printing that can cause C stack overflow.
+#'
+#' @param object A `gdal_pipeline` object.
+#' @param ... Additional arguments passed to str.default.
+#' @param max.level Maximum level of nesting to display (ignored for gdal_pipeline).
+#' @param vec.len Maximum length of vectors to display (ignored for gdal_pipeline).
+#'
+#' @return Invisibly returns `object`.
+#'
+#' @keywords internal
+#' @export
+str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
+  cat("<gdal_pipeline>")
+  
+  if (!is.null(object$name)) {
+    cat(sprintf(" [%s]", object$name))
+  }
+  
+  cat(sprintf(" [%d jobs]", length(object$jobs)))
+  
+  if (!is.null(object$description)) {
+    cat(sprintf(" [%s]", substr(object$description, 1, 50)))
+    if (nchar(object$description) > 50) {
+      cat("...")
+    }
+  }
+  
+  cat("\n")
+  invisible(object)
+}
+
+
+#' Check if Path is Virtual File System
 
 
 #' Execute a GDAL Pipeline
@@ -166,10 +205,10 @@ print.gdal_pipeline <- function(x, ...) {
 #' @return Invisibly returns `TRUE` on successful completion.
 #'
 #' @seealso
-#' [gdal_run.gdal_job()], [render_gdal_pipeline()]
+#' [gdal_job_run.gdal_job()], [render_gdal_pipeline()]
 #'
 #' @export
-gdal_run.gdal_pipeline <- function(x, ..., verbose = FALSE) {
+gdal_job_run.gdal_pipeline <- function(x, ..., verbose = FALSE) {
   if (length(x$jobs) == 0) {
     if (verbose) cli::cli_alert_info("Pipeline is empty - nothing to execute")
     return(invisible(TRUE))
@@ -206,7 +245,7 @@ gdal_run.gdal_pipeline <- function(x, ..., verbose = FALSE) {
 
     # Execute the job
     tryCatch({
-      gdal_run(job, ..., verbose = verbose)
+      gdal_job_run(job, ..., verbose = verbose)
     }, error = function(e) {
       cli::cli_abort(
         c(
@@ -244,7 +283,7 @@ gdal_run.gdal_pipeline <- function(x, ..., verbose = FALSE) {
 #' @return A character string containing the GDAL pipeline command.
 #'
 #' @seealso
-#' [render_shell_script()], [gdal_run.gdal_pipeline()]
+#' [render_shell_script()], [gdal_job_run.gdal_pipeline()]
 #'
 #' @export
 render_gdal_pipeline <- function(pipeline, ...) {
@@ -297,7 +336,7 @@ render_gdal_pipeline.gdal_pipeline <- function(pipeline, ...) {
 #' @return A character string containing the shell script.
 #'
 #' @seealso
-#' [render_gdal_pipeline()], [gdal_run.gdal_pipeline()]
+#' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()]
 #'
 #' @export
 render_shell_script <- function(pipeline, shell = "bash", ...) {

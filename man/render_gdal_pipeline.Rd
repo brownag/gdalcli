@@ -25,5 +25,5 @@ Converts a \code{gdal_pipeline} into a GDAL pipeline command string that can be
 executed directly with \verb{gdal pipeline}.
 }
 \seealso{
-\code{\link[=render_shell_script]{render_shell_script()}}, \code{\link[=gdal_run.gdal_pipeline]{gdal_run.gdal_pipeline()}}
+\code{\link[=render_shell_script]{render_shell_script()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}
 }

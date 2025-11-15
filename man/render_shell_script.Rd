@@ -26,5 +26,5 @@ A character string containing the shell script.
 Converts a \code{gdal_pipeline} into a shell script that executes the jobs sequentially.
 }
 \seealso{
-\code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=gdal_run.gdal_pipeline]{gdal_run.gdal_pipeline()}}
+\code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}
 }

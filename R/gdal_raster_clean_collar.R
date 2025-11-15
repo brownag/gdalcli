@@ -3,10 +3,14 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Clean the collar of a raster dataset, removing noise.
+#' @title clean-collar: Clean the collar of a raster dataset, removing noise
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Clean the collar of a raster dataset, removing noise.
+#' `gdal raster clean-collar` scans a (8-bit) image and sets all pixels that
+#' are nearly or exactly black (the default), white or one or more custom colors around the collar
+#' to black or white.
+#' This is often used to "fix up" lossy compressed air photos so that color pixels can be
+#' treated as transparent when mosaicing. The output format must use lossless compression
+#' if either alpha band or mask band is not set.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
@@ -27,15 +31,11 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_clean_collar(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
+#' # Example usage
+#' job <- gdal_raster_clean_collar(update = "my.tif")
 #' @export
 gdal_raster_clean_collar <- function(job = NULL,
-  input = NULL,
+  input,
   input_format = NULL,
   output = NULL,
   output_format = NULL,
@@ -49,7 +49,6 @@ gdal_raster_clean_collar <- function(job = NULL,
   add_alpha = FALSE,
   add_mask = FALSE,
   algorithm = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -67,10 +66,8 @@ gdal_raster_clean_collar <- function(job = NULL,
   if (!missing(algorithm)) new_args[["algorithm"]] <- algorithm
   job_input <- handle_job_input(job, new_args, c("raster", "clean-collar"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "clean-collar"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

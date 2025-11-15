@@ -3,50 +3,40 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Adding overviews.
+#' @title add: Adding overviews
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Adding overviews.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
-#' @param resampling Resampling method. Choices: nearest, average, cubic, cubicspline, lanczos, ...
-#' @param min_size Maximum width or height of the smallest overview level. (Integer). Minimum: `1`
-#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param dataset Dataset (to be updated in-place, unless --external) (Dataset path) (required)
+#' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param external Add external overviews (Logical)
+#' @param resampling Resampling method. Choices: nearest, average, cubic, cubicspline, lanczos, ...
 #' @param levels Levels / decimation factors (Integer vector). Minimum: `2`. `0` to `2147483647` value(s)
+#' @param min_size Maximum width or height of the smallest overview level. (Integer). Minimum: `1`
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_overview_add(resampling = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_overview_add <- function(job = NULL,
-  resampling = NULL,
-  min_size = NULL,
+  dataset,
   open_option = NULL,
-  dataset = NULL,
   external = FALSE,
-  levels = NULL) {
-  # Collect function arguments
+  resampling = NULL,
+  levels = NULL,
+  min_size = NULL) {
   new_args <- list()
-  if (!missing(resampling)) new_args[["resampling"]] <- resampling
-  if (!missing(min_size)) new_args[["min_size"]] <- min_size
-  if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
+  if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(external)) new_args[["external"]] <- external
+  if (!missing(resampling)) new_args[["resampling"]] <- resampling
   if (!missing(levels)) new_args[["levels"]] <- levels
+  if (!missing(min_size)) new_args[["min_size"]] <- min_size
   job_input <- handle_job_input(job, new_args, c("raster", "overview", "add"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "overview", "add"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

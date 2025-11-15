@@ -2,19 +2,19 @@
 % Please edit documentation in R/gdal_raster_pixel_info.R
 \name{gdal_raster_pixel_info}
 \alias{gdal_raster_pixel_info}
-\title{Return information on a pixel of a raster dataset.}
+\title{pixel-info: Return information on a pixel of a raster dataset}
 \usage{
 gdal_raster_pixel_info(
   job = NULL,
-  input = NULL,
+  input,
   input_format = NULL,
-  resampling = NULL,
   output_format = NULL,
   open_option = NULL,
   band = NULL,
   overview = NULL,
   position = NULL,
-  position_crs = NULL
+  position_crs = NULL,
+  resampling = NULL
 )
 }
 \arguments{
@@ -23,8 +23,6 @@ gdal_raster_pixel_info(
 \item{input}{Input raster dataset (Dataset path) (required)}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{resampling}{Resampling algorithm for interpolation. Choices: nearest, bilinear, cubic, cubicspline (Default: \code{nearest})}
 
 \item{output_format}{Output format. Choices: geojson, csv (Default: \code{geojson})}
 
@@ -37,22 +35,17 @@ gdal_raster_pixel_info(
 \item{position}{Pixel position. Format: \verb{<column,line> or <X,Y>}. \code{0} to \code{2147483647} value(s)}
 
 \item{position_crs}{CRS of position (Default: \code{pixel})}
+
+\item{resampling}{Resampling algorithm for interpolation. Choices: nearest, bilinear, cubic, cubicspline (Default: \code{nearest})}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Return information on a pixel of a raster dataset.
+\verb{gdal raster pixel-info} provide a mechanism to query information about
+a pixel given its location in one of a variety of coordinate systems.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_pixel_info(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -31,7 +31,7 @@ job <- gdal_vector_convert("in.shp", "out.gpkg") |>
   gdal_with_co("COMPRESS=LZW") |>
   gdal_with_co("LAYER_STRATEGY=INDENT")
 
-gdal_run(job)
+gdal_job_run(job)
 }
 
 }

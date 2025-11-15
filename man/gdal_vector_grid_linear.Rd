@@ -2,25 +2,25 @@
 % Please edit documentation in R/gdal_vector_grid_linear.R
 \name{gdal_vector_grid_linear}
 \alias{gdal_vector_grid_linear}
-\title{Create a regular grid from scattered points using linear/barycentric interpolation.}
+\title{linear: Create a regular grid from scattered points using linear/barycentric...}
 \usage{
 gdal_vector_grid_linear(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
-  extent,
-  resolution,
-  size,
+  extent = NULL,
+  resolution = NULL,
+  size = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
   sql = NULL,
-  bbox,
+  bbox = NULL,
   zfield = NULL,
   zoffset = NULL,
   zmultiply = NULL,
@@ -33,9 +33,9 @@ gdal_vector_grid_linear(
 
 \item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
@@ -75,17 +75,11 @@ gdal_vector_grid_linear(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Create a regular grid from scattered points using linear/barycentric interpolation.
+This program creates a regular grid (raster) from the scattered data read from
+a vector dataset. Input data will be interpolated to fill grid nodes with
+values, you can choose from various interpolation methods.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_linear.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_grid_linear(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

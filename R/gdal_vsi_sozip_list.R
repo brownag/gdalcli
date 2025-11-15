@@ -3,10 +3,9 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title List content of a ZIP file, with SOZIP related information.
+#' @title list: List content of a ZIP file, with SOZIP related information
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' List content of a ZIP file, with SOZIP related information.
+#' The gdal vsi sozip utility can be used to:
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
@@ -14,24 +13,15 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vsi_sozip_list(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vsi_sozip_list <- function(job = NULL,
-  input = NULL) {
-  # Collect function arguments
+  input) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   job_input <- handle_job_input(job, new_args, c("vsi", "sozip", "list"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vsi", "sozip", "list"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

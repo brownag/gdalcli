@@ -2,19 +2,19 @@
 % Please edit documentation in R/gdal_mdim_info.R
 \name{gdal_mdim_info}
 \alias{gdal_mdim_info}
-\title{Return information on a multidimensional dataset.}
+\title{info: Return information on a multidimensional dataset}
 \usage{
 gdal_mdim_info(
   job = NULL,
-  input = NULL,
+  input,
   input_format = NULL,
-  stdout = FALSE,
   open_option = NULL,
   detailed = FALSE,
   array = NULL,
   limit = NULL,
   array_option = NULL,
-  stats = FALSE
+  stats = FALSE,
+  stdout = FALSE
 )
 }
 \arguments{
@@ -23,8 +23,6 @@ gdal_mdim_info(
 \item{input}{Input multidimensional raster dataset (Dataset path) (required)}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -37,22 +35,17 @@ gdal_mdim_info(
 \item{array_option}{Option passed to GDALGroup::GetMDArrayNames() to filter reported arrays. (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{stats}{Read and display image statistics. (Logical)}
+
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Return information on a multidimensional dataset.
+\verb{gdal mdim info} lists various information about a GDAL supported
+multidimensional dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_mdim_info.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_mdim_info(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_mdim_utilities: 

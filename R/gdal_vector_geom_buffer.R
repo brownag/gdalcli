@@ -3,18 +3,17 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Compute a buffer around geometries of a vector dataset.
+#' @title buffer: Compute a buffer around geometries of a vector dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Compute a buffer around geometries of a vector dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_buffer.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector datasets (required). Exactly `1` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
+#' @param distance Distance to which to extend the geometry. (required)
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
-#' @param join_style Join style.. Choices: round, mitre, bevel (Default: `round`)
-#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -26,27 +25,21 @@
 #' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
 #' @param active_layer Set active layer (if not specified, all)
 #' @param active_geometry Geometry field name to which to restrict the processing (if not specified, all)
-#' @param distance Distance to which to extend the geometry. (required)
 #' @param endcap_style Endcap style.. Choices: round, flat, square (Default: `round`)
+#' @param join_style Join style.. Choices: round, mitre, bevel (Default: `round`)
 #' @param mitre_limit Mitre ratio limit (only affects mitered join style). (Default: `5`). Minimum: `0`
 #' @param quadrant_segments Number of line segments used to approximate a quarter circle. (Integer) (Default: `8`). Minimum: `1`
 #' @param side Sets whether the computed buffer should be single-sided or not.. Choices: both, left, right (Default: `both`)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_geom_buffer(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector_geom_buffer <- function(job = NULL,
   input,
+  output,
+  distance,
   input_format = NULL,
   input_layer = NULL,
-  join_style = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -58,18 +51,17 @@ gdal_vector_geom_buffer <- function(job = NULL,
   append = FALSE,
   active_layer = NULL,
   active_geometry = NULL,
-  distance = NULL,
   endcap_style = NULL,
+  join_style = NULL,
   mitre_limit = NULL,
   quadrant_segments = NULL,
   side = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(distance)) new_args[["distance"]] <- distance
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
-  if (!missing(join_style)) new_args[["join_style"]] <- join_style
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -81,17 +73,15 @@ gdal_vector_geom_buffer <- function(job = NULL,
   if (!missing(append)) new_args[["append"]] <- append
   if (!missing(active_layer)) new_args[["active_layer"]] <- active_layer
   if (!missing(active_geometry)) new_args[["active_geometry"]] <- active_geometry
-  if (!missing(distance)) new_args[["distance"]] <- distance
   if (!missing(endcap_style)) new_args[["endcap_style"]] <- endcap_style
+  if (!missing(join_style)) new_args[["join_style"]] <- join_style
   if (!missing(mitre_limit)) new_args[["mitre_limit"]] <- mitre_limit
   if (!missing(quadrant_segments)) new_args[["quadrant_segments"]] <- quadrant_segments
   if (!missing(side)) new_args[["side"]] <- side
   job_input <- handle_job_input(job, new_args, c("vector", "geom", "buffer"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "geom", "buffer"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

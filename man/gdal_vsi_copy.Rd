@@ -2,12 +2,12 @@
 % Please edit documentation in R/gdal_vsi_copy.R
 \name{gdal_vsi_copy}
 \alias{gdal_vsi_copy}
-\title{Copy files located on GDAL Virtual System Interface (VSI).}
+\title{copy: Copy files located on GDAL Virtual System Interface (VSI)}
 \usage{
 gdal_vsi_copy(
   job = NULL,
-  source = NULL,
-  destination = NULL,
+  source,
+  destination,
   recursive = FALSE,
   skip_errors = FALSE
 )
@@ -27,17 +27,9 @@ gdal_vsi_copy(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Copy files located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi copy} copy files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_copy.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vsi_copy(source = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

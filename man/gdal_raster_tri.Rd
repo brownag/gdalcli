@@ -2,13 +2,13 @@
 % Please edit documentation in R/gdal_raster_tri.R
 \name{gdal_raster_tri}
 \alias{gdal_raster_tri}
-\title{Generate a Terrain Ruggedness Index (TRI) map}
+\title{tri: Generate a Terrain Ruggedness Index (TRI) map}
 \usage{
 gdal_raster_tri(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -23,9 +23,9 @@ gdal_raster_tri(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -45,17 +45,9 @@ gdal_raster_tri(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Generate a Terrain Ruggedness Index (TRI) map
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_tri.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_tri(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -2,13 +2,13 @@
 % Please edit documentation in R/gdal_raster_roughness.R
 \name{gdal_raster_roughness}
 \alias{gdal_raster_roughness}
-\title{Generate a roughness map}
+\title{roughness: Generate a roughness map}
 \usage{
 gdal_raster_roughness(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -22,9 +22,9 @@ gdal_raster_roughness(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -42,17 +42,9 @@ gdal_raster_roughness(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Generate a roughness map
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_roughness.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_roughness(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -9,7 +9,7 @@
 \arguments{
 \item{job_env}{Named character vector of env vars from the job.}
 
-\item{explicit_env}{Named character vector of explicit env vars passed to gdal_run.}
+\item{explicit_env}{Named character vector of explicit env vars passed to gdal_job_run.}
 
 \item{config_opts}{Named character vector of GDAL config options.}
 }
@@ -20,7 +20,7 @@ A named character vector of all environment variables to pass to processx.
 Internal function that combines environment variables from multiple sources:
 \enumerate{
 \item Base environment variables from the job
-\item Explicit environment variables passed to gdal_run
+\item Explicit environment variables passed to gdal_job_run
 \item GDAL config options (converted to GDAL_CONFIG_* format if needed)
 \item Legacy global environment variables (for backward compatibility)
 }

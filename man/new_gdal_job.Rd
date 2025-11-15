@@ -38,7 +38,7 @@ An S3 object of class \code{gdal_job}.
 \description{
 The \code{gdal_job} S3 class is the central data structure that encapsulates a GDAL command
 specification. It implements the lazy evaluation framework, where commands are constructed
-as objects and only executed when passed to \code{\link[=gdal_run]{gdal_run()}}.
+as objects and only executed when passed to \code{\link[=gdal_job_run]{gdal_job_run()}}.
 
 The class follows the S3 object system and is designed to be composable with the native
 R pipe (\verb{|>}). Helper functions like \code{\link[=gdal_with_co]{gdal_with_co()}}, \code{\link[=gdal_with_config]{gdal_with_config()}}, etc., all
@@ -93,5 +93,5 @@ result <- job |>
 
 }
 \seealso{
-\code{\link[=gdal_run]{gdal_run()}}, \code{\link[=gdal_with_co]{gdal_with_co()}}, \code{\link[=gdal_with_config]{gdal_with_config()}}, \code{\link[=gdal_with_env]{gdal_with_env()}}
+\code{\link[=gdal_job_run]{gdal_job_run()}}, \code{\link[=gdal_with_co]{gdal_with_co()}}, \code{\link[=gdal_with_config]{gdal_with_config()}}, \code{\link[=gdal_with_env]{gdal_with_env()}}
 }

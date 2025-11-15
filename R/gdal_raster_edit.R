@@ -3,9 +3,8 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Edit a raster dataset.
+#' @title edit: Edit a raster dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Edit a raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_edit.html} for detailed GDAL documentation.
@@ -23,25 +22,20 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_edit(dataset = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
+#' # Example usage
+#' job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
 #' @export
 gdal_raster_edit <- function(job = NULL,
-  dataset = NULL,
+  dataset,
   auxiliary = FALSE,
   crs = NULL,
-  bbox,
+  bbox = NULL,
   nodata = NULL,
   metadata = NULL,
   unset_metadata = NULL,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
   if (!missing(auxiliary)) new_args[["auxiliary"]] <- auxiliary
@@ -55,10 +49,8 @@ gdal_raster_edit <- function(job = NULL,
   if (!missing(hist)) new_args[["hist"]] <- hist
   job_input <- handle_job_input(job, new_args, c("raster", "edit"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "edit"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

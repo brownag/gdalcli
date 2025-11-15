@@ -2,16 +2,16 @@
 % Please edit documentation in R/gdal_raster_pipeline.R
 \name{gdal_raster_pipeline}
 \alias{gdal_raster_pipeline}
-\title{Process a raster dataset.}
+\title{Process a raster dataset}
 \usage{
 gdal_raster_pipeline(
   jobs = NULL,
-  input = NULL,
   input_format = NULL,
-  pipeline = NULL,
+  input = NULL,
   output = NULL,
   output_format = NULL,
   open_option = NULL,
+  pipeline = NULL,
   creation_option = NULL,
   overwrite = FALSE
 )
@@ -19,17 +19,17 @@ gdal_raster_pipeline(
 \arguments{
 \item{jobs}{A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string}
 
-\item{input}{Input raster dataset (Dataset path)}
-
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{pipeline}{Pipeline string (ignored if jobs is provided)}
+\item{input}{Input raster dataset (Dataset path)}
 
 \item{output}{Output raster dataset (Dataset path)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{pipeline}{Pipeline string (ignored if jobs is provided)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
@@ -39,17 +39,9 @@ gdal_raster_pipeline(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Process a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_pipeline(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -21,7 +21,7 @@
 #' For example, GDAL 3.11.0 and 3.11.5 are compatible, but 3.11.x and
 #' 3.12.x are not.
 #'
-#' @seealso [gdal_run()], [gdalraster::gdal_version()]
+#' @seealso [gdal_job_run()], [gdalraster::gdal_version()]
 #'
 #' @examples
 #' \dontrun{

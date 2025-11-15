@@ -2,27 +2,27 @@
 % Please edit documentation in R/gdal_raster_reproject.R
 \name{gdal_raster_reproject}
 \alias{gdal_raster_reproject}
-\title{Reproject a raster dataset.}
+\title{reproject: Reproject a raster dataset}
 \usage{
 gdal_raster_reproject(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  src_crs = NULL,
-  resampling = NULL,
-  src_nodata,
-  output = NULL,
   output_format = NULL,
-  dst_crs = NULL,
-  dst_nodata,
+  target_aligned_pixels = FALSE,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  resolution,
-  size,
-  bbox,
+  src_crs = NULL,
+  dst_crs = NULL,
+  resampling = NULL,
+  resolution = NULL,
+  size = NULL,
+  bbox = NULL,
   bbox_crs = NULL,
-  target_aligned_pixels = FALSE,
+  src_nodata = NULL,
+  dst_nodata = NULL,
   add_alpha = FALSE,
   warp_option = NULL,
   transform_option = NULL,
@@ -34,27 +34,25 @@ gdal_raster_reproject(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{src_crs}{Source CRS}
-
-\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
-
-\item{src_nodata}{Set nodata values for input bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{dst_crs}{Destination CRS}
-
-\item{dst_nodata}{Set nodata values for output bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Advanced)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
+\item{src_crs}{Source CRS}
+
+\item{dst_crs}{Destination CRS}
+
+\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>}. Minimum: \code{0}. Exactly \code{2} value(s)}
 
@@ -64,7 +62,9 @@ gdal_raster_reproject(
 
 \item{bbox_crs}{CRS of target bounding box}
 
-\item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Advanced)}
+\item{src_nodata}{Set nodata values for input bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
+
+\item{dst_nodata}{Set nodata values for output bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
 
 \item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical) (Advanced)}
 
@@ -78,17 +78,9 @@ gdal_raster_reproject(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Reproject a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_reproject(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

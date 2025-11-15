@@ -2,14 +2,14 @@
 % Please edit documentation in R/gdal_vector_filter.R
 \name{gdal_vector_filter}
 \alias{gdal_vector_filter}
-\title{Filter a vector dataset.}
+\title{filter: Filter a vector dataset}
 \usage{
 gdal_vector_filter(
   job = NULL,
   input,
+  output,
   input_format = NULL,
   input_layer = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -20,7 +20,7 @@ gdal_vector_filter(
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  bbox,
+  bbox = NULL,
   where = NULL
 )
 }
@@ -29,11 +29,11 @@ gdal_vector_filter(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -63,17 +63,9 @@ gdal_vector_filter(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Filter a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_filter.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_filter(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

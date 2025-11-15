@@ -47,3 +47,5 @@
 
   sort(all_names)
 }
+
+`%||%` <- function(a, b) if (is.null(a)) b else a

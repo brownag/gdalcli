@@ -3,10 +3,9 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
+#' @title sync: Synchronize source and target file/directory located on GDAL Virtual System...
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
+#' `gdal vsi sync` synchronize files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
@@ -18,20 +17,13 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vsi_sync(source = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vsi_sync <- function(job = NULL,
-  source = NULL,
-  destination = NULL,
+  source,
+  destination,
   recursive = FALSE,
   strategy = NULL,
   num_threads = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(source)) new_args[["source"]] <- source
   if (!missing(destination)) new_args[["destination"]] <- destination
@@ -40,10 +32,8 @@ gdal_vsi_sync <- function(job = NULL,
   if (!missing(num_threads)) new_args[["num_threads"]] <- num_threads
   job_input <- handle_job_input(job, new_args, c("vsi", "sync"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vsi", "sync"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

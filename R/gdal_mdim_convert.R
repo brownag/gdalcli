@@ -3,16 +3,15 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Convert a multidimensional dataset.
+#' @title convert: Convert a multidimensional dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Convert a multidimensional dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster or multidimensional raster dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output Output multidimensional raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -26,17 +25,11 @@
 #' @return A [gdal_job] object.
 #' @family gdal_mdim_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_mdim_convert(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_mdim_convert <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -47,11 +40,10 @@ gdal_mdim_convert <- function(job = NULL,
   subset = NULL,
   scale_axes = NULL,
   strict = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
@@ -64,10 +56,8 @@ gdal_mdim_convert <- function(job = NULL,
   if (!missing(strict)) new_args[["strict"]] <- strict
   job_input <- handle_job_input(job, new_args, c("mdim", "convert"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("mdim", "convert"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

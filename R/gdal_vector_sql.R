@@ -3,16 +3,16 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Apply SQL statement(s) to a dataset.
+#' @title sql: Apply SQL statement(s) to a dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Apply SQL statement(s) to a dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_sql.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector datasets (required). Exactly `1` value(s)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output Output vector dataset (Dataset path) (required)
+#' @param sql SQL statement(s) (Character vector). Format: `<statement>|@<filename>` (required). `0` to `2147483647` value(s)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name(s) (Character vector). `0` to `2147483647` value(s)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -22,22 +22,16 @@
 #' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
 #' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
 #' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
-#' @param sql SQL statement(s) (Character vector). Format: `<statement>|@<filename>` (required). `0` to `2147483647` value(s)
 #' @param dialect SQL dialect (e.g. OGRSQL, SQLITE)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_sql(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector_sql <- function(job = NULL,
   input,
+  output,
+  sql,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -47,13 +41,12 @@ gdal_vector_sql <- function(job = NULL,
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  sql = NULL,
   dialect = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(sql)) new_args[["sql"]] <- sql
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -63,14 +56,11 @@ gdal_vector_sql <- function(job = NULL,
   if (!missing(update)) new_args[["update"]] <- update
   if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
   if (!missing(append)) new_args[["append"]] <- append
-  if (!missing(sql)) new_args[["sql"]] <- sql
   if (!missing(dialect)) new_args[["dialect"]] <- dialect
   job_input <- handle_job_input(job, new_args, c("vector", "sql"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "sql"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

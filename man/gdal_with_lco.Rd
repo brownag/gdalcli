@@ -30,7 +30,7 @@ job <- gdal_vector_convert("in.shp", "out.gpkg") |>
   gdal_with_lco("SPATIAL_INDEX=YES") |>
   gdal_with_lco("GEOMETRY_NAME=shape")
 
-gdal_run(job)
+gdal_job_run(job)
 }
 
 }

@@ -2,15 +2,15 @@
 % Please edit documentation in R/gdal_vector_select.R
 \name{gdal_vector_select}
 \alias{gdal_vector_select}
-\title{Select a subset of fields from a vector dataset.}
+\title{select: Select a subset of fields from a vector dataset}
 \usage{
 gdal_vector_select(
   job = NULL,
   input,
+  output,
+  fields,
   input_format = NULL,
   input_layer = NULL,
-  ignore_missing_fields = FALSE,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -21,8 +21,8 @@ gdal_vector_select(
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  fields = NULL,
-  exclude = FALSE
+  exclude = FALSE,
+  ignore_missing_fields = FALSE
 )
 }
 \arguments{
@@ -30,13 +30,13 @@ gdal_vector_select(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
+\item{fields}{Fields to select (or exclude if --exclude) (Character vector) (required). \code{0} to \code{2147483647} value(s)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
-
-\item{ignore_missing_fields}{Ignore missing fields (Logical)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -58,25 +58,17 @@ gdal_vector_select(
 
 \item{active_layer}{Set active layer (if not specified, all)}
 
-\item{fields}{Fields to select (or exclude if --exclude) (Character vector) (required). \code{0} to \code{2147483647} value(s)}
-
 \item{exclude}{Exclude specified fields (Logical)}
+
+\item{ignore_missing_fields}{Ignore missing fields (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Select a subset of fields from a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_select.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_select(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

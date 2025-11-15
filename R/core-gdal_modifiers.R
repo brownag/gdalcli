@@ -23,7 +23,7 @@
 #'   gdal_with_co("COMPRESS=LZW") |>
 #'   gdal_with_co("LAYER_STRATEGY=INDENT")
 #'
-#' gdal_run(job)
+#' gdal_job_run(job)
 #' }
 #'
 #' @export
@@ -86,7 +86,7 @@ gdal_with_co.default <- function(x, ...) {
 #'   gdal_with_lco("SPATIAL_INDEX=YES") |>
 #'   gdal_with_lco("GEOMETRY_NAME=shape")
 #'
-#' gdal_run(job)
+#' gdal_job_run(job)
 #' }
 #'
 #' @export
@@ -145,7 +145,7 @@ gdal_with_lco.default <- function(x, ...) {
 #' job <- gdal_vector_info("file.gpkg") |>
 #'   gdal_with_oo("VERIFY_BUFFERS=NO")
 #'
-#' gdal_run(job)
+#' gdal_job_run(job)
 #' }
 #'
 #' @export
@@ -205,7 +205,7 @@ gdal_with_oo.default <- function(x, ...) {
 #'   gdal_with_config("OGR_SQL_DIALECT=SQLITE") |>
 #'   gdal_with_config("GDAL_CACHEMAX=512")
 #'
-#' gdal_run(job)
+#' gdal_job_run(job)
 #' }
 #'
 #' @export
@@ -299,7 +299,7 @@ gdal_with_config.default <- function(x, ...) {
 #' job <- gdal_vector_convert("in.shp", "out.gpkg") |>
 #'   gdal_with_env(gdal_auth_s3(...))
 #'
-#' gdal_run(job)
+#' gdal_job_run(job)
 #' }
 #'
 #' @export

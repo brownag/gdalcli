@@ -55,6 +55,7 @@
 #'
 #' @export
 set_gdal_auth <- function(handler, ...) {
+  class(handler) <- handler
   UseMethod("set_gdal_auth", handler)
 }
 

@@ -2,20 +2,20 @@
 % Please edit documentation in R/gdal_vector_rasterize.R
 \name{gdal_vector_rasterize}
 \alias{gdal_vector_rasterize}
-\title{Burns vector geometries into a raster.}
+\title{rasterize: Burns vector geometries into a raster}
 \usage{
 gdal_vector_rasterize(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  invert = FALSE,
-  init = NULL,
-  output = NULL,
   output_format = NULL,
+  target_aligned_pixels = FALSE,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
   band = NULL,
+  invert = FALSE,
   all_touched = FALSE,
   burn = NULL,
   attribute_name = NULL,
@@ -26,12 +26,12 @@ gdal_vector_rasterize(
   sql = NULL,
   dialect = NULL,
   nodata = NULL,
+  init = NULL,
   crs = NULL,
   transformer_option = NULL,
-  extent,
-  resolution,
-  target_aligned_pixels = FALSE,
-  size,
+  extent = NULL,
+  resolution = NULL,
+  size = NULL,
   optimization = NULL,
   update = FALSE,
   overwrite = FALSE
@@ -42,15 +42,13 @@ gdal_vector_rasterize(
 
 \item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{invert}{Invert the rasterization (Logical) (Default: \code{false})}
-
-\item{init}{Pre-initialize output bands with specified value. \code{0} to \code{2147483647} value(s)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
 
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
 \item{output_format}{Output format}
+
+\item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical)}
 
 \item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
 
@@ -59,6 +57,8 @@ gdal_vector_rasterize(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{band}{The band(s) to burn values into (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+
+\item{invert}{Invert the rasterization (Logical) (Default: \code{false})}
 
 \item{all_touched}{Enables the ALL_TOUCHED rasterization option (Logical)}
 
@@ -80,6 +80,8 @@ gdal_vector_rasterize(
 
 \item{nodata}{Assign a specified nodata value to output bands}
 
+\item{init}{Pre-initialize output bands with specified value. \code{0} to \code{2147483647} value(s)}
+
 \item{crs}{Override the projection for the output file}
 
 \item{transformer_option}{Set a transformer option suitable to pass to GDALCreateGenImgProjTransformer2 (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
@@ -87,8 +89,6 @@ gdal_vector_rasterize(
 \item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
 \item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
-
-\item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical)}
 
 \item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
@@ -102,17 +102,9 @@ gdal_vector_rasterize(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Burns vector geometries into a raster.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_rasterize(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

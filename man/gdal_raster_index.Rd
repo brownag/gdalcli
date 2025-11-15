@@ -2,17 +2,15 @@
 % Please edit documentation in R/gdal_raster_index.R
 \name{gdal_raster_index}
 \alias{gdal_raster_index}
-\title{Create a vector index of raster datasets.}
+\title{index: Create a vector index of raster datasets}
 \usage{
 gdal_raster_index(
   job = NULL,
-  input = NULL,
-  min_pixel_size = NULL,
+  input,
+  output,
   source_crs_field_name = NULL,
   source_crs_format = NULL,
-  output = NULL,
   output_format = NULL,
-  dst_crs = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
@@ -22,9 +20,11 @@ gdal_raster_index(
   layer = NULL,
   recursive = FALSE,
   filename_filter = NULL,
+  min_pixel_size = NULL,
   max_pixel_size = NULL,
   location_name = NULL,
   absolute_path = FALSE,
+  dst_crs = NULL,
   metadata = NULL
 )
 }
@@ -33,17 +33,13 @@ gdal_raster_index(
 
 \item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s)}
 
-\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{source_crs_field_name}{Name of the field to store the CRS of each dataset}
 
 \item{source_crs_format}{Format in which the CRS of each dataset must be written. Choices: auto, WKT, EPSG, PROJ (Default: \code{auto})}
 
-\item{output}{Output vector dataset (Dataset path) (required)}
-
 \item{output_format}{Output format}
-
-\item{dst_crs}{Destination CRS}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
@@ -63,11 +59,15 @@ gdal_raster_index(
 
 \item{filename_filter}{Pattern that the filenames in input directories should follow ('*' and '?' wildcard) (Character vector). \code{0} to \code{2147483647} value(s)}
 
+\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
+
 \item{max_pixel_size}{Maximum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
 
 \item{location_name}{Name of the field with the raster path (Default: \code{location})}
 
 \item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
+
+\item{dst_crs}{Destination CRS}
 
 \item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 }
@@ -75,17 +75,9 @@ gdal_raster_index(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Create a vector index of raster datasets.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_index.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_index(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

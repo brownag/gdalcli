@@ -3,17 +3,16 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Return information on a vector dataset.
+#' @title info: Return information on a vector dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Return information on a vector dataset.
+#' `gdal vector info` lists various information about a GDAL supported
+#' vector dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_info.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector dataset (Dataset path) (required)
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format. Choices: json, text (Default: `json`)
-#' @param stdout Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param layer Layer name (Character vector). `0` to `2147483647` value(s)
 #' @param features List all features (beware of RAM consumption on large layers) (Logical)
@@ -21,34 +20,29 @@
 #' @param where Attribute query in a restricted form of the queries used in the SQL WHERE statement. Format: `<WHERE>|@<filename>`
 #' @param dialect SQL dialect
 #' @param update Open the dataset in update mode (Logical)
+#' @param stdout Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_info(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
+#' # Example usage
+#' job <- gdal_vector_info(features = "poly.gpkg")
 #' @export
 gdal_vector_info <- function(job = NULL,
-  input = NULL,
+  input,
   input_format = NULL,
   output_format = NULL,
-  stdout = FALSE,
   open_option = NULL,
   layer = NULL,
   features = FALSE,
   sql = NULL,
   where = NULL,
   dialect = NULL,
-  update = FALSE) {
-  # Collect function arguments
+  update = FALSE,
+  stdout = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
-  if (!missing(stdout)) new_args[["stdout"]] <- stdout
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(layer)) new_args[["layer"]] <- layer
   if (!missing(features)) new_args[["features"]] <- features
@@ -56,12 +50,11 @@ gdal_vector_info <- function(job = NULL,
   if (!missing(where)) new_args[["where"]] <- where
   if (!missing(dialect)) new_args[["dialect"]] <- dialect
   if (!missing(update)) new_args[["update"]] <- update
+  if (!missing(stdout)) new_args[["stdout"]] <- stdout
   job_input <- handle_job_input(job, new_args, c("vector", "info"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "info"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

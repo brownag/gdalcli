@@ -23,10 +23,10 @@ Install from main development branch:
 
 ```r
 # From GitHub
-remotes::install_github("your-org/gdalcli")
+remotes::install_github("andrewbrown/gdalcli")
 
 # Or from R-Universe (all versions)
-install.packages('gdalcli', repos = 'https://your-org.r-universe.dev')
+install.packages('gdalcli', repos = 'https://andrewbrown.r-universe.dev')
 ```
 
 **Pros:**
@@ -43,11 +43,11 @@ For users with GDAL 3.11.x installed:
 
 ```r
 # From GitHub
-remotes::install_github("your-org/gdalcli", ref = "release/gdal-3.11")
+remotes::install_github("andrewbrown/gdalcli", ref = "release/gdal-3.11")
 
 # Or from GDAL 3.11-specific R-Universe
 install.packages('gdalcli',
-  repos = 'https://your-org-gdal311.r-universe.dev')
+  repos = 'https://andrewbrown-gdal311.r-universe.dev')
 ```
 
 **Pros:**
@@ -66,11 +66,11 @@ For users with GDAL 3.12.x installed:
 
 ```r
 # From GitHub
-remotes::install_github("your-org/gdalcli", ref = "release/gdal-3.12")
+remotes::install_github("andrewbrown/gdalcli", ref = "release/gdal-3.12")
 
 # Or from GDAL 3.12-specific R-Universe
 install.packages('gdalcli',
-  repos = 'https://your-org-gdal312.r-universe.dev')
+  repos = 'https://andrewbrown-gdal312.r-universe.dev')
 ```
 
 ## Checking Your Installation
@@ -122,28 +122,28 @@ This metadata is used by `gdal_version_check()` to validate runtime compatibilit
 ### GDAL 3.11 Release
 
 - **Branch:** `release/gdal-3.11`
-- **R-Universe:** `https://your-org-gdal311.r-universe.dev`
-- **GitHub:** `https://github.com/your-org/gdalcli/tree/release/gdal-3.11`
+- **R-Universe:** `https://andrewbrown-gdal311.r-universe.dev`
+- **GitHub:** `https://github.com/andrewbrown/gdalcli/tree/release/gdal-3.11`
 - **GDAL Requirement:** `>= 3.11.0, < 3.12`
 - **Tested With:** GDAL 3.11.1
 - **Commands:** 83+ raster, vector, mdim, VSI, and driver functions
 
 **Installation:**
 ```r
-install.packages('gdalcli', repos = 'https://your-org-gdal311.r-universe.dev')
+install.packages('gdalcli', repos = 'https://andrewbrown-gdal312.r-universe.dev')
 ```
 
 ### GDAL 3.12 Release (When Available)
 
 - **Branch:** `release/gdal-3.12`
-- **R-Universe:** `https://your-org-gdal312.r-universe.dev`
-- **GitHub:** `https://github.com/your-org/gdalcli/tree/release/gdal-3.12`
+- **R-Universe:** `https://andrewbrown-gdal312.r-universe.dev`
+- **GitHub:** `https://github.com/andrewbrown/gdalcli/tree/release/gdal-3.12`
 - **GDAL Requirement:** `>= 3.12.0, < 3.13`
 - **Commands:** 83+ (architecture-specific commands)
 
 **Installation:**
 ```r
-install.packages('gdalcli', repos = 'https://your-org-gdal312.r-universe.dev')
+install.packages('gdalcli', repos = 'https://andrewbrown-gdal312.r-universe.dev')
 ```
 
 ## Architecture

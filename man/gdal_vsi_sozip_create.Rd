@@ -2,20 +2,20 @@
 % Please edit documentation in R/gdal_vsi_sozip_create.R
 \name{gdal_vsi_sozip_create}
 \alias{gdal_vsi_sozip_create}
-\title{Create a Seek-optimized ZIP (SOZIP) file.}
+\title{create: Create a Seek-optimized ZIP (SOZIP) file}
 \usage{
 gdal_vsi_sozip_create(
   job = NULL,
-  input = NULL,
-  sozip_min_file_size = NULL,
-  output = NULL,
-  stdout = FALSE,
+  input,
+  output,
   overwrite = FALSE,
   recursive = FALSE,
   no_paths = FALSE,
   enable_sozip = NULL,
   sozip_chunk_size = NULL,
-  content_type = NULL
+  sozip_min_file_size = NULL,
+  content_type = NULL,
+  stdout = FALSE
 )
 }
 \arguments{
@@ -23,11 +23,7 @@ gdal_vsi_sozip_create(
 
 \item{input}{Input filenames (Character vector) (required). \code{0} to \code{2147483647} value(s)}
 
-\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
-
 \item{output}{Output ZIP filename (required)}
-
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -39,23 +35,19 @@ gdal_vsi_sozip_create(
 
 \item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix} (Default: \code{32768})}
 
+\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
+
 \item{content_type}{Store the Content-Type of the file being added.}
+
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Create a Seek-optimized ZIP (SOZIP) file.
+The gdal vsi sozip utility can be used to:
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_create.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vsi_sozip_create(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

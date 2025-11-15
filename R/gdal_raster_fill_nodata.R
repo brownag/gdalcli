@@ -3,65 +3,56 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Fill nodata raster regions by interpolation from edges.
+#' @title fill-nodata: Fill nodata raster regions by interpolation from edges
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Fill nodata raster regions by interpolation from edges.
+#' `gdal raster fill-nodata` fills nodata areas by interpolating
+#' from valid pixels around the edges of the area.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
-#' @param smoothing_iterations The number of 3x3 average filter smoothing iterations to run after the interpolation to dampen artifacts. The default is zero smoothing iterations. (Integer). Format: `SMOOTHING_ITERATIONS` (Default: `0`)
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
 #' @param band Input band (1-based index) (Integer) (Default: `1`)
 #' @param max_distance The maximum distance (in pixels) that the algorithm will search out for values to interpolate. (Integer). Format: `MAX_DISTANCE` (Default: `100`)
+#' @param smoothing_iterations The number of 3x3 average filter smoothing iterations to run after the interpolation to dampen artifacts. The default is zero smoothing iterations. (Integer). Format: `SMOOTHING_ITERATIONS` (Default: `0`)
 #' @param mask Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path)
 #' @param strategy By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: invdist, nearest (Default: `invdist`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_fill_nodata(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_fill_nodata <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  smoothing_iterations = NULL,
-  output = NULL,
   output_format = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
   max_distance = NULL,
+  smoothing_iterations = NULL,
   mask = NULL,
   strategy = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
-  if (!missing(smoothing_iterations)) new_args[["smoothing_iterations"]] <- smoothing_iterations
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
   if (!missing(band)) new_args[["band"]] <- band
   if (!missing(max_distance)) new_args[["max_distance"]] <- max_distance
+  if (!missing(smoothing_iterations)) new_args[["smoothing_iterations"]] <- smoothing_iterations
   if (!missing(mask)) new_args[["mask"]] <- mask
   if (!missing(strategy)) new_args[["strategy"]] <- strategy
   job_input <- handle_job_input(job, new_args, c("raster", "fill-nodata"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "fill-nodata"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

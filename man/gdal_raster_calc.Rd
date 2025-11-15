@@ -2,19 +2,19 @@
 % Please edit documentation in R/gdal_raster_calc.R
 \name{gdal_raster_calc}
 \alias{gdal_raster_calc}
-\title{Perform raster algebra}
+\title{calc: Perform raster algebra}
 \usage{
 gdal_raster_calc(
   job = NULL,
   input,
-  output = NULL,
+  output,
+  calc,
   output_format = NULL,
   output_data_type = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   no_check_srs = FALSE,
-  no_check_extent = FALSE,
-  calc
+  no_check_extent = FALSE
 )
 }
 \arguments{
@@ -23,6 +23,8 @@ gdal_raster_calc(
 \item{input}{Input raster datasets (Character vector). Format: \code{INPUTS} (required). \code{1} to \code{2147483647} value(s)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{calc}{Expression(s) to evaluate (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -35,24 +37,18 @@ gdal_raster_calc(
 \item{no_check_srs}{Do not check consistency of input spatial reference systems (Logical)}
 
 \item{no_check_extent}{Do not check consistency of input extents (Logical)}
-
-\item{calc}{Expression(s) to evaluate (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Perform raster algebra
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_calc.html} for detailed GDAL documentation.
 }
 \examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_calc(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
+# Example usage
+job <- gdal_raster_calc(calc = "A+B+C")
 }
 \seealso{
 Other gdal_raster_utilities: 

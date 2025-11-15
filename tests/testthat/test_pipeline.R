@@ -135,7 +135,7 @@ test_that("pipeline execution fails gracefully on errors", {
 
   # Should fail at first job
   expect_error(
-    gdal_run(job),
+    gdal_job_run(job),
     "Pipeline failed at job 1"
   )
 })

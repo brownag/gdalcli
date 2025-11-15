@@ -3,16 +3,17 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Create a regular grid from scattered points using linear/barycentric interpolation.
+#' @title linear: Create a regular grid from scattered points using linear/barycentric...
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Create a regular grid from scattered points using linear/barycentric interpolation.
+#' This program creates a regular grid (raster) from the scattered data read from
+#' a vector dataset. Input data will be interpolated to fill grid nodes with
+#' values, you can choose from various interpolation methods.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_linear.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format
 #' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: `Float64`)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -33,39 +34,32 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_grid_linear(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector_grid_linear <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
-  extent,
-  resolution,
-  size,
+  extent = NULL,
+  resolution = NULL,
+  size = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
   sql = NULL,
-  bbox,
+  bbox = NULL,
   zfield = NULL,
   zoffset = NULL,
   zmultiply = NULL,
   radius = NULL,
   nodata = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -85,10 +79,8 @@ gdal_vector_grid_linear <- function(job = NULL,
   if (!missing(nodata)) new_args[["nodata"]] <- nodata
   job_input <- handle_job_input(job, new_args, c("vector", "grid", "linear"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "grid", "linear"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

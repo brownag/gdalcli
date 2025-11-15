@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdal_vector.R
 \name{gdal_vector}
 \alias{gdal_vector}
-\title{Vector commands.}
+\title{vector: Vector commands}
 \usage{
 gdal_vector(job = NULL, drivers = FALSE)
 }
@@ -15,17 +15,9 @@ gdal_vector(job = NULL, drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Vector commands.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector(drivers = TRUE)
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

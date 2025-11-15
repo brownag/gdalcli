@@ -18,3 +18,5 @@
 \.gdal_doc_cache
 \.test_cache
 \.\.Rcheck
+^doc$
+^Meta$

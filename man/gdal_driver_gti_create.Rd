@@ -2,16 +2,13 @@
 % Please edit documentation in R/gdal_driver_gti_create.R
 \name{gdal_driver_gti_create}
 \alias{gdal_driver_gti_create}
-\title{Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.}
+\title{create: Create an index of raster datasets compatible of the GDAL Tile Index (GTI)...}
 \usage{
 gdal_driver_gti_create(
   job = NULL,
-  input = NULL,
-  min_pixel_size = NULL,
-  color_interpretation = NULL,
-  output = NULL,
+  input,
+  output,
   output_format = NULL,
-  dst_crs = NULL,
   output_data_type = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -22,15 +19,18 @@ gdal_driver_gti_create(
   layer = NULL,
   recursive = FALSE,
   filename_filter = NULL,
+  min_pixel_size = NULL,
   max_pixel_size = NULL,
   location_name = NULL,
   absolute_path = FALSE,
+  dst_crs = NULL,
   metadata = NULL,
   xml_filename = NULL,
-  resolution,
-  bbox,
+  resolution = NULL,
+  bbox = NULL,
   band_count = NULL,
   nodata = NULL,
+  color_interpretation = NULL,
   mask = FALSE,
   fetch_metadata = NULL
 )
@@ -40,15 +40,9 @@ gdal_driver_gti_create(
 
 \item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s)}
 
-\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
-
-\item{color_interpretation}{Color interpretation(s) of the bands of the virtual mosaic (Character vector). Choices: red, green, blue, alpha, gray, .... \code{0} to \code{2147483647} value(s)}
-
 \item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
-
-\item{dst_crs}{Destination CRS}
 
 \item{output_data_type}{Datatype of the virtual mosaic. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
 
@@ -70,11 +64,15 @@ gdal_driver_gti_create(
 
 \item{filename_filter}{Pattern that the filenames in input directories should follow ('*' and '?' wildcard) (Character vector). \code{0} to \code{2147483647} value(s)}
 
+\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
+
 \item{max_pixel_size}{Maximum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
 
 \item{location_name}{Name of the field with the raster path (Default: \code{location})}
 
 \item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
+
+\item{dst_crs}{Destination CRS}
 
 \item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
@@ -88,6 +86,8 @@ gdal_driver_gti_create(
 
 \item{nodata}{Nodata value(s) of the bands of the virtual mosaic. \code{0} to \code{2147483647} value(s)}
 
+\item{color_interpretation}{Color interpretation(s) of the bands of the virtual mosaic (Character vector). Choices: red, green, blue, alpha, gray, .... \code{0} to \code{2147483647} value(s)}
+
 \item{mask}{Defines that the virtual mosaic has a mask band (Logical)}
 
 \item{fetch_metadata}{Fetch a metadata item from source rasters and write it as a field in the index. (Character vector). Format: \verb{<gdal-metadata-name>,<field-name>,<field-type>}. \code{0} to \code{2147483647} value(s)}
@@ -96,17 +96,9 @@ gdal_driver_gti_create(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.
 
 See \url{https://gdal.org/en/stable/programs/gdal_driver_gti_create.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_driver_gti_create(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_driver_utilities: 

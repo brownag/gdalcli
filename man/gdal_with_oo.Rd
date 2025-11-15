@@ -29,7 +29,7 @@ This function is designed to be used with the native R pipe (\verb{|>}).
 job <- gdal_vector_info("file.gpkg") |>
   gdal_with_oo("VERIFY_BUFFERS=NO")
 
-gdal_run(job)
+gdal_job_run(job)
 }
 
 }

@@ -3,17 +3,16 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Clip a vector dataset.
+#' @title clip: Clip a vector dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Clip a vector dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_clip.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector datasets (required). Exactly `1` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
-#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -35,18 +34,12 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_clip(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector_clip <- function(job = NULL,
   input,
+  output,
   input_format = NULL,
   input_layer = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -57,7 +50,7 @@ gdal_vector_clip <- function(job = NULL,
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  bbox,
+  bbox = NULL,
   bbox_crs = NULL,
   geometry = NULL,
   geometry_crs = NULL,
@@ -65,12 +58,11 @@ gdal_vector_clip <- function(job = NULL,
   like_sql = NULL,
   like_layer = NULL,
   like_where = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -91,10 +83,8 @@ gdal_vector_clip <- function(job = NULL,
   if (!missing(like_where)) new_args[["like_where"]] <- like_where
   job_input <- handle_job_input(job, new_args, c("vector", "clip"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "clip"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

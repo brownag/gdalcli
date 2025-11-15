@@ -2,13 +2,14 @@
 % Please edit documentation in R/gdal_vector_sql.R
 \name{gdal_vector_sql}
 \alias{gdal_vector_sql}
-\title{Apply SQL statement(s) to a dataset.}
+\title{sql: Apply SQL statement(s) to a dataset}
 \usage{
 gdal_vector_sql(
   job = NULL,
   input,
+  output,
+  sql,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -18,7 +19,6 @@ gdal_vector_sql(
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  sql = NULL,
   dialect = NULL
 )
 }
@@ -27,9 +27,11 @@ gdal_vector_sql(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output vector dataset (Dataset path) (required)}
+
+\item{sql}{SQL statement(s) (Character vector). Format: \verb{<statement>|@<filename>} (required). \code{0} to \code{2147483647} value(s)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -49,25 +51,15 @@ gdal_vector_sql(
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{sql}{SQL statement(s) (Character vector). Format: \verb{<statement>|@<filename>} (required). \code{0} to \code{2147483647} value(s)}
-
 \item{dialect}{SQL dialect (e.g. OGRSQL, SQLITE)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Apply SQL statement(s) to a dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_sql.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_sql(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

@@ -2,30 +2,28 @@
 % Please edit documentation in R/gdal_vsi_list.R
 \name{gdal_vsi_list}
 \alias{gdal_vsi_list}
-\title{List files of one of the GDAL Virtual System Interface (VSI).}
+\title{list: List files of one of the GDAL Virtual System Interface (VSI)}
 \usage{
 gdal_vsi_list(
   job = NULL,
-  long_listing = FALSE,
+  filename,
   output_format = NULL,
-  stdout = FALSE,
-  filename = NULL,
+  long_listing = FALSE,
   recursive = FALSE,
   depth = NULL,
   absolute_path = FALSE,
-  tree = FALSE
+  tree = FALSE,
+  stdout = FALSE
 )
 }
 \arguments{
 \item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{long_listing}{Use a long listing format (Logical)}
+\item{filename}{File or directory name (required)}
 
 \item{output_format}{Output format. Choices: json, text (Default: \code{json})}
 
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
-
-\item{filename}{File or directory name (required)}
+\item{long_listing}{Use a long listing format (Logical)}
 
 \item{recursive}{List subdirectories recursively (Logical)}
 
@@ -34,22 +32,16 @@ gdal_vsi_list(
 \item{absolute_path}{Display absolute path (Logical)}
 
 \item{tree}{Use a hierarchical presentation for JSON output (Logical)}
+
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-List files of one of the GDAL Virtual System Interface (VSI).
+\verb{gdal vsi list} list files of GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_list.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vsi_list(long_listing = TRUE)
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vsi_utilities: 

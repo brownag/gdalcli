@@ -34,7 +34,7 @@ gdal.alg$vector$translate
 
 # Call commands to create lazy-evaluated jobs
 job <- gdal.alg$raster$info(input = "data.tif")
-result <- gdal_run(job)
+result <- gdal_job_run(job)
 }\if{html}{\out{</div>}}
 }
 
@@ -84,11 +84,11 @@ then type \verb{gdal.alg$raster$} and press Tab for available commands.
   job <- gdal.alg()$raster$info(input = "data.tif")
 
   # Execute with gdal_run
-  result <- gdal_run(job)
+  result <- gdal_job_run(job)
 }
 
 }
 \seealso{
-\code{\link[=gdal_run]{gdal_run()}}, \code{\link[=gdal_with_co]{gdal_with_co()}}, \code{\link[=gdal_with_config]{gdal_with_config()}},
+\code{\link[=gdal_job_run]{gdal_job_run()}}, \code{\link[=gdal_with_co]{gdal_with_co()}}, \code{\link[=gdal_with_config]{gdal_with_config()}},
 \code{\link[=new_gdal_job]{new_gdal_job()}}
 }

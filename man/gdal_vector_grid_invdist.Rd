@@ -2,38 +2,38 @@
 % Please edit documentation in R/gdal_vector_grid_invdist.R
 \name{gdal_vector_grid_invdist}
 \alias{gdal_vector_grid_invdist}
-\title{Create a regular grid from scattered points using weighted inverse distance interpolation.}
+\title{invdist: Create a regular grid from scattered points using weighted inverse distance...}
 \usage{
 gdal_vector_grid_invdist(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  smoothing = NULL,
-  min_points = NULL,
-  max_points = NULL,
-  min_points_per_quadrant = NULL,
-  max_points_per_quadrant = NULL,
-  output = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
-  extent,
-  resolution,
-  size,
+  extent = NULL,
+  resolution = NULL,
+  size = NULL,
   crs = NULL,
   overwrite = FALSE,
   layer = NULL,
   sql = NULL,
-  bbox,
+  bbox = NULL,
   zfield = NULL,
   zoffset = NULL,
   zmultiply = NULL,
   power = NULL,
+  smoothing = NULL,
   radius = NULL,
   radius1 = NULL,
   radius2 = NULL,
   angle = NULL,
+  min_points = NULL,
+  max_points = NULL,
+  min_points_per_quadrant = NULL,
+  max_points_per_quadrant = NULL,
   nodata = NULL
 )
 }
@@ -42,19 +42,9 @@ gdal_vector_grid_invdist(
 
 \item{input}{Input vector dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{smoothing}{Smoothing parameter (Default: \code{0})}
-
-\item{min_points}{Minimum number of data points to use (Integer) (Default: \code{0})}
-
-\item{max_points}{Maximum number of data points to use (Integer) (Default: \code{2147483647})}
-
-\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer) (Default: \code{0})}
-
-\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
@@ -88,6 +78,8 @@ gdal_vector_grid_invdist(
 
 \item{power}{Weighting power (Default: \code{2})}
 
+\item{smoothing}{Smoothing parameter (Default: \code{0})}
+
 \item{radius}{Radius of the search circle}
 
 \item{radius1}{First axis of the search ellipse}
@@ -96,23 +88,25 @@ gdal_vector_grid_invdist(
 
 \item{angle}{Angle of search ellipse rotation in degrees (counter clockwise) (Default: \code{0})}
 
+\item{min_points}{Minimum number of data points to use (Integer) (Default: \code{0})}
+
+\item{max_points}{Maximum number of data points to use (Integer) (Default: \code{2147483647})}
+
+\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer) (Default: \code{0})}
+
+\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
+
 \item{nodata}{Target nodata value (Default: \code{0})}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Create a regular grid from scattered points using weighted inverse distance interpolation.
+This program creates a regular grid (raster) from the scattered data read from
+a vector dataset. Input data will be interpolated to fill grid nodes with
+values, you can choose from various interpolation methods.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_invdist.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_grid_invdist(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

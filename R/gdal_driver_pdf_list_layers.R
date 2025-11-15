@@ -3,9 +3,8 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title List layers of a PDF dataset
+#' @title list-layers: List layers of a PDF dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' List layers of a PDF dataset
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
@@ -15,26 +14,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_driver_pdf_list_layers(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_driver_pdf_list_layers <- function(job = NULL,
-  input = NULL,
+  input,
   output_format = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   job_input <- handle_job_input(job, new_args, c("driver", "pdf", "list-layers"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("driver", "pdf", "list-layers"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

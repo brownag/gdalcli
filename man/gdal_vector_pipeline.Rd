@@ -2,18 +2,18 @@
 % Please edit documentation in R/gdal_vector_pipeline.R
 \name{gdal_vector_pipeline}
 \alias{gdal_vector_pipeline}
-\title{Process a vector dataset.}
+\title{Process a vector dataset}
 \usage{
 gdal_vector_pipeline(
   jobs = NULL,
-  input,
   input_format = NULL,
+  input = NULL,
   input_layer = NULL,
-  pipeline = NULL,
   output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
+  pipeline = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
@@ -25,13 +25,11 @@ gdal_vector_pipeline(
 \arguments{
 \item{jobs}{A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string}
 
-\item{input}{Input vector datasets. \code{1} to \code{2147483647} value(s)}
-
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input}{Input vector datasets. \code{1} to \code{2147483647} value(s)}
 
-\item{pipeline}{Pipeline string (ignored if jobs is provided)}
+\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
 \item{output}{Output vector dataset (Dataset path)}
 
@@ -40,6 +38,8 @@ gdal_vector_pipeline(
 \item{output_layer}{Output layer name}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{pipeline}{Pipeline string (ignored if jobs is provided)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
@@ -57,17 +57,9 @@ gdal_vector_pipeline(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Process a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_pipeline(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

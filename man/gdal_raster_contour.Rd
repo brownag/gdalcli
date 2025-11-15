@@ -2,16 +2,13 @@
 % Please edit documentation in R/gdal_raster_contour.R
 \name{gdal_raster_contour}
 \alias{gdal_raster_contour}
-\title{Creates a vector contour from a raster elevation model (DEM).}
+\title{contour: Creates a vector contour from a raster elevation model (DEM)}
 \usage{
 gdal_raster_contour(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  min_name = NULL,
-  src_nodata = NULL,
-  interval = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -19,8 +16,11 @@ gdal_raster_contour(
   band = NULL,
   layer = NULL,
   elevation_name = NULL,
+  min_name = NULL,
   max_name = NULL,
   X3d = FALSE,
+  src_nodata = NULL,
+  interval = NULL,
   levels = NULL,
   exp_base = NULL,
   offset = NULL,
@@ -34,15 +34,9 @@ gdal_raster_contour(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{min_name}{Name of the minimum elevation field}
-
-\item{src_nodata}{Input pixel value to treat as 'nodata'}
-
-\item{interval}{Elevation interval between contours. Minimum: \code{0}}
-
 \item{output}{Output vector dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
@@ -58,9 +52,15 @@ gdal_raster_contour(
 
 \item{elevation_name}{Name of the elevation field}
 
+\item{min_name}{Name of the minimum elevation field}
+
 \item{max_name}{Name of the maximum elevation field}
 
 \item{X3d}{Force production of 3D vectors instead of 2D (Logical)}
+
+\item{src_nodata}{Input pixel value to treat as 'nodata'}
+
+\item{interval}{Elevation interval between contours. Minimum: \code{0}}
 
 \item{levels}{List of contour levels (Character vector). \code{0} to \code{2147483647} value(s)}
 
@@ -78,17 +78,9 @@ gdal_raster_contour(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Creates a vector contour from a raster elevation model (DEM).
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_contour.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_contour(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

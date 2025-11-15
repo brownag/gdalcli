@@ -2,13 +2,13 @@
 % Please edit documentation in R/gdal_raster_convert.R
 \name{gdal_raster_convert}
 \alias{gdal_raster_convert}
-\title{Convert a raster dataset.}
+\title{convert: Convert a raster dataset}
 \usage{
 gdal_raster_convert(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -21,9 +21,9 @@ gdal_raster_convert(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
@@ -39,17 +39,10 @@ gdal_raster_convert(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Convert a raster dataset.
+\verb{gdal raster convert} can be used to convert raster data between
+different formats.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_convert.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_convert(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

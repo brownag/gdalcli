@@ -3,10 +3,9 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Delete files located on GDAL Virtual System Interface (VSI).
+#' @title delete: Delete files located on GDAL Virtual System Interface (VSI)
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Delete files located on GDAL Virtual System Interface (VSI).
+#' `gdal vsi delete` delete files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
@@ -15,26 +14,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vsi_delete(filename = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vsi_delete <- function(job = NULL,
-  filename = NULL,
+  filename,
   recursive = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(filename)) new_args[["filename"]] <- filename
   if (!missing(recursive)) new_args[["recursive"]] <- recursive
   job_input <- handle_job_input(job, new_args, c("vsi", "delete"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vsi", "delete"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

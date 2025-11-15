@@ -3,18 +3,17 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Select a subset of fields from a vector dataset.
+#' @title select: Select a subset of fields from a vector dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Select a subset of fields from a vector dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_select.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector datasets (required). Exactly `1` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
+#' @param fields Fields to select (or exclude if --exclude) (Character vector) (required). `0` to `2147483647` value(s)
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
-#' @param ignore_missing_fields Ignore missing fields (Logical)
-#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -25,24 +24,18 @@
 #' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
 #' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
 #' @param active_layer Set active layer (if not specified, all)
-#' @param fields Fields to select (or exclude if --exclude) (Character vector) (required). `0` to `2147483647` value(s)
 #' @param exclude Exclude specified fields (Logical)
+#' @param ignore_missing_fields Ignore missing fields (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_select(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector_select <- function(job = NULL,
   input,
+  output,
+  fields,
   input_format = NULL,
   input_layer = NULL,
-  ignore_missing_fields = FALSE,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -53,15 +46,14 @@ gdal_vector_select <- function(job = NULL,
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  fields = NULL,
-  exclude = FALSE) {
-  # Collect function arguments
+  exclude = FALSE,
+  ignore_missing_fields = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(fields)) new_args[["fields"]] <- fields
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
-  if (!missing(ignore_missing_fields)) new_args[["ignore_missing_fields"]] <- ignore_missing_fields
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -72,14 +64,12 @@ gdal_vector_select <- function(job = NULL,
   if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
   if (!missing(append)) new_args[["append"]] <- append
   if (!missing(active_layer)) new_args[["active_layer"]] <- active_layer
-  if (!missing(fields)) new_args[["fields"]] <- fields
   if (!missing(exclude)) new_args[["exclude"]] <- exclude
+  if (!missing(ignore_missing_fields)) new_args[["ignore_missing_fields"]] <- ignore_missing_fields
   job_input <- handle_job_input(job, new_args, c("vector", "select"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "select"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

@@ -3,19 +3,16 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Modify the geometry type of a vector dataset.
+#' @title set-type: Modify the geometry type of a vector dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Modify the geometry type of a vector dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_set-type.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input vector datasets (required). Exactly `1` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
-#' @param single Force geometries to non-MULTI geometry types (Logical)
-#' @param linear Convert curve geometries to linear types (Logical)
-#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -31,26 +28,20 @@
 #' @param feature_only Only modify the geometry type of features (Logical)
 #' @param geometry_type Geometry type
 #' @param multi Force geometries to MULTI geometry types (Logical)
+#' @param single Force geometries to non-MULTI geometry types (Logical)
+#' @param linear Convert curve geometries to linear types (Logical)
 #' @param curve Convert linear geometries to curve types (Logical)
 #' @param dim Force geometries to the specified dimension. Choices: XY, XYZ, XYM, XYZM
 #' @param skip Skip feature when change of feature geometry type failed (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vector_geom_set_type(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vector_geom_set_type <- function(job = NULL,
   input,
+  output,
   input_format = NULL,
   input_layer = NULL,
-  single = FALSE,
-  linear = FALSE,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -66,17 +57,16 @@ gdal_vector_geom_set_type <- function(job = NULL,
   feature_only = FALSE,
   geometry_type = NULL,
   multi = FALSE,
+  single = FALSE,
+  linear = FALSE,
   curve = FALSE,
   dim = NULL,
   skip = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
-  if (!missing(single)) new_args[["single"]] <- single
-  if (!missing(linear)) new_args[["linear"]] <- linear
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -92,15 +82,15 @@ gdal_vector_geom_set_type <- function(job = NULL,
   if (!missing(feature_only)) new_args[["feature_only"]] <- feature_only
   if (!missing(geometry_type)) new_args[["geometry_type"]] <- geometry_type
   if (!missing(multi)) new_args[["multi"]] <- multi
+  if (!missing(single)) new_args[["single"]] <- single
+  if (!missing(linear)) new_args[["linear"]] <- linear
   if (!missing(curve)) new_args[["curve"]] <- curve
   if (!missing(dim)) new_args[["dim"]] <- dim
   if (!missing(skip)) new_args[["skip"]] <- skip
   job_input <- handle_job_input(job, new_args, c("vector", "geom", "set-type"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vector", "geom", "set-type"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

@@ -2,19 +2,18 @@
 % Please edit documentation in R/gdal_raster_clip.R
 \name{gdal_raster_clip}
 \alias{gdal_raster_clip}
-\title{Clip a raster dataset.}
+\title{clip: Clip a raster dataset}
 \usage{
 gdal_raster_clip(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  allow_bbox_outside_source = FALSE,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  bbox,
+  bbox = NULL,
   bbox_crs = NULL,
   geometry = NULL,
   geometry_crs = NULL,
@@ -23,6 +22,7 @@ gdal_raster_clip(
   like_layer = NULL,
   like_where = NULL,
   only_bbox = FALSE,
+  allow_bbox_outside_source = FALSE,
   add_alpha = FALSE
 )
 }
@@ -31,11 +31,9 @@ gdal_raster_clip(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{allow_bbox_outside_source}{Allow clipping box to include pixels outside input dataset (Logical)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -63,23 +61,17 @@ gdal_raster_clip(
 
 \item{only_bbox}{For 'geometry' and 'like', only consider their bounding box (Logical)}
 
+\item{allow_bbox_outside_source}{Allow clipping box to include pixels outside input dataset (Logical)}
+
 \item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Clip a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_clip.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_clip(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

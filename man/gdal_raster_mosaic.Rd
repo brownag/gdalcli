@@ -2,21 +2,21 @@
 % Please edit documentation in R/gdal_raster_mosaic.R
 \name{gdal_raster_mosaic}
 \alias{gdal_raster_mosaic}
-\title{Build a mosaic, either virtual (VRT) or materialized.}
+\title{mosaic: Build a mosaic, either virtual (VRT) or materialized}
 \usage{
 gdal_raster_mosaic(
   job = NULL,
-  input,
-  src_nodata,
-  output = NULL,
+  output,
+  input = NULL,
   output_format = NULL,
-  dst_nodata,
+  target_aligned_pixels = FALSE,
   creation_option = NULL,
   band = NULL,
   overwrite = FALSE,
   resolution = NULL,
-  bbox,
-  target_aligned_pixels = FALSE,
+  bbox = NULL,
+  src_nodata = NULL,
+  dst_nodata = NULL,
   hide_nodata = FALSE,
   add_alpha = FALSE
 )
@@ -24,15 +24,13 @@ gdal_raster_mosaic(
 \arguments{
 \item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s)}
-
-\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{dst_nodata}{Set nodata values at the destination band level.. \code{1} to \code{2147483647} value(s)}
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
@@ -44,7 +42,9 @@ gdal_raster_mosaic(
 
 \item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Exactly \code{4} value(s)}
 
-\item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
+\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
+
+\item{dst_nodata}{Set nodata values at the destination band level.. \code{1} to \code{2147483647} value(s)}
 
 \item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
 
@@ -54,17 +54,9 @@ gdal_raster_mosaic(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Build a mosaic, either virtual (VRT) or materialized.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_mosaic(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

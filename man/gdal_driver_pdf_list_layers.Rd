@@ -2,9 +2,9 @@
 % Please edit documentation in R/gdal_driver_pdf_list_layers.R
 \name{gdal_driver_pdf_list_layers}
 \alias{gdal_driver_pdf_list_layers}
-\title{List layers of a PDF dataset}
+\title{list-layers: List layers of a PDF dataset}
 \usage{
-gdal_driver_pdf_list_layers(job = NULL, input = NULL, output_format = NULL)
+gdal_driver_pdf_list_layers(job = NULL, input, output_format = NULL)
 }
 \arguments{
 \item{job}{A gdal_job object from a piped operation, or NULL}
@@ -17,17 +17,9 @@ gdal_driver_pdf_list_layers(job = NULL, input = NULL, output_format = NULL)
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 List layers of a PDF dataset
 
 See \url{https://gdal.org/en/stable/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_driver_pdf_list_layers(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_driver_utilities: 

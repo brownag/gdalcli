@@ -3,89 +3,79 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Compute the viewshed of a raster dataset.
+#' @title viewshed: Compute the viewshed of a raster dataset
 #' @description
-#' Auto-generated GDAL CLI wrapper.
 #' Compute the viewshed of a raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
 #' @param input Input raster dataset (Dataset path) (required)
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
-#' @param invisible_value Pixel value to set for invisible areas (Integer) (Default: `0`). Range: (`0` to `255`)
-#' @param observer_spacing Cell Spacing between observers (Integer) (Default: `10`). Minimum: `1`
 #' @param output Output raster dataset (Dataset path) (required)
+#' @param position Observer position. Format: `<X,Y> or <X,Y,H>` (required). `2` to `3` value(s)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format
-#' @param out_of_range_value Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Integer) (Default: `0`). Range: (`0` to `255`)
-#' @param dst_nodata The value to be set for the cells in the output raster that have no data. (Integer). Range: (`0` to `255`)
+#' @param target_height Height of the target above the DEM surface in the height unit of the DEM. (Default: `0`)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
-#' @param position Observer position. Format: `<X,Y> or <X,Y,H>` (required). `2` to `3` value(s)
-#' @param target_height Height of the target above the DEM surface in the height unit of the DEM. (Default: `0`)
 #' @param mode Sets what information the output contains.. Choices: normal, DEM, ground, cumulative (Default: `normal`)
 #' @param max_distance Maximum distance from observer to compute visibility. It is also used to clamp the extent of the output raster.. Minimum: `0`
 #' @param curvature_coefficient Coefficient to consider the effect of the curvature and refraction.. Minimum: `0`
 #' @param band Input band (1-based index) (Integer) (Default: `1`)
 #' @param visible_value Pixel value to set for visible areas (Integer) (Default: `255`). Range: (`0` to `255`)
+#' @param invisible_value Pixel value to set for invisible areas (Integer) (Default: `0`). Range: (`0` to `255`)
+#' @param out_of_range_value Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Integer) (Default: `0`). Range: (`0` to `255`)
+#' @param dst_nodata The value to be set for the cells in the output raster that have no data. (Integer). Range: (`0` to `255`)
+#' @param observer_spacing Cell Spacing between observers (Integer) (Default: `10`). Minimum: `1`
 #' @param num_threads Number of jobs (or ALL_CPUS) (Default: `3`)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_raster_viewshed(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_raster_viewshed <- function(job = NULL,
-  input = NULL,
+  input,
+  output,
+  position,
   input_format = NULL,
-  invisible_value = NULL,
-  observer_spacing = NULL,
-  output = NULL,
   output_format = NULL,
-  out_of_range_value = NULL,
-  dst_nodata = NULL,
+  target_height = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  position,
-  target_height = NULL,
   mode = NULL,
   max_distance = NULL,
   curvature_coefficient = NULL,
   band = NULL,
   visible_value = NULL,
+  invisible_value = NULL,
+  out_of_range_value = NULL,
+  dst_nodata = NULL,
+  observer_spacing = NULL,
   num_threads = NULL) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(input_format)) new_args[["input_format"]] <- input_format
-  if (!missing(invisible_value)) new_args[["invisible_value"]] <- invisible_value
-  if (!missing(observer_spacing)) new_args[["observer_spacing"]] <- observer_spacing
   if (!missing(output)) new_args[["output"]] <- output
+  if (!missing(position)) new_args[["position"]] <- position
+  if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
-  if (!missing(out_of_range_value)) new_args[["out_of_range_value"]] <- out_of_range_value
-  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
+  if (!missing(target_height)) new_args[["target_height"]] <- target_height
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
-  if (!missing(position)) new_args[["position"]] <- position
-  if (!missing(target_height)) new_args[["target_height"]] <- target_height
   if (!missing(mode)) new_args[["mode"]] <- mode
   if (!missing(max_distance)) new_args[["max_distance"]] <- max_distance
   if (!missing(curvature_coefficient)) new_args[["curvature_coefficient"]] <- curvature_coefficient
   if (!missing(band)) new_args[["band"]] <- band
   if (!missing(visible_value)) new_args[["visible_value"]] <- visible_value
+  if (!missing(invisible_value)) new_args[["invisible_value"]] <- invisible_value
+  if (!missing(out_of_range_value)) new_args[["out_of_range_value"]] <- out_of_range_value
+  if (!missing(dst_nodata)) new_args[["dst_nodata"]] <- dst_nodata
+  if (!missing(observer_spacing)) new_args[["observer_spacing"]] <- observer_spacing
   if (!missing(num_threads)) new_args[["num_threads"]] <- num_threads
   job_input <- handle_job_input(job, new_args, c("raster", "viewshed"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("raster", "viewshed"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

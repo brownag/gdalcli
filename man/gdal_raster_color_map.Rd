@@ -2,13 +2,13 @@
 % Please edit documentation in R/gdal_raster_color_map.R
 \name{gdal_raster_color_map}
 \alias{gdal_raster_color_map}
-\title{Generate a RGB or RGBA dataset from a single band, using a color map}
+\title{color-map: Generate a RGB or RGBA dataset from a single band, using a color map}
 \usage{
 gdal_raster_color_map(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -24,9 +24,9 @@ gdal_raster_color_map(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -48,17 +48,12 @@ gdal_raster_color_map(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Generate a RGB or RGBA dataset from a single band, using a color map
+\verb{gdal raster color-map} generates a RGB or RGBA dataset from a
+single band, using a color map, either attached directly to a raster band,
+or from an external text file. It is typically used to create hypsometric maps
+from a DEM.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_color_map(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

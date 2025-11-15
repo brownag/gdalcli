@@ -2,32 +2,32 @@
 % Please edit documentation in R/gdal_raster_footprint.R
 \name{gdal_raster_footprint}
 \alias{gdal_raster_footprint}
-\title{Compute the footprint of a raster dataset.}
+\title{footprint: Compute the footprint of a raster dataset}
 \usage{
 gdal_raster_footprint(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  combine_bands = NULL,
-  src_nodata,
-  coordinate_system = NULL,
-  min_ring_area = NULL,
-  max_points = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
-  dst_crs = NULL,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   append = FALSE,
   overwrite = FALSE,
   band = NULL,
+  combine_bands = NULL,
   overview = NULL,
+  src_nodata = NULL,
+  coordinate_system = NULL,
+  dst_crs = NULL,
   split_multipolygons = FALSE,
   convex_hull = FALSE,
   densify_distance = NULL,
   simplify_tolerance = NULL,
+  min_ring_area = NULL,
+  max_points = NULL,
   location_field = NULL,
   no_location_field = FALSE,
   absolute_path = FALSE
@@ -38,25 +38,13 @@ gdal_raster_footprint(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{combine_bands}{Defines how the mask bands of the selected bands are combined to generate a single mask band, before being vectorized.. Choices: union, intersection (Default: \code{union})}
-
-\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
-
-\item{coordinate_system}{Target coordinate system. Choices: georeferenced, pixel}
-
-\item{min_ring_area}{Minimum value for the area of a ring. Minimum: \code{0}}
-
-\item{max_points}{Maximum number of points of each output geometry (Default: \code{100})}
-
 \item{output}{Output vector dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
 \item{output_layer}{Output layer name (Default: \code{footprint})}
-
-\item{dst_crs}{Destination CRS}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -70,7 +58,15 @@ gdal_raster_footprint(
 
 \item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
+\item{combine_bands}{Defines how the mask bands of the selected bands are combined to generate a single mask band, before being vectorized.. Choices: union, intersection (Default: \code{union})}
+
 \item{overview}{Which overview level of source file must be used (Integer). Minimum: \code{0}}
+
+\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
+
+\item{coordinate_system}{Target coordinate system. Choices: georeferenced, pixel}
+
+\item{dst_crs}{Destination CRS}
 
 \item{split_multipolygons}{Whether to split multipolygons as several features each with one single polygon (Logical)}
 
@@ -79,6 +75,10 @@ gdal_raster_footprint(
 \item{densify_distance}{Maximum distance between 2 consecutive points of the output geometry.. Minimum: \code{0}}
 
 \item{simplify_tolerance}{Tolerance used to merge consecutive points of the output geometry.. Minimum: \code{0}}
+
+\item{min_ring_area}{Minimum value for the area of a ring. Minimum: \code{0}}
+
+\item{max_points}{Maximum number of points of each output geometry (Default: \code{100})}
 
 \item{location_field}{Name of the field where the path of the input dataset will be stored. (Default: \code{location})}
 
@@ -90,17 +90,9 @@ gdal_raster_footprint(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Compute the footprint of a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_footprint(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

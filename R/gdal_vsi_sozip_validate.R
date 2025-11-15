@@ -3,10 +3,9 @@
 # Do not edit directly. Changes will be overwritten on regeneration.
 # ===================================================================
 
-#' @title Validate a ZIP file, possibly using SOZIP optimization.
+#' @title validate: Validate a ZIP file, possibly using SOZIP optimization
 #' @description
-#' Auto-generated GDAL CLI wrapper.
-#' Validate a ZIP file, possibly using SOZIP optimization.
+#' The gdal vsi sozip utility can be used to:
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
 #' @param job A gdal_job object from a piped operation, or NULL
@@ -15,26 +14,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
-#' # Create a GDAL job (not executed)
-#' job <- gdal_vsi_sozip_validate(input = "data.tif")
-#' #
-#' # Inspect the job (optional)
-#' # print(job)
-
 #' @export
 gdal_vsi_sozip_validate <- function(job = NULL,
-  input = NULL,
+  input,
   stdout = FALSE) {
-  # Collect function arguments
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(stdout)) new_args[["stdout"]] <- stdout
   job_input <- handle_job_input(job, new_args, c("vsi", "sozip", "validate"))
   if (job_input$should_extend) {
-    # Extend pipeline from existing job
     return(extend_gdal_pipeline(job_input$job, c("vsi", "sozip", "validate"), new_args))
   } else {
-    # Create new job with merged arguments
     merged_args <- job_input$merged_args
   }
 

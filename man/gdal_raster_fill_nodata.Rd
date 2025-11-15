@@ -2,19 +2,19 @@
 % Please edit documentation in R/gdal_raster_fill_nodata.R
 \name{gdal_raster_fill_nodata}
 \alias{gdal_raster_fill_nodata}
-\title{Fill nodata raster regions by interpolation from edges.}
+\title{fill-nodata: Fill nodata raster regions by interpolation from edges}
 \usage{
 gdal_raster_fill_nodata(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  smoothing_iterations = NULL,
-  output = NULL,
   output_format = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
   max_distance = NULL,
+  smoothing_iterations = NULL,
   mask = NULL,
   strategy = NULL
 )
@@ -24,11 +24,9 @@ gdal_raster_fill_nodata(
 
 \item{input}{Input raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{smoothing_iterations}{The number of 3x3 average filter smoothing iterations to run after the interpolation to dampen artifacts. The default is zero smoothing iterations. (Integer). Format: \code{SMOOTHING_ITERATIONS} (Default: \code{0})}
-
 \item{output}{Output raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
@@ -40,6 +38,8 @@ gdal_raster_fill_nodata(
 
 \item{max_distance}{The maximum distance (in pixels) that the algorithm will search out for values to interpolate. (Integer). Format: \code{MAX_DISTANCE} (Default: \code{100})}
 
+\item{smoothing_iterations}{The number of 3x3 average filter smoothing iterations to run after the interpolation to dampen artifacts. The default is zero smoothing iterations. (Integer). Format: \code{SMOOTHING_ITERATIONS} (Default: \code{0})}
+
 \item{mask}{Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path)}
 
 \item{strategy}{By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: invdist, nearest (Default: \code{invdist})}
@@ -48,17 +48,10 @@ gdal_raster_fill_nodata(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
-Fill nodata raster regions by interpolation from edges.
+\verb{gdal raster fill-nodata} fills nodata areas by interpolating
+from valid pixels around the edges of the area.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_fill_nodata(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

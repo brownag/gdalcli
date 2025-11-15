@@ -2,13 +2,13 @@
 % Please edit documentation in R/gdal_mdim_convert.R
 \name{gdal_mdim_convert}
 \alias{gdal_mdim_convert}
-\title{Convert a multidimensional dataset.}
+\title{convert: Convert a multidimensional dataset}
 \usage{
 gdal_mdim_convert(
   job = NULL,
-  input = NULL,
+  input,
+  output,
   input_format = NULL,
-  output = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -26,9 +26,9 @@ gdal_mdim_convert(
 
 \item{input}{Input raster or multidimensional raster dataset (Dataset path) (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output}{Output multidimensional raster dataset (Dataset path) (required)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format}
 
@@ -54,17 +54,9 @@ gdal_mdim_convert(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Convert a multidimensional dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_mdim_convert(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_mdim_utilities: 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdal_mdim.R
 \name{gdal_mdim}
 \alias{gdal_mdim}
-\title{Multidimensional commands.}
+\title{mdim: Multidimensional commands}
 \usage{
 gdal_mdim(job = NULL, drivers = FALSE)
 }
@@ -15,17 +15,9 @@ gdal_mdim(job = NULL, drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Multidimensional commands.
 
 See \url{https://gdal.org/en/stable/programs/gdal_mdim.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_mdim(drivers = TRUE)
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_mdim_utilities: 

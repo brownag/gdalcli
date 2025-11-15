@@ -2,25 +2,25 @@
 % Please edit documentation in R/gdal_raster_create.R
 \name{gdal_raster_create}
 \alias{gdal_raster_create}
-\title{Create a new raster dataset.}
+\title{create: Create a new raster dataset}
 \usage{
 gdal_raster_create(
   job = NULL,
-  input = NULL,
+  output,
   input_format = NULL,
-  output = NULL,
+  input = NULL,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   append = FALSE,
-  size,
+  size = NULL,
   band_count = NULL,
   nodata = NULL,
   burn = NULL,
   crs = NULL,
-  bbox,
+  bbox = NULL,
   metadata = NULL,
   copy_metadata = FALSE,
   copy_overviews = FALSE
@@ -29,11 +29,11 @@ gdal_raster_create(
 \arguments{
 \item{job}{A gdal_job object from a piped operation, or NULL}
 
-\item{input}{Input raster dataset (Dataset path)}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path)}
 
 \item{output_format}{Output format}
 
@@ -69,17 +69,9 @@ gdal_raster_create(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Create a new raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_create.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_raster_create(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_raster_utilities: 

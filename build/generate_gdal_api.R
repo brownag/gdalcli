@@ -15,9 +15,10 @@
 library(processx)
 library(jsonlite)
 library(glue)
-library(rvest)      # For web scraping GDAL documentation
-library(httr)       # For HTTP requests with error handling
-library(xml2)       # For XML/HTML parsing utilities
+library(rvest)
+library(httr)
+library(xml2)
+library(magrittr)
 
 # ============================================================================
 # Step 0: Helper Functions
@@ -179,6 +180,188 @@ construct_doc_url <- function(full_path, base_url = "https://gdal.org/en/stable/
 }
 
 
+#' Fetch GDAL examples from OSGeo/gdal GitHub RST source files
+#'
+#' Attempts to fetch examples directly from the RST (reStructuredText) source files
+#' in the OSGeo/gdal repository. RST files have a deterministic structure with
+#' .. example:: directives, making parsing more reliable than HTML.
+#'
+#' @param command_name Character string with the command name (e.g., "gdal_raster_info").
+#' @param timeout Numeric timeout in seconds for HTTP request (default: 10).
+#' @param verbose Logical whether to print debug messages.
+#'
+#' @return List with elements:
+#'   - status: HTTP status code (200 for success, else error code)
+#'   - examples: Character vector of extracted example commands
+#'   - source: "rst" to indicate source type
+#'
+fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE) {
+  result <- list(
+    status = NA_integer_,
+    examples = character(0),
+    source = "rst"
+  )
+  
+  if (is.null(verbose)) verbose <- FALSE
+  if (!is.logical(verbose)) verbose <- FALSE
+  
+  # Convert command name to RST filename
+  # e.g., "gdal_raster_info" -> "gdal_raster_info.rst"
+  rst_filename <- paste0(command_name, ".rst")
+  
+  # Build raw GitHub URL for RST file
+  # Point to the master branch doc/source/programs/ directory
+  rst_url <- sprintf(
+    "https://raw.githubusercontent.com/OSGeo/gdal/master/doc/source/programs/%s",
+    rst_filename
+  )
+  
+  if (verbose) {
+    cat(sprintf("  [DEBUG] Attempting to fetch RST examples from %s\n", rst_url))
+  }
+  
+  # Attempt to fetch the RST file
+  response <- tryCatch(
+    {
+      httr::GET(rst_url, httr::timeout(timeout))
+    },
+    error = function(e) {
+      if (verbose) cat(sprintf("    [DEBUG] Error fetching RST: %s\n", e$message))
+      return(NULL)
+    }
+  )
+  
+  if (is.null(response)) {
+    result$status <- 0
+    return(result)
+  }
+  
+  status_code <- httr::status_code(response)
+  result$status <- status_code
+  
+  if (status_code != 200) {
+    if (verbose) {
+      cat(sprintf("    [DEBUG] RST fetch returned status %d\n", status_code))
+    }
+    return(result)
+  }
+  
+  # Extract content as text
+  rst_content <- httr::content(response, as = "text", encoding = "UTF-8")
+  
+  # Parse RST file to extract examples section
+  # RST format: 
+  #   Examples
+  #   --------
+  #   
+  #   .. example::
+  #      :title: Some title
+  #      
+  #      $ gdal command here
+  
+  examples <- .extract_examples_from_rst(rst_content)
+  
+  if (length(examples) > 0) {
+    result$examples <- examples
+    if (verbose) {
+      cat(sprintf("    [OK] Found %d examples in RST\n", length(examples)))
+    }
+  } else {
+    if (verbose) {
+      cat("    [DEBUG] No examples found in RST\n")
+    }
+  }
+  
+  return(result)
+}
+
+
+#' Extract example commands from RST content
+#'
+#' Helper function to parse RST content and extract code-block:: bash commands.
+#'
+#' @param rst_content Character string containing RST file content.
+#'
+#' @return Character vector of extracted example commands.
+#'
+.extract_examples_from_rst <- function(rst_content) {
+  examples <- character(0)
+  
+  # Split content into lines for processing
+  lines <- strsplit(rst_content, "\n", fixed = TRUE)[[1]]
+  
+  # Find "Examples" section (case-insensitive)
+  examples_idx <- which(grepl("^Examples\\s*$", lines, ignore.case = TRUE))
+  
+  if (length(examples_idx) == 0) {
+    return(examples)
+  }
+  
+  # Start from the Examples heading
+  start_idx <- examples_idx[1]
+  
+  # Find all code blocks starting from Examples section
+  for (i in (start_idx + 1):length(lines)) {
+    line <- lines[i]
+    
+    # Look for code-block directive: .. code-block:: bash
+    if (grepl("^\\s*\\.\\.\\s+code-block::\\s+bash", line, ignore.case = TRUE)) {
+      # Get the indentation of the code block
+      block_indent <- nchar(line) - nchar(trimws(line))
+      
+      # Collect lines until we hit a non-indented line or end of content
+      code_lines <- character(0)
+      j <- i + 1
+      
+      while (j <= length(lines)) {
+        code_line <- lines[j]
+        
+        # Skip empty lines at the start
+        if (length(code_lines) == 0 && !nzchar(trimws(code_line))) {
+          j <- j + 1
+          next
+        }
+        
+        # Check if this line is still part of the code block (more indented)
+        line_indent <- nchar(code_line) - nchar(trimws(code_line))
+        
+        if (nzchar(trimws(code_line)) && line_indent <= block_indent) {
+          # We've hit a non-code line, exit the block
+          break
+        }
+        
+        # Remove indentation and add to code lines
+        if (nzchar(trimws(code_line))) {
+          # Remove the common indentation
+          trimmed_line <- sub(sprintf("^\\s{%d}", block_indent + 4), "", code_line)
+          code_lines <- c(code_lines, trimmed_line)
+        }
+        
+        j <- j + 1
+      }
+      
+      # Join code lines and extract command (remove shell prompt if present)
+      if (length(code_lines) > 0) {
+        code_block <- paste(code_lines, collapse = " ")
+        
+        # Remove shell prompt ($) and leading/trailing whitespace
+        code_block <- gsub("^\\s*\\$\\s*", "", code_block)
+        code_block <- trimws(code_block)
+        
+        if (nzchar(code_block)) {
+          examples <- c(examples, code_block)
+        }
+      }
+      
+      # Move to where the code block ended
+      i <- j - 1
+    }
+  }
+  
+  return(examples)
+}
+
+
 #' Scrape GDAL documentation for a specific program.
 #'
 #' Attempts to fetch and parse the HTML documentation page for a GDAL program,
@@ -186,6 +369,8 @@ construct_doc_url <- function(full_path, base_url = "https://gdal.org/en/stable/
 #'
 #' @param url Character string containing the documentation URL.
 #' @param timeout Numeric timeout in seconds for HTTP request.
+#' @param command_name Character string with the subcommand name (e.g., "create" for "gdal vsi sozip create").
+#'   Used to find the correct section when multiple commands are on the same page.
 #'
 #' @return List containing:
 #'   - status: HTTP status code or error message
@@ -194,7 +379,11 @@ construct_doc_url <- function(full_path, base_url = "https://gdal.org/en/stable/
 #'   - examples: Character vector of code examples
 #'   - raw_html: The parsed HTML (or NA if failed)
 #'
-scrape_gdal_docs <- function(url, timeout = 10) {
+scrape_gdal_docs <- function(url, timeout = 10, verbose = FALSE, command_name = NULL) {
+  # Ensure verbose is a logical
+  if (is.null(verbose)) verbose <- FALSE
+  if (!is.logical(verbose)) verbose <- FALSE
+  
   result <- list(
     status = NA_integer_,
     description = NA_character_,
@@ -209,7 +398,7 @@ scrape_gdal_docs <- function(url, timeout = 10) {
       httr::GET(url, httr::timeout(timeout))
     },
     error = function(e) {
-      cat(sprintf("  ⚠ Error fetching %s: %s\n", url, e$message))
+      cat(sprintf("  [WARN] Error fetching %s: %s\n", url, e$message))
       return(NULL)
     }
   )
@@ -228,7 +417,7 @@ scrape_gdal_docs <- function(url, timeout = 10) {
       rvest::read_html(response)
     },
     error = function(e) {
-      cat(sprintf("  ⚠ Error parsing HTML from %s\n", url))
+      cat(sprintf("  [WARN] Error parsing HTML from %s\n", url))
       return(NULL)
     }
   )
@@ -303,45 +492,126 @@ scrape_gdal_docs <- function(url, timeout = 10) {
 
   result$param_details <- param_details
 
-  # Extract code examples from <pre> tags within Examples section
+  # Extract code examples from <pre> tags or <div> blocks within Examples section
   # Filter to only include executable CLI commands (starting with 'gdal' or '$')
   examples <- tryCatch(
     {
-      # Find h2 or h3 headings that contain "Example"
-      all_headings <- page %>% rvest::html_elements("h2, h3")
+      # Get all headings (h1-h6)
+      all_headings <- page %>% rvest::html_elements("h1, h2, h3, h4, h5, h6")
       heading_texts <- all_headings %>% rvest::html_text()
-      example_indices <- grep("Example", heading_texts, ignore.case = TRUE)
+      heading_names <- all_headings %>% lapply(function(x) xml2::xml_name(x)) %>% unlist()
+      heading_texts_clean <- iconv(trimws(heading_texts), "UTF-8", "ASCII", sub="")
 
       example_texts <- character(0)
 
-      if (length(example_indices) > 0) {
-        for (idx in example_indices[1:min(3, length(example_indices))]) {
-          # Get the heading element
-          heading <- all_headings[idx]
-          # Find all pre tags that follow this heading
-          following_pres <- xml2::xml_find_all(heading, "./following::pre[1]")
-          if (length(following_pres) > 0) {
-            for (pre in following_pres) {
-              pre_text <- rvest::html_text(pre)
-              if (!is.na(pre_text) && nzchar(pre_text)) {
-                # Filter: only keep lines that look like executable commands
-                # A command line usually starts with '$', 'gdal', or a program name
-                lines <- strsplit(pre_text, "\n")[[1]]
-                command_lines <- character(0)
+      # If command_name is provided, look for a section header matching the subcommand
+      # (e.g., "gdal vsi sozip create" for the create subcommand)
+      target_section_idx <- NA_integer_
 
-                for (line in lines) {
-                  line <- trimws(line)
-                  # Check if this is a command line (starts with shell prompt or 'gdal')
-                  if (grepl("^\\$\\s*gdal", line) || grepl("^gdal\\s", line)) {
-                    # Remove shell prompt if present
-                    line <- sub("^\\$\\s*", "", line)
-                    command_lines <- c(command_lines, line)
-                  }
+      if (!is.null(command_name) && nzchar(command_name)) {
+        # Look for a heading that contains the command_name
+        # Convert to lowercase for matching
+        cmd_lower <- tolower(command_name)
+        for (i in seq_along(heading_texts)) {
+          if (grepl(cmd_lower, tolower(heading_texts[i]))) {
+            target_section_idx <- i
+            break
+          }
+        }
+      }
+
+      # If we found a target section header, look for Examples after it
+      if (!is.na(target_section_idx)) {
+        # Find the next "Examples" heading after the target section
+        remaining_headings <- heading_texts_clean[(target_section_idx + 1):length(heading_texts_clean)]
+        examples_idx_relative <- grep("^\\s*Examples?\\s*$", remaining_headings, ignore.case = TRUE)[1]
+
+        if (!is.na(examples_idx_relative)) {
+          examples_idx <- target_section_idx + examples_idx_relative
+          examples_heading <- all_headings[examples_idx]
+
+          # Look for examples in following siblings or in a section element
+          # Get all div and pre elements that follow
+          following_divs <- xml2::xml_find_all(examples_heading, "following-sibling::div | following-sibling::pre")
+          
+          # Also check inside a following section element
+          following_section <- xml2::xml_find_first(examples_heading, "following-sibling::section[1]")
+          if (!is.na(following_section)) {
+            section_divs <- xml2::xml_find_all(following_section, ".//div")
+            following_divs <- c(following_divs, section_divs)
+          }
+
+          for (elem in following_divs[1:min(5, length(following_divs))]) {
+            elem_text <- trimws(xml2::xml_text(elem))
+            if (!is.na(elem_text) && nzchar(elem_text)) {
+              # Check if this looks like a command (starts with gdal or $)
+              lines <- strsplit(elem_text, "\n")[[1]]
+              command_lines <- character(0)
+
+              for (line in lines) {
+                line <- trimws(line)
+                if (grepl("^\\$\\s*gdal", line) || grepl("^gdal\\s", line) || grepl("^gdal$", line)) {
+                  line <- sub("^\\$\\s*", "", line)
+                  command_lines <- c(command_lines, line)
                 }
+              }
 
-                # Only add if we found actual command lines
-                if (length(command_lines) > 0) {
-                  example_texts <- c(example_texts, paste(command_lines, collapse = "\n"))
+              if (length(command_lines) > 0) {
+                example_texts <- c(example_texts, paste(command_lines, collapse = "\n"))
+              }
+            }
+          }
+        }
+      }
+
+      # Fallback: if no subcommand matching or no examples found, look for generic Examples h2
+      if (length(example_texts) == 0) {
+        # Look for standalone "Examples" h2 heading
+        h2_elements <- page %>% rvest::html_elements("h2")
+        h2_texts <- h2_elements %>% rvest::html_text()
+        h2_texts_clean <- iconv(trimws(h2_texts), "UTF-8", "ASCII", sub="")
+        example_h2_idx <- grep("^\\s*Examples?\\s*$", h2_texts_clean, ignore.case = TRUE)[1]
+
+        if (!is.na(example_h2_idx)) {
+          examples_heading <- h2_elements[example_h2_idx]
+          
+          # The examples may be in several following section elements
+          # Get all following section siblings
+          following_sections <- xml2::xml_find_all(examples_heading, "following-sibling::section")
+          
+          if (length(following_sections) > 0) {
+            # Iterate through up to 5 example sections
+            for (section_idx in seq_len(min(5, length(following_sections)))) {
+              section_elem <- following_sections[section_idx]
+              
+              # Look for pre tags within this section (they may be nested in div.highlight)
+              pres <- xml2::xml_find_all(section_elem, ".//pre")
+              
+              if (length(pres) > 0) {
+                for (pre in pres) {
+                  pre_text <- rvest::html_text(pre)
+                  if (!is.na(pre_text) && nzchar(pre_text)) {
+                    # The text from pre may have extra whitespace/newlines due to HTML formatting
+                    # Clean it up to get actual command lines
+                    lines <- strsplit(pre_text, "\n")[[1]]
+                    command_lines <- character(0)
+                    
+                    for (line in lines) {
+                      line <- trimws(line)
+                      # Skip empty lines and lines that look like HTML artifacts
+                      if (!nzchar(line)) next
+                      
+                      # Check if this looks like a command (starts with gdal or $)
+                      if (grepl("^\\$\\s*gdal", line) || grepl("^gdal\\s", line) || grepl("^gdal$", line)) {
+                        line <- sub("^\\$\\s*", "", line)
+                        command_lines <- c(command_lines, line)
+                      }
+                    }
+                    
+                    if (length(command_lines) > 0) {
+                      example_texts <- c(example_texts, paste(command_lines, collapse = "\n"))
+                    }
+                  }
                 }
               }
             }
@@ -351,7 +621,13 @@ scrape_gdal_docs <- function(url, timeout = 10) {
 
       example_texts
     },
-    error = function(e) character(0)
+    error = function(e) {
+      # Note: verbose is captured from outer scope
+      if (!is.na(verbose) && verbose) {
+        cat(sprintf("    [WARN] Error extracting examples: %s\n", e$message))
+      }
+      character(0)
+    }
   )
 
   result$examples <- examples
@@ -434,11 +710,24 @@ parse_cli_command <- function(cli_command) {
         # Remove leading dashes
         flag_name <- sub("^--?", "", token)
 
-        # Check if next token could be a value (not a filename and doesn't start with -)
-        if (i < length(tokens) &&
-            !grepl("^-", tokens[i + 1]) &&
-            !is_filename(tokens[i + 1])) {
-          # This flag likely has a value (simple, non-file argument)
+        # Determine if this flag takes a value based on patterns
+        # Single-letter flags that take values: -i, -o, -b, -co, -of, -ot, -e, -f, -t, -a
+        # Long flags with obvious value patterns: --calc, --dataset, --sql, etc.
+        flag_takes_value <- FALSE
+        
+        # Single-letter flags that commonly take values
+        if (nchar(flag_name) == 1 && flag_name %in% c("i", "o", "b", "co", "of", "ot", "e", "f", "t", "a", "s")) {
+          flag_takes_value <- TRUE
+        }
+        # Long flags that typically take values (heuristic)
+        else if (nchar(flag_name) > 1 && !grepl("^no-|^disable|^skip", flag_name)) {
+          # It's a long flag that probably takes a value if it's not a negative/disable flag
+          flag_takes_value <- TRUE
+        }
+
+        # Check if next token could be a value
+        if (flag_takes_value && i < length(tokens) && !grepl("^-", tokens[i + 1])) {
+          # This flag likely has a value
           next_token <- tokens[i + 1]
           result$options <- c(result$options, next_token)
           names(result$options)[length(result$options)] <- flag_name
@@ -463,7 +752,7 @@ parse_cli_command <- function(cli_command) {
 #' Convert a parsed CLI command to an R function call.
 #'
 #' Takes parsed CLI components and converts them into valid R code that creates
-#' a gdal_job object (without calling gdal_run).
+#' a gdal_job object (without calling gdal_job_run).
 #'
 #' @param parsed_cli List from parse_cli_command().
 #' @param r_function_name Character string of the R function name.
@@ -471,7 +760,7 @@ parse_cli_command <- function(cli_command) {
 #'
 #' @return Character string containing R code to create gdal_job.
 #'
-convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = NULL) {
+convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = NULL, arg_mapping = NULL) {
   if (is.null(parsed_cli) || length(parsed_cli) == 0) {
     # Fallback: simple function call with no args
     return(sprintf("job <- %s()", r_function_name))
@@ -480,23 +769,122 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
   # Build argument assignments
   args <- character()
 
-  # Map common positional argument names
-  positional_names <- c("input", "output", "src_dataset", "dest_dataset", "dataset")
-
-  # Add positional arguments
-  if (length(parsed_cli$positional_args) > 0) {
-    # Use generic positional names for positional arguments
-    # (metadata usually contains flag/option names, not positional arg placeholders)
-    for (j in seq_along(parsed_cli$positional_args)) {
-      if (j <= length(positional_names)) {
-        arg_name <- positional_names[j]
-      } else {
-        arg_name <- paste0("arg", j)
+  # Get parameter metadata from input_args and arg_mapping
+  # arg_mapping has priority since it contains already-normalized R names
+  param_metadata <- list()
+  positional_param_names <- character(0)
+  
+  # If we have arg_mapping, use it (this is the authoritative source for R parameter names)
+  if (!is.null(arg_mapping) && length(arg_mapping) > 0) {
+    # arg_mapping is a list: R_name -> {gdal_name, type, min_count, max_count, default, is_positional}
+    for (r_name in names(arg_mapping)) {
+      mapping_entry <- arg_mapping[[r_name]]
+      max_count <- if (!is.null(mapping_entry$max_count)) mapping_entry$max_count else 1
+      is_pos <- if (!is.null(mapping_entry$is_positional) && !is.na(mapping_entry$is_positional)) mapping_entry$is_positional else FALSE
+      
+      param_metadata[[r_name]] <- list(gdal_name = r_name, max_count = max_count, is_positional = is_pos)
+      
+      # Only track positional parameters for building positional_param_names
+      if (isTRUE(is_pos)) {
+        positional_param_names <- c(positional_param_names, r_name)
       }
-      # Remove existing quotes if present to avoid double-quoting
-      val <- parsed_cli$positional_args[j]
-      val <- gsub("^\"|\"$", "", val)  # Remove leading/trailing quotes
-      args <- c(args, sprintf('%s = "%s"', arg_name, val))
+    }
+  } else if (!is.null(input_args) && length(input_args) > 0) {
+    # Fallback to building from input_args if no arg_mapping
+    # Convert to list if it's a dataframe
+    if (is.data.frame(input_args)) {
+      args_list <- lapply(1:nrow(input_args), function(i) as.list(input_args[i, ]))
+    } else {
+      args_list <- input_args
+    }
+    
+    # Build metadata for each parameter
+    for (arg in args_list) {
+      if (!is.null(arg$name)) {
+        gdal_name <- as.character(arg$name)
+        gdal_short <- sub("^-+", "", gdal_name)
+        
+        # Try to infer R name from GDAL name
+        # Common mappings: -i/-input -> input, -o/-output -> output, -d/-dataset -> dataset
+        r_name <- gdal_short
+        if (grepl("^i$|input", gdal_short, ignore.case = TRUE)) {
+          r_name <- "input"
+        } else if (grepl("^o$|output", gdal_short, ignore.case = TRUE)) {
+          r_name <- "output"
+        } else if (grepl("^d$|dataset", gdal_short, ignore.case = TRUE)) {
+          r_name <- "dataset"
+        } else if (grepl("^s$|src", gdal_short, ignore.case = TRUE)) {
+          r_name <- "src_dataset"
+        } else if (grepl("dest", gdal_short, ignore.case = TRUE)) {
+          r_name <- "dest_dataset"
+        } else {
+          # Just normalize to underscores
+          r_name <- gsub("-", "_", gdal_short)
+        }
+        
+        max_count <- if (!is.null(arg$max_count)) arg$max_count else 1
+        param_metadata[[r_name]] <- list(gdal_name = gdal_name, max_count = max_count)
+        positional_param_names <- c(positional_param_names, r_name)
+      }
+    }
+  }
+  
+  # Common fallback names if we don't have metadata
+  if (length(positional_param_names) == 0) {
+    positional_param_names <- c("dataset", "input", "output", "src_dataset", "dest_dataset")
+  }
+
+  # Handle positional arguments: check for multi-valued parameters
+  if (length(parsed_cli$positional_args) > 0) {
+    # If we have more than 2 positional args, check if first parameter is multi-valued
+    if (length(parsed_cli$positional_args) > 2 && length(positional_param_names) > 0) {
+      first_param <- positional_param_names[1]
+      first_param_max_count <- param_metadata[[first_param]]$max_count
+      
+      # If first parameter accepts multiple values, combine all but last arg into a vector
+      if (!is.null(first_param_max_count) && first_param_max_count > 1) {
+        # All args except the last go to the first parameter as a vector
+        input_files <- parsed_cli$positional_args[-length(parsed_cli$positional_args)]
+        output_file <- parsed_cli$positional_args[length(parsed_cli$positional_args)]
+        
+        # Remove quotes and format as R vector
+        input_files <- gsub("^\"|\"$", "", input_files)
+        output_file <- gsub("^\"|\"$", "", output_file)
+        
+        # Create vector syntax
+        if (length(input_files) == 1) {
+          input_vector_str <- sprintf('"%s"', input_files)
+        } else {
+          input_vector_str <- sprintf('c(%s)', paste(sprintf('"%s"', input_files), collapse = ", "))
+        }
+        
+        args <- c(args, sprintf('%s = %s', first_param, input_vector_str))
+        
+        # Add output as the last positional parameter
+        if (length(positional_param_names) > 1) {
+          output_param <- positional_param_names[2]
+          args <- c(args, sprintf('%s = "%s"', output_param, output_file))
+        } else {
+          # Fallback to "output" if we don't have a second param name
+          args <- c(args, sprintf('output = "%s"', output_file))
+        }
+      } else {
+        # First parameter doesn't accept multiple values - skip this example
+        return(NULL)
+      }
+    } else {
+      # 1-2 positional args: map sequentially to parameter names
+      for (j in seq_along(parsed_cli$positional_args)) {
+        if (j <= length(positional_param_names)) {
+          arg_name <- positional_param_names[j]
+        } else {
+          arg_name <- paste0("arg", j)
+        }
+        # Remove existing quotes if present to avoid double-quoting
+        val <- parsed_cli$positional_args[j]
+        val <- gsub("^\"|\"$", "", val)  # Remove leading/trailing quotes
+        args <- c(args, sprintf('%s = "%s"', arg_name, val))
+      }
     }
   }
 
@@ -512,26 +900,51 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
   if (length(parsed_cli$options) > 0) {
     option_names <- names(parsed_cli$options)
     # Get valid parameter names from input_args metadata if available
+    # Build mapping from GDAL flag names to R parameter names
+    gdal_to_r_mapping <- character(0)
     valid_params <- character(0)
+    
     if (!is.null(input_args) && length(input_args) > 0) {
+      # Convert input_args to list if it's a dataframe
       if (is.data.frame(input_args)) {
-        valid_params <- gsub("-", "_", input_args$name)
-      } else if (is.list(input_args)) {
-        valid_params <- gsub("-", "_", sapply(input_args, function(x) x$name %||% NA_character_))
-        valid_params <- valid_params[!is.na(valid_params)]
+        args_list <- lapply(1:nrow(input_args), function(i) as.list(input_args[i, ]))
+      } else {
+        args_list <- input_args
+      }
+      
+      # Build mapping from GDAL name -> R name
+      for (arg in args_list) {
+        if (!is.null(arg$name)) {
+          gdal_name <- as.character(arg$name)
+          # Remove leading dashes and normalize
+          gdal_short <- sub("^-+", "", gdal_name)
+          # Convert to R name (replace hyphens with underscores)
+          r_name <- gsub("-", "_", gdal_short)
+          gdal_to_r_mapping[gdal_short] <- r_name
+          valid_params <- c(valid_params, r_name)
+        }
       }
     }
 
     for (i in seq_along(parsed_cli$options)) {
-      opt_name <- gsub("-", "_", option_names[i])  # Normalize hyphens to underscores
+      opt_name_cli <- option_names[i]  # Original CLI flag name from parsed command
       opt_value <- parsed_cli$options[i]
+
+      # Map from CLI flag name to R parameter name
+      # First try direct mapping
+      opt_name_r <- if (opt_name_cli %in% names(gdal_to_r_mapping)) {
+        gdal_to_r_mapping[[opt_name_cli]]
+      } else {
+        # Fallback: normalize hyphens to underscores
+        gsub("-", "_", opt_name_cli)
+      }
 
       # Remove existing quotes if present to avoid double-quoting
       opt_value <- gsub("^\"|\"$", "", opt_value)  # Remove leading/trailing quotes
 
       # Only include if it's a valid parameter or we don't have metadata
-      if (length(valid_params) == 0 || opt_name %in% valid_params) {
-        args <- c(args, sprintf('%s = "%s"', opt_name, opt_value))
+      if (length(valid_params) == 0 || opt_name_r %in% valid_params) {
+        args <- c(args, sprintf('%s = "%s"', opt_name_r, opt_value))
       }
     }
   }
@@ -623,12 +1036,44 @@ generate_family_tag <- function(full_path) {
 #'
 #' @param cache_dir Character string path to cache directory.
 #'
-#' @return List with methods: get(url), set(url, data)
+#' @return List with methods: get(url), set(url, data), get_csv(), save_csv()
 #'
 create_doc_cache <- function(cache_dir = ".gdal_doc_cache") {
   if (!dir.exists(cache_dir)) {
     dir.create(cache_dir, showWarnings = FALSE)
   }
+
+  csv_file <- file.path(cache_dir, "descriptions.csv")
+
+  # Load descriptions from CSV if it exists
+  load_descriptions <- function() {
+    if (file.exists(csv_file)) {
+      tryCatch(
+        {
+          read.csv(csv_file, stringsAsFactors = FALSE)
+        },
+        error = function(e) {
+          data.frame(command_path = character(), description = character())
+        }
+      )
+    } else {
+      data.frame(command_path = character(), description = character())
+    }
+  }
+
+  # Save descriptions to CSV
+  save_descriptions <- function(descriptions) {
+    tryCatch(
+      {
+        write.csv(descriptions, csv_file, row.names = FALSE, quote = TRUE)
+      },
+      error = function(e) {
+        warning(sprintf("Failed to save descriptions to %s", csv_file))
+      }
+    )
+  }
+
+  descriptions_df <- load_descriptions()
 
   list(
     get = function(url) {
@@ -657,6 +1102,37 @@ create_doc_cache <- function(cache_dir = ".gdal_doc_cache") {
           warning(sprintf("Failed to cache documentation for %s", url))
         }
       )
+    },
+
+    get_description = function(command_path) {
+      # command_path is a character vector like c("gdal", "raster", "calc")
+      # Convert to string for lookup
+      path_str <- paste(command_path, collapse = "_")
+      # Reload descriptions from disk in case they were saved during this run
+      current_df <- load_descriptions()
+      rows <- which(current_df$command_path == path_str)
+      if (length(rows) > 0) {
+        return(current_df$description[rows[1]])
+      }
+      NA_character_
+    },
+
+    save_description = function(command_path, description) {
+      path_str <- paste(command_path, collapse = "_")
+      # Check if already exists
+      rows <- which(descriptions_df$command_path == path_str)
+      if (length(rows) > 0) {
+        # Update
+        descriptions_df$description[rows[1]] <<- description
+      } else {
+        # Add new row
+        descriptions_df <<- rbind(descriptions_df, data.frame(
+          command_path = path_str,
+          description = description,
+          stringsAsFactors = FALSE
+        ))
+      }
+      save_descriptions(descriptions_df)
     }
   )
 }
@@ -670,25 +1146,142 @@ create_doc_cache <- function(cache_dir = ".gdal_doc_cache") {
 #'
 #' @return List with enriched documentation data.
 #'
-fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE) {
-  url <- construct_doc_url(full_path)
+fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = NULL, command_name = NULL) {
+  # Ensure verbose is a logical
+  if (is.null(verbose)) verbose <- FALSE
+  if (!is.logical(verbose)) verbose <- FALSE
+  
+  # Use provided URL from GDAL JSON, or construct one if not provided
+  if (is.null(url) || !nzchar(url)) {
+    url <- construct_doc_url(full_path)
+  }
+  
+  # Normalize URL: ensure it includes /en/stable/ path if not present
+  # GDAL JSON URLs may be like https://gdal.org/programs/... or https://gdal.org/en/stable/programs/...
+  if (!grepl("/en/stable/", url)) {
+    url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", url)
+  }
+  
+  # For driver commands that may have driver-specific URLs, try /programs/ variant first
+  # This handles cases like gdal_driver_gpkg_repack which should use /programs/gdal_driver_gpkg_repack.html
+  # instead of /drivers/vector/gpkg.html
+  primary_url <- url
+  alternate_url <- NULL
+  
+  if (length(full_path) > 2 && full_path[2] == "driver") {
+    # This is a driver command - construct the /programs/ variant
+    programs_url <- construct_doc_url(full_path)
+    if (!grepl("/en/stable/", programs_url)) {
+      programs_url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", programs_url)
+    }
+    
+    # If the provided URL is a /drivers/ URL, we should try /programs/ first
+    if (grepl("/drivers/", url)) {
+      # Swap them - try /programs/ first as it's more likely to exist
+      alternate_url <- url
+      primary_url <- programs_url
+    }
+  }
 
-  # Check cache first (if available)
+  # Check cache first (if available) - only for primary URL
   if (!is.null(cache)) {
-    cached <- cache$get(url)
+    cached <- cache$get(primary_url)
     if (!is.null(cached)) {
-      if (verbose) cat(sprintf("  ✓ Cached: %s\n", url))
+      if (verbose) cat(sprintf("  [OK] Cached RDS: %s\n", primary_url))
       return(cached)
     }
   }
 
-  # Attempt to scrape documentation
-  if (verbose) cat(sprintf("  ⟳ Fetching: %s\n", url))
-  docs <- scrape_gdal_docs(url)
+  # Initialize result structure
+  result <- list(
+    status = NA_integer_,
+    description = NA_character_,
+    param_details = list(),
+    examples = character(0),
+    raw_html = NA
+  )
 
-  # Cache the result
+  # STRATEGY: Try RST extraction first (more reliable)
+  # Then fall back to HTML scraping if RST doesn't have examples
+  # Build command name for RST lookup (e.g., c("gdal", "raster", "info") -> "gdal_raster_info")
+  command_name_for_rst <- paste(full_path, collapse = "_")
+  
+  if (verbose) {
+    cat(sprintf("  ⟳ Fetching RST examples: %s\n", command_name_for_rst))
+  }
+  
+  # Attempt to fetch examples from RST first
+  rst_result <- fetch_examples_from_rst(command_name_for_rst, verbose = verbose)
+  
+  if (rst_result$status == 200 && length(rst_result$examples) > 0) {
+    if (verbose) {
+      cat(sprintf("  [OK] Got %d examples from RST\n", length(rst_result$examples)))
+    }
+    # Use RST examples
+    result$examples <- rst_result$examples
+    result$status <- 200
+    result$source_examples <- "rst"
+    
+    # Cache the result
+    if (!is.null(cache)) {
+      cache$set(primary_url, result)
+    }
+    return(result)
+  }
+
+  # RST didn't have examples, try HTML scraping
+  if (verbose) {
+    cat(sprintf("  ⟳ Fetching HTML: %s\n", primary_url))
+  }
+  
+  docs <- scrape_gdal_docs(primary_url, verbose = verbose, command_name = command_name)
+
+  # If primary URL failed with 404 and we have an alternate, try that
+  if (docs$status == 404 && !is.null(alternate_url)) {
+    if (verbose) cat(sprintf("  [404] Trying alternate: %s\n", alternate_url))
+    docs <- scrape_gdal_docs(alternate_url, verbose = verbose, command_name = command_name)
+  }
+
+  # Handle 404: try fallback URLs with parent commands
+  if (docs$status == 404 && length(full_path) > 2) {
+    # Try using parent command URL (e.g., for gdal_vector_geom_buffer, try gdal_vector page)
+    # This handles cases where subcommands don't have individual doc pages
+    parent_path <- full_path[1:(length(full_path)-1)]
+    parent_url <- construct_doc_url(parent_path)
+    
+    # Normalize parent URL
+    if (!grepl("/en/stable/", parent_url)) {
+      parent_url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", parent_url)
+    }
+    
+    if (verbose) cat(sprintf("  [404] Trying parent: %s\n", parent_url))
+    docs <- scrape_gdal_docs(parent_url, verbose = verbose, command_name = command_name)
+    
+    # If parent also fails, try the grandparent (for deeply nested commands)
+    if (docs$status == 404 && length(full_path) > 3) {
+      grandparent_path <- full_path[1:(length(full_path)-2)]
+      grandparent_url <- construct_doc_url(grandparent_path)
+      
+      # Normalize grandparent URL
+      if (!grepl("/en/stable/", grandparent_url)) {
+        grandparent_url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", grandparent_url)
+      }
+      
+      if (verbose) cat(sprintf("  [404] Trying grandparent: %s\n", grandparent_url))
+      docs <- scrape_gdal_docs(grandparent_url, verbose = verbose, command_name = command_name)
+    }
+  }
+
+  # Cache the result using primary URL
   if (!is.null(cache) && docs$status == 200) {
-    cache$set(url, docs)
+    cache$set(primary_url, docs)
+    # Also save description to CSV for persistence
+    if (!is.na(docs$description) && nzchar(docs$description)) {
+      cache$save_description(full_path, docs$description)
+    }
+  } else if (!is.null(cache) && (!is.na(docs$description) && nzchar(docs$description))) {
+    # Even if fetch failed, save the description we got
+    cache$save_description(full_path, docs$description)
   }
 
   docs
@@ -766,9 +1359,11 @@ crawl_gdal_api <- function(command_path = c("gdal")) {
     # This is an endpoint; collect it
     endpoints[[paste(command_path, collapse = "_")]] <- list(
       full_path = command_path,
-      description = api_spec$description %||% "",
-      input_arguments = api_spec$input_arguments %||% list(),
-      input_output_arguments = api_spec$input_output_arguments %||% list()
+      name = ifelse(is.null(api_spec$name), "", api_spec$name),
+      description = ifelse(is.null(api_spec$description), "", api_spec$description),
+      url = ifelse(is.null(api_spec$url), "", api_spec$url),
+      input_arguments = if (is.null(api_spec$input_arguments)) list() else api_spec$input_arguments,
+      input_output_arguments = if (is.null(api_spec$input_output_arguments)) list() else api_spec$input_output_arguments
     )
   }
 
@@ -814,10 +1409,15 @@ crawl_gdal_api <- function(command_path = c("gdal")) {
 #' @return A string containing the complete R function code (including roxygen).
 #'
 generate_function <- function(endpoint, cache = NULL, verbose = FALSE) {
+  # Ensure verbose is a logical
+  if (is.null(verbose)) verbose <- FALSE
+  if (!is.logical(verbose)) verbose <- FALSE
+  
   full_path <- endpoint$full_path
-  description <- endpoint$description %||% "GDAL command."
-  input_args <- endpoint$input_arguments %||% list()
-  input_output_args <- endpoint$input_output_arguments %||% list()
+  command_name <- if (is.null(endpoint$name)) tail(full_path, 1) else endpoint$name
+  description <- if (is.null(endpoint$description)) "GDAL command." else endpoint$description
+  input_args <- if (is.null(endpoint$input_arguments)) list() else endpoint$input_arguments
+  input_output_args <- if (is.null(endpoint$input_output_arguments)) list() else endpoint$input_output_arguments
 
   # Build function name from command path (already includes 'gdal' prefix)
   # Replace hyphens with underscores for valid R function names
@@ -847,11 +1447,20 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE) {
   family <- generate_family_tag(full_path)
 
   if (!is.null(cache)) {
-    enriched_docs <- fetch_enriched_docs(full_path, cache = cache, verbose = verbose)
+    # Extract the url from the endpoint JSON if available
+    endpoint_url <- if (is.null(endpoint$url)) NULL else endpoint$url
+    enriched_docs <- fetch_enriched_docs(full_path, cache = cache, verbose = verbose, url = endpoint_url, command_name = command_name)
   }
 
   # Generate roxygen documentation with enrichment
-  roxygen_doc <- generate_roxygen_doc(func_name, description, r_args$arg_names, enriched_docs, family, input_args, input_output_args, full_path, is_base_gdal, r_args$arg_mapping)
+  roxygen_doc <- tryCatch({
+    generate_roxygen_doc(func_name, description, r_args$arg_names, enriched_docs, family, input_args, input_output_args, full_path, is_base_gdal, r_args$arg_mapping, cache, command_name, verbose = verbose)
+  }, error = function(e) {
+    cat(sprintf("\n[ERROR] roxygen_doc generation failed for %s:\n", func_name))
+    cat(sprintf("  Message: %s\n", conditionMessage(e)))
+    cat(sprintf("  Call: %s\n", paste(deparse(e$call), collapse = "\n")))
+    stop(e)
+  })
 
   # Generate function body
   func_body <- generate_function_body(full_path, input_args, input_output_args, r_args$arg_names, r_args$arg_mapping, is_pipeline, is_base_gdal)
@@ -860,13 +1469,14 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE) {
   header <- "# ===================================================================\n# This file is AUTO-GENERATED by build/generate_gdal_api.R\n# Do not edit directly. Changes will be overwritten on regeneration.\n# ===================================================================\n"
 
   # Combine into complete function
-  function_code <- sprintf(
-    "%s\n%s\n#' @export\n%s <- function(%s) {\n%s\n}\n",
-    header,
+  # Use paste0 instead of sprintf to avoid interpreting % in roxygen_doc as format specifiers
+  function_code <- paste0(
+    header, "\n",
     roxygen_doc,
-    func_name,
-    args_signature,
-    func_body
+    "#' @export\n",
+    func_name, " <- function(", args_signature, ") {\n",
+    func_body,
+    "\n}\n"
   )
 
   function_code
@@ -885,60 +1495,91 @@ generate_r_arguments <- function(input_args, input_output_args) {
   arg_names <- character()
   arg_mapping <- list()
 
-  # Combine all arguments: input_output_args first (positional), then input_args (options)
-  all_args <- c(input_output_args, input_args)
+  # First, convert both to lists if they're dataframes
+  if (is.data.frame(input_output_args)) {
+    io_list <- lapply(1:nrow(input_output_args), function(i) as.list(input_output_args[i, ]))
+  } else if (length(input_output_args) > 0) {
+    io_list <- input_output_args
+  } else {
+    io_list <- list()
+  }
   
-  if (is.null(all_args) || length(all_args) == 0) {
+  if (is.data.frame(input_args)) {
+    in_list <- lapply(1:nrow(input_args), function(i) as.list(input_args[i, ]))
+  } else if (length(input_args) > 0) {
+    in_list <- input_args
+  } else {
+    in_list <- list()
+  }
+
+  # Extract input-like parameters from input_args and move them to the front
+  # GDAL's spec mixes input parameters with option parameters in input_arguments
+  # We need to reorder: inputs first, then outputs, then other options
+  
+  input_params <- list()     # input, inputs, source, etc.
+  output_params <- list()    # output, destination, target, etc.
+  option_params <- list()    # everything else
+  
+  # Classify all parameters from both lists
+  for (param in c(io_list, in_list)) {
+    param_name <- if (is.null(param$name)) "" else as.character(param$name)
+    
+    # Classify based on name
+    is_input <- grepl("^input|^source|^dataset$", param_name, ignore.case = TRUE) && !grepl("output", param_name, ignore.case = TRUE)
+    is_output <- grepl("^output|^destination|^target", param_name, ignore.case = TRUE) && !grepl("input", param_name, ignore.case = TRUE)
+    
+    if (is_input) {
+      input_params[[length(input_params) + 1]] <- param
+    } else if (is_output) {
+      output_params[[length(output_params) + 1]] <- param
+    } else {
+      option_params[[length(option_params) + 1]] <- param
+    }
+  }
+  
+  # Combine in correct order: inputs first, then outputs, then options
+  args_list <- c(input_params, output_params, option_params)
+  
+  if (is.null(args_list) || length(args_list) == 0) {
     return(list(signature = signature, arg_names = arg_names, arg_mapping = arg_mapping))
   }
 
-  # Convert dataframe to list of lists (jsonlite often converts JSON arrays to dataframes)
-  if (is.data.frame(all_args)) {
-    args_list <- lapply(1:nrow(all_args), function(i) as.list(all_args[i, ]))
-  } else {
-    args_list <- all_args
-  }
-
-  # Track which arguments are positional (from input_output_args)
-  is_positional <- rep(c(TRUE, FALSE), c(length(input_output_args %||% list()), length(input_args %||% list())))
-
-  # Classify arguments for ordering: inputs first, outputs second, others last
-  classify_arg <- function(arg) {
-    name <- tolower(arg$name %||% "")
-    if (grepl("input|src|source|in", name)) return("input")
-    if (grepl("output|dst|destination|out", name)) return("output")
-    return("other")
-  }
-  
-  classifications <- sapply(args_list, classify_arg)
-  
-  # Order by classification: input, output, other
-  order_indices <- order(factor(classifications, levels = c("input", "output", "other")))
-  
-  # Reorder args_list and is_positional accordingly
-  args_list <- args_list[order_indices]
-  is_positional <- is_positional[order_indices]
-  
-  # Special handling: if there's an "input" parameter, move it to the front
-  input_idx <- which(sapply(args_list, function(arg) {
-    r_name <- gsub("-", "_", arg$name %||% arg[[1]] %||% "")
-    r_name == "input"
-  }))
-  
-  if (length(input_idx) > 0 && input_idx > 1) {
-    # Move input to the front
-    input_arg <- args_list[[input_idx]]
-    input_pos <- is_positional[input_idx]
-    
-    args_list <- c(list(input_arg), args_list[-input_idx])
-    is_positional <- c(input_pos, is_positional[-input_idx])
-  }
-
-  for (i in seq_along(args_list)) {
+  # Check for mixed required/optional to ensure R signature validity
+  # First pass: mark which are required
+  required_status <- sapply(seq_along(args_list), function(i) {
     arg <- args_list[[i]]
-    gdal_name <- arg$name %||% arg[[1]]
-    if (is.null(gdal_name)) {
-      warning("Argument at position ", i, " has no name")
+    is_req <- ifelse(is.null(arg$required), FALSE, arg$required)
+    if (is.na(is_req)) FALSE else is_req
+  })
+  
+  # Check if we have optional args followed by required args
+  has_mixed <- FALSE
+  for (i in 2:length(required_status)) {
+    if (!isTRUE(required_status[i-1]) && isTRUE(required_status[i])) {
+      has_mixed <- TRUE
+      break
+    }
+  }
+  
+  # If mixed ordering detected, reorder to put required first, preserving relative order within each group
+  if (has_mixed) {
+    required_indices <- which(required_status)
+    optional_indices <- which(!required_status)
+    ordered_args_indices <- c(required_indices, optional_indices)
+  } else {
+    # Use current order (which now has inputs before outputs)
+    ordered_args_indices <- seq_along(args_list)
+  }
+
+  for (idx in ordered_args_indices) {
+    arg <- args_list[[idx]]
+    gdal_name <- if (is.null(arg$name)) {
+      if (is.null(arg[[1]])) "" else as.character(arg[[1]][1])
+    } else {
+      as.character(arg$name)
+    }
+    if (is.null(gdal_name) || !nzchar(gdal_name)) {
+      warning("Argument at position ", idx, " has no name")
       next
     }
 
@@ -947,13 +1588,14 @@ generate_r_arguments <- function(input_args, input_output_args) {
     if (grepl("^[0-9]", r_name)) {
       r_name <- paste0("X", r_name)
     }
-    arg_type <- arg$type %||% "string"
-    min_count <- arg$min_count %||% 0
-    max_count <- arg$max_count %||% 1
+    arg_type <- ifelse(is.null(arg$type), "string", arg$type)
+    min_count <- ifelse(is.null(arg$min_count), 0, arg$min_count)
+    max_count <- ifelse(is.null(arg$max_count), 1, arg$max_count)
     default_val <- arg$default
 
     # Determine R type and default
-    if (min_count > 0) {
+    is_required <- ifelse(is.null(arg$required), FALSE, arg$required)
+    if (is_required) {
       # Required argument (no default)
       default_str <- ""
     } else {
@@ -979,8 +1621,7 @@ generate_r_arguments <- function(input_args, input_output_args) {
       type = arg_type,
       min_count = min_count,
       max_count = max_count,
-      default = default_val,
-      is_positional = is_positional[i]
+      default = default_val
     )
   }
 
@@ -989,6 +1630,55 @@ generate_r_arguments <- function(input_args, input_output_args) {
     arg_names = arg_names,
     arg_mapping = arg_mapping
   )
+}
+
+
+#' Extract a short title from a longer description.
+#'
+#' Attempts to create a concise title by taking the first clause or sentence.
+#' Removes trailing periods and common suffixes.
+#'
+#' @param description Character string with the full description.
+#'
+#' @return Character string with a shorter title (typically first 50-80 chars).
+#'
+extract_short_title <- function(description) {
+  if (is.na(description) || !nzchar(description)) {
+    return(description)
+  }
+
+  # Remove trailing period or period+space
+  title <- sub("\\.$", "", description)
+  title <- sub("\\. *$", "", title)
+
+  # If the description has multiple sentences (ends with period), take first sentence
+  if (grepl("\\. ", description)) {
+    first_sentence <- strsplit(description, "\\. ")[[1]][1]
+    if (nzchar(first_sentence)) {
+      title <- first_sentence
+    }
+  }
+
+  # If the description has common suffixes like "by X" or "using X", optionally trim
+  # But keep them for now as they can be informative
+
+  # Limit title length for readability (roxygen typically prefers titles under 80 chars)
+  if (nchar(title) > 80) {
+    # Try to truncate at a natural boundary (space before 80 chars)
+    # Find last space before 80 chars
+    substring_80 <- substr(title, 1, 80)
+    last_space <- regexpr(" [^ ]*$", substring_80)
+    if (last_space > 0) {
+      title <- substr(title, 1, last_space[1] - 1)
+    } else {
+      # No space found, just truncate
+      title <- substr(title, 1, 80)
+    }
+    # Add ellipsis if truncated
+    title <- paste0(title, "...")
+  }
+
+  title
 }
 
 
@@ -1003,43 +1693,132 @@ generate_r_arguments <- function(input_args, input_output_args) {
 #' @param input_output_args List of input/output arguments metadata from GDAL (optional).
 #' @param full_path Character vector representing the command hierarchy.
 #' @param is_base_gdal Logical indicating if this is the base gdal function.
+#' @param cache Documentation cache object (optional).
+#' @param command_name Character string with the GDAL command name (optional).
 #'
-generate_roxygen_doc <- function(func_name, description, arg_names, enriched_docs = NULL, family = NULL, input_args = NULL, input_output_args = NULL, full_path = NULL, is_base_gdal = FALSE, arg_mapping = NULL) {
+generate_roxygen_doc <- function(func_name, description, arg_names, enriched_docs = NULL, family = NULL, input_args = NULL, input_output_args = NULL, full_path = NULL, is_base_gdal = FALSE, arg_mapping = NULL, cache = NULL, command_name = NULL, verbose = FALSE) {
+  # Ensure verbose is a logical
+  if (is.null(verbose)) verbose <- FALSE
+  if (!is.logical(verbose)) verbose <- FALSE
+  
   # Helper to format multi-line text for roxygen2 (each line needs #')
+  # Wrap gsub/sub to add line number tracking
+  safe_gsub <- function(pattern, replacement, x, ..., func_name = "", linenum = 0) {
+    tryCatch({
+      gsub(pattern, replacement, x, ...)
+    }, error = function(e) {
+      stop(sprintf("gsub error in %s (line ~%d): pattern='%s', replacement='%s', x_class=%s, x_length=%d: %s",
+                   func_name, linenum, pattern, replacement, 
+                   class(x)[1], length(x), conditionMessage(e)))
+    })
+  }
+
   format_roxygen_text <- function(text) {
     if (is.na(text) || !nzchar(text)) return("")
+    if (!is.character(text)) {
+      warning(sprintf("format_roxygen_text received non-character input: %s", class(text)))
+      return("")
+    }
     # Split on newlines and add #' prefix to each line
     lines <- strsplit(text, "\n")[[1]]
     paste(paste0("#' ", trimws(lines)), collapse = "\n")
   }
 
-  doc <- sprintf("#' @title %s\n", description)
+  wrap_command_in_backticks <- function(text, cmd_name) {
+    if (is.na(text) || !nzchar(text) || is.na(cmd_name) || !nzchar(cmd_name)) {
+      return(text)
+    }
+    # Match the command name at the start of the text (case-sensitive, with optional spaces/punctuation)
+    # Pattern: command_name (possibly with spaces replacing underscores) followed by a space
+    pattern <- sprintf("^%s\\s+", gsub("_", " ", cmd_name))
+    if (grepl(pattern, text)) {
+      # Extract the matched part and wrap it in backticks
+      matched_part <- sub(pattern, "", text)
+      # Only proceed if there's content after the command name
+      if (nzchar(matched_part) && nchar(matched_part) < nchar(text)) {
+        original_cmd <- substring(text, 1, nchar(text) - nchar(matched_part))
+        result <- paste0("`", trimws(original_cmd), "` ", matched_part)
+        return(result)
+      }
+    }
+    # If simple command name didn't match, try to find the full command path in the text
+    # e.g., if cmd_name is "create" but text starts with "gdal driver gti create"
+    if (length(full_path) > 0) {
+      full_pattern <- sprintf("^%s\\s+", paste(gsub("_", " ", full_path), collapse = " "))
+      if (grepl(full_pattern, text)) {
+        matched_part <- sub(full_pattern, "", text)
+        # Only proceed if there's content after the command path
+        if (nzchar(matched_part) && nchar(matched_part) < nchar(text)) {
+          original_cmd <- substring(text, 1, nchar(text) - nchar(matched_part))
+          result <- paste0("`", trimws(original_cmd), "` ", matched_part)
+          return(result)
+        }
+      }
+    }
+    return(text)
+  }
 
-  # Check if this is a pipeline function
+  # Check if this is a pipeline function (needed early for title formatting)
   is_pipeline <- func_name %in% c("gdal_raster_pipeline", "gdal_vector_pipeline")
 
-  # Use enriched description if available, otherwise use API description
+  # Build title with command name prefix if available
+  title <- extract_short_title(description)
+  if (!is.null(command_name) && nzchar(command_name) && !is_base_gdal && !is_pipeline) {
+    title <- sprintf("%s: %s", command_name, title)
+  }
+  
+  doc <- sprintf("#' @title %s\n", title)
+
+  # Use enriched description if available, otherwise try cached description, otherwise use API description
   enriched_desc <- NA_character_
-  if (!is.null(enriched_docs) && !is.na(enriched_docs$description)) {
+  
+  # First try enriched_docs from fetch (more detailed HTML description)
+  if (!is.null(enriched_docs) && !is.na(enriched_docs$description) && nzchar(enriched_docs$description)) {
     enriched_desc <- enriched_docs$description
+  }
+  
+  # If not found via fetch, try persistent cache (CSV)
+  if ((is.na(enriched_desc) || !nzchar(enriched_desc)) && !is.null(cache)) {
+    cached_desc <- cache$get_description(full_path)
+    if (!is.na(cached_desc) && nzchar(cached_desc)) {
+      enriched_desc <- cached_desc
+    }
+  }
+  
+  # If no enriched description, use the GDAL JSON API description (always available)
+  if (is.na(enriched_desc) || !nzchar(enriched_desc)) {
+    enriched_desc <- description
   }
 
   if (is.character(enriched_desc) && length(enriched_desc) > 0 &&
       !is.na(enriched_desc[1]) && nzchar(enriched_desc[1])) {
+    # Wrap command name in backticks for code formatting
+    desc_with_backticks <- wrap_command_in_backticks(enriched_desc[1], command_name)
     # Escape special roxygen2 markup characters in description
-    escaped_desc <- enriched_desc[1]
-    escaped_desc <- gsub("\\{", "\\\\{", escaped_desc)  # Escape {
-    escaped_desc <- gsub("\\}", "\\\\}", escaped_desc)  # Escape }
+    escaped_desc <- desc_with_backticks
+    if (is.character(escaped_desc) && length(escaped_desc) > 0 && nzchar(escaped_desc)) {
+      tryCatch({
+        # Add line tracking for debugging
+        if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub { on desc for %s\n", func_name))
+        escaped_desc <- safe_gsub("\\{", "\\\\{", escaped_desc, func_name = func_name, linenum = 1224)  # Escape {
+        if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub } on desc for %s\n", func_name))
+        escaped_desc <- safe_gsub("\\}", "\\\\}", escaped_desc, func_name = func_name, linenum = 1225)  # Escape }
+      }, error = function(e) {
+        stop(sprintf("Error escaping description for %s: %s", func_name, e$message))
+      })
+    }
     formatted_desc <- format_roxygen_text(escaped_desc)
     # Add the GDAL documentation URL link
     doc_url <- construct_doc_url(full_path)
     doc <- paste0(doc, sprintf("#' @description\n%s\n#' \n#' See \\url{%s} for detailed GDAL documentation.\n", formatted_desc, doc_url))
   } else {
-    # Fallback: include both header and description
-    formatted_desc <- format_roxygen_text(description)
+    # Fallback: this should rarely happen now
+    # Wrap command name in backticks for code formatting
+    desc_with_backticks <- wrap_command_in_backticks(description, command_name)
+    formatted_desc <- format_roxygen_text(desc_with_backticks)
     # Add the GDAL documentation URL link
     doc_url <- construct_doc_url(full_path)
-    doc <- paste0(doc, sprintf("#' @description\n#' Auto-generated GDAL CLI wrapper.\n%s\n#' \n#' See \\url{%s} for detailed GDAL documentation.\n", formatted_desc, doc_url))
+    doc <- paste0(doc, sprintf("#' @description\n%s\n#' \n#' See \\url{%s} for detailed GDAL documentation.\n", formatted_desc, doc_url))
   }
 
   # For pipeline functions, add jobs parameter first
@@ -1061,7 +1840,7 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
         # Convert dataframe to list of lists
         for (i in seq_len(nrow(all_input_args))) {
           row_list <- as.list(all_input_args[i, ])
-          gdal_name <- row_list$name %||% NA_character_
+          gdal_name <- ifelse(is.null(row_list$name), NA_character_, row_list$name)
           if (!is.na(gdal_name)) {
             r_name <- gsub("-", "_", gdal_name)
             if (grepl("^[0-9]", r_name)) r_name <- paste0("X", r_name)
@@ -1071,7 +1850,7 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       } else if (is.list(all_input_args)) {
         for (i in seq_along(all_input_args)) {
           arg <- all_input_args[[i]]
-          gdal_name <- arg$name %||% NA_character_
+          gdal_name <- ifelse(is.null(arg$name), NA_character_, arg$name)
           if (!is.na(gdal_name)) {
             r_name <- gsub("-", "_", gdal_name)
             if (grepl("^[0-9]", r_name)) r_name <- paste0("X", r_name)
@@ -1082,25 +1861,31 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     }
 
     for (arg_name in arg_names) {
-      # Get metadata for this argument
-      arg_meta <- arg_metadata_map[[arg_name]] %||% list()
+      # Get metadata for this argument - use if() not ifelse() to preserve list type
+      if (is.null(arg_metadata_map[[arg_name]])) {
+        arg_meta <- list()
+      } else {
+        arg_meta <- arg_metadata_map[[arg_name]]
+      }
       
       # Build parameter description
       param_desc <- ""
       
       # Start with the description from JSON
-      if (!is.null(arg_meta$description) && nzchar(arg_meta$description)) {
+      if (!is.null(arg_meta$description) && is.character(arg_meta$description) && nzchar(arg_meta$description)) {
         param_desc <- arg_meta$description
         # Escape special roxygen2 markup characters in description
-        param_desc <- gsub("\\{", "\\\\{", param_desc)  # Escape {
-        param_desc <- gsub("\\}", "\\\\}", param_desc)  # Escape }
-        # Escape square brackets with backslash
-        param_desc <- gsub("\\[", "\\\\[", param_desc)
-        param_desc <- gsub("\\]", "\\\\]", param_desc)
+        if (is.character(param_desc) && length(param_desc) > 0) {
+          param_desc <- safe_gsub("\\{", "\\\\{", param_desc, func_name = func_name, linenum = 1302)  # Escape {
+          param_desc <- safe_gsub("\\}", "\\\\}", param_desc, func_name = func_name, linenum = 1303)  # Escape }
+          # Escape square brackets with backslash
+          param_desc <- safe_gsub("\\[", "\\\\[", param_desc, func_name = func_name, linenum = 1305)
+          param_desc <- safe_gsub("\\]", "\\\\]", param_desc, func_name = func_name, linenum = 1306)
+        }
       }
       
       # Add type information
-      arg_type <- arg_meta$type %||% "unknown"
+      arg_type <- ifelse(is.null(arg_meta$type), "unknown", arg_meta$type)
       if (arg_type == "boolean") {
         param_desc <- paste0(param_desc, " (Logical)")
       } else if (arg_type == "integer") {
@@ -1183,78 +1968,79 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     doc <- paste0(doc, sprintf("#' @family %s\n", family))
   }
 
-  # Add examples: convert CLI examples to R code if available
+  # Add examples: convert CLI examples to R code (required from enriched docs)
   doc <- paste0(doc, "#' @examples\n")
 
-  if (!is.null(enriched_docs) && length(enriched_docs$examples) > 0) {
+  examples_added <- 0
+
+  # Examples are fetched from enriched_docs, but are optional
+  # (some commands may not have examples yet in the GDAL documentation)
+  if (!is.null(enriched_docs) && !is.null(enriched_docs$examples) && length(enriched_docs$examples) > 0) {
+    # We have examples - use them
+    has_examples <- TRUE
+  } else {
+    has_examples <- FALSE
+  }
+  
+  if (verbose && !has_examples) {
+    cat(sprintf("  [WARN] No examples found for %s (status=%d)\n", func_name, if (is.null(enriched_docs)) NA else enriched_docs$status))
+  }
+  
+  if (has_examples) {
     # Parse and convert CLI examples to R code
-    examples_added <- 0
-
-    for (i in seq_len(min(2, length(enriched_docs$examples)))) {
+    # Only take the first example to avoid duplicates
+    for (i in seq_len(min(1, length(enriched_docs$examples)))) {
       cli_example <- trimws(enriched_docs$examples[i])
-      if (nzchar(cli_example)) {
-        # Parse the CLI command
-        parsed_cli <- parse_cli_command(cli_example)
+    if (nzchar(cli_example)) {
+      # Clean up the CLI example: remove line continuations (backslash-newline patterns)
+      # This handles multi-line examples from the documentation
+      cli_example <- gsub("\\s*\\\\\\s*\n\\s*", " ", cli_example)  # Replace "\ \n   " with space
+      cli_example <- gsub("\\s+", " ", cli_example)  # Normalize multiple spaces to single space
+      cli_example <- trimws(cli_example)
+      
+      # Parse the CLI command
+      parsed_cli <- parse_cli_command(cli_example)
 
-        # Convert to R code
-        r_code <- convert_cli_to_r_example(parsed_cli, func_name, c(input_output_args, input_args))
+      # Convert to R code, passing arg_mapping so parameter names are correct
+      r_code <- convert_cli_to_r_example(parsed_cli, func_name, c(input_output_args, input_args), arg_mapping = arg_mapping)
 
-        if (!is.null(r_code) && nzchar(r_code)) {
-          # Validate that the generated code uses valid parameters
-          # Extract parameter names from the example: job <- func(param1 = val1, param2 = val2)
-          param_matches <- gregexpr("(\\w+)\\s*=", r_code)[[1]]
-          if (param_matches[1] > -1) {
-            matched_params <- regmatches(r_code, gregexpr("(\\w+)(?=\\s*=)", r_code, perl = TRUE))[[1]]
+      if (!is.null(r_code) && nzchar(r_code)) {
+        # Validate that the generated code uses valid parameters
+        # Extract parameter names from the example: job <- func(param1 = val1, param2 = val2)
+        param_matches <- gregexpr("(\\w+)\\s*=", r_code)[[1]]
+        if (param_matches[1] > -1) {
+          matched_params <- regmatches(r_code, gregexpr("(\\w+)(?=\\s*=)", r_code, perl = TRUE))[[1]]
 
-            # Check if all used parameters are valid
-            valid_param_names <- if (!is.null(arg_names)) arg_names else character(0)
-            invalid_params <- setdiff(matched_params, valid_param_names)
+          # Check if all used parameters are valid
+          valid_param_names <- if (!is.null(arg_names)) arg_names else character(0)
+          invalid_params <- setdiff(matched_params, valid_param_names)
 
-            if (length(invalid_params) > 0) {
-              # Skip this example - it uses invalid parameters
-              next
-            }
+          if (length(invalid_params) > 0) {
+            # Skip this example - it uses invalid parameters
+            next
           }
-
-          # Add a comment describing what the example does
-          if (examples_added == 0) {
-            doc <- paste0(doc, "#' # Create a GDAL job (not executed)\n")
-          } else {
-            doc <- paste0(doc, "#' # Another example\n")
-          }
-          # Add the R code (with roxygen prefix on each line if multi-line)
-          # Split by newlines and add #' prefix to each
-          code_lines <- strsplit(r_code, "\n")[[1]]
-          formatted_code <- paste(paste0("#' ", code_lines), collapse = "\n")
-          doc <- paste0(doc, formatted_code, "\n")
-          examples_added <- examples_added + 1
         }
+
+        # Add a comment describing what the example does
+        if (examples_added == 0) {
+          doc <- paste0(doc, "#' # Example usage\n")
+        }
+        # Add the R code (with roxygen prefix on each line if multi-line)
+        # Split by newlines and add #' prefix to each
+        code_lines <- strsplit(r_code, "\n")[[1]]
+        formatted_code <- paste(paste0("#' ", code_lines), collapse = "\n")
+        doc <- paste0(doc, formatted_code, "\n")
+        examples_added <- examples_added + 1
       }
     }
-
-    # Add code to inspect the job structure
-    if (examples_added > 0) {
-      doc <- paste0(doc, "#' \n#' # Inspect the job structure\n#' str(job)\n")
     }
   }
 
-  if (length(enriched_docs$examples) == 0 || examples_added == 0) {
-    # Fallback: provide a template example showing job creation without execution
-    # Use the first parameter if available, otherwise use 'input'
-    first_param <- if (!is.null(arg_names) && length(arg_names) > 0) arg_names[1] else "input"
-    
-    # Check if first_param is boolean
-    is_boolean <- FALSE
-    if (!is.null(arg_mapping[[first_param]]) && arg_mapping[[first_param]]$type == "boolean") {
-      is_boolean <- TRUE
+  # If we didn't get any valid examples, that's okay - commands may not have examples yet
+  if (has_examples && examples_added == 0) {
+    if (verbose) {
+      cat(sprintf("  [WARN] Failed to convert any examples for %s. Examples from GDAL docs may be in unsupported format.\n", func_name))
     }
-    
-    if (is_boolean) {
-      doc <- paste0(doc, sprintf("#' # Create a GDAL job (not executed)\n#' job <- %s(%s = TRUE)\n", func_name, first_param))
-    } else {
-      doc <- paste0(doc, sprintf("#' # Create a GDAL job (not executed)\n#' job <- %s(%s = \"data.tif\")\n", func_name, first_param))
-    }
-    doc <- paste0(doc, "#' #\n#' # Inspect the job (optional)\n#' # print(job)\n")
   }
 
   doc
@@ -1417,7 +2203,6 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     }
   } else {
     # Handle job input for pipeline extension or argument merging
-    body_lines <- c(body_lines, "  # Collect function arguments")
     body_lines <- c(body_lines, "  new_args <- list()")
 
     if (length(arg_names) > 0) {
@@ -1431,10 +2216,8 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
 
     body_lines <- c(body_lines, sprintf("  job_input <- handle_job_input(job, new_args, %s)", path_json))
     body_lines <- c(body_lines, "  if (job_input$should_extend) {")
-    body_lines <- c(body_lines, "    # Extend pipeline from existing job")
     body_lines <- c(body_lines, sprintf("    return(extend_gdal_pipeline(job_input$job, %s, new_args))", path_json))
     body_lines <- c(body_lines, "  } else {")
-    body_lines <- c(body_lines, "    # Create new job with merged arguments")
     body_lines <- c(body_lines, sprintf("    merged_args <- job_input$merged_args", path_json))
     body_lines <- c(body_lines, "  }")
   }
@@ -1465,15 +2248,201 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
 #'
 write_function_file <- function(func_name, function_code) {
   output_file <- file.path("R", sprintf("%s.R", func_name))
-
-  cat(sprintf("Generating: %s\n", output_file))
   writeLines(function_code, con = output_file)
-
   output_file
 }
 
 
 # ============================================================================
+#' Analyze and detect parameter ordering issues across all generated functions
+#'
+#' This function scans all generated R functions to identify cases where optional
+#' parameters appear before required positional parameters. Required positional
+#' arguments should always come first (after the 'job' parameter).
+#'
+#' @return Data frame with function names and parameter ordering analysis
+#'
+analyze_parameter_ordering <- function(r_dir = "R") {
+  if (!dir.exists(r_dir)) {
+    return(data.frame())
+  }
+  
+  r_files <- list.files(r_dir, pattern = "^gdal_.*\\.R$", full.names = TRUE)
+  issues <- list()
+  
+  for (file_path in r_files) {
+    content <- readLines(file_path)
+    
+    # Find function definition
+    func_pattern <- "^(gdal_\\w+) <- function\\((.+)\\) \\{"
+    func_line <- grep(func_pattern, content)
+    
+    if (length(func_line) == 0) next
+    func_line <- func_line[1]
+    
+    # Extract function name and signature
+    match <- regmatches(content[func_line], regexec(func_pattern, content[func_line]))
+    if (length(match[[1]]) < 3) next
+    
+    func_name <- match[[1]][2]
+    params_str <- match[[1]][3]
+    
+    # Parse parameters
+    param_parts <- strsplit(params_str, ",")[[1]]
+    param_names <- character()
+    param_has_default <- logical()
+    
+    for (p in param_parts) {
+      p <- trimws(p)
+      if (nzchar(p)) {
+        # Extract parameter name (before '=' if it has a default)
+        param_name <- sub("\\s*=.*$", "", p)
+        has_default <- grepl("=", p)
+        
+        param_names <- c(param_names, param_name)
+        param_has_default <- c(param_has_default, has_default)
+      }
+    }
+    
+    # Check for issue: optional parameter before required parameter
+    # Typically: job (no default), required_param (no default), optional_param (has default)
+    # Problem: job, optional_param (has default), required_param (no default)
+    
+    if (length(param_names) >= 3) {
+      # Skip 'job' parameter
+      rest_names <- param_names[-1]
+      rest_defaults <- param_has_default[-1]
+      
+      # Find first parameter with a default (optional)
+      first_optional <- which(rest_defaults)[1]
+      # Find last parameter without a default (required)
+      last_required <- tail(which(!rest_defaults), 1)
+      
+      if (!is.na(first_optional) && !is.na(last_required) && first_optional < last_required) {
+        issues[[length(issues) + 1]] <- list(
+          func_name = func_name,
+          file = file_path,
+          params = rest_names,
+          has_defaults = rest_defaults,
+          issue_desc = sprintf("Optional param '%s' appears before required param '%s'",
+                               rest_names[first_optional], rest_names[last_required])
+        )
+      }
+    }
+  }
+  
+  if (length(issues) == 0) {
+    return(data.frame(func_name = character(), issue = character()))
+  }
+  
+  # Convert to data frame
+  df <- data.frame(
+    func_name = sapply(issues, function(x) x$func_name),
+    file = sapply(issues, function(x) x$file),
+    issue = sapply(issues, function(x) x$issue_desc),
+    stringsAsFactors = FALSE
+  )
+  
+  return(df)
+}
+
+
+#' Apply automatic parameter ordering fixups based on required vs optional status
+#'
+#' Scans all generated functions and reorders parameters so that required positional
+#' parameters (those without defaults) always come before optional parameters.
+#'
+apply_automatic_signature_fixups <- function(r_dir = "R") {
+  if (!dir.exists(r_dir)) {
+    return(invisible(FALSE))
+  }
+  
+  r_files <- list.files(r_dir, pattern = "^gdal_.*\\.R$", full.names = TRUE)
+  fixed_count <- 0
+  
+  for (file_path in r_files) {
+    content <- readLines(file_path)
+    original_content <- content
+    
+    # Find function definition
+    func_pattern <- "^(gdal_\\w+) <- function\\((.+)\\) \\{"
+    func_line <- grep(func_pattern, content)
+    
+    if (length(func_line) == 0) next
+    func_line <- func_line[1]
+    
+    # Extract function name and parameters
+    match <- regmatches(content[func_line], regexec(func_pattern, content[func_line]))
+    if (length(match[[1]]) < 3) next
+    
+    func_name <- match[[1]][2]
+    params_str <- match[[1]][3]
+    
+    # Parse parameters more carefully
+    params <- character()
+    current_param <- ""
+    paren_depth <- 0
+    
+    for (i in 1:nchar(params_str)) {
+      char <- substr(params_str, i, i)
+      
+      if (char == "(") paren_depth <- paren_depth + 1
+      else if (char == ")") paren_depth <- paren_depth - 1
+      else if (char == "," && paren_depth == 0) {
+        params <- c(params, trimws(current_param))
+        current_param <- ""
+        next
+      }
+      
+      current_param <- paste0(current_param, char)
+    }
+    if (nzchar(current_param)) {
+      params <- c(params, trimws(current_param))
+    }
+    
+    if (length(params) < 2) next
+    
+    # Categorize parameters: job, required (no default), optional (has default)
+    job_param <- params[grepl("^job", params)]
+    
+    rest_params <- params[!grepl("^job", params)]
+    required_params <- rest_params[!grepl("=", rest_params)]
+    optional_params <- rest_params[grepl("=", rest_params)]
+    
+    # Check if reordering is needed
+    # Correct order: job, required_params..., optional_params...
+    correct_order <- c(job_param, required_params, optional_params)
+    current_order <- params
+    
+    if (identical(correct_order, current_order)) {
+      next  # Already correct
+    }
+    
+    # Rebuild the function signature
+    new_signature_line <- sprintf("%s <- function(%s) {",
+                                  func_name,
+                                  paste(correct_order, collapse = ", "))
+    
+    content[func_line] <- new_signature_line
+    
+    # Write back if changed
+    if (!identical(content, original_content)) {
+      writeLines(content, file_path)
+      cat(sprintf("  [OK] %s - reordered parameters\n", func_name))
+      fixed_count <- fixed_count + 1
+    }
+  }
+  
+  if (fixed_count > 0) {
+    cat(sprintf("\n[OK] Applied %d parameter ordering fixes\n", fixed_count))
+  } else {
+    cat("[OK] No parameter ordering issues found\n")
+  }
+  
+  invisible(fixed_count > 0)
+}
+
+
 # Main Execution
 # ============================================================================
 
@@ -1506,50 +2475,63 @@ main <- function() {
     return(invisible(NULL))
   }
 
-  cat(sprintf("✓ Found %d GDAL command endpoints.\n\n", length(endpoints)))
+  cat(sprintf("[OK] Found %d GDAL command endpoints.\n\n", length(endpoints)))
 
-  # Initialize documentation cache (unless disabled via environment variable)
-  doc_cache <- NULL
-  enable_enrichment <- Sys.getenv("SKIP_DOC_ENRICHMENT", "false") != "true"
-
-  if (enable_enrichment) {
-    cat("Initializing documentation cache for web enrichment...\n")
-    doc_cache <- create_doc_cache(".gdal_doc_cache")
-    cat("(Set SKIP_DOC_ENRICHMENT=true environment variable to disable)\n\n")
-  } else {
-    cat("Documentation enrichment disabled (SKIP_DOC_ENRICHMENT=true)\n\n")
-  }
+  # Initialize documentation cache (web enrichment is mandatory)
+  cat("Initializing documentation cache for web enrichment...\n")
+  doc_cache <- create_doc_cache(".gdal_doc_cache")
+  cat("(Web enrichment is required for examples)\n\n")
 
   generated_files <- character()
   failed_count <- 0
 
   for (endpoint_name in names(endpoints)) {
     endpoint <- endpoints[[endpoint_name]]
-    # Function name combines command path (which already starts with 'gdal')
-    # Also replace hyphens with underscores to get valid R function names
     func_name <- paste(gsub("-", "_", endpoint$full_path), collapse = "_")
-
-    cat(sprintf("  Generating %s... ", func_name))
 
     tryCatch(
       {
-        function_code <- generate_function(endpoint, cache = doc_cache, verbose = FALSE)
+        if (func_name %in% c("gdal", "gdal_raster", "gdal_vector", "gdal_mdim")) {
+          cat(sprintf("  [DEBUG] Generating %s...\n", func_name))
+        }
+        function_code <- generate_function(endpoint, cache = doc_cache, verbose = TRUE)
+        if (func_name %in% c("gdal", "gdal_raster", "gdal_vector", "gdal_mdim")) {
+          cat(sprintf("  [DEBUG] Writing %s...\n", func_name))
+        }
         output_file <- write_function_file(func_name, function_code)
-        cat("OK\n")
         generated_files <- c(generated_files, output_file)
+        cat(sprintf("  [OK] %s\n", func_name))
       },
       error = function(e) {
-        cat(sprintf("FAILED: %s\n", e$message))
+        error_msg <- conditionMessage(e)
+        error_class <- class(e)[1]
+        error_info <- sprintf("[%s] %s", error_class, error_msg)
+        cat(sprintf("  [FAILED] %s: %s\n", func_name, error_info))
         failed_count <<- failed_count + 1
       }
     )
   }
 
-  cat(sprintf("\n✓ Generated %d functions successfully.\n", length(generated_files)))
+  cat(sprintf("\n[OK] Generated %d functions successfully.\n", length(generated_files)))
   if (failed_count > 0) {
-    cat(sprintf("⚠ %d functions failed to generate.\n", failed_count))
+    cat(sprintf("[WARN] %d functions failed to generate.\n", failed_count))
   }
-  cat(sprintf("✓ Run roxygen2::roxygenise() to update documentation.\n\n"))
+  
+  # Analyze and report parameter ordering issues
+  cat("\nAnalyzing parameter ordering across all functions...\n")
+  issues <- analyze_parameter_ordering("R")
+  if (nrow(issues) > 0) {
+    cat(sprintf("[WARN] Found %d functions with potential parameter ordering issues:\n", nrow(issues)))
+    for (i in 1:nrow(issues)) {
+      cat(sprintf("  - %s: %s\n", issues$func_name[i], issues$issue[i]))
+    }
+    cat("\nApplying automatic parameter ordering fixes...\n")
+    apply_automatic_signature_fixups("R")
+  } else {
+    cat("[OK] All functions have correct parameter ordering\n")
+  }
+  
+  cat(sprintf("[OK] Run roxygen2::roxygenise() to update documentation.\n\n"))
 
   invisible(generated_files)
 }

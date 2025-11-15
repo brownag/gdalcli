@@ -1,0 +1,275 @@
+# Dynamic GDAL Compilation Dockerfile Template
+# Build with: docker build --build-arg GDAL_VERSION=3.11.1 --build-arg GDAL_RELEASE_TYPE=tagged ...
+#
+# GDAL_VERSION: e.g., "3.11.1", "3.12.0", "latest" (for dev from main)
+# GDAL_RELEASE_TYPE: "tagged" (use v{version} tag), "latest" (use main branch), "dev" (compile from main)
+#
+# Cache layers:
+#   - gdal-compiled: GDAL compilation (35-40 min, cached by GDAL_VERSION + GDAL_RELEASE_TYPE)
+#   - base: R environment + API generation (1-2 min, uses cached GDAL)
+#   - runtime: minimal production image (uses cached GDAL binaries from base)
+
+ARG BASE_IMAGE=ubuntu:24.04
+
+# ============================================================================
+# STAGE 1: gdal-compiled
+# Compile GDAL once, cache it by version
+# Rebuilds only if GDAL_VERSION or GDAL_RELEASE_TYPE change
+# ============================================================================
+FROM ${BASE_IMAGE} AS gdal-compiled
+
+ARG GDAL_VERSION=3.11.1
+ARG GDAL_RELEASE_TYPE=tagged
+ARG DEBIAN_FRONTEND=noninteractive
+
+LABEL gdal.version="${GDAL_VERSION}" \
+      gdal.release_type="${GDAL_RELEASE_TYPE}" \
+      stage="gdal-compiled"
+
+# Install build dependencies for compiling GDAL from source
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    cmake \
+    curl \
+    git \
+    gzip \
+    libfontconfig1-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libcurl4-openssl-dev \
+    libexpat-dev \
+    libgeos-dev \
+    libhdf5-dev \
+    libjsoncpp-dev \
+    libnetcdf-dev \
+    libopenjp2-7-dev \
+    libpng-dev \
+    libpq-dev \
+    libproj-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxerces-c-dev \
+    libzip-dev \
+    postgresql-client \
+    python3 \
+    python3-dev \
+    sqlite3 \
+    tar \
+    wget \
+    zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and compile GDAL from GitHub releases
+RUN mkdir -p /tmp/gdal-build && cd /tmp/gdal-build && \
+    if [ "${GDAL_RELEASE_TYPE}" = "tagged" ]; then \
+      GDAL_URL="https://github.com/OSGeo/gdal/releases/download/v${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz"; \
+      echo "Downloading tagged release: $GDAL_URL"; \
+      curl -fsSL "$GDAL_URL" -o gdal.tar.gz; \
+    elif [ "${GDAL_RELEASE_TYPE}" = "latest" ] || [ "${GDAL_RELEASE_TYPE}" = "dev" ]; then \
+      echo "Cloning GDAL development version from main branch"; \
+      git clone --depth 1 https://github.com/OSGeo/gdal.git gdal-src; \
+      cd gdal-src && \
+      tar czf ../gdal.tar.gz --exclude=.git . && \
+      cd ..; \
+    else \
+      echo "Invalid GDAL_RELEASE_TYPE: ${GDAL_RELEASE_TYPE}"; \
+      exit 1; \
+    fi && \
+    tar xzf gdal.tar.gz && \
+    rm gdal.tar.gz && \
+    DIR=$(ls -d gdal* 2>/dev/null | head -1) && \
+    cd "$DIR" && \
+    mkdir -p build && cd build && \
+    cmake .. \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DBUILD_SHARED_LIBS=ON \
+      -DGDAL_USE_CURL=ON \
+      -DGDAL_USE_NETCDF=ON \
+      -DGDAL_USE_HDF5=ON \
+      -DGDAL_USE_GEOS=ON \
+      -DGDAL_USE_PROJ=ON \
+      -DGDAL_USE_POSTGRESQL=ON \
+      -DGDAL_USE_SQLITE3=ON \
+      -DGDAL_USE_ZSTD=OFF \
+      -DGDAL_USE_JPEG=ON \
+      -DGDAL_USE_PNG=ON \
+      -DGDAL_USE_OPENJPEG=ON \
+      -DGDAL_USE_JSONCPP=ON && \
+    cmake --build . -j4 && \
+    cmake --install . && \
+    cd / && \
+    rm -rf /tmp/gdal-build && \
+    ldconfig
+
+# Verify GDAL installation
+RUN gdal --version && \
+    which gdalinfo && \
+    gdalinfo --version
+
+# ============================================================================
+# STAGE 2: base
+# Use cached GDAL from stage 1, add R environment and generate API
+# Fast rebuild when only R code changes (1-2 min)
+# ============================================================================
+FROM ${BASE_IMAGE} AS base
+
+ARG GDAL_VERSION=3.11.1
+ARG GDAL_RELEASE_TYPE=tagged
+ARG DEBIAN_FRONTEND=noninteractive
+
+LABEL gdal.version="${GDAL_VERSION}" \
+      gdal.release_type="${GDAL_RELEASE_TYPE}" \
+      r.version="4.5+" \
+      version="0.2.0" \
+      maintainer="gdalcli contributors" \
+      stage="base"
+
+# Install runtime dependencies and R
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    libcurl4-openssl-dev \
+    libexpat-dev \
+    libgeos-c1v5 \
+    libhdf5-dev \
+    libjsoncpp-dev \
+    libnetcdf-dev \
+    libopenjp2-7-dev \
+    libpng-dev \
+    libpq5 \
+    libproj-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxerces-c-dev \
+    libzip-dev \
+    postgresql-client \
+    python3-dev \
+    r-base \
+    r-base-dev \
+    sqlite3 \
+    zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy GDAL binaries and libraries from gdal-compiled stage
+COPY --from=gdal-compiled /usr/local/lib /usr/local/lib
+COPY --from=gdal-compiled /usr/local/bin /usr/local/bin
+COPY --from=gdal-compiled /usr/local/share /usr/local/share
+
+# Update library cache
+RUN ldconfig
+
+# Verify GDAL is accessible
+RUN gdal --version && \
+    which gdalinfo && \
+    gdalinfo --version
+
+# Create non-root user (use -o to allow non-unique UID if it already exists)
+RUN useradd -m -u 1000 -o builder 2>/dev/null || true
+
+# Set environment variables
+ENV R_LIBS_USER="/usr/local/lib/R/site-library" \
+    GDAL_CONFIG=/usr/local/bin/gdal-config \
+    GDAL_VERSION="${GDAL_VERSION}" \
+    GDAL_RELEASE_TYPE="${GDAL_RELEASE_TYPE}" \
+    LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH}" \
+    PATH="/usr/local/bin:${PATH}"
+
+# Install core R packages via apt for reliability
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    r-cran-rlang \
+    r-cran-cli \
+    r-cran-processx \
+    r-cran-jsonlite \
+    r-cran-digest \
+    r-cran-glue \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install remaining build-time packages via R (rvest, httr, xml2, roxygen2)
+RUN R --quiet --no-save -e "install.packages(c('rvest', 'httr', 'xml2', 'roxygen2'), repos='https://cran.r-project.org', Ncpus=4)"
+
+# Copy repository - this layer will rebuild on any code change
+COPY . /workspace/gdalcli/
+WORKDIR /workspace/gdalcli
+
+# Generate dynamic API based on installed GDAL
+RUN Rscript build/generate_gdal_api.R
+
+# ============================================================================
+# STAGE 3: runtime
+# Minimal production image with only runtime dependencies
+# ============================================================================
+FROM ubuntu:24.04 AS runtime
+
+ARG GDAL_VERSION=3.11.1
+
+LABEL gdal.version="${GDAL_VERSION}" \
+      version="0.2.0" \
+      maintainer="gdalcli contributors" \
+      stage="runtime"
+
+# Install runtime dependencies only (no build tools)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libcurl4-openssl-dev \
+    libexpat1 \
+    libgeos-c1v5 \
+    libhdf5-103 \
+    libjsoncpp25 \
+    libnetcdf15 \
+    libopenjp2-7 \
+    libpng16-16t64 \
+    libpq5 \
+    libproj25 \
+    libssl3 \
+    libxml2 \
+    libxerces-c3.2 \
+    libzip4 \
+    r-base \
+    sqlite3 \
+    zlib1g && \
+    rm -rf /var/lib/apt/lists/* && \
+    find /usr/share/doc -type f -delete && \
+    find /usr/share/man -type f -delete
+
+# Install R package imports (required for runtime)
+RUN R --quiet --no-save <<'EOF'
+packages <- c(
+  "rlang", "cli", "processx", "jsonlite", "digest", "glue"
+)
+install.packages(packages,
+                 repos = "https://cran.r-project.org",
+                 Ncpus = 4)
+EOF
+
+# Copy GDAL libraries and binaries from base stage
+COPY --from=base /usr/local/lib /usr/local/lib
+COPY --from=base /usr/local/bin /usr/local/bin
+COPY --from=base /usr/local/share /usr/local/share
+
+# Update library cache
+RUN ldconfig
+
+# Copy R libraries from base stage
+COPY --from=base /usr/local/lib/R /usr/local/lib/R
+
+# Copy generated package from base stage
+COPY --from=base /workspace/gdalcli/R /opt/gdalcli/R
+
+# Create non-root user
+RUN useradd -m -u 1000 builder
+
+# Set environment variables
+ENV R_LIBS_USER="/usr/local/lib/R/site-library" \
+    GDAL_CONFIG=/usr/local/bin/gdal-config \
+    GDAL_VERSION="${GDAL_VERSION}" \
+    LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH}" \
+    PATH="/usr/local/bin:${PATH}"
+
+USER builder
+WORKDIR /data
+
+# Verify runtime environment
+RUN gdal --version && \
+    echo "Runtime environment ready for GDAL ${GDAL_VERSION}"

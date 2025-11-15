@@ -2,14 +2,14 @@
 % Please edit documentation in R/gdal_vector_geom_swap_xy.R
 \name{gdal_vector_geom_swap_xy}
 \alias{gdal_vector_geom_swap_xy}
-\title{Swap X and Y coordinates of geometries of a vector dataset.}
+\title{swap-xy: Swap X and Y coordinates of geometries of a vector dataset}
 \usage{
 gdal_vector_geom_swap_xy(
   job = NULL,
   input,
+  output,
   input_format = NULL,
   input_layer = NULL,
-  output = NULL,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -28,11 +28,11 @@ gdal_vector_geom_swap_xy(
 
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -60,17 +60,9 @@ gdal_vector_geom_swap_xy(
 A \link{gdal_job} object.
 }
 \description{
-Auto-generated GDAL CLI wrapper.
 Swap X and Y coordinates of geometries of a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_swap-xy.html} for detailed GDAL documentation.
-}
-\examples{
-# Create a GDAL job (not executed)
-job <- gdal_vector_geom_swap_xy(input = "data.tif")
-#
-# Inspect the job (optional)
-# print(job)
 }
 \seealso{
 Other gdal_vector_utilities: 

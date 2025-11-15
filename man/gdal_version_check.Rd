@@ -39,5 +39,5 @@ For example, GDAL 3.11.0 and 3.11.5 are compatible, but 3.11.x and
 
 }
 \seealso{
-\code{\link[=gdal_run]{gdal_run()}}, \code{\link[gdalraster:gdal_version]{gdalraster::gdal_version()}}
+\code{\link[=gdal_job_run]{gdal_job_run()}}, \code{\link[gdalraster:gdal_version]{gdalraster::gdal_version()}}
 }
