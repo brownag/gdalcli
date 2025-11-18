@@ -5,7 +5,6 @@
 \title{create: Create a Seek-optimized ZIP (SOZIP) file}
 \usage{
 gdal_vsi_sozip_create(
-  job = NULL,
   input,
   output,
   overwrite = FALSE,
@@ -19,9 +18,7 @@ gdal_vsi_sozip_create(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input filenames (Character vector) (required). \code{0} to \code{2147483647} value(s)}
+\item{input}{Input filenames (Character vector) (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output ZIP filename (required)}
 
@@ -48,6 +45,11 @@ A \link{gdal_job} object.
 The gdal vsi sozip utility can be used to:
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_create.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal vsi sozip create my.gpkg my.gpkg.zip
+job <- gdal_vsi_sozip_create(input = "my.gpkg", output = "my.gpkg.zip")
 }
 \seealso{
 Other gdal_vsi_utilities: 

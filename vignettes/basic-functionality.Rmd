@@ -123,7 +123,7 @@ gdalcli::gdal_job_run(job)
 
 # Raster Operations
 
-`gdalcli` provides comprehensive raster processing capabilities through auto-generated functions. Let's explore some common operations.
+Raster operations are provided through auto-generated functions. Common operations include:
 
 ## Dataset Information
 
@@ -210,7 +210,7 @@ gdalcli::gdal_job_run(convert_vector)
 
 # Pipeline Composition
 
-One of the most powerful features of `gdalcli` is the ability to compose complex workflows using R's native pipe operator.
+Multi-step workflows can be composed using R's native pipe operator.
 
 ## Chaining Operations
 
@@ -271,7 +271,7 @@ gdalcli::gdal_job_run(job, backend = "gdalraster")
 
 ### Using the Python Backend
 
-For workflows that leverage Python geospatial libraries, you can execute GDAL operations through Python:
+For workflows that use Python geospatial libraries, GDAL operations can be executed through Python:
 
 ```{r python-backend, eval=FALSE}
 # Requires: reticulate package and Python with osgeo.gdal installed
@@ -357,7 +357,7 @@ gdalcli::gdal_job_run(memory_optimized)
 
 ## Batch Processing
 
-Process multiple files efficiently:
+Process multiple files:
 
 ```{r batch-processing}
 # Process multiple sample rasters
@@ -386,7 +386,7 @@ This vignette demonstrated the core functionality of `gdalcli`:
 - **Configuration management** for performance and behavior
 - **Job inspection and reuse** for flexible workflows
 
-The `gdalcli` package provides a powerful, secure, and composable interface to GDAL's extensive geospatial processing capabilities.
+The `gdalcli` package provides a composable interface to GDAL's geospatial processing capabilities.
 
 # Session Information
 

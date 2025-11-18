@@ -8,23 +8,39 @@
 #' Vector commands.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param drivers Display vector driver list as JSON document and exit (Logical)
+#' @param drivers Display vector driver list as JSON document and exit (Logical). Can also be a [gdal_job] object to extend a pipeline
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal vector info poly.gpkg
+#' # For help on available parameters, run: ?gdal_vector
+#' job <- gdal_vector()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_vector <- function(job = NULL,
-  drivers = FALSE) {
+gdal_vector <- function(drivers = FALSE) {
   new_args <- list()
   if (!missing(drivers)) new_args[["drivers"]] <- drivers
-  job_input <- handle_job_input(job, new_args, c("vector"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(drivers) && inherits(drivers, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- drivers
+    new_args[["drivers"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    drivers = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

@@ -19,4 +19,12 @@ Main gdal entry point.
 
 See \url{https://gdal.org/en/stable/programs/gdal.html} for detailed GDAL documentation.
 }
+\examples{
+\dontrun{
+# TODO: No examples available for gdal.
+# See GDAL documentation: https://gdal.org/programs/gdal.html
+job <- gdal()
+# gdal_job_run(job)
+}
+}
 \concept{gdal_utilities}

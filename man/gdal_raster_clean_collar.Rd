@@ -5,7 +5,6 @@
 \title{clean-collar: Clean the collar of a raster dataset, removing noise}
 \usage{
 gdal_raster_clean_collar(
-  job = NULL,
   input,
   input_format = NULL,
   output = NULL,
@@ -23,9 +22,7 @@ gdal_raster_clean_collar(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -67,7 +64,8 @@ if either alpha band or mask band is not set.
 See \url{https://gdal.org/en/stable/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
 }
 \examples{
-# Example usage
+# Example
+# gdal raster clean-collar --update my.tif
 job <- gdal_raster_clean_collar(update = "my.tif")
 }
 \seealso{

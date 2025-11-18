@@ -5,22 +5,57 @@
 \title{Check if Path is Virtual File System
 Execute a GDAL Pipeline}
 \usage{
-\method{gdal_job_run}{gdal_pipeline}(x, ..., verbose = FALSE)
+\method{gdal_job_run}{gdal_pipeline}(
+  x,
+  execution_mode = c("sequential", "native"),
+  stream_in = NULL,
+  stream_out_format = NULL,
+  env = NULL,
+  ...,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{A \code{gdal_pipeline} object.}
+
+\item{execution_mode}{Character string: \code{"sequential"} (default) to run jobs as
+separate GDAL commands, or \code{"native"} to run as a single native GDAL pipeline
+command (via \verb{gdal raster/vector pipeline}). Native mode is more efficient for
+large datasets as it avoids intermediate disk I/O.}
+
+\item{stream_in}{An R object to be streamed to \verb{/vsistdin/} for the first pipeline step.
+Only used in native execution mode. Default \code{NULL}.}
+
+\item{stream_out_format}{Character string: output format for the last pipeline step.
+Options: \code{NULL} (no streaming), \code{"text"}, or \code{"raw"}. Only used in native execution mode.}
+
+\item{env}{Environment variables to pass to the GDAL process. Only used in native execution mode.}
 
 \item{...}{Additional arguments passed to individual job execution.}
 
 \item{verbose}{Logical. If \code{TRUE}, prints progress information. Default \code{FALSE}.}
 }
 \value{
-Invisibly returns \code{TRUE} on successful completion.
+Invisibly returns \code{TRUE} on successful completion, or (in native mode with
+streaming output) returns the captured output.
 }
 \description{
 Executes a sequence of GDAL jobs in order, with output from one job
 potentially becoming input to the next through virtual file systems.
 }
+\examples{
+\dontrun{
+# Sequential execution (default, each job runs separately)
+pipeline <- gdal_raster_info("in.tif") |>
+  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+  gdal_raster_convert(output = "out.tif")
+gdal_job_run(pipeline)
+
+# Native pipeline execution (single GDAL pipeline command)
+gdal_job_run(pipeline, execution_mode = "native")
+}
+
+}
 \seealso{
-\code{\link[=gdal_job_run.gdal_job]{gdal_job_run.gdal_job()}}, \code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}
+\code{\link[=gdal_job_run.gdal_job]{gdal_job_run.gdal_job()}}, \code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=render_native_pipeline]{render_native_pipeline()}}
 }

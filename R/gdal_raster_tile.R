@@ -8,10 +8,9 @@
 #' Generate tiles in separate files from a raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_tile.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster dataset (Dataset path) (required)
-#' @param output Output directory (required)
+#' @param input Input raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output directory (required)
 #' @param output_format Output format (Default: `PNG`)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -48,11 +47,14 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' # Example
+#' # gdal raster tile --min-zoom=2 --max-zoom=5 input.tif output_folder
+#' job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom = 2, 
+#'     max_zoom = 5)
 #' @export
-gdal_raster_tile <- function(job = NULL,
-  input,
-  output,
+gdal_raster_tile <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -88,8 +90,8 @@ gdal_raster_tile <- function(job = NULL,
   mapml_template = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
@@ -123,13 +125,59 @@ gdal_raster_tile <- function(job = NULL,
   if (!missing(title)) new_args[["title"]] <- title
   if (!missing(copyright)) new_args[["copyright"]] <- copyright
   if (!missing(mapml_template)) new_args[["mapml_template"]] <- mapml_template
-  job_input <- handle_job_input(job, new_args, c("raster", "tile"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "tile"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "tile"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "tile"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    tiling_scheme = list(min_count = 0, max_count = 1),
+    min_zoom = list(min_count = 0, max_count = 1),
+    max_zoom = list(min_count = 0, max_count = 1),
+    min_x = list(min_count = 0, max_count = 1),
+    max_x = list(min_count = 0, max_count = 1),
+    min_y = list(min_count = 0, max_count = 1),
+    max_y = list(min_count = 0, max_count = 1),
+    no_intersection_ok = list(min_count = 0, max_count = 1),
+    resampling = list(min_count = 0, max_count = 1),
+    overview_resampling = list(min_count = 0, max_count = 1),
+    convention = list(min_count = 0, max_count = 1),
+    tile_size = list(min_count = 0, max_count = 1),
+    add_alpha = list(min_count = 0, max_count = 1),
+    no_alpha = list(min_count = 0, max_count = 1),
+    dst_nodata = list(min_count = 0, max_count = 1),
+    skip_blank = list(min_count = 0, max_count = 1),
+    metadata = list(min_count = 0, max_count = 2147483647),
+    copy_src_metadata = list(min_count = 0, max_count = 1),
+    aux_xml = list(min_count = 0, max_count = 1),
+    kml = list(min_count = 0, max_count = 1),
+    resume = list(min_count = 0, max_count = 1),
+    num_threads = list(min_count = 0, max_count = 1),
+    excluded_values = list(min_count = 0, max_count = 1),
+    excluded_values_pct_threshold = list(min_count = 0, max_count = 1),
+    nodata_values_pct_threshold = list(min_count = 0, max_count = 1),
+    webviewer = list(min_count = 0, max_count = 2147483647),
+    url = list(min_count = 0, max_count = 1),
+    title = list(min_count = 0, max_count = 1),
+    copyright = list(min_count = 0, max_count = 1),
+    mapml_template = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "tile"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

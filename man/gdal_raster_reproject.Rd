@@ -5,10 +5,9 @@
 \title{reproject: Reproject a raster dataset}
 \usage{
 gdal_raster_reproject(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
   open_option = NULL,
@@ -30,13 +29,11 @@ gdal_raster_reproject(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -81,6 +78,12 @@ A \link{gdal_job} object.
 Reproject a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster reproject --dst-crs=EPSG:32632 in.tif out.tif --overwrite
+job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = TRUE, 
+    dst_crs = "EPSG:32632")
 }
 \seealso{
 Other gdal_raster_utilities: 

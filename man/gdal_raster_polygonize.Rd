@@ -5,10 +5,9 @@
 \title{polygonize: Create a polygon feature dataset from a raster band}
 \usage{
 gdal_raster_polygonize(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -24,13 +23,11 @@ gdal_raster_polygonize(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -63,6 +60,11 @@ A \link{gdal_job} object.
 Create a polygon feature dataset from a raster band.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster polygonize input.tif polygonize.shp
+job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
 }
 \seealso{
 Other gdal_raster_utilities: 

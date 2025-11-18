@@ -9,8 +9,7 @@
 #' a pixel given its location in one of a variety of coordinate systems.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster dataset (Dataset path) (required)
+#' @param input Input raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format. Choices: geojson, csv (Default: `geojson`)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -22,9 +21,15 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal raster pixel-info byte.tif 5 10
+#' # For help on available parameters, run: ?gdal_raster_pixel_info
+#' job <- gdal_raster_pixel_info()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_raster_pixel_info <- function(job = NULL,
-  input,
+gdal_raster_pixel_info <- function(input,
   input_format = NULL,
   output_format = NULL,
   open_option = NULL,
@@ -43,13 +48,32 @@ gdal_raster_pixel_info <- function(job = NULL,
   if (!missing(position)) new_args[["position"]] <- position
   if (!missing(position_crs)) new_args[["position_crs"]] <- position_crs
   if (!missing(resampling)) new_args[["resampling"]] <- resampling
-  job_input <- handle_job_input(job, new_args, c("raster", "pixel-info"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "pixel-info"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "pixel-info"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "pixel-info"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output_format = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    band = list(min_count = 0, max_count = 2147483647),
+    overview = list(min_count = 0, max_count = 1),
+    position = list(min_count = 0, max_count = 2147483647),
+    position_crs = list(min_count = 0, max_count = 1),
+    resampling = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "pixel-info"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

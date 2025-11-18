@@ -5,13 +5,12 @@
 \title{sql: Apply SQL statement(s) to a dataset}
 \usage{
 gdal_vector_sql(
-  job = NULL,
   input,
-  output,
-  sql,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
+  sql,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -23,19 +22,17 @@ gdal_vector_sql(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
-
-\item{sql}{SQL statement(s) (Character vector). Format: \verb{<statement>|@<filename>} (required). \code{0} to \code{2147483647} value(s)}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{output_layer}{Output layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+
+\item{sql}{SQL statement(s) (Character vector). Format: \verb{<statement>|@<filename>} (required). \code{0} to \code{2147483647} value(s)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -60,6 +57,15 @@ A \link{gdal_job} object.
 Apply SQL statement(s) to a dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_sql.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vector sql in.gpkg out.gpkg --output-layer country_sorted_by_pop --sql="SELECT * FROM country ORDER BY pop DESC"
+# For help on available parameters, run: ?gdal_vector_sql
+job <- gdal_vector_sql()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

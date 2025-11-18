@@ -8,31 +8,43 @@
 #' Deleting overviews.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param dataset Dataset (to be updated in-place, unless --read-only) (Dataset path) (required)
+#' @param dataset Dataset (to be updated in-place, unless --read-only) (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param external Delete external overviews (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Example usage
+#' # Example
+#' # gdal raster overview delete my.tif
 #' job <- gdal_raster_overview_delete(dataset = "my.tif")
 #' @export
-gdal_raster_overview_delete <- function(job = NULL,
-  dataset,
+gdal_raster_overview_delete <- function(dataset,
   open_option = NULL,
   external = FALSE) {
   new_args <- list()
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(external)) new_args[["external"]] <- external
-  job_input <- handle_job_input(job, new_args, c("raster", "overview", "delete"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "overview", "delete"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(dataset) && inherits(dataset, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- dataset
+    new_args[["dataset"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "overview", "delete"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "overview", "delete"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    dataset = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    external = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "overview", "delete"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

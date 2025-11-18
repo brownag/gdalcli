@@ -4,10 +4,6 @@
 # GDAL_VERSION: e.g., "3.11.1", "3.12.0", "latest" (for dev from main)
 # GDAL_RELEASE_TYPE: "tagged" (use v{version} tag), "latest" (use main branch), "dev" (compile from main)
 #
-# Cache layers:
-#   - gdal-compiled: GDAL compilation (35-40 min, cached by GDAL_VERSION + GDAL_RELEASE_TYPE)
-#   - base: R environment + API generation (1-2 min, uses cached GDAL)
-#   - runtime: minimal production image (uses cached GDAL binaries from base)
 
 ARG BASE_IMAGE=ubuntu:24.04
 

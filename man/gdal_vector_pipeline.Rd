@@ -6,8 +6,8 @@
 \usage{
 gdal_vector_pipeline(
   jobs = NULL,
-  input_format = NULL,
   input = NULL,
+  input_format = NULL,
   input_layer = NULL,
   output = NULL,
   output_format = NULL,
@@ -25,9 +25,9 @@ gdal_vector_pipeline(
 \arguments{
 \item{jobs}{A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{input}{Input vector datasets. \code{1} to \code{2147483647} value(s)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
@@ -60,6 +60,12 @@ A \link{gdal_job} object.
 Process a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal vector pipeline ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
+job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write"), 
+    output = "out.gpkg", overwrite = TRUE)
 }
 \seealso{
 Other gdal_vector_utilities: 

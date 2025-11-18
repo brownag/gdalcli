@@ -5,10 +5,9 @@
 \title{footprint: Compute the footprint of a raster dataset}
 \usage{
 gdal_raster_footprint(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -34,13 +33,11 @@ gdal_raster_footprint(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -93,6 +90,11 @@ A \link{gdal_job} object.
 Compute the footprint of a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster footprint my_raster.tif footprint.geojson
+job <- gdal_raster_footprint(input = "my_raster.tif", output = "footprint.geojson")
 }
 \seealso{
 Other gdal_raster_utilities: 

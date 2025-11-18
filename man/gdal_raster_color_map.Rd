@@ -5,10 +5,9 @@
 \title{color-map: Generate a RGB or RGBA dataset from a single band, using a color map}
 \usage{
 gdal_raster_color_map(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -20,13 +19,11 @@ gdal_raster_color_map(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -54,6 +51,12 @@ or from an external text file. It is typically used to create hypsometric maps
 from a DEM.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster color-map --color-map=color-map.txt n43.dt0 out.tif --overwrite
+job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
+    color_map = "color-map.txt")
 }
 \seealso{
 Other gdal_raster_utilities: 

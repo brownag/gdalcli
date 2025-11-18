@@ -7,22 +7,14 @@
 gdal_auth_azure(no_sign_request = FALSE)
 }
 \arguments{
-\item{no_sign_request}{Logical. If \code{TRUE}, configures public container access
-without requiring credentials. Default \code{FALSE}.}
+\item{no_sign_request}{Logical. If \code{TRUE}, allows public container access without credentials.}
 }
 \value{
-A named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
 }
 \description{
-\code{gdal_auth_azure()} reads Azure Blob Storage authentication credentials from
-environment variables and returns them as a named character vector suitable for
-use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
-
-\strong{IMPORTANT}: Credentials are read from environment variables (not from function
-arguments) to prevent accidental exposure in code repositories. This encourages
-secure credential management via \code{.Renviron} files or external secret managers.
-
-This is the modern, recommended approach for Azure credentials.
+Reads Azure Blob Storage authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Set credentials via \verb{~/.Renviron}: \code{AZURE_STORAGE_CONNECTION_STRING} or account + key/token.
 }
 \section{Setting Up Credentials}{
 

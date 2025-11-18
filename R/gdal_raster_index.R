@@ -8,11 +8,10 @@
 #' Create a vector index of raster datasets.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_index.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster datasets (required). `0` to `2147483647` value(s)
-#' @param output Output vector dataset (Dataset path) (required)
+#' @param input Input raster datasets (required). `0` to `2147483647` value(s). Can also be a [gdal_job] object to extend a pipeline
 #' @param source_crs_field_name Name of the field to store the CRS of each dataset
 #' @param source_crs_format Format in which the CRS of each dataset must be written. Choices: auto, WKT, EPSG, PROJ (Default: `auto`)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -32,12 +31,14 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' # Example
+#' # gdal raster index doq/*.tif doq_index.gpkg
+#' job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")
 #' @export
-gdal_raster_index <- function(job = NULL,
-  input,
-  output,
+gdal_raster_index <- function(input,
   source_crs_field_name = NULL,
   source_crs_format = NULL,
+  output,
   output_format = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -56,9 +57,9 @@ gdal_raster_index <- function(job = NULL,
   metadata = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(source_crs_field_name)) new_args[["source_crs_field_name"]] <- source_crs_field_name
   if (!missing(source_crs_format)) new_args[["source_crs_format"]] <- source_crs_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
@@ -75,13 +76,43 @@ gdal_raster_index <- function(job = NULL,
   if (!missing(absolute_path)) new_args[["absolute_path"]] <- absolute_path
   if (!missing(dst_crs)) new_args[["dst_crs"]] <- dst_crs
   if (!missing(metadata)) new_args[["metadata"]] <- metadata
-  job_input <- handle_job_input(job, new_args, c("raster", "index"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "index"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "index"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "index"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 2147483647),
+    source_crs_field_name = list(min_count = 0, max_count = 1),
+    source_crs_format = list(min_count = 0, max_count = 1),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1),
+    layer = list(min_count = 0, max_count = 1),
+    recursive = list(min_count = 0, max_count = 1),
+    filename_filter = list(min_count = 0, max_count = 2147483647),
+    min_pixel_size = list(min_count = 0, max_count = 1),
+    max_pixel_size = list(min_count = 0, max_count = 1),
+    location_name = list(min_count = 0, max_count = 1),
+    absolute_path = list(min_count = 0, max_count = 1),
+    dst_crs = list(min_count = 0, max_count = 1),
+    metadata = list(min_count = 0, max_count = 2147483647)
+  )
+
+  new_gdal_job(command_path = c("raster", "index"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

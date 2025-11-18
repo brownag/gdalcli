@@ -5,7 +5,6 @@
 \title{create: Create an index of raster datasets compatible of the GDAL Tile Index (GTI)...}
 \usage{
 gdal_driver_gti_create(
-  job = NULL,
   input,
   output,
   output_format = NULL,
@@ -36,9 +35,7 @@ gdal_driver_gti_create(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s)}
+\item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
@@ -99,6 +96,12 @@ A \link{gdal_job} object.
 Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.
 
 See \url{https://gdal.org/en/stable/programs/gdal_driver_gti_create.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal driver gti create --ot Byte --resolution=60,60 --band-count=3 --color-interpretation=Red,Green,Blue *.tif tile_index.gti.gpkg
+job <- gdal_driver_gti_create(input = "*.tif", output = "tile_index.gti.gpkg", 
+    resolution = c(60, 60), band_count = 3, color_interpretation = "Red,Green,Blue")
 }
 \seealso{
 Other gdal_driver_utilities: 

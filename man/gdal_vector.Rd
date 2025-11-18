@@ -4,12 +4,10 @@
 \alias{gdal_vector}
 \title{vector: Vector commands}
 \usage{
-gdal_vector(job = NULL, drivers = FALSE)
+gdal_vector(drivers = FALSE)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{drivers}{Display vector driver list as JSON document and exit (Logical)}
+\item{drivers}{Display vector driver list as JSON document and exit (Logical). Can also be a \link{gdal_job} object to extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -18,6 +16,15 @@ A \link{gdal_job} object.
 Vector commands.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vector info poly.gpkg
+# For help on available parameters, run: ?gdal_vector
+job <- gdal_vector()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

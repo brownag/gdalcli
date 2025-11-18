@@ -5,11 +5,10 @@
 \title{set-type: Modify the data type of bands of a raster dataset}
 \usage{
 gdal_raster_set_type(
-  job = NULL,
   input,
+  input_format = NULL,
   output,
   output_data_type,
-  input_format = NULL,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -17,15 +16,13 @@ gdal_raster_set_type(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input}{Input raster dataset (Dataset path) (required)}
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (required)}
-
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -44,6 +41,11 @@ have a specific data type. Values may be truncated or rounded if the output
 data type is "smaller" than the input one.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_set-type.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster set-type --datatype Float32 byte.tif float32.tif --overwrite
+job <- gdal_raster_set_type(input = "byte.tif", output = "float32.tif", overwrite = TRUE)
 }
 \seealso{
 Other gdal_raster_utilities: 

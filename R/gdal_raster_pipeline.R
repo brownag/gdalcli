@@ -9,8 +9,8 @@
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
 #' @param jobs A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input Input raster dataset (Dataset path)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output Output raster dataset (Dataset path)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -20,10 +20,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal raster pipeline ! read in.tif ! reproject --dst-crs=EPSG:32632 ! edit --metadata AUTHOR=EvenR ! write out.tif --overwrite
+#' # For help on available parameters, run: ?gdal_raster_pipeline
+#' job <- gdal_raster_pipeline()
+#' # gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_pipeline <- function(jobs = NULL,
-  input_format = NULL,
   input = NULL,
+  input_format = NULL,
   output = NULL,
   output_format = NULL,
   open_option = NULL,
@@ -45,8 +52,8 @@ gdal_raster_pipeline <- function(jobs = NULL,
 
   # Collect arguments
   args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
   if (!missing(input)) args[["input"]] <- input
+  if (!missing(input_format)) args[["input_format"]] <- input_format
   if (!missing(output)) args[["output"]] <- output
   if (!missing(output_format)) args[["output_format"]] <- output_format
   if (!missing(open_option)) args[["open_option"]] <- open_option
@@ -54,6 +61,17 @@ gdal_raster_pipeline <- function(jobs = NULL,
   if (!missing(creation_option)) args[["creation_option"]] <- creation_option
   if (!missing(overwrite)) args[["overwrite"]] <- overwrite
 
-  new_gdal_job(command_path = c("raster", "pipeline"), arguments = args)
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    pipeline = list(min_count = 0, max_count = 1),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "pipeline"), arguments = args, arg_mapping = .arg_mapping)
 }
 

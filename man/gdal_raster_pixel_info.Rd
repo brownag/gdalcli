@@ -5,7 +5,6 @@
 \title{pixel-info: Return information on a pixel of a raster dataset}
 \usage{
 gdal_raster_pixel_info(
-  job = NULL,
   input,
   input_format = NULL,
   output_format = NULL,
@@ -18,9 +17,7 @@ gdal_raster_pixel_info(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -46,6 +43,15 @@ A \link{gdal_job} object.
 a pixel given its location in one of a variety of coordinate systems.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster pixel-info byte.tif 5 10
+# For help on available parameters, run: ?gdal_raster_pixel_info
+job <- gdal_raster_pixel_info()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

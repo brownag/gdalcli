@@ -1,0 +1,356 @@
+#' GDALG Pipeline Format Support
+#'
+#' @description
+#' Functions for converting between R gdal_pipeline objects and GDAL's abstract
+#' pipeline format (GDALG). GDALG files are JSON-based pipeline definitions
+#' that can be saved, loaded, and chained together.
+#'
+#' The GDALG format enables:
+#' - Pipeline persistence (save/load to disk)
+#' - Pipeline sharing and version control
+#' - Complex workflow composition
+#' - Integration with GDAL command-line tools
+#'
+#' @keywords internal
+
+# ============================================================================
+# GDALG JSON Structure and Conversion
+# ============================================================================
+
+#' Convert gdal_job to GDALG Step Definition
+#'
+#' @description
+#' Internal function that converts a single gdal_job to a GDALG step definition.
+#'
+#' @param job A gdal_job object
+#' @param step_number Integer index of the step in the pipeline
+#'
+#' @return A list representing a GDALG step definition
+#'
+#' @keywords internal
+.job_to_gdalg_step <- function(job, step_number) {
+  # Determine step type from command_path
+  cmd_path <- job$command_path
+  if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+    cmd_path <- cmd_path[-1]
+  }
+
+  if (length(cmd_path) < 2) {
+    rlang::abort(sprintf("Invalid job command path"))
+  }
+
+  operation <- cmd_path[2]  # e.g., "reproject", "convert"
+
+  # Determine step type based on operation
+  step_type <- switch(operation,
+    "info" = "read",
+    "convert" = "write",
+    "create" = "write",
+    "tile" = "write",
+    operation  # Use operation as step type by default
+  )
+
+  # Build step object
+  step <- list(
+    type = step_type,
+    name = sprintf("%s_%d", step_type, step_number),
+    operation = operation
+  )
+
+  # Add positional arguments (input/output)
+  if (!is.null(job$arguments$input)) {
+    step$input <- job$arguments$input
+  }
+  if (!is.null(job$arguments$output)) {
+    step$output <- job$arguments$output
+  }
+
+  # Add options (non-positional arguments)
+  options <- list()
+  skip_args <- c("input", "output", "pipeline", "input_format",
+                  "output_format", "creation_option", "layer_creation_option")
+
+  for (arg_name in names(job$arguments)) {
+    if (!arg_name %in% skip_args) {
+      arg_val <- job$arguments[[arg_name]]
+      if (!is.null(arg_val)) {
+        options[[arg_name]] <- arg_val
+      }
+    }
+  }
+
+  if (length(options) > 0) {
+    step$options <- options
+  }
+
+  step
+}
+
+#' Convert gdal_pipeline to GDALG JSON
+#'
+#' @description
+#' Internal function that converts a gdal_pipeline object to a GDALG JSON
+#' list structure (before serialization).
+#'
+#' @param pipeline A gdal_pipeline object
+#'
+#' @return A list representing the complete GDALG structure
+#'
+#' @keywords internal
+.pipeline_to_gdalg <- function(pipeline) {
+  if (!inherits(pipeline, "gdal_pipeline")) {
+    rlang::abort("Expected gdal_pipeline object")
+  }
+
+  # Convert each job to a GDALG step
+  steps <- list()
+  for (i in seq_along(pipeline$jobs)) {
+    job <- pipeline$jobs[[i]]
+    step <- .job_to_gdalg_step(job, i)
+    steps[[i]] <- step
+  }
+
+  # Build GDALG structure
+  gdalg <- list(
+    gdalVersion = NA_character_,  # Could be filled in if GDAL version is available
+    steps = steps
+  )
+
+  # Add optional metadata if pipeline has name/description
+  if (!is.null(pipeline$name)) {
+    gdalg$name <- pipeline$name
+  }
+  if (!is.null(pipeline$description)) {
+    gdalg$description <- pipeline$description
+  }
+
+  gdalg
+}
+
+#' Convert GDALG JSON to gdal_pipeline
+#'
+#' @description
+#' Internal function that converts a GDALG JSON structure to a gdal_pipeline object.
+#'
+#' @param gdalg A list representing a GDALG structure (from jsonlite::fromJSON)
+#'
+#' @return A gdal_pipeline object
+#'
+#' @keywords internal
+.gdalg_to_pipeline <- function(gdalg) {
+  if (!is.list(gdalg)) {
+    rlang::abort("GDALG must be a list")
+  }
+
+  if (is.null(gdalg$steps)) {
+    rlang::abort("GDALG must contain a 'steps' array")
+  }
+
+  # yyjsonr preserves array structure as list
+  # Handle both list (standard) and data.frame (edge case from other sources)
+  steps_list <- if (is.data.frame(gdalg$steps)) {
+    lapply(seq_len(nrow(gdalg$steps)), function(i) {
+      as.list(gdalg$steps[i, ])
+    })
+  } else if (is.list(gdalg$steps)) {
+    gdalg$steps
+  } else {
+    rlang::abort("steps must be an array")
+  }
+
+  # Convert each GDALG step to a gdal_job
+  jobs <- list()
+  for (i in seq_along(steps_list)) {
+    step <- steps_list[[i]]
+    job <- .gdalg_step_to_job(step, i)
+    jobs[[i]] <- job
+  }
+
+  # Create pipeline
+  pipeline <- new_gdal_pipeline(
+    jobs = jobs,
+    name = gdalg$name,
+    description = gdalg$description
+  )
+
+  pipeline
+}
+
+#' Convert GDALG Step to gdal_job
+#'
+#' @description
+#' Internal function that converts a single GDALG step to a gdal_job object.
+#'
+#' @param step A list representing a GDALG step
+#' @param step_number Integer index of the step
+#'
+#' @return A gdal_job object
+#'
+#' @keywords internal
+.gdalg_step_to_job <- function(step, step_number) {
+  # Determine command path from step type and operation
+  step_type <- step$type %||% "unknown"
+  operation <- step$operation %||% step_type
+
+  # Most operations are raster-based unless explicitly marked as vector
+  # This is a heuristic - ideally the GDALG would specify the type
+  cmd_type <- if (grepl("vector|convert|rasterize", operation)) "vector" else "raster"
+
+  command_path <- c(cmd_type, operation)
+
+  # Build arguments from step - only include arguments that were actually set
+  arguments <- list()
+
+  # Add positional arguments (only if present in step)
+  if (!is.null(step$input) && !is.na(step$input)) {
+    arguments$input <- step$input
+  }
+  if (!is.null(step$output) && !is.na(step$output)) {
+    arguments$output <- step$output
+  }
+
+  # Add optional arguments from options
+  # Only include options that have non-NA values
+  if (!is.null(step$options) && is.list(step$options)) {
+    for (opt_name in names(step$options)) {
+      opt_val <- step$options[[opt_name]]
+      # Skip NA values - these are placeholders from JSON parsing
+      if (!is.null(opt_val) && !is.na(opt_val)) {
+        arguments[[opt_name]] <- opt_val
+      }
+    }
+  }
+
+  # Create job
+  job <- new_gdal_job(
+    command_path = command_path,
+    arguments = arguments
+  )
+
+  job
+}
+
+# ============================================================================
+# Public Functions: Save and Load Pipelines
+# ============================================================================
+
+#' Save GDAL Pipeline to GDALG Format
+#'
+#' @description
+#' Saves a gdal_pipeline object to a GDALG JSON file. GDALG is GDAL's abstract
+#' pipeline format, which can be saved to disk and loaded later for execution.
+#'
+#' @param pipeline A gdal_pipeline or gdal_job object with pipeline
+#' @param path Character string specifying the path to save to (typically .gdalg.json)
+#' @param pretty Logical. If TRUE (default), formats JSON with indentation for readability
+#'
+#' @return Invisibly returns the path where the pipeline was saved
+#'
+#' @details
+#' The saved GDALG file can be:
+#' - Executed with GDAL command-line tools
+#' - Loaded back into R with gdal_load_pipeline()
+#' - Shared with colleagues or version controlled
+#' - Used in other GDAL-compatible tools
+#'
+#' @examples
+#' \dontrun{
+#' pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
+#'   gdal_raster_convert(output = "out.tif")
+#'
+#' # Save to file
+#' gdal_save_pipeline(pipeline, "workflow.gdalg.json")
+#'
+#' # Load and execute later
+#' loaded <- gdal_load_pipeline("workflow.gdalg.json")
+#' gdal_job_run(loaded)
+#' }
+#'
+#' @export
+gdal_save_pipeline <- function(pipeline, path, pretty = TRUE) {
+  # Handle gdal_job with pipeline history
+  if (inherits(pipeline, "gdal_job")) {
+    if (is.null(pipeline$pipeline)) {
+      rlang::abort("gdal_job does not have a pipeline history")
+    }
+    pipeline <- pipeline$pipeline
+  }
+
+  if (!inherits(pipeline, "gdal_pipeline")) {
+    rlang::abort("pipeline must be a gdal_pipeline or gdal_job with pipeline")
+  }
+
+  # Convert pipeline to GDALG format
+  gdalg <- .pipeline_to_gdalg(pipeline)
+
+  # Serialize to JSON using yyjsonr with auto_unbox to avoid wrapping scalars in arrays
+  opts <- yyjsonr::opts_write_json(pretty = pretty, auto_unbox = TRUE)
+  yyjsonr::write_json_file(gdalg, path, opts = opts)
+
+  if (!file.exists(path)) {
+    rlang::abort(sprintf("Failed to write pipeline to %s", path))
+  }
+
+  invisible(path)
+}
+
+#' Load GDAL Pipeline from GDALG Format
+#'
+#' @description
+#' Loads a gdal_pipeline from a GDALG JSON file. GDALG files can be created by
+#' gdal_save_pipeline(), GDAL command-line tools, or manually.
+#'
+#' @param path Character string specifying the path to the GDALG file
+#'
+#' @return A gdal_pipeline object that can be executed or further modified
+#'
+#' @details
+#' Loaded pipelines can be:
+#' - Executed with gdal_job_run()
+#' - Modified by piping new jobs
+#' - Rendered to different formats (native, shell script, etc.)
+#' - Saved again with gdal_save_pipeline()
+#'
+#' @examples
+#' \dontrun{
+#' # Load a previously saved pipeline
+#' pipeline <- gdal_load_pipeline("workflow.gdalg.json")
+#'
+#' # Execute it
+#' gdal_job_run(pipeline)
+#'
+#' # Or extend it with additional operations
+#' extended <- pipeline |>
+#'   gdal_raster_scale(src_min = 0, src_max = 100)
+#' }
+#'
+#' @export
+gdal_load_pipeline <- function(path) {
+  # Check file exists
+  if (!file.exists(path)) {
+    rlang::abort(sprintf("File not found: %s", path))
+  }
+
+  # Parse JSON using yyjsonr with options to preserve array structure
+  tryCatch({
+    opts <- yyjsonr::opts_read_json(arr_of_objs_to_df = FALSE)
+    gdalg <- yyjsonr::read_json_file(path, opts = opts)
+  }, error = function(e) {
+    rlang::abort(c(
+      sprintf("Failed to parse GDALG file: %s", path),
+      "x" = conditionMessage(e)
+    ))
+  })
+
+  # Convert GDALG to pipeline
+  tryCatch({
+    pipeline <- .gdalg_to_pipeline(gdalg)
+  }, error = function(e) {
+    rlang::abort(c(
+      "Failed to convert GDALG to pipeline",
+      "x" = conditionMessage(e)
+    ))
+  })
+
+  pipeline
+}

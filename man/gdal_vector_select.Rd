@@ -5,14 +5,13 @@
 \title{select: Select a subset of fields from a vector dataset}
 \usage{
 gdal_vector_select(
-  job = NULL,
   input,
-  output,
-  fields,
   input_format = NULL,
   input_layer = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
+  fields,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -26,21 +25,19 @@ gdal_vector_select(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
-
-\item{fields}{Fields to select (or exclude if --exclude) (Character vector) (required). \code{0} to \code{2147483647} value(s)}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{output_layer}{Output layer name}
+
+\item{fields}{Fields to select (or exclude if --exclude) (Character vector) (required). \code{0} to \code{2147483647} value(s)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -69,6 +66,15 @@ A \link{gdal_job} object.
 Select a subset of fields from a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_select.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vector select in.shp out.gpkg "EAS_ID,_ogr_geometry_" --overwrite
+# For help on available parameters, run: ?gdal_vector_select
+job <- gdal_vector_select()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

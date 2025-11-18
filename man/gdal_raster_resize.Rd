@@ -5,12 +5,11 @@
 \title{resize: Resize a raster dataset without changing the georeferenced extents}
 \usage{
 gdal_raster_resize(
-  job = NULL,
   input,
-  output,
-  size,
   input_format = NULL,
+  output,
   output_format = NULL,
+  size,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
@@ -18,17 +17,15 @@ gdal_raster_resize(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
-
-\item{size}{Target size in pixels (or percentage if using '\%' suffix) (Character vector). Format: \verb{<width[\%]>,<height[\%]>} (required). Minimum: \code{0}. Exactly \code{2} value(s)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
+\item{output}{Output raster dataset (Dataset path) (required)}
+
 \item{output_format}{Output format ("GDALG" allowed)}
+
+\item{size}{Target size in pixels (or percentage if using '\%' suffix) (Character vector). Format: \verb{<width[\%]>,<height[\%]>} (required). Minimum: \code{0}. Exactly \code{2} value(s)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -45,6 +42,15 @@ A \link{gdal_job} object.
 Resize a raster dataset without changing the georeferenced extents.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_resize.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster resize --size=1000,500 -r cubic in.tif out.tif --overwrite
+# For help on available parameters, run: ?gdal_raster_resize
+job <- gdal_raster_resize()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

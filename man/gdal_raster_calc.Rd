@@ -5,12 +5,11 @@
 \title{calc: Perform raster algebra}
 \usage{
 gdal_raster_calc(
-  job = NULL,
   input,
   output,
-  calc,
   output_format = NULL,
   output_data_type = NULL,
+  calc,
   creation_option = NULL,
   overwrite = FALSE,
   no_check_srs = FALSE,
@@ -18,17 +17,15 @@ gdal_raster_calc(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster datasets (Character vector). Format: \code{INPUTS} (required). \code{1} to \code{2147483647} value(s)}
+\item{input}{Input raster datasets (Character vector). Format: \code{INPUTS} (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
-
-\item{calc}{Expression(s) to evaluate (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
+
+\item{calc}{Expression(s) to evaluate (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
@@ -47,7 +44,8 @@ Perform raster algebra
 See \url{https://gdal.org/en/stable/programs/gdal_raster_calc.html} for detailed GDAL documentation.
 }
 \examples{
-# Example usage
+# Example
+# gdal raster calc -i "A=file1.tif" -i "B=file2.tif" -i "C=file3.tif" --calc "A+B+C" -o out.tif
 job <- gdal_raster_calc(calc = "A+B+C")
 }
 \seealso{

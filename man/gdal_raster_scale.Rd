@@ -5,10 +5,9 @@
 \title{scale: Scale the values of the bands of a raster dataset}
 \usage{
 gdal_raster_scale(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
@@ -24,13 +23,11 @@ gdal_raster_scale(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -63,6 +60,12 @@ A \link{gdal_job} object.
 Scale the values of the bands of a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_scale.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster scale --datatype Byte --src-min 0 --src-max 4095 uint16.tif byte.tif --overwrite
+job <- gdal_raster_scale(input = "uint16.tif", output = "byte.tif", overwrite = TRUE, 
+    src_min = 0, src_max = 4095)
 }
 \seealso{
 Other gdal_raster_utilities: 

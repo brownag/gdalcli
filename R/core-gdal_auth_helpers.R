@@ -1,81 +1,12 @@
 #' Create Process-Isolated AWS S3 Authentication Environment Variables
 #'
 #' @description
-#' `gdal_auth_s3()` reads AWS S3 authentication credentials from environment
-#' variables and returns them as a named character vector suitable for use with
-#' [gdal_with_env()].
+#' Reads AWS S3 authentication from environment variables for use with [gdal_with_env()].
+#' Set credentials via `~/.Renviron`: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 #'
-#' **IMPORTANT**: Credentials are read from environment variables (not from function
-#' arguments) to prevent accidental exposure in code repositories. This encourages
-#' secure credential management via `.Renviron` files or external secret managers.
+#' @param no_sign_request Logical. If `TRUE`, allows unsigned (public) bucket access.
 #'
-#' This is the modern, recommended approach: it avoids global state pollution,
-#' ensures credentials are process-isolated, and works correctly in parallel
-#' execution contexts.
-#'
-#' @param no_sign_request Logical. If `TRUE`, configures unsigned (public) bucket
-#'   access without requiring credentials. Default `FALSE`.
-#'
-#' @return
-#' A named character vector of environment variables suitable for passing to
-#' [gdal_with_env()]. Keys are variable names like `AWS_ACCESS_KEY_ID`; values
-#' are the corresponding credentials read from the environment.
-#'
-#' @section Setting Up Credentials:
-#'
-#' **Option 1: Using .Renviron (Recommended)**
-#'
-#' Add to your `~/.Renviron` or project `.Renviron`:
-#' ```
-#' AWS_ACCESS_KEY_ID=your_access_key_id
-#' AWS_SECRET_ACCESS_KEY=your_secret_access_key
-#' AWS_SESSION_TOKEN=optional_session_token
-#' AWS_REGION=us-west-2
-#' ```
-#'
-#' Then restart R or run `readRenviron("~/.Renviron")`.
-#'
-#' **Option 2: Using Sys.setenv() (Temporary, for this session only)**
-#'
-#' ```r
-#' Sys.setenv(
-#'   AWS_ACCESS_KEY_ID = "your_key",
-#'   AWS_SECRET_ACCESS_KEY = "your_secret"
-#' )
-#' ```
-#'
-#' **Option 3: External Credentials File**
-#'
-#' Use AWS credential files at `~/.aws/credentials` and set:
-#' ```
-#' AWS_PROFILE=your_profile_name
-#' ```
-#'
-#' @section Usage Example:
-#'
-#' ```r
-#' # In your .Renviron file:
-#' # AWS_ACCESS_KEY_ID=AKIA...
-#' # AWS_SECRET_ACCESS_KEY=wJalr...
-#'
-#' # In your R script:
-#' auth <- gdal_auth_s3()  # Reads from environment
-#'
-#' job <- gdal_gdal_vector_convert(
-#'   input = gdal_vsi_url("vsis3", bucket = "my-bucket", key = "data.shp"),
-#'   output_format = "GPKG"
-#' ) |>
-#'   gdal_with_env(auth) |>
-#'   gdal_run()
-#' ```
-#'
-#' @section Why No Function Arguments?:
-#'
-#' Credentials are **intentionally not accepted as function arguments** because:
-#' - OK Prevents accidental hardcoding of secrets in R scripts
-#' - OK Reduces risk of leaking credentials via version control or logs
-#' - OK Encourages secure credential management via .Renviron
-#' - OK Follows security best practices (12-factor app)
+#' @return Named character vector of environment variables for [gdal_with_env()].
 #'
 #' @export
 gdal_auth_s3 <- function(no_sign_request = FALSE) {
@@ -133,21 +64,12 @@ gdal_auth_s3 <- function(no_sign_request = FALSE) {
 #' Create Process-Isolated Azure Blob Storage Authentication Environment Variables
 #'
 #' @description
-#' `gdal_auth_azure()` reads Azure Blob Storage authentication credentials from
-#' environment variables and returns them as a named character vector suitable for
-#' use with [gdal_with_env()].
+#' Reads Azure Blob Storage authentication from environment variables for use with [gdal_with_env()].
+#' Set credentials via `~/.Renviron`: `AZURE_STORAGE_CONNECTION_STRING` or account + key/token.
 #'
-#' **IMPORTANT**: Credentials are read from environment variables (not from function
-#' arguments) to prevent accidental exposure in code repositories. This encourages
-#' secure credential management via `.Renviron` files or external secret managers.
+#' @param no_sign_request Logical. If `TRUE`, allows public container access without credentials.
 #'
-#' This is the modern, recommended approach for Azure credentials.
-#'
-#' @param no_sign_request Logical. If `TRUE`, configures public container access
-#'   without requiring credentials. Default `FALSE`.
-#'
-#' @return
-#' A named character vector of environment variables for [gdal_with_env()].
+#' @return Named character vector of environment variables for [gdal_with_env()].
 #'
 #' @section Setting Up Credentials:
 #'
@@ -271,61 +193,14 @@ gdal_auth_azure <- function(no_sign_request = FALSE) {
 #' Create Process-Isolated Google Cloud Storage Authentication Environment Variables
 #'
 #' @description
-#' `gdal_auth_gcs()` reads Google Cloud Storage authentication credentials from
-#' environment variables and returns them as a named character vector suitable for
-#' use with [gdal_with_env()].
+#' Reads Google Cloud Storage authentication from environment variables for use with [gdal_with_env()].
+#' Set `GOOGLE_APPLICATION_CREDENTIALS` environment variable pointing to JSON credentials file.
 #'
-#' **IMPORTANT**: Credentials file path is read from environment variables (not from
-#' function arguments) to prevent accidental exposure in code repositories. This
-#' encourages secure credential management via `.Renviron` files.
+#' @param no_sign_request Logical. If `TRUE`, allows public bucket access without credentials.
 #'
-#' @param no_sign_request Logical. If `TRUE`, configures public bucket access
-#'   without requiring credentials. Default `FALSE`.
+#' @return Named character vector of environment variables for [gdal_with_env()].
 #'
-#' @return
-#' A named character vector of environment variables for [gdal_with_env()].
-#'
-#' @section Setting Up Credentials:
-#'
-#' **Option 1: Service Account JSON File (Recommended)**
-#'
-#' 1. Download JSON credentials from Google Cloud Console
-#' 2. Save to a secure location (e.g., `~/.gcp/credentials.json`)
-#' 3. Add to your `~/.Renviron` or project `.Renviron`:
-#' ```
-#' GOOGLE_APPLICATION_CREDENTIALS=~/.gcp/credentials.json
-#' ```
-#' 4. Restart R or run `readRenviron("~/.Renviron")`
-#'
-#' **Option 2: Using gcloud CLI (Alternative)**
-#'
-#' Set up credentials via:
-#' ```bash
-#' gcloud auth application-default login
-#' ```
-#'
-#' This automatically sets `GOOGLE_APPLICATION_CREDENTIALS` for you.
-#'
-#' @section Usage Example:
-#'
-#' ```r
-#' # In your .Renviron file:
-#' # GOOGLE_APPLICATION_CREDENTIALS=~/.gcp/credentials.json
-#'
-#' # In your R script:
-#' auth <- gdal_auth_gcs()  # Reads from environment
-#'
-#' job <- gdal_gdal_vector_convert(
-#'   input = gdal_vsi_url("vsigs", bucket = "my-bucket", path = "data.shp"),
-#'   output_format = "GPKG"
-#' ) |>
-#'   gdal_with_env(auth) |>
-#'   gdal_run()
-#' ```
-#'
-#' @section Why No Function Arguments?:
-#'
-#' Credentials are **intentionally not accepted as function arguments** because:
+#' @export
 #' - OK Prevents accidental hardcoding of secrets in R scripts
 #' - OK Reduces risk of leaking credentials via version control or logs
 #' - OK Encourages secure credential management via .Renviron
@@ -386,53 +261,14 @@ gdal_auth_gcs <- function(no_sign_request = FALSE) {
 #' Create Process-Isolated Alibaba Cloud OSS Authentication Environment Variables
 #'
 #' @description
-#' `gdal_auth_oss()` reads Alibaba Cloud OSS authentication credentials from
-#' environment variables and returns them as a named character vector suitable for
-#' use with [gdal_with_env()].
+#' Reads Alibaba Cloud OSS authentication from environment variables for use with [gdal_with_env()].
+#' Set `OSS_ENDPOINT`, `OSS_ACCESS_KEY_ID`, and `OSS_SECRET_ACCESS_KEY` in `~/.Renviron`.
 #'
-#' **IMPORTANT**: Credentials are read from environment variables (not from function
-#' arguments) to prevent accidental exposure in code repositories. This encourages
-#' secure credential management via `.Renviron` files.
+#' @param no_sign_request Logical. If `TRUE`, allows public bucket access without credentials.
 #'
-#' @param no_sign_request Logical. If `TRUE`, configures public bucket access
-#'   without requiring credentials. Default `FALSE`.
+#' @return Named character vector of environment variables for [gdal_with_env()].
 #'
-#' @return
-#' A named character vector of environment variables for [gdal_with_env()].
-#'
-#' @section Setting Up Credentials:
-#'
-#' Add to your `~/.Renviron` or project `.Renviron`:
-#' ```
-#' OSS_ENDPOINT=http://oss-cn-hangzhou.aliyuncs.com
-#' OSS_ACCESS_KEY_ID=your_access_key_id
-#' OSS_SECRET_ACCESS_KEY=your_secret_access_key
-#' OSS_SESSION_TOKEN=optional_session_token
-#' ```
-#'
-#' Then restart R or run `readRenviron("~/.Renviron")`.
-#'
-#' @section Usage Example:
-#'
-#' ```r
-#' # In your .Renviron file:
-#' # OSS_ENDPOINT=http://oss-cn-hangzhou.aliyuncs.com
-#' # OSS_ACCESS_KEY_ID=AKIA...
-#' # OSS_SECRET_ACCESS_KEY=...
-#'
-#' # In your R script:
-#' auth <- gdal_auth_oss()  # Reads from environment
-#'
-#' job <- gdal_gdal_vector_convert(
-#'   input = gdal_vsi_url("vsioss", bucket = "my-bucket", path = "data.shp"),
-#'   output_format = "GPKG"
-#' ) |>
-#'   gdal_with_env(auth) |>
-#'   gdal_run()
-#' ```
-#'
-#' @section Why No Function Arguments?:
-#'
+#' @export
 #' Credentials are **intentionally not accepted as function arguments** because:
 #' - OK Prevents accidental hardcoding of secrets in R scripts
 #' - OK Reduces risk of leaking credentials via version control or logs
@@ -488,70 +324,12 @@ gdal_auth_oss <- function(no_sign_request = FALSE) {
 #' Create Process-Isolated OpenStack Swift Authentication Environment Variables
 #'
 #' @description
-#' `gdal_auth_swift()` reads OpenStack Swift authentication credentials from
-#' environment variables and returns them as a named character vector suitable for
-#' use with [gdal_with_env()].
+#' Reads OpenStack Swift authentication from environment variables for use with [gdal_with_env()].
+#' Supports Auth V1 and Keystone V3. Set appropriate variables in `~/.Renviron`.
 #'
-#' **IMPORTANT**: Credentials are read from environment variables (not from function
-#' arguments) to prevent accidental exposure in code repositories. This encourages
-#' secure credential management via `.Renviron` files.
+#' @param auth_version Character string. Either `"1"` for Auth V1 or `"3"` for Keystone V3.
 #'
-#' Supports both Auth V1 and Keystone V3 authentication.
-#'
-#' @param auth_version Character string. Either `"1"` for Auth V1 or `"3"` for
-#'   Keystone V3. Default `"3"`.
-#'
-#' @return
-#' A named character vector of environment variables for [gdal_with_env()].
-#'
-#' @section Setting Up Credentials (Auth V1):
-#'
-#' Add to your `~/.Renviron` or project `.Renviron`:
-#' ```
-#' SWIFT_AUTH_V1_URL=http://swift.example.com/auth/v1.0
-#' SWIFT_USER=username
-#' SWIFT_KEY=password
-#' ```
-#'
-#' @section Setting Up Credentials (Keystone V3):
-#'
-#' Add to your `~/.Renviron` or project `.Renviron`:
-#' ```
-#' OS_AUTH_URL=http://keystone.example.com:5000/v3
-#' OS_USERNAME=username
-#' OS_PASSWORD=password
-#' OS_PROJECT_NAME=projectname
-#' OS_PROJECT_DOMAIN_NAME=default
-#' OS_IDENTITY_API_VERSION=3
-#' ```
-#'
-#' @section Usage Example:
-#'
-#' ```r
-#' # In your .Renviron file (Keystone V3):
-#' # OS_AUTH_URL=http://keystone.example.com:5000/v3
-#' # OS_USERNAME=myuser
-#' # OS_PASSWORD=mypass
-#' # OS_PROJECT_NAME=myproject
-#'
-#' # In your R script:
-#' auth <- gdal_auth_swift(auth_version = "3")  # Reads from environment
-#'
-#' job <- gdal_gdal_vector_convert(
-#'   input = gdal_vsi_url("vsiswift", container = "data", path = "file.shp"),
-#'   output_format = "GPKG"
-#' ) |>
-#'   gdal_with_env(auth) |>
-#'   gdal_run()
-#' ```
-#'
-#' @section Why No Function Arguments?:
-#'
-#' Credentials are **intentionally not accepted as function arguments** because:
-#' - OK Prevents accidental hardcoding of secrets in R scripts
-#' - OK Reduces risk of leaking credentials via version control or logs
-#' - OK Encourages secure credential management via .Renviron
-#' - OK Follows security best practices (12-factor app)
+#' @return Named character vector of environment variables for [gdal_with_env()].
 #'
 #' @export
 gdal_auth_swift <- function(auth_version = "3") {

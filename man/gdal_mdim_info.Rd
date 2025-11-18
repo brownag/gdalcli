@@ -5,10 +5,9 @@
 \title{info: Return information on a multidimensional dataset}
 \usage{
 gdal_mdim_info(
-  job = NULL,
   input,
-  input_format = NULL,
   open_option = NULL,
+  input_format = NULL,
   detailed = FALSE,
   array = NULL,
   limit = NULL,
@@ -18,13 +17,11 @@ gdal_mdim_info(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input multidimensional raster dataset (Dataset path) (required)}
-
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input}{Input multidimensional raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{detailed}{Most verbose output. Report attribute data types and array values. (Logical)}
 
@@ -46,6 +43,11 @@ A \link{gdal_job} object.
 multidimensional dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal mdim info netcdf-4d.nc
+job <- gdal_mdim_info(input = "netcdf-4d.nc")
 }
 \seealso{
 Other gdal_mdim_utilities: 

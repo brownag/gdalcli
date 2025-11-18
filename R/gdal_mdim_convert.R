@@ -8,10 +8,9 @@
 #' Convert a multidimensional dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster or multidimensional raster dataset (Dataset path) (required)
-#' @param output Output multidimensional raster dataset (Dataset path) (required)
+#' @param input Input raster or multidimensional raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output multidimensional raster dataset (Dataset path) (required)
 #' @param output_format Output format
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -25,11 +24,13 @@
 #' @return A [gdal_job] object.
 #' @family gdal_mdim_utilities
 #' @examples
+#' # Example
+#' # gdal mdim convert in.nc out.vrt
+#' job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")
 #' @export
-gdal_mdim_convert <- function(job = NULL,
-  input,
-  output,
+gdal_mdim_convert <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -42,8 +43,8 @@ gdal_mdim_convert <- function(job = NULL,
   strict = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
@@ -54,13 +55,36 @@ gdal_mdim_convert <- function(job = NULL,
   if (!missing(subset)) new_args[["subset"]] <- subset
   if (!missing(scale_axes)) new_args[["scale_axes"]] <- scale_axes
   if (!missing(strict)) new_args[["strict"]] <- strict
-  job_input <- handle_job_input(job, new_args, c("mdim", "convert"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("mdim", "convert"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("mdim", "convert"), new_args))
   }
 
-  new_gdal_job(command_path = c("mdim", "convert"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    array = list(min_count = 0, max_count = 2147483647),
+    array_option = list(min_count = 0, max_count = 2147483647),
+    group = list(min_count = 0, max_count = 2147483647),
+    subset = list(min_count = 0, max_count = 2147483647),
+    scale_axes = list(min_count = 0, max_count = 2147483647),
+    strict = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("mdim", "convert"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

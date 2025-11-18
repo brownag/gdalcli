@@ -8,14 +8,13 @@
 #' Reproject a vector dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input vector datasets (required). Exactly `1` value(s)
-#' @param output Output vector dataset (Dataset path) (required)
-#' @param dst_crs Destination CRS (required)
+#' @param input Input vector datasets (required). Exactly `1` value(s). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name
+#' @param dst_crs Destination CRS (required)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -28,15 +27,21 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal vector pipeline ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
+#' # For help on available parameters, run: ?gdal_vector_reproject
+#' job <- gdal_vector_reproject()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_vector_reproject <- function(job = NULL,
-  input,
-  output,
-  dst_crs,
+gdal_vector_reproject <- function(input,
   input_format = NULL,
   input_layer = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
+  dst_crs,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -48,12 +53,12 @@ gdal_vector_reproject <- function(job = NULL,
   src_crs = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
-  if (!missing(dst_crs)) new_args[["dst_crs"]] <- dst_crs
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
+  if (!missing(dst_crs)) new_args[["dst_crs"]] <- dst_crs
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
@@ -63,13 +68,39 @@ gdal_vector_reproject <- function(job = NULL,
   if (!missing(append)) new_args[["append"]] <- append
   if (!missing(active_layer)) new_args[["active_layer"]] <- active_layer
   if (!missing(src_crs)) new_args[["src_crs"]] <- src_crs
-  job_input <- handle_job_input(job, new_args, c("vector", "reproject"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector", "reproject"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector", "reproject"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector", "reproject"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 1, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    input_layer = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_layer = list(min_count = 0, max_count = 1),
+    dst_crs = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1),
+    active_layer = list(min_count = 0, max_count = 1),
+    src_crs = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "reproject"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

@@ -6,8 +6,8 @@
 \usage{
 gdal_raster_pipeline(
   jobs = NULL,
-  input_format = NULL,
   input = NULL,
+  input_format = NULL,
   output = NULL,
   output_format = NULL,
   open_option = NULL,
@@ -19,9 +19,9 @@ gdal_raster_pipeline(
 \arguments{
 \item{jobs}{A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{input}{Input raster dataset (Dataset path)}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path)}
 
@@ -42,6 +42,15 @@ A \link{gdal_job} object.
 Process a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster pipeline ! read in.tif ! reproject --dst-crs=EPSG:32632 ! edit --metadata AUTHOR=EvenR ! write out.tif --overwrite
+# For help on available parameters, run: ?gdal_raster_pipeline
+job <- gdal_raster_pipeline()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

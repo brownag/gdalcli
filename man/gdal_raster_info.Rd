@@ -5,7 +5,6 @@
 \title{info: Return information on a raster dataset}
 \usage{
 gdal_raster_info(
-  job = NULL,
   input,
   input_format = NULL,
   output_format = NULL,
@@ -28,9 +27,7 @@ gdal_raster_info(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -76,6 +73,11 @@ A \link{gdal_job} object.
 raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_info.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster info utmsmall.tif
+job <- gdal_raster_info(input = "utmsmall.tif")
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -8,8 +8,7 @@
 #' Adding overviews.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param dataset Dataset (to be updated in-place, unless --external) (Dataset path) (required)
+#' @param dataset Dataset (to be updated in-place, unless --external) (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param external Add external overviews (Logical)
 #' @param resampling Resampling method. Choices: nearest, average, cubic, cubicspline, lanczos, ...
@@ -18,9 +17,15 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal raster overview add -r average abc.tif
+#' # For help on available parameters, run: ?gdal_raster_overview_add
+#' job <- gdal_raster_overview_add()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_raster_overview_add <- function(job = NULL,
-  dataset,
+gdal_raster_overview_add <- function(dataset,
   open_option = NULL,
   external = FALSE,
   resampling = NULL,
@@ -33,13 +38,29 @@ gdal_raster_overview_add <- function(job = NULL,
   if (!missing(resampling)) new_args[["resampling"]] <- resampling
   if (!missing(levels)) new_args[["levels"]] <- levels
   if (!missing(min_size)) new_args[["min_size"]] <- min_size
-  job_input <- handle_job_input(job, new_args, c("raster", "overview", "add"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "overview", "add"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(dataset) && inherits(dataset, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- dataset
+    new_args[["dataset"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "overview", "add"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "overview", "add"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    dataset = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    external = list(min_count = 0, max_count = 1),
+    resampling = list(min_count = 0, max_count = 1),
+    levels = list(min_count = 0, max_count = 2147483647),
+    min_size = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "overview", "add"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

@@ -76,7 +76,8 @@ new_gdal_job <- function(command_path,
                          env_vars = character(),
                          stream_in = NULL,
                          stream_out_format = NULL,
-                         pipeline = NULL) {
+                         pipeline = NULL,
+                         arg_mapping = NULL) {
   # Validate command_path
   if (!is.character(command_path)) {
     rlang::abort("command_path must be a character vector.")
@@ -101,7 +102,8 @@ new_gdal_job <- function(command_path,
     env_vars = as.character(env_vars),
     stream_in = stream_in,
     stream_out_format = stream_out_format,
-    pipeline = pipeline
+    pipeline = pipeline,
+    arg_mapping = arg_mapping
   )
 
   class(job) <- c("gdal_job", "list")
@@ -258,61 +260,139 @@ build_pipeline_from_jobs <- function(jobs) {
     }
 
     # Extract the command step name from command_path
-    # e.g., c("gdal", "raster", "info") -> "info"
-    # But for pipeline, we need step names like "read", "reproject", "write"
+    # e.g., c("raster", "reproject") -> "reproject"
+    # For pipeline, we need step names like "read", "reproject", "write"
     cmd_path <- job$command_path
-    if (length(cmd_path) < 3) {
+
+    # Handle both "gdal" prefixed and non-prefixed paths
+    if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+      cmd_path <- cmd_path[-1]
+    }
+
+    if (length(cmd_path) < 2) {
       rlang::abort(sprintf("Invalid command path for job %d: %s", i, paste(cmd_path, collapse = " ")))
     }
 
-    # Map GDAL commands to pipeline step names
-    step_name <- cmd_path[3]  # Usually the third element is the step name
+    # Get the command type (raster/vector) and operation
+    cmd_type <- cmd_path[1]  # "raster" or "vector"
+    operation <- cmd_path[2]  # The actual operation name
 
-    # Special mappings for pipeline steps
-    step_mapping <- c(
-      "convert" = "write",  # gdal raster convert -> write step
-      "create" = "write",   # gdal raster create -> write step
-      "info" = "read"       # gdal raster info -> read step (though info doesn't fit pipeline)
+    # Map GDAL commands to pipeline step names
+    # Comprehensive mappings based on available GDAL pipeline steps
+    step_mapping <- list(
+      # Raster operations
+      "raster" = c(
+        # I/O
+        "convert" = "write",
+        "create" = "write",
+        "tile" = "write",
+        # Analysis & transformation
+        "reproject" = "reproject",
+        "clip" = "clip",
+        "edit" = "edit",
+        "select" = "select",
+        "scale" = "scale",
+        "unscale" = "unscale",
+        "resize" = "resize",
+        "calc" = "calc",
+        "reclassify" = "reclassify",
+        "hillshade" = "hillshade",
+        "slope" = "slope",
+        "aspect" = "aspect",
+        "roughness" = "roughness",
+        "tpi" = "tpi",
+        "tri" = "tri",
+        # Cleanup
+        "fill_nodata" = "fillnodata",
+        "fill-nodata" = "fillnodata",
+        "clean_collar" = "cleancol",
+        "clean-collar" = "cleancol",
+        "sieve" = "sieve",
+        # Other
+        "mosaic" = "mosaic",
+        "stack" = "stack",
+        "info" = "read"  # info can be read-only pipeline step
+      ),
+      # Vector operations
+      "vector" = c(
+        # I/O
+        "convert" = "write",
+        # Analysis & transformation
+        "reproject" = "reproject",
+        "clip" = "clip",
+        "filter" = "filter",
+        "select" = "select",
+        "sql" = "sql",
+        "intersection" = "intersection",
+        "info" = "read"
+      )
     )
 
-    if (step_name %in% names(step_mapping)) {
-      step_name <- step_mapping[step_name]
+    # Get the appropriate mapping for this command type
+    type_mapping <- step_mapping[[cmd_type]]
+    if (is.null(type_mapping)) {
+      rlang::abort(sprintf("Unknown command type '%s' in job %d", cmd_type, i))
+    }
+
+    # Map the operation to a step name
+    step_name <- if (operation %in% names(type_mapping)) {
+      type_mapping[operation]
+    } else {
+      operation  # Use operation as-is if no mapping exists
     }
 
     # Build step arguments
     step_args <- character()
     args <- job$arguments
+    args_copy <- args  # Keep copy for later processing
 
-    # Special handling for different steps
+    # Special handling for different steps - handle I/O
     if (step_name == "read") {
       # For read step, input is positional
-      if (!is.null(args$input)) {
-        step_args <- c(step_args, args$input)
-        args$input <- NULL
+      if (!is.null(args_copy$input)) {
+        step_args <- c(step_args, args_copy$input)
+        args_copy$input <- NULL
       }
     } else if (step_name == "write") {
       # For write step, output is positional
-      if (!is.null(args$output)) {
-        step_args <- c(step_args, args$output)
-        args$output <- NULL
+      if (!is.null(args_copy$output)) {
+        step_args <- c(step_args, args_copy$output)
+        args_copy$output <- NULL
       }
+    } else {
+      # For intermediate steps, don't include input/output since data flows through pipeline
+      args_copy$input <- NULL
+      args_copy$output <- NULL
     }
 
-    # Convert remaining arguments to CLI flags
-    for (arg_name in names(args)) {
-      arg_val <- args[[arg_name]]
+    # Convert remaining arguments to CLI flags for pipeline context
+    # Skip arguments that shouldn't be in pipeline (like pipeline, input_format, output_format)
+    skip_args <- c("pipeline", "input_format", "output_format", "open_option",
+                    "creation_option", "layer_creation_option", "input_layer",
+                    "output_layer", "overwrite", "update", "append", "overwrite_layer")
+
+    for (arg_name in names(args_copy)) {
+      arg_val <- args_copy[[arg_name]]
+
+      # Skip certain arguments that don't apply in pipeline context
+      if (arg_name %in% skip_args) {
+        next
+      }
+
       if (!is.null(arg_val)) {
-        # Convert R argument name to CLI flag
+        # Convert R argument name to CLI flag (keep underscores or convert to hyphens)
         cli_flag <- paste0("--", gsub("_", "-", arg_name))
 
         # Format the value
-        if (is.logical(arg_val) && arg_val) {
-          step_args <- c(step_args, cli_flag)
+        if (is.logical(arg_val)) {
+          if (arg_val) {
+            step_args <- c(step_args, cli_flag)
+          }
         } else if (is.character(arg_val)) {
           if (length(arg_val) == 1) {
             step_args <- c(step_args, cli_flag, arg_val)
           } else {
-            # Multiple values
+            # Multiple values - repeat flag for each
             for (v in arg_val) {
               step_args <- c(step_args, cli_flag, v)
             }
@@ -462,13 +542,11 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
 #' # Use convenience methods (creates new job, doesn't execute)
 #' job_with_co <- job$with_co("COMPRESS=LZW")
 #' 
-#' # Execute the job
-#' # job_with_co$run()  # Uncomment to actually run
-#'
+#' 
 #' @export
 `$.gdal_job` <- function(x, name) {
   # Handle slot access using base list access to avoid recursion
-  if (name %in% c("command_path", "arguments", "config_options", "env_vars", "stream_in", "stream_out_format", "pipeline")) {
+  if (name %in% c("command_path", "arguments", "config_options", "env_vars", "stream_in", "stream_out_format", "pipeline", "arg_mapping")) {
     return(.subset2(x, name))
   }
   
@@ -490,7 +568,8 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
         env_vars = x$env_vars,
         stream_in = x$stream_in,
         stream_out_format = x$stream_out_format,
-        pipeline = x$pipeline
+        pipeline = x$pipeline,
+        arg_mapping = x$arg_mapping
       )
     },
     # Default: signal error

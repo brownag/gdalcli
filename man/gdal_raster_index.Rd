@@ -5,11 +5,10 @@
 \title{index: Create a vector index of raster datasets}
 \usage{
 gdal_raster_index(
-  job = NULL,
   input,
-  output,
   source_crs_field_name = NULL,
   source_crs_format = NULL,
+  output,
   output_format = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -29,15 +28,13 @@ gdal_raster_index(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
+\item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{source_crs_field_name}{Name of the field to store the CRS of each dataset}
 
 \item{source_crs_format}{Format in which the CRS of each dataset must be written. Choices: auto, WKT, EPSG, PROJ (Default: \code{auto})}
+
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -78,6 +75,11 @@ A \link{gdal_job} object.
 Create a vector index of raster datasets.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_index.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster index doq/*.tif doq_index.gpkg
+job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")
 }
 \seealso{
 Other gdal_raster_utilities: 

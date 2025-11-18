@@ -4,12 +4,10 @@
 \alias{gdal_driver_gpkg_repack}
 \title{repack: Repack/vacuum in-place a GeoPackage dataset}
 \usage{
-gdal_driver_gpkg_repack(job = NULL, dataset)
+gdal_driver_gpkg_repack(dataset)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{dataset}{GeoPackage dataset (Dataset path) (required)}
+\item{dataset}{GeoPackage dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -20,7 +18,8 @@ Repack/vacuum in-place a GeoPackage dataset
 See \url{https://gdal.org/en/stable/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
 }
 \examples{
-# Example usage
+# Example
+# gdal driver gpkg repack my.gpkg
 job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")
 }
 \seealso{

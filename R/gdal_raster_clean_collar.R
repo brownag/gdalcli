@@ -13,8 +13,7 @@
 #' if either alpha band or mask band is not set.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster dataset (Dataset path) (required)
+#' @param input Input raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output Output raster dataset (Dataset path)
 #' @param output_format Output format
@@ -31,11 +30,11 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Example usage
+#' # Example
+#' # gdal raster clean-collar --update my.tif
 #' job <- gdal_raster_clean_collar(update = "my.tif")
 #' @export
-gdal_raster_clean_collar <- function(job = NULL,
-  input,
+gdal_raster_clean_collar <- function(input,
   input_format = NULL,
   output = NULL,
   output_format = NULL,
@@ -64,13 +63,37 @@ gdal_raster_clean_collar <- function(job = NULL,
   if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
   if (!missing(add_mask)) new_args[["add_mask"]] <- add_mask
   if (!missing(algorithm)) new_args[["algorithm"]] <- algorithm
-  job_input <- handle_job_input(job, new_args, c("raster", "clean-collar"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "clean-collar"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "clean-collar"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "clean-collar"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    color = list(min_count = 0, max_count = 2147483647),
+    color_threshold = list(min_count = 0, max_count = 1),
+    pixel_distance = list(min_count = 0, max_count = 1),
+    add_alpha = list(min_count = 0, max_count = 1),
+    add_mask = list(min_count = 0, max_count = 1),
+    algorithm = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "clean-collar"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

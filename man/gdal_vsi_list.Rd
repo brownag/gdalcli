@@ -5,7 +5,6 @@
 \title{list: List files of one of the GDAL Virtual System Interface (VSI)}
 \usage{
 gdal_vsi_list(
-  job = NULL,
   filename,
   output_format = NULL,
   long_listing = FALSE,
@@ -17,9 +16,7 @@ gdal_vsi_list(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{filename}{File or directory name (required)}
+\item{filename}{File or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output_format}{Output format. Choices: json, text (Default: \code{json})}
 
@@ -42,6 +39,15 @@ A \link{gdal_job} object.
 \verb{gdal vsi list} list files of GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_list.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vsi list -lR --of=text /vsis3/bucket
+# For help on available parameters, run: ?gdal_vsi_list
+job <- gdal_vsi_list()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vsi_utilities: 

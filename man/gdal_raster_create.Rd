@@ -5,10 +5,9 @@
 \title{create: Create a new raster dataset}
 \usage{
 gdal_raster_create(
-  job = NULL,
-  output,
-  input_format = NULL,
   input = NULL,
+  input_format = NULL,
+  output,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
@@ -27,13 +26,11 @@ gdal_raster_create(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input}{Input raster dataset (Dataset path)}
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -72,6 +69,12 @@ A \link{gdal_job} object.
 Create a new raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_create.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster create --size=20,20 --band-count=3 --crs=EPSG:4326 --bbox=2,49,3,50 --burn 10 out.tif
+job <- gdal_raster_create(input = "out.tif", size = c(20, 20), band_count = 3, 
+    crs = "EPSG:4326", bbox = c(2, 49, 3, 50), burn = 10)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -4,12 +4,10 @@
 \alias{gdal_vsi_move}
 \title{move: Move/rename a file/directory located on GDAL Virtual System Interface (VSI)}
 \usage{
-gdal_vsi_move(job = NULL, source, destination)
+gdal_vsi_move(source, destination)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{source}{Source file or directory name (required)}
+\item{source}{Source file or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{destination}{Destination file or directory name (required)}
 }
@@ -20,6 +18,12 @@ A \link{gdal_job} object.
 \verb{gdal vsi move} move files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_move.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal vsi move /vsis3/bucket/my.tif /vsis3/bucket/new_name.tif
+job <- gdal_vsi_move(source = "/vsis3/bucket/my.tif", 
+    destination = "/vsis3/bucket/new_name.tif")
 }
 \seealso{
 Other gdal_vsi_utilities: 

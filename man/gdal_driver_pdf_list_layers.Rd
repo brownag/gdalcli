@@ -4,12 +4,10 @@
 \alias{gdal_driver_pdf_list_layers}
 \title{list-layers: List layers of a PDF dataset}
 \usage{
-gdal_driver_pdf_list_layers(job = NULL, input, output_format = NULL)
+gdal_driver_pdf_list_layers(input, output_format = NULL)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster or vector dataset (Dataset path) (required)}
+\item{input}{Input raster or vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output_format}{Output format. Choices: json, text (Default: \code{json})}
 }
@@ -20,6 +18,14 @@ A \link{gdal_job} object.
 List layers of a PDF dataset
 
 See \url{https://gdal.org/en/stable/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: No examples available for gdal_driver_pdf_list_layers.
+# See GDAL documentation: https://gdal.org/programs/gdal-driver-pdf-list-layers.html
+job <- gdal_driver_pdf_list_layers()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_driver_utilities: 

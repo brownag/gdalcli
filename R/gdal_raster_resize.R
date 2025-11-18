@@ -8,12 +8,11 @@
 #' Resize a raster dataset without changing the georeferenced extents.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_resize.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster dataset (Dataset path) (required)
-#' @param output Output raster dataset (Dataset path) (required)
-#' @param size Target size in pixels (or percentage if using '%' suffix) (Character vector). Format: `<width[%]>,<height[%]>` (required). Minimum: `0`. Exactly `2` value(s)
+#' @param input Input raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
+#' @param size Target size in pixels (or percentage if using '%' suffix) (Character vector). Format: `<width[%]>,<height[%]>` (required). Minimum: `0`. Exactly `2` value(s)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
@@ -21,34 +20,59 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal raster resize --size=1000,500 -r cubic in.tif out.tif --overwrite
+#' # For help on available parameters, run: ?gdal_raster_resize
+#' job <- gdal_raster_resize()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_raster_resize <- function(job = NULL,
-  input,
-  output,
-  size,
+gdal_raster_resize <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
+  size,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
   resampling = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
-  if (!missing(size)) new_args[["size"]] <- size
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
+  if (!missing(size)) new_args[["size"]] <- size
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
   if (!missing(resampling)) new_args[["resampling"]] <- resampling
-  job_input <- handle_job_input(job, new_args, c("raster", "resize"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "resize"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "resize"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "resize"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    size = list(min_count = 2, max_count = 2),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    resampling = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "resize"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

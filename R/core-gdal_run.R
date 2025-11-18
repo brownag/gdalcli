@@ -161,6 +161,7 @@ gdal_job_run.gdal_job <- function(x,
 #' - Converting argument names from snake_case to kebab-case (e.g., `dst_crs` → `dst-crs`)
 #' - Flattening vector arguments (e.g., `c("COL1=val1", "COL2=val2")` for a repeatable arg)
 #' - Converting logical arguments to their flag equivalents
+#' - Converting composite arguments (e.g., `c(2, 49, 3, 50)` for bbox → `--bbox=2,49,3,50`)
 #'
 #' @param job A [gdal_job] object.
 #'
@@ -175,6 +176,9 @@ gdal_job_run.gdal_job <- function(x,
   # Separate positional and option arguments
   positional_args_list <- list()
   option_args <- character()
+
+  # Get arg_mapping if available (contains min_count/max_count for proper serialization)
+  arg_mapping <- if (!is.null(job$arg_mapping)) job$arg_mapping else list()
 
   # Process regular arguments
   for (i in seq_along(job$arguments)) {
@@ -209,17 +213,21 @@ gdal_job_run.gdal_job <- function(x,
           option_args <- c(option_args, cli_flag)
         }
       } else if (length(arg_value) > 1) {
-        # Handle multi-value vs repeatable arguments
-        multi_value_args <- c("resolution", "extent", "size", "bbox")
-        comma_separated_args <- c("resolution", "extent", "bbox")  # These need comma separation
-        if (arg_name %in% comma_separated_args) {
-          # Comma-separated multi-value arguments: --flag val1,val2,...
+        # Determine if this is a composite (fixed-count) or repeatable argument
+        # by checking arg_mapping if available
+        arg_meta <- arg_mapping[[arg_name]]
+        is_composite <- FALSE
+        
+        if (!is.null(arg_meta) && !is.null(arg_meta$min_count) && !is.null(arg_meta$max_count)) {
+          # Composite argument: min_count == max_count and both > 1
+          is_composite <- arg_meta$min_count == arg_meta$max_count && arg_meta$min_count > 1
+        }
+
+        if (is_composite) {
+          # Composite argument: comma-separated value (e.g., bbox=2,49,3,50)
           option_args <- c(option_args, cli_flag, paste(as.character(arg_value), collapse = ","))
-        } else if (arg_name %in% multi_value_args) {
-          # Space-separated multi-value arguments: --flag val1 val2 ...
-          option_args <- c(option_args, cli_flag, as.character(arg_value))
         } else {
-          # Repeatable arguments: --flag val1 --flag val2 ...
+          # Repeatable argument: --flag val1 --flag val2 ...
           for (val in arg_value) {
             option_args <- c(option_args, cli_flag, as.character(val))
           }

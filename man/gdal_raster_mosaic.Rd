@@ -5,9 +5,8 @@
 \title{mosaic: Build a mosaic, either virtual (VRT) or materialized}
 \usage{
 gdal_raster_mosaic(
-  job = NULL,
-  output,
   input = NULL,
+  output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
   creation_option = NULL,
@@ -22,11 +21,9 @@ gdal_raster_mosaic(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
-
-\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -57,6 +54,12 @@ A \link{gdal_job} object.
 Build a mosaic, either virtual (VRT) or materialized.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster mosaic --hide-nodata --dst-nodata=0,0,255 doq/*.tif doq_index.vrt
+job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", hide_nodata = TRUE, 
+    dst_nodata = "0,0,255")
 }
 \seealso{
 Other gdal_raster_utilities: 

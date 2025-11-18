@@ -5,13 +5,12 @@
 \title{concat: Concatenate vector datasets}
 \usage{
 gdal_vector_concat(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
   input_layer = NULL,
   source_layer_field_name = NULL,
   source_layer_field_content = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -28,11 +27,7 @@ gdal_vector_concat(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector datasets (required). \code{1} to \code{2147483647} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
+\item{input}{Input vector datasets (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -41,6 +36,8 @@ gdal_vector_concat(
 \item{source_layer_field_name}{Name of the new field to add to contain identificoncation of the source layer, with value determined from 'source-layer-field-content'}
 
 \item{source_layer_field_content}{A string, possibly using \{AUTO_NAME\}, \{DS_NAME\}, \{DS_BASENAME\}, \{DS_INDEX\}, \{LAYER_NAME\}, \{LAYER_INDEX\}}
+
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -75,6 +72,11 @@ A \link{gdal_job} object.
 Concatenate vector datasets.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_concat.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal vector concat --mode=stack *.shp out.gpkg
+job <- gdal_vector_concat(input = "*.shp", output = "out.gpkg", mode = "stack")
 }
 \seealso{
 Other gdal_vector_utilities: 

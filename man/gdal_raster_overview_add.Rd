@@ -5,7 +5,6 @@
 \title{add: Adding overviews}
 \usage{
 gdal_raster_overview_add(
-  job = NULL,
   dataset,
   open_option = NULL,
   external = FALSE,
@@ -15,9 +14,7 @@ gdal_raster_overview_add(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path) (required)}
+\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -36,6 +33,15 @@ A \link{gdal_job} object.
 Adding overviews.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster overview add -r average abc.tif
+# For help on available parameters, run: ?gdal_raster_overview_add
+job <- gdal_raster_overview_add()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

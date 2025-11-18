@@ -5,10 +5,9 @@
 \title{hillshade: Generate a shaded relief map}
 \usage{
 gdal_raster_hillshade(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -25,13 +24,11 @@ gdal_raster_hillshade(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -66,6 +63,12 @@ A \link{gdal_job} object.
 Generate a shaded relief map
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster hillshade --zfactor=30 n43.dt0 out.tif --overwrite
+job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
+    zfactor = 30)
 }
 \seealso{
 Other gdal_raster_utilities: 

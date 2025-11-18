@@ -9,8 +9,7 @@
 #' raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_info.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster dataset (Dataset path) (required)
+#' @param input Input raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param output_format Output format. Choices: json, text (Default: `json`)
 #' @param min_max Compute minimum and maximum value (Logical)
@@ -32,9 +31,11 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' # Example
+#' # gdal raster info utmsmall.tif
+#' job <- gdal_raster_info(input = "utmsmall.tif")
 #' @export
-gdal_raster_info <- function(job = NULL,
-  input,
+gdal_raster_info <- function(input,
   input_format = NULL,
   output_format = NULL,
   min_max = FALSE,
@@ -73,13 +74,42 @@ gdal_raster_info <- function(job = NULL,
   if (!missing(no_mask)) new_args[["no_mask"]] <- no_mask
   if (!missing(subdataset)) new_args[["subdataset"]] <- subdataset
   if (!missing(stdout)) new_args[["stdout"]] <- stdout
-  job_input <- handle_job_input(job, new_args, c("raster", "info"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "info"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "info"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "info"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output_format = list(min_count = 0, max_count = 1),
+    min_max = list(min_count = 0, max_count = 1),
+    stats = list(min_count = 0, max_count = 1),
+    approx_stats = list(min_count = 0, max_count = 1),
+    hist = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    no_gcp = list(min_count = 0, max_count = 1),
+    no_md = list(min_count = 0, max_count = 1),
+    no_ct = list(min_count = 0, max_count = 1),
+    no_fl = list(min_count = 0, max_count = 1),
+    checksum = list(min_count = 0, max_count = 1),
+    list_mdd = list(min_count = 0, max_count = 1),
+    metadata_domain = list(min_count = 0, max_count = 1),
+    no_nodata = list(min_count = 0, max_count = 1),
+    no_mask = list(min_count = 0, max_count = 1),
+    subdataset = list(min_count = 0, max_count = 1),
+    stdout = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "info"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

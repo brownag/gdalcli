@@ -199,23 +199,65 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #' potentially becoming input to the next through virtual file systems.
 #'
 #' @param x A `gdal_pipeline` object.
+#' @param execution_mode Character string: `"sequential"` (default) to run jobs as
+#'   separate GDAL commands, or `"native"` to run as a single native GDAL pipeline
+#'   command (via `gdal raster/vector pipeline`). Native mode is more efficient for
+#'   large datasets as it avoids intermediate disk I/O.
+#' @param stream_in An R object to be streamed to `/vsistdin/` for the first pipeline step.
+#'   Only used in native execution mode. Default `NULL`.
+#' @param stream_out_format Character string: output format for the last pipeline step.
+#'   Options: `NULL` (no streaming), `"text"`, or `"raw"`. Only used in native execution mode.
+#' @param env Environment variables to pass to the GDAL process. Only used in native execution mode.
 #' @param ... Additional arguments passed to individual job execution.
 #' @param verbose Logical. If `TRUE`, prints progress information. Default `FALSE`.
 #'
-#' @return Invisibly returns `TRUE` on successful completion.
+#' @return Invisibly returns `TRUE` on successful completion, or (in native mode with
+#'   streaming output) returns the captured output.
 #'
 #' @seealso
-#' [gdal_job_run.gdal_job()], [render_gdal_pipeline()]
+#' [gdal_job_run.gdal_job()], [render_gdal_pipeline()], [render_native_pipeline()]
+#'
+#' @examples
+#' \dontrun{
+#' # Sequential execution (default, each job runs separately)
+#' pipeline <- gdal_raster_info("in.tif") |>
+#'   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+#'   gdal_raster_convert(output = "out.tif")
+#' gdal_job_run(pipeline)
+#'
+#' # Native pipeline execution (single GDAL pipeline command)
+#' gdal_job_run(pipeline, execution_mode = "native")
+#' }
 #'
 #' @export
-gdal_job_run.gdal_pipeline <- function(x, ..., verbose = FALSE) {
+gdal_job_run.gdal_pipeline <- function(x,
+                                       execution_mode = c("sequential", "native"),
+                                       stream_in = NULL,
+                                       stream_out_format = NULL,
+                                       env = NULL,
+                                       ...,
+                                       verbose = FALSE) {
+  execution_mode <- match.arg(execution_mode)
+
   if (length(x$jobs) == 0) {
     if (verbose) cli::cli_alert_info("Pipeline is empty - nothing to execute")
     return(invisible(TRUE))
   }
 
+  if (execution_mode == "native") {
+    # Native pipeline execution: run as single GDAL pipeline command
+    return(.gdal_job_run_native_pipeline(
+      x,
+      stream_in = stream_in,
+      stream_out_format = stream_out_format,
+      env = env,
+      verbose = verbose
+    ))
+  }
+
+  # Sequential execution: run jobs separately (original behavior)
   if (verbose) {
-    cli::cli_alert_info(sprintf("Executing pipeline with %d jobs", length(x$jobs)))
+    cli::cli_alert_info(sprintf("Executing pipeline with %d jobs (sequential mode)", length(x$jobs)))
   }
 
   # Collect temporary files for cleanup
@@ -271,31 +313,217 @@ gdal_job_run.gdal_pipeline <- function(x, ..., verbose = FALSE) {
 }
 
 
+#' Execute GDAL Pipeline in Native Mode
+#'
+#' @description
+#' Internal function that executes a gdal_pipeline as a single native GDAL
+#' pipeline command (via `gdal raster/vector pipeline`).
+#'
+#' @param pipeline A `gdal_pipeline` object.
+#' @param stream_in An R object to stream to /vsistdin/ (optional).
+#' @param stream_out_format Format for output streaming: NULL, "text", or "raw".
+#' @param env Environment variables for the subprocess.
+#' @param verbose Logical. If TRUE, prints execution details.
+#'
+#' @return Invisibly returns TRUE on success, or captured output if stream_out_format is set.
+#'
+#' @keywords internal
+.gdal_job_run_native_pipeline <- function(pipeline,
+                                          stream_in = NULL,
+                                          stream_out_format = NULL,
+                                          env = NULL,
+                                          verbose = FALSE) {
+  # Check processx availability
+  if (!requireNamespace("processx", quietly = TRUE)) {
+    cli::cli_abort(
+      c(
+        "processx package required for native pipeline execution",
+        "i" = "Install with: install.packages('processx')"
+      )
+    )
+  }
+
+  if (verbose) {
+    cli::cli_alert_info(sprintf("Executing pipeline with %d steps (native mode)", length(pipeline$jobs)))
+  }
+
+  # Render the native pipeline string
+  pipeline_str <- render_native_pipeline(pipeline)
+
+  # Detect pipeline type (raster/vector) from first job
+  if (length(pipeline$jobs) == 0) {
+    return(invisible(TRUE))
+  }
+
+  first_job <- pipeline$jobs[[1]]
+  cmd_path <- first_job$command_path
+  if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+    cmd_path <- cmd_path[-1]
+  }
+  pipeline_type <- if (length(cmd_path) > 0) cmd_path[1] else "raster"
+
+  # Collect all config options from all jobs
+  config_flags <- character()
+  for (job in pipeline$jobs) {
+    if (length(job$config_options) > 0) {
+      for (config_name in names(job$config_options)) {
+        config_val <- job$config_options[[config_name]]
+        # Add as --config KEY=VALUE pair
+        config_flags <- c(config_flags,
+                         sprintf("--config %s=%s", config_name, config_val))
+      }
+    }
+  }
+
+  # Build the full command: gdal raster/vector pipeline [--config options] <pipeline_str>
+  # Config flags go between "pipeline" and the pipeline string
+  args <- c(pipeline_type, "pipeline")
+  if (length(config_flags) > 0) {
+    # Flatten config flags into individual args (--config and KEY=VALUE as separate elements)
+    config_args <- character()
+    for (cfg in config_flags) {
+      # Split "--config KEY=VALUE" into c("--config", "KEY=VALUE")
+      parts <- strsplit(cfg, " ")[[1]]
+      config_args <- c(config_args, parts)
+    }
+    args <- c(args, config_args)
+  }
+  args <- c(args, pipeline_str)
+
+  if (verbose) {
+    cli::cli_alert_info(sprintf("Command: gdal %s", paste(args, collapse = " ")))
+  }
+
+  # Prepare stdin/stdout for streaming
+  stdin_arg <- if (!is.null(stream_in)) stream_in else NULL
+  stdout_arg <- if (!is.null(stream_out_format)) "|" else NULL
+
+  # Merge environment variables from all pipeline jobs
+  env_final <- character()
+  for (job in pipeline$jobs) {
+    if (length(job$env_vars) > 0) {
+      env_final <- c(env_final, job$env_vars)
+    }
+  }
+
+  # Merge with explicit env parameter (explicit takes precedence)
+  if (!is.null(env)) {
+    env_final <- c(env_final, env)
+  }
+
+  # Remove duplicates (keep last value if key appears multiple times)
+  if (length(env_final) > 0) {
+    env_final <- env_final[!duplicated(names(env_final), fromLast = TRUE)]
+  }
+
+  # Execute the native pipeline command
+  tryCatch({
+    result <- processx::run(
+      command = "gdal",
+      args = args,
+      stdin = stdin_arg,
+      stdout = stdout_arg,
+      env = if (length(env_final) > 0) env_final else NULL,
+      error_on_status = TRUE
+    )
+
+    # Handle output based on streaming format
+    if (!is.null(stream_out_format)) {
+      if (stream_out_format == "text") {
+        if (verbose) {
+          cli::cli_alert_success("Native pipeline completed successfully")
+        }
+        return(result$stdout)
+      } else if (stream_out_format == "raw") {
+        if (verbose) {
+          cli::cli_alert_success("Native pipeline completed successfully")
+        }
+        return(charToRaw(result$stdout))
+      }
+    }
+
+    if (verbose) {
+      cli::cli_alert_success("Native pipeline completed successfully")
+    }
+
+    invisible(TRUE)
+  }, error = function(e) {
+    cli::cli_abort(
+      c(
+        "Native GDAL pipeline execution failed",
+        "x" = conditionMessage(e),
+        "i" = sprintf("Command: gdal %s", paste(args, collapse = " "))
+      )
+    )
+  })
+}
+
+
+#' Render GDAL Pipeline as Native GDAL Pipeline String
+#'
+#' @description
+#' Converts a `gdal_pipeline` object into a native GDAL pipeline string that can be
+#' executed directly with `gdal raster pipeline` or `gdal vector pipeline`.
+#'
+#' The native pipeline format uses `! step_name args...` syntax:
+#' ```
+#' gdal raster pipeline ! read in.tif ! reproject --dst-crs=EPSG:32632 ! write out.tif
+#' ```
+#'
+#' @param pipeline A `gdal_pipeline` object.
+#'
+#' @return A character string containing the native GDAL pipeline string (without `gdal raster/vector pipeline` prefix).
+#'
+#' @keywords internal
+#'
+render_native_pipeline <- function(pipeline) {
+  UseMethod("render_native_pipeline")
+}
+
+#' @rdname render_native_pipeline
+#' @keywords internal
+render_native_pipeline.gdal_pipeline <- function(pipeline) {
+  if (length(pipeline$jobs) == 0) {
+    return("")
+  }
+
+  # Use build_pipeline_from_jobs to generate the native pipeline string
+  build_pipeline_from_jobs(pipeline$jobs)
+}
+
 #' Render GDAL Pipeline as GDAL Pipeline Command
 #'
 #' @description
 #' Converts a `gdal_pipeline` into a GDAL pipeline command string that can be
-#' executed directly with `gdal pipeline`.
+#' executed directly with `gdal raster/vector pipeline`.
+#'
+#' By default, renders as a sequence of separate GDAL commands (`gdal cmd1 && gdal cmd2`).
+#' Set `format = "native"` to generate native GDAL pipeline syntax.
 #'
 #' @param pipeline A `gdal_pipeline` object.
+#' @param format Character string: `"shell_chain"` (default, separate commands with &&)
+#'   or `"native"` (native GDAL pipeline syntax with ! delimiters).
 #' @param ... Additional arguments (unused).
 #'
 #' @return A character string containing the GDAL pipeline command.
 #'
 #' @seealso
-#' [render_shell_script()], [gdal_job_run.gdal_pipeline()]
+#' [render_shell_script()], [gdal_job_run.gdal_pipeline()], [render_native_pipeline()]
 #'
 #' @export
-render_gdal_pipeline <- function(pipeline, ...) {
+render_gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), ...) {
+  format <- match.arg(format)
   UseMethod("render_gdal_pipeline")
 }
 
 
 #' @rdname render_gdal_pipeline
 #' @export
-render_gdal_pipeline.gdal_job <- function(pipeline, ...) {
+render_gdal_pipeline.gdal_job <- function(pipeline, format = c("shell_chain", "native"), ...) {
+  format <- match.arg(format)
+
   if (!is.null(pipeline$pipeline)) {
-    render_gdal_pipeline(pipeline$pipeline, ...)
+    render_gdal_pipeline(pipeline$pipeline, format = format, ...)
   } else {
     # No pipeline history, render just this job
     args <- .serialize_gdal_job(pipeline)
@@ -305,55 +533,85 @@ render_gdal_pipeline.gdal_job <- function(pipeline, ...) {
 
 #' @rdname render_gdal_pipeline
 #' @export
-render_gdal_pipeline.gdal_pipeline <- function(pipeline, ...) {
+render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), ...) {
+  format <- match.arg(format)
+
   if (length(pipeline$jobs) == 0) {
     return("gdal pipeline")
   }
 
-  # For now, render as a sequence of separate GDAL commands
-  # TODO: Implement proper GDAL pipeline syntax when available
-  commands <- character()
-  for (i in seq_along(pipeline$jobs)) {
-    job <- pipeline$jobs[[i]]
-    args <- .serialize_gdal_job(job)
-    cmd <- paste(c("gdal", args), collapse = " ")
-    commands <- c(commands, cmd)
-  }
+  if (format == "native") {
+    # Render as native GDAL pipeline string
+    # First, detect if raster or vector based on first job
+    first_job <- pipeline$jobs[[1]]
+    cmd_type <- if (!is.null(first_job$command_path) && length(first_job$command_path) > 0) {
+      first_job$command_path[if (first_job$command_path[1] == "gdal") 2 else 1]
+    } else {
+      "raster"  # Default to raster
+    }
 
-  paste(commands, collapse = " && ")
+    pipeline_str <- render_native_pipeline(pipeline)
+    paste("gdal", cmd_type, "pipeline", pipeline_str)
+  } else {
+    # Render as sequence of separate GDAL commands (shell chain)
+    commands <- character()
+    for (i in seq_along(pipeline$jobs)) {
+      job <- pipeline$jobs[[i]]
+      args <- .serialize_gdal_job(job)
+      cmd <- paste(c("gdal", args), collapse = " ")
+      commands <- c(commands, cmd)
+    }
+
+    paste(commands, collapse = " && ")
+  }
 }
 
 
 #' Render GDAL Pipeline as Shell Script
 #'
 #' @description
-#' Converts a `gdal_pipeline` into a shell script that executes the jobs sequentially.
+#' Converts a `gdal_pipeline` into a shell script that executes the jobs.
+#'
+#' By default, generates separate commands chained with `&&`. Set `format = "native"`
+#' to generate a shell script using a single native GDAL pipeline command instead.
 #'
 #' @param pipeline A `gdal_pipeline` object.
 #' @param shell Character string specifying shell type: `"bash"` (default) or `"zsh"`.
+#' @param format Character string: `"commands"` (default, separate commands with &&)
+#'   or `"native"` (single native GDAL pipeline command). Default is `"commands"`.
 #' @param ... Additional arguments (unused).
 #'
 #' @return A character string containing the shell script.
 #'
+#' @details
+#' When `format = "commands"`, the script executes each job as a separate GDAL command,
+#' which is safer for hybrid workflows mixing pipeline and non-pipeline operations.
+#'
+#' When `format = "native"`, the script uses a single `gdal raster/vector pipeline`
+#' command, which is more efficient as it avoids intermediate disk I/O.
+#'
 #' @seealso
-#' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()]
+#' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()], [render_native_pipeline()]
 #'
 #' @export
-render_shell_script <- function(pipeline, shell = "bash", ...) {
+render_shell_script <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {
+  format <- match.arg(format)
   UseMethod("render_shell_script")
 }
 
 
 #' @rdname render_shell_script
 #' @export
-render_shell_script.gdal_job <- function(pipeline, shell = "bash", ...) {
+render_shell_script.gdal_job <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {
+  format <- match.arg(format)
+
   if (!is.null(pipeline$pipeline)) {
-    render_shell_script(pipeline$pipeline, shell = shell, ...)
+    render_shell_script(pipeline$pipeline, shell = shell, format = format, ...)
   } else {
     # No pipeline history, render just this job as a simple script
     args <- .serialize_gdal_job(pipeline)
     cmd <- paste(c("gdal", args), collapse = " ")
-    
+
     script_lines <- character()
     if (shell == "bash") {
       script_lines <- c(script_lines, "#!/bin/bash")
@@ -361,16 +619,18 @@ render_shell_script.gdal_job <- function(pipeline, shell = "bash", ...) {
       script_lines <- c(script_lines, "#!/bin/zsh")
     } else {
       script_lines <- c(script_lines, sprintf("#!/bin/%s", shell))
-  }
+    }
     script_lines <- c(script_lines, "", "set -e", "", cmd, "")
-    
+
     paste(script_lines, collapse = "\n")
   }
 }
 
 #' @rdname render_shell_script
 #' @export
-render_shell_script.gdal_pipeline <- function(pipeline, shell = "bash", ...) {
+render_shell_script.gdal_pipeline <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {
+  format <- match.arg(format)
+
   if (length(pipeline$jobs) == 0) {
     return("# Empty pipeline")
   }
@@ -390,26 +650,66 @@ render_shell_script.gdal_pipeline <- function(pipeline, shell = "bash", ...) {
 
   # Add description if present
   if (!is.null(pipeline$name)) {
-    script_lines <- c(script_lines, sprintf("# %s", pipeline$name))
+    script_lines <- c(script_lines, sprintf("# Pipeline: %s", pipeline$name))
   }
   if (!is.null(pipeline$description)) {
     script_lines <- c(script_lines, sprintf("# %s", pipeline$description))
   }
-  script_lines <- c(script_lines, "")
+  if (!is.null(pipeline$name) || !is.null(pipeline$description)) {
+    script_lines <- c(script_lines, "")
+  }
 
   # Add set -e for error handling
   script_lines <- c(script_lines, "set -e", "")
 
-  # Add each job as a separate command
-  for (i in seq_along(pipeline$jobs)) {
-    job <- pipeline$jobs[[i]]
+  if (format == "native") {
+    # Render as native GDAL pipeline command
+    # First, collect all config options from all jobs
+    config_flags <- character()
+    for (job in pipeline$jobs) {
+      if (length(job$config_options) > 0) {
+        for (config_name in names(job$config_options)) {
+          config_val <- job$config_options[[config_name]]
+          # Add as --config KEY=VALUE pair
+          config_flags <- c(config_flags,
+                           sprintf("--config %s=%s", config_name, config_val))
+        }
+      }
+    }
 
-    # Serialize the job to command line
-    args <- .serialize_gdal_job(job)
-    cmd <- paste(c("gdal", args), collapse = " ")
+    # Build pipeline type and pipeline string (without the "gdal raster pipeline" prefix)
+    first_job <- pipeline$jobs[[1]]
+    cmd_path <- first_job$command_path
+    if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+      cmd_path <- cmd_path[-1]
+    }
+    pipeline_type <- if (length(cmd_path) > 0) cmd_path[1] else "raster"
 
-    script_lines <- c(script_lines, sprintf("# Job %d", i))
-    script_lines <- c(script_lines, cmd, "")
+    # Get just the pipeline string part (steps with !)
+    pipeline_str <- render_native_pipeline(pipeline)
+
+    # Build full command with config options if any
+    if (length(config_flags) > 0) {
+      config_str <- paste(config_flags, collapse = " ")
+      cmd <- sprintf("gdal %s pipeline %s %s", pipeline_type, config_str, pipeline_str)
+    } else {
+      cmd <- sprintf("gdal %s pipeline %s", pipeline_type, pipeline_str)
+    }
+
+    script_lines <- c(script_lines, "# Native GDAL pipeline execution", cmd, "")
+  } else {
+    # Render as separate GDAL commands (original behavior)
+    # Add each job as a separate command
+    for (i in seq_along(pipeline$jobs)) {
+      job <- pipeline$jobs[[i]]
+
+      # Serialize the job to command line
+      args <- .serialize_gdal_job(job)
+      cmd <- paste(c("gdal", args), collapse = " ")
+
+      script_lines <- c(script_lines, sprintf("# Job %d", i))
+      script_lines <- c(script_lines, cmd, "")
+    }
   }
 
   # Join all lines
@@ -510,16 +810,6 @@ set_description <- function(pipeline, description) {
   UseMethod("set_description")
 }
 
-
-#' @rdname set_name
-#' @export
-set_name.gdal_pipeline <- function(pipeline, name) {
-  new_gdal_pipeline(
-    pipeline$jobs,
-    name = name,
-    description = pipeline$description
-  )
-}
 
 #' @rdname set_name
 #' @export
@@ -720,42 +1010,85 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 }
 
 
-#' Handle Job Input for Pipeline Extension
+#' Process GDAL Pipeline (Convenience Wrapper)
 #'
 #' @description
-#' Processes the job parameter to determine if pipeline extension
-#' should occur or if arguments should be merged for job modification.
+#' Convenience function that automatically detects whether a pipeline contains
+#' raster or vector operations and delegates to the appropriate `gdal_raster_pipeline()`
+#' or `gdal_vector_pipeline()` function.
 #'
-#' @param job A gdal_job object or NULL.
-#' @param new_args List of new arguments passed to the function.
-#' @param full_path Character vector representing the command path.
+#' This function is useful when you want a single unified interface to process
+#' pipelines without needing to explicitly choose the raster or vector variant.
 #'
-#' @return A list with elements:
-#'   - should_extend: Logical indicating if pipeline should be extended.
-#'   - job: The job object to extend from (if extending).
-#'   - merged_args: Arguments for creating a new job (if not extending).
+#' @param jobs A list or vector of `gdal_job` objects to execute in sequence,
+#'   or NULL to use pipeline string
+#' @param pipeline A pipeline string (ignored if jobs is provided)
+#' @param input Input dataset path(s)
+#' @param output Output dataset path
+#' @param ... Additional arguments passed to `gdal_raster_pipeline()` or `gdal_vector_pipeline()`
 #'
-handle_job_input <- function(job, new_args, full_path) {
-  # If no job provided, create new job with merged arguments
-  if (is.null(job)) {
-    return(list(
-      should_extend = FALSE,
-      job = NULL,
-      merged_args = new_args
-    ))
+#' @return A `gdal_job` object representing the pipeline.
+#'
+#' @details
+#' The pipeline type is determined by examining the first job's command_path:
+#' - If the first job is a raster command, `gdal_raster_pipeline()` is used
+#' - If the first job is a vector command, `gdal_vector_pipeline()` is used
+#' - Default is raster if type cannot be determined
+#'
+#' @examples
+#' \dontrun{
+#' # Auto-detect based on job type
+#' job1 <- gdal_raster_reproject(input = "input.tif", dst_crs = "EPSG:32632")
+#' job2 <- gdal_raster_convert(output = "output.tif")
+#'
+#' # This will automatically use gdal_raster_pipeline
+#' pipeline <- gdal_pipeline(jobs = list(job1, job2))
+#' }
+#'
+#' @export
+gdal_pipeline <- function(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...) {
+  # If pipeline string is provided directly, determine type and delegate
+  if (!is.null(pipeline) && is.null(jobs)) {
+    # Default to raster if type not determinable from pipeline string
+    return(gdal_raster_pipeline(pipeline = pipeline, input = input, output = output, ...))
   }
 
-  # Validate job object
-  if (!inherits(job, 'gdal_job')) {
-    rlang::abort('job must be a gdal_job object or NULL')
+  # If jobs provided, detect type from first job
+  if (!is.null(jobs)) {
+    if (!is.list(jobs) && !is.vector(jobs)) {
+      rlang::abort('jobs must be a list or vector of gdal_job objects')
+    }
+
+    if (length(jobs) == 0) {
+      rlang::abort('jobs cannot be empty')
+    }
+
+    # Get the first job
+    first_job <- jobs[[1]]
+    if (!inherits(first_job, 'gdal_job')) {
+      rlang::abort('first element of jobs must be a gdal_job object')
+    }
+
+    # Determine pipeline type from first job's command_path
+    cmd_path <- first_job$command_path
+    if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+      cmd_path <- cmd_path[-1]
+    }
+
+    pipeline_type <- if (length(cmd_path) > 0) cmd_path[1] else "raster"
+
+    # Delegate to appropriate pipeline function
+    if (pipeline_type == "vector") {
+      return(gdal_vector_pipeline(jobs = jobs, input = input, output = output, ...))
+    } else {
+      # Default to raster for any other type
+      return(gdal_raster_pipeline(jobs = jobs, input = input, output = output, ...))
+    }
   }
 
-  # For base pipe integration, we always want to create/extend a pipeline
-  # If job has a pipeline, extend it
-  # If job has no pipeline, create one starting with this job
-  return(list(
-    should_extend = TRUE,
-    job = job,
-    merged_args = NULL
-  ))
+  # No jobs or pipeline provided
+  rlang::abort('Either jobs or pipeline must be provided')
 }
+
+
+#' @keywords internal

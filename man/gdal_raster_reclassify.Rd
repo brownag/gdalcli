@@ -5,32 +5,29 @@
 \title{reclassify: Reclassify values in a raster dataset}
 \usage{
 gdal_raster_reclassify(
-  job = NULL,
   input,
-  output,
-  mapping,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_data_type = NULL,
+  mapping,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
-
-\item{mapping}{Reclassification mappings (or specify a @\if{html}{\out{<filename>}} to point to a file containing mappings (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
+
+\item{mapping}{Reclassification mappings (or specify a @\if{html}{\out{<filename>}} to point to a file containing mappings (required)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -46,6 +43,15 @@ A \link{gdal_job} object.
 A file (or string) specifies the mapping of input pixel values or ranges to output files.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_reclassify.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster reclassify -m "0=10; [2,4]=20; 1=40" -i wbm.tif -o typ.tif
+# For help on available parameters, run: ?gdal_raster_reclassify
+job <- gdal_raster_reclassify()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

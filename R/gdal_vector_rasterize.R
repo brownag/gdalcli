@@ -8,10 +8,9 @@
 #' Burns vector geometries into a raster.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input vector dataset (Dataset path) (required)
-#' @param output Output raster dataset (Dataset path) (required)
+#' @param input Input vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
 #' @param output_format Output format
 #' @param target_aligned_pixels (target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical)
 #' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...
@@ -41,11 +40,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal vector rasterize -b 1,2,3 --burn 255,0,0 -l mask mask.shp work.tif
+#' # For help on available parameters, run: ?gdal_vector_rasterize
+#' job <- gdal_vector_rasterize()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_vector_rasterize <- function(job = NULL,
-  input,
-  output,
+gdal_vector_rasterize <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
   output_data_type = NULL,
@@ -74,8 +79,8 @@ gdal_vector_rasterize <- function(job = NULL,
   overwrite = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(target_aligned_pixels)) new_args[["target_aligned_pixels"]] <- target_aligned_pixels
   if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
@@ -102,13 +107,52 @@ gdal_vector_rasterize <- function(job = NULL,
   if (!missing(optimization)) new_args[["optimization"]] <- optimization
   if (!missing(update)) new_args[["update"]] <- update
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
-  job_input <- handle_job_input(job, new_args, c("vector", "rasterize"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector", "rasterize"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector", "rasterize"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector", "rasterize"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    target_aligned_pixels = list(min_count = 0, max_count = 1),
+    output_data_type = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    band = list(min_count = 0, max_count = 2147483647),
+    invert = list(min_count = 0, max_count = 1),
+    all_touched = list(min_count = 0, max_count = 1),
+    burn = list(min_count = 0, max_count = 2147483647),
+    attribute_name = list(min_count = 0, max_count = 1),
+    X3d = list(min_count = 0, max_count = 1),
+    add = list(min_count = 0, max_count = 1),
+    layer_name = list(min_count = 0, max_count = 1),
+    where = list(min_count = 0, max_count = 1),
+    sql = list(min_count = 0, max_count = 1),
+    dialect = list(min_count = 0, max_count = 1),
+    nodata = list(min_count = 0, max_count = 1),
+    init = list(min_count = 0, max_count = 2147483647),
+    crs = list(min_count = 0, max_count = 1),
+    transformer_option = list(min_count = 0, max_count = 2147483647),
+    extent = list(min_count = 4, max_count = 4),
+    resolution = list(min_count = 2, max_count = 2),
+    size = list(min_count = 2, max_count = 2),
+    optimization = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "rasterize"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

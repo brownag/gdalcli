@@ -4,18 +4,10 @@
 \alias{gdal_vsi_copy}
 \title{copy: Copy files located on GDAL Virtual System Interface (VSI)}
 \usage{
-gdal_vsi_copy(
-  job = NULL,
-  source,
-  destination,
-  recursive = FALSE,
-  skip_errors = FALSE
-)
+gdal_vsi_copy(source, destination, recursive = FALSE, skip_errors = FALSE)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{source}{Source file or directory name (required)}
+\item{source}{Source file or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{destination}{Destination file or directory name (required)}
 
@@ -30,6 +22,15 @@ A \link{gdal_job} object.
 \verb{gdal vsi copy} copy files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_copy.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vsi copy -r /vsis3/bucket/my_dir .
+# For help on available parameters, run: ?gdal_vsi_copy
+job <- gdal_vsi_copy()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vsi_utilities: 

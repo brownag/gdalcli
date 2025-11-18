@@ -13,6 +13,12 @@
 #' @return A [gdal_job] object.
 #' @family gdal_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: No examples available for gdal.
+#' # See GDAL documentation: https://gdal.org/programs/gdal.html
+#' job <- gdal()
+#' # gdal_job_run(job)
+#' }
 #' @export
 gdal <- function(x = NULL,
   drivers = FALSE) {
@@ -86,6 +92,10 @@ gdal <- function(x = NULL,
   merged_args <- list()
   if (!missing(drivers)) merged_args[["drivers"]] <- drivers
 
-  new_gdal_job(command_path = c("gdal"), arguments = merged_args)
+  .arg_mapping <- list(
+    drivers = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("gdal"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

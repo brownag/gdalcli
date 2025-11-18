@@ -8,10 +8,9 @@
 #' Clip a raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_clip.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster dataset (Dataset path) (required)
-#' @param output Output raster dataset (Dataset path) (required)
+#' @param input Input raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -30,11 +29,14 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' # Example
+#' # gdal raster clip --bbox=2,49,3,50 --bbox-crs=EPSG:4326 in.tif out.tif --overwrite
+#' job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE, 
+#'     bbox = c(2, 49, 3, 50), bbox_crs = "EPSG:4326")
 #' @export
-gdal_raster_clip <- function(job = NULL,
-  input,
-  output,
+gdal_raster_clip <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -52,8 +54,8 @@ gdal_raster_clip <- function(job = NULL,
   add_alpha = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
@@ -69,13 +71,41 @@ gdal_raster_clip <- function(job = NULL,
   if (!missing(only_bbox)) new_args[["only_bbox"]] <- only_bbox
   if (!missing(allow_bbox_outside_source)) new_args[["allow_bbox_outside_source"]] <- allow_bbox_outside_source
   if (!missing(add_alpha)) new_args[["add_alpha"]] <- add_alpha
-  job_input <- handle_job_input(job, new_args, c("raster", "clip"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "clip"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "clip"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "clip"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    bbox = list(min_count = 4, max_count = 4),
+    bbox_crs = list(min_count = 0, max_count = 1),
+    geometry = list(min_count = 0, max_count = 1),
+    geometry_crs = list(min_count = 0, max_count = 1),
+    like = list(min_count = 0, max_count = 1),
+    like_sql = list(min_count = 0, max_count = 1),
+    like_layer = list(min_count = 0, max_count = 1),
+    like_where = list(min_count = 0, max_count = 1),
+    only_bbox = list(min_count = 0, max_count = 1),
+    allow_bbox_outside_source = list(min_count = 0, max_count = 1),
+    add_alpha = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "clip"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

@@ -5,12 +5,11 @@
 \title{select: Select a subset of bands from a raster dataset}
 \usage{
 gdal_raster_select(
-  job = NULL,
   input,
-  output,
-  band,
   input_format = NULL,
+  output,
   output_format = NULL,
+  band,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
@@ -18,17 +17,15 @@ gdal_raster_select(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
-
-\item{band}{Band(s) (1-based index, 'mask' or 'mask:\if{html}{\out{<band>}}') (Character vector) (required). \code{1} to \code{2147483647} value(s)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
+\item{output}{Output raster dataset (Dataset path) (required)}
+
 \item{output_format}{Output format ("GDALG" allowed)}
+
+\item{band}{Band(s) (1-based index, 'mask' or 'mask:\if{html}{\out{<band>}}') (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -45,6 +42,12 @@ A \link{gdal_job} object.
 Select a subset of bands from a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_select.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster select --band 3,2,1 bgr.tif rgb.tif --overwrite
+job <- gdal_raster_select(input = "bgr.tif", output = "rgb.tif", overwrite = TRUE, 
+    band = "3,2,1")
 }
 \seealso{
 Other gdal_raster_utilities: 

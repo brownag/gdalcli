@@ -8,8 +8,7 @@
 #' Edit a raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_edit.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param dataset Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required)
+#' @param dataset Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param auxiliary Ask for an auxiliary .aux.xml file to be edited (Logical)
 #' @param crs Override CRS (without reprojection)
 #' @param bbox Bounding box as xmin,ymin,xmax,ymax. Exactly `4` value(s)
@@ -22,11 +21,11 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Example usage
+#' # Example
+#' # gdal raster edit --crs=EPSG:32632 my.tif
 #' job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
 #' @export
-gdal_raster_edit <- function(job = NULL,
-  dataset,
+gdal_raster_edit <- function(dataset,
   auxiliary = FALSE,
   crs = NULL,
   bbox = NULL,
@@ -47,13 +46,33 @@ gdal_raster_edit <- function(job = NULL,
   if (!missing(stats)) new_args[["stats"]] <- stats
   if (!missing(approx_stats)) new_args[["approx_stats"]] <- approx_stats
   if (!missing(hist)) new_args[["hist"]] <- hist
-  job_input <- handle_job_input(job, new_args, c("raster", "edit"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "edit"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(dataset) && inherits(dataset, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- dataset
+    new_args[["dataset"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "edit"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "edit"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    dataset = list(min_count = 0, max_count = 1),
+    auxiliary = list(min_count = 0, max_count = 1),
+    crs = list(min_count = 0, max_count = 1),
+    bbox = list(min_count = 4, max_count = 4),
+    nodata = list(min_count = 0, max_count = 1),
+    metadata = list(min_count = 0, max_count = 2147483647),
+    unset_metadata = list(min_count = 0, max_count = 2147483647),
+    stats = list(min_count = 0, max_count = 1),
+    approx_stats = list(min_count = 0, max_count = 1),
+    hist = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "edit"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

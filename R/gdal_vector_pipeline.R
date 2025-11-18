@@ -9,8 +9,8 @@
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
 #' @param jobs A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string
-#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input Input vector datasets. `1` to `2147483647` value(s)
+#' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
 #' @param output Output vector dataset (Dataset path)
 #' @param output_format Output format ("GDALG" allowed)
@@ -26,10 +26,14 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' # Example
+#' # gdal vector pipeline ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
+#' job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write"), 
+#'     output = "out.gpkg", overwrite = TRUE)
 #' @export
 gdal_vector_pipeline <- function(jobs = NULL,
-  input_format = NULL,
   input = NULL,
+  input_format = NULL,
   input_layer = NULL,
   output = NULL,
   output_format = NULL,
@@ -57,8 +61,8 @@ gdal_vector_pipeline <- function(jobs = NULL,
 
   # Collect arguments
   args <- list()
-  if (!missing(input_format)) args[["input_format"]] <- input_format
   if (!missing(input)) args[["input"]] <- input
+  if (!missing(input_format)) args[["input_format"]] <- input_format
   if (!missing(input_layer)) args[["input_layer"]] <- input_layer
   if (!missing(output)) args[["output"]] <- output
   if (!missing(output_format)) args[["output_format"]] <- output_format
@@ -72,6 +76,23 @@ gdal_vector_pipeline <- function(jobs = NULL,
   if (!missing(overwrite_layer)) args[["overwrite_layer"]] <- overwrite_layer
   if (!missing(append)) args[["append"]] <- append
 
-  new_gdal_job(command_path = c("vector", "pipeline"), arguments = args)
+  .arg_mapping <- list(
+    input = list(min_count = 1, max_count = 2147483647),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    input_layer = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_layer = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    pipeline = list(min_count = 0, max_count = 1),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "pipeline"), arguments = args, arg_mapping = .arg_mapping)
 }
 

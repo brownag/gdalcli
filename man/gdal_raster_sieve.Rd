@@ -5,10 +5,9 @@
 \title{sieve: Remove small polygons from a raster dataset}
 \usage{
 gdal_raster_sieve(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -20,13 +19,11 @@ gdal_raster_sieve(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -51,6 +48,11 @@ A \link{gdal_job} object.
 Remove small polygons from a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_sieve.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster sieve -b 2 -s 10 input.tif output.tif
+job <- gdal_raster_sieve(input = "input.tif", output = "output.tif")
 }
 \seealso{
 Other gdal_raster_utilities: 

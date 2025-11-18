@@ -8,12 +8,11 @@
 #' Perform raster algebra
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_calc.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster datasets (Character vector). Format: `INPUTS` (required). `1` to `2147483647` value(s)
+#' @param input Input raster datasets (Character vector). Format: `INPUTS` (required). `1` to `2147483647` value(s). Can also be a [gdal_job] object to extend a pipeline
 #' @param output Output raster dataset (Dataset path) (required)
-#' @param calc Expression(s) to evaluate (Character vector) (required). `1` to `2147483647` value(s)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...
+#' @param calc Expression(s) to evaluate (Character vector) (required). `1` to `2147483647` value(s)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
 #' @param no_check_srs Do not check consistency of input spatial reference systems (Logical)
@@ -21,15 +20,15 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
-#' # Example usage
+#' # Example
+#' # gdal raster calc -i "A=file1.tif" -i "B=file2.tif" -i "C=file3.tif" --calc "A+B+C" -o out.tif
 #' job <- gdal_raster_calc(calc = "A+B+C")
 #' @export
-gdal_raster_calc <- function(job = NULL,
-  input,
+gdal_raster_calc <- function(input,
   output,
-  calc,
   output_format = NULL,
   output_data_type = NULL,
+  calc,
   creation_option = NULL,
   overwrite = FALSE,
   no_check_srs = FALSE,
@@ -37,20 +36,39 @@ gdal_raster_calc <- function(job = NULL,
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output)) new_args[["output"]] <- output
-  if (!missing(calc)) new_args[["calc"]] <- calc
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
+  if (!missing(calc)) new_args[["calc"]] <- calc
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(overwrite)) new_args[["overwrite"]] <- overwrite
   if (!missing(no_check_srs)) new_args[["no_check_srs"]] <- no_check_srs
   if (!missing(no_check_extent)) new_args[["no_check_extent"]] <- no_check_extent
-  job_input <- handle_job_input(job, new_args, c("raster", "calc"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "calc"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "calc"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "calc"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 1, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_data_type = list(min_count = 0, max_count = 1),
+    calc = list(min_count = 1, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    no_check_srs = list(min_count = 0, max_count = 1),
+    no_check_extent = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "calc"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

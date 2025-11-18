@@ -5,7 +5,6 @@
 \title{edit: Edit a raster dataset}
 \usage{
 gdal_raster_edit(
-  job = NULL,
   dataset,
   auxiliary = FALSE,
   crs = NULL,
@@ -19,9 +18,7 @@ gdal_raster_edit(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{dataset}{Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required)}
+\item{dataset}{Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{auxiliary}{Ask for an auxiliary .aux.xml file to be edited (Logical)}
 
@@ -50,7 +47,8 @@ Edit a raster dataset.
 See \url{https://gdal.org/en/stable/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
-# Example usage
+# Example
+# gdal raster edit --crs=EPSG:32632 my.tif
 job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
 }
 \seealso{

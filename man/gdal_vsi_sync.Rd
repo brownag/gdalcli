@@ -5,7 +5,6 @@
 \title{sync: Synchronize source and target file/directory located on GDAL Virtual System...}
 \usage{
 gdal_vsi_sync(
-  job = NULL,
   source,
   destination,
   recursive = FALSE,
@@ -14,9 +13,7 @@ gdal_vsi_sync(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{source}{Source file or directory name (required)}
+\item{source}{Source file or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{destination}{Destination file or directory name (required)}
 
@@ -33,6 +30,15 @@ A \link{gdal_job} object.
 \verb{gdal vsi sync} synchronize files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vsi sync -r my_directory/ /vsis3/bucket/my_directory
+# For help on available parameters, run: ?gdal_vsi_sync
+job <- gdal_vsi_sync()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vsi_utilities: 

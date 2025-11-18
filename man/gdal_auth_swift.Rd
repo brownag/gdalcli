@@ -7,78 +7,12 @@
 gdal_auth_swift(auth_version = "3")
 }
 \arguments{
-\item{auth_version}{Character string. Either \code{"1"} for Auth V1 or \code{"3"} for
-Keystone V3. Default \code{"3"}.}
+\item{auth_version}{Character string. Either \code{"1"} for Auth V1 or \code{"3"} for Keystone V3.}
 }
 \value{
-A named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
 }
 \description{
-\code{gdal_auth_swift()} reads OpenStack Swift authentication credentials from
-environment variables and returns them as a named character vector suitable for
-use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
-
-\strong{IMPORTANT}: Credentials are read from environment variables (not from function
-arguments) to prevent accidental exposure in code repositories. This encourages
-secure credential management via \code{.Renviron} files.
-
-Supports both Auth V1 and Keystone V3 authentication.
+Reads OpenStack Swift authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Supports Auth V1 and Keystone V3. Set appropriate variables in \verb{~/.Renviron}.
 }
-\section{Setting Up Credentials (Auth V1)}{
-
-
-Add to your \verb{~/.Renviron} or project \code{.Renviron}:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{SWIFT_AUTH_V1_URL=http://swift.example.com/auth/v1.0
-SWIFT_USER=username
-SWIFT_KEY=password
-}\if{html}{\out{</div>}}
-}
-
-\section{Setting Up Credentials (Keystone V3)}{
-
-
-Add to your \verb{~/.Renviron} or project \code{.Renviron}:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{OS_AUTH_URL=http://keystone.example.com:5000/v3
-OS_USERNAME=username
-OS_PASSWORD=password
-OS_PROJECT_NAME=projectname
-OS_PROJECT_DOMAIN_NAME=default
-OS_IDENTITY_API_VERSION=3
-}\if{html}{\out{</div>}}
-}
-
-\section{Usage Example}{
-
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{# In your .Renviron file (Keystone V3):
-# OS_AUTH_URL=http://keystone.example.com:5000/v3
-# OS_USERNAME=myuser
-# OS_PASSWORD=mypass
-# OS_PROJECT_NAME=myproject
-
-# In your R script:
-auth <- gdal_auth_swift(auth_version = "3")  # Reads from environment
-
-job <- gdal_gdal_vector_convert(
-  input = gdal_vsi_url("vsiswift", container = "data", path = "file.shp"),
-  output_format = "GPKG"
-) |>
-  gdal_with_env(auth) |>
-  gdal_run()
-}\if{html}{\out{</div>}}
-}
-
-\section{Why No Function Arguments?}{
-
-
-Credentials are \strong{intentionally not accepted as function arguments} because:
-\itemize{
-\item OK Prevents accidental hardcoding of secrets in R scripts
-\item OK Reduces risk of leaking credentials via version control or logs
-\item OK Encourages secure credential management via .Renviron
-\item OK Follows security best practices (12-factor app)
-}
-}
-

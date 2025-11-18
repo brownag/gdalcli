@@ -4,12 +4,10 @@
 \alias{gdal_vsi_sozip_list}
 \title{list: List content of a ZIP file, with SOZIP related information}
 \usage{
-gdal_vsi_sozip_list(job = NULL, input)
+gdal_vsi_sozip_list(input)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input ZIP filename (required)}
+\item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -18,6 +16,15 @@ A \link{gdal_job} object.
 The gdal vsi sozip utility can be used to:
 
 See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vsi sozip create my.gpkg my.gpkg.zip
+# For help on available parameters, run: ?gdal_vsi_sozip_list
+job <- gdal_vsi_sozip_list()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vsi_utilities: 

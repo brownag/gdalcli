@@ -8,10 +8,9 @@
 #' Compute the footprint of a raster dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster dataset (Dataset path) (required)
-#' @param output Output vector dataset (Dataset path) (required)
+#' @param input Input raster dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format
 #' @param output_layer Output layer name (Default: `footprint`)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -37,11 +36,13 @@
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' # Example
+#' # gdal raster footprint my_raster.tif footprint.geojson
+#' job <- gdal_raster_footprint(input = "my_raster.tif", output = "footprint.geojson")
 #' @export
-gdal_raster_footprint <- function(job = NULL,
-  input,
-  output,
+gdal_raster_footprint <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -66,8 +67,8 @@ gdal_raster_footprint <- function(job = NULL,
   absolute_path = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -90,13 +91,48 @@ gdal_raster_footprint <- function(job = NULL,
   if (!missing(location_field)) new_args[["location_field"]] <- location_field
   if (!missing(no_location_field)) new_args[["no_location_field"]] <- no_location_field
   if (!missing(absolute_path)) new_args[["absolute_path"]] <- absolute_path
-  job_input <- handle_job_input(job, new_args, c("raster", "footprint"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster", "footprint"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster", "footprint"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster", "footprint"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_layer = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    append = list(min_count = 0, max_count = 1),
+    overwrite = list(min_count = 0, max_count = 1),
+    band = list(min_count = 0, max_count = 2147483647),
+    combine_bands = list(min_count = 0, max_count = 1),
+    overview = list(min_count = 0, max_count = 1),
+    src_nodata = list(min_count = 1, max_count = 2147483647),
+    coordinate_system = list(min_count = 0, max_count = 1),
+    dst_crs = list(min_count = 0, max_count = 1),
+    split_multipolygons = list(min_count = 0, max_count = 1),
+    convex_hull = list(min_count = 0, max_count = 1),
+    densify_distance = list(min_count = 0, max_count = 1),
+    simplify_tolerance = list(min_count = 0, max_count = 1),
+    min_ring_area = list(min_count = 0, max_count = 1),
+    max_points = list(min_count = 0, max_count = 1),
+    location_field = list(min_count = 0, max_count = 1),
+    no_location_field = list(min_count = 0, max_count = 1),
+    absolute_path = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster", "footprint"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

@@ -8,14 +8,13 @@
 #' Compute a buffer around geometries of a vector dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_buffer.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input vector datasets (required). Exactly `1` value(s)
-#' @param output Output vector dataset (Dataset path) (required)
-#' @param distance Distance to which to extend the geometry. (required)
+#' @param input Input vector datasets (required). Exactly `1` value(s). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name
+#' @param distance Distance to which to extend the geometry. (required)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -33,15 +32,17 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' # Example
+#' # gdal vector info poly.gpkg
+#' job <- gdal_vector_geom_buffer(input = "poly.gpkg")
 #' @export
-gdal_vector_geom_buffer <- function(job = NULL,
-  input,
-  output,
-  distance,
+gdal_vector_geom_buffer <- function(input,
   input_format = NULL,
   input_layer = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
+  distance,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -58,12 +59,12 @@ gdal_vector_geom_buffer <- function(job = NULL,
   side = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
-  if (!missing(distance)) new_args[["distance"]] <- distance
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
+  if (!missing(distance)) new_args[["distance"]] <- distance
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
@@ -78,13 +79,44 @@ gdal_vector_geom_buffer <- function(job = NULL,
   if (!missing(mitre_limit)) new_args[["mitre_limit"]] <- mitre_limit
   if (!missing(quadrant_segments)) new_args[["quadrant_segments"]] <- quadrant_segments
   if (!missing(side)) new_args[["side"]] <- side
-  job_input <- handle_job_input(job, new_args, c("vector", "geom", "buffer"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector", "geom", "buffer"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector", "geom", "buffer"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector", "geom", "buffer"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 1, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    input_layer = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_layer = list(min_count = 0, max_count = 1),
+    distance = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1),
+    active_layer = list(min_count = 0, max_count = 1),
+    active_geometry = list(min_count = 0, max_count = 1),
+    endcap_style = list(min_count = 0, max_count = 1),
+    join_style = list(min_count = 0, max_count = 1),
+    mitre_limit = list(min_count = 0, max_count = 1),
+    quadrant_segments = list(min_count = 0, max_count = 1),
+    side = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "geom", "buffer"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

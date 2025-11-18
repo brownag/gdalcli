@@ -4,17 +4,10 @@
 \alias{gdal_raster_overview_delete}
 \title{delete: Deleting overviews}
 \usage{
-gdal_raster_overview_delete(
-  job = NULL,
-  dataset,
-  open_option = NULL,
-  external = FALSE
-)
+gdal_raster_overview_delete(dataset, open_option = NULL, external = FALSE)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{dataset}{Dataset (to be updated in-place, unless --read-only) (Dataset path) (required)}
+\item{dataset}{Dataset (to be updated in-place, unless --read-only) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -29,7 +22,8 @@ Deleting overviews.
 See \url{https://gdal.org/en/stable/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
 }
 \examples{
-# Example usage
+# Example
+# gdal raster overview delete my.tif
 job <- gdal_raster_overview_delete(dataset = "my.tif")
 }
 \seealso{

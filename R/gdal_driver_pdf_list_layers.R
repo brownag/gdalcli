@@ -8,26 +8,42 @@
 #' List layers of a PDF dataset
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster or vector dataset (Dataset path) (required)
+#' @param input Input raster or vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param output_format Output format. Choices: json, text (Default: `json`)
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: No examples available for gdal_driver_pdf_list_layers.
+#' # See GDAL documentation: https://gdal.org/programs/gdal-driver-pdf-list-layers.html
+#' job <- gdal_driver_pdf_list_layers()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_driver_pdf_list_layers <- function(job = NULL,
-  input,
+gdal_driver_pdf_list_layers <- function(input,
   output_format = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
-  job_input <- handle_job_input(job, new_args, c("driver", "pdf", "list-layers"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("driver", "pdf", "list-layers"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("driver", "pdf", "list-layers"), new_args))
   }
 
-  new_gdal_job(command_path = c("driver", "pdf", "list-layers"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("driver", "pdf", "list-layers"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

@@ -5,13 +5,12 @@
 \title{viewshed: Compute the viewshed of a raster dataset}
 \usage{
 gdal_raster_viewshed(
-  job = NULL,
   input,
-  output,
-  position,
   input_format = NULL,
+  output,
   output_format = NULL,
   target_height = NULL,
+  position,
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
@@ -28,19 +27,17 @@ gdal_raster_viewshed(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
-
-\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>} (required). \code{2} to \code{3} value(s)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
 \item{target_height}{Height of the target above the DEM surface in the height unit of the DEM. (Default: \code{0})}
+
+\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>} (required). \code{2} to \code{3} value(s)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -75,6 +72,12 @@ A \link{gdal_job} object.
 Compute the viewshed of a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster viewshed --max-distance=500 --pos=-10147017,5108065 source.tif destination.tif
+job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 
+    max_distance = 500)
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -12,7 +12,8 @@ new_gdal_job(
   env_vars = character(),
   stream_in = NULL,
   stream_out_format = NULL,
-  pipeline = NULL
+  pipeline = NULL,
+  arg_mapping = NULL
 )
 }
 \arguments{

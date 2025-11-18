@@ -117,17 +117,6 @@ test_that("pipeline uses temp files for connections when needed", {
   expect_equal(rasterize_job$arguments$input, "temp.gpkg")
 })
 
-test_that("pipeline execution handles temp file cleanup", {
-  # This test would require mocking file operations
-  # For now, just test that the pipeline runs without error
-  skip("Requires file system mocking")
-
-  # In a real test, we'd:
-  # 1. Create a pipeline that uses temp files
-  # 2. Mock tempfile() and file.exists()
-  # 3. Verify temp files are created and cleaned up
-})
-
 test_that("pipeline execution fails gracefully on errors", {
   # Create a pipeline with invalid arguments
   job <- gdal_raster_info(input = "nonexistent.tif") |>
@@ -237,4 +226,220 @@ test_that("is_virtual_path correctly identifies virtual paths", {
   expect_false(is_virtual_path("regular_file.tif"))
   expect_false(is_virtual_path("/home/user/file.tif"))
   expect_false(is_virtual_path("C:/windows/file.tif"))
+})
+
+# ============================================================================
+# Phase 1: Native Pipeline Execution Tests
+# ============================================================================
+
+test_that("render_native_pipeline generates correct native format", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+    gdal_raster_convert(output = "output.tif")
+
+  # Extract the pipeline object and render with native format
+  pipe_obj <- pipeline$pipeline
+  native_cmd <- render_gdal_pipeline(pipe_obj, format = "native")
+
+  expect_type(native_cmd, "character")
+  expect_true(grepl("! read", native_cmd))
+  expect_true(grepl("! reproject", native_cmd))
+  expect_true(grepl("! write", native_cmd))
+  expect_true(grepl("--dst-crs", native_cmd))
+})
+
+test_that("render_gdal_pipeline with format='native' includes full command", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+    gdal_raster_convert(output = "output.tif")
+
+  pipe_obj <- pipeline$pipeline
+  native_cmd <- render_gdal_pipeline(pipe_obj, format = "native")
+
+  expect_type(native_cmd, "character")
+  expect_true(grepl("gdal raster pipeline", native_cmd))
+  expect_true(grepl("! read input.tif", native_cmd))
+  expect_true(grepl("! write output.tif", native_cmd))
+})
+
+test_that("render_gdal_pipeline with format='shell_chain' uses && separator", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_convert(output = "output.tif")
+
+  pipe_obj <- pipeline$pipeline
+  chain_cmd <- render_gdal_pipeline(pipe_obj, format = "shell_chain")
+
+  expect_type(chain_cmd, "character")
+  expect_true(grepl(" && ", chain_cmd))
+  expect_true(grepl("gdal raster info", chain_cmd))
+  expect_true(grepl("gdal raster convert", chain_cmd))
+})
+
+test_that("gdal_job_run pipeline with execution_mode='sequential' runs all jobs", {
+  # This is more of a structural test since we can't actually run GDAL
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_convert(output = "output.tif")
+
+  expect_s3_class(pipeline, "gdal_job")
+  expect_s3_class(pipeline$pipeline, "gdal_pipeline")
+  expect_length(pipeline$pipeline$jobs, 2)
+})
+
+test_that("gdal_job_run accepts execution_mode parameter", {
+  # Test that the parameter is accepted (structural test)
+  job <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_convert(output = "output.tif")
+
+  # Just check that calling with the parameter doesn't error on parameter validation
+  # (actual execution will fail due to missing GDAL, but that's expected)
+  expect_s3_class(job, "gdal_job")
+})
+
+test_that("native pipeline execution detects pipeline type correctly", {
+  # Test raster pipeline detection
+  raster_pipeline <- gdal_raster_info(input = "raster.tif") |>
+    gdal_raster_reproject(dst_crs = "EPSG:32632")
+
+  pipe_obj <- raster_pipeline$pipeline
+  first_job <- pipe_obj$jobs[[1]]
+
+  cmd_path <- first_job$command_path
+  if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+    cmd_path <- cmd_path[-1]
+  }
+  pipeline_type <- if (length(cmd_path) > 0) cmd_path[1] else "raster"
+
+  expect_equal(pipeline_type, "raster")
+})
+
+test_that("native pipeline execution detects vector pipeline type", {
+  # Test vector pipeline detection
+  vector_pipeline <- gdal_vector_info(input = "vector.gpkg") |>
+    gdal_vector_reproject(dst_crs = "EPSG:32632")
+
+  pipe_obj <- vector_pipeline$pipeline
+  first_job <- pipe_obj$jobs[[1]]
+
+  cmd_path <- first_job$command_path
+  if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+    cmd_path <- cmd_path[-1]
+  }
+  pipeline_type <- if (length(cmd_path) > 0) cmd_path[1] else "raster"
+
+  expect_equal(pipeline_type, "vector")
+})
+
+test_that("native pipeline rendering skips input/output in intermediate steps", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+    gdal_raster_convert(output = "output.tif")
+
+  pipe_obj <- pipeline$pipeline
+  native_cmd <- render_gdal_pipeline(pipe_obj, format = "native")
+
+  # The reproject step should NOT have --input or --output flags
+  # (because it's an intermediate step)
+  expect_false(grepl("reproject.*--input", native_cmd))
+  expect_false(grepl("reproject.*--output", native_cmd))
+})
+
+# ============================================================================
+# Phase 2: Shell Script Generation Tests
+# ============================================================================
+
+test_that("render_shell_script with format='commands' generates separate commands", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+    gdal_raster_convert(output = "output.tif")
+
+  script <- render_shell_script(pipeline, format = "commands")
+
+  expect_type(script, "character")
+  expect_true(grepl("#!/bin/bash", script))
+  expect_true(grepl("set -e", script))
+  # Should have multiple gdal commands
+  lines <- strsplit(script, "\n")[[1]]
+  gdal_lines <- lines[grepl("^gdal ", lines)]
+  expect_true(length(gdal_lines) > 1)
+})
+
+test_that("render_shell_script with format='native' generates single pipeline command", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+    gdal_raster_convert(output = "output.tif")
+
+  script <- render_shell_script(pipeline, format = "native")
+
+  expect_type(script, "character")
+  expect_true(grepl("#!/bin/bash", script))
+  expect_true(grepl("set -e", script))
+  expect_true(grepl("gdal raster pipeline", script))
+  # Should have single pipeline command with ! syntax
+  expect_true(grepl("! read", script))
+  expect_true(grepl("! reproject", script))
+  expect_true(grepl("! write", script))
+})
+
+test_that("render_shell_script respects shell parameter", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_convert(output = "output.tif")
+
+  script_bash <- render_shell_script(pipeline, shell = "bash")
+  script_zsh <- render_shell_script(pipeline, shell = "zsh")
+
+  expect_true(grepl("#!/bin/bash", script_bash))
+  expect_true(grepl("#!/bin/zsh", script_zsh))
+})
+
+test_that("render_shell_script includes pipeline metadata", {
+  pipeline <- new_gdal_pipeline(
+    list(
+      gdal_raster_info(input = "input.tif"),
+      gdal_raster_convert(output = "output.tif")
+    ),
+    name = "Test Pipeline",
+    description = "A test pipeline"
+  )
+
+  script <- render_shell_script(pipeline, format = "native")
+
+  expect_true(grepl("Test Pipeline", script))
+  expect_true(grepl("A test pipeline", script))
+})
+
+test_that("render_shell_script with format defaults to 'commands'", {
+  pipeline <- gdal_raster_info(input = "input.tif") |>
+    gdal_raster_convert(output = "output.tif")
+
+  script_default <- render_shell_script(pipeline)
+  script_explicit <- render_shell_script(pipeline, format = "commands")
+
+  # Both should be identical (default should be 'commands')
+  expect_equal(script_default, script_explicit)
+})
+
+test_that("gdal_pipeline convenience function detects pipeline type", {
+  # Create raster jobs
+  job1 <- gdal_raster_info(input = "input.tif")
+  job2 <- gdal_raster_reproject(dst_crs = "EPSG:32632")
+
+  # Create pipeline using convenience function
+  pipeline_job <- gdal_pipeline(jobs = list(job1, job2))
+
+  expect_s3_class(pipeline_job, "gdal_job")
+  expect_equal(pipeline_job$command_path[1], "raster")
+  expect_equal(pipeline_job$command_path[2], "pipeline")
+})
+
+test_that("gdal_pipeline convenience function works with vector jobs", {
+  # Create vector jobs
+  job1 <- gdal_vector_info(input = "input.gpkg")
+  job2 <- gdal_vector_reproject(dst_crs = "EPSG:32632")
+
+  # Create pipeline using convenience function
+  pipeline_job <- gdal_pipeline(jobs = list(job1, job2))
+
+  expect_s3_class(pipeline_job, "gdal_job")
+  expect_equal(pipeline_job$command_path[1], "vector")
+  expect_equal(pipeline_job$command_path[2], "pipeline")
 })

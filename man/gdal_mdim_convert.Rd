@@ -5,10 +5,9 @@
 \title{convert: Convert a multidimensional dataset}
 \usage{
 gdal_mdim_convert(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -22,13 +21,11 @@ gdal_mdim_convert(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster or multidimensional raster dataset (Dataset path) (required)}
-
-\item{output}{Output multidimensional raster dataset (Dataset path) (required)}
+\item{input}{Input raster or multidimensional raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output multidimensional raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -57,6 +54,11 @@ A \link{gdal_job} object.
 Convert a multidimensional dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal mdim convert in.nc out.vrt
+job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")
 }
 \seealso{
 Other gdal_mdim_utilities: 

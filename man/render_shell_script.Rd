@@ -6,16 +6,34 @@
 \alias{render_shell_script.gdal_pipeline}
 \title{Render GDAL Pipeline as Shell Script}
 \usage{
-render_shell_script(pipeline, shell = "bash", ...)
+render_shell_script(
+  pipeline,
+  shell = "bash",
+  format = c("commands", "native"),
+  ...
+)
 
-\method{render_shell_script}{gdal_job}(pipeline, shell = "bash", ...)
+\method{render_shell_script}{gdal_job}(
+  pipeline,
+  shell = "bash",
+  format = c("commands", "native"),
+  ...
+)
 
-\method{render_shell_script}{gdal_pipeline}(pipeline, shell = "bash", ...)
+\method{render_shell_script}{gdal_pipeline}(
+  pipeline,
+  shell = "bash",
+  format = c("commands", "native"),
+  ...
+)
 }
 \arguments{
 \item{pipeline}{A \code{gdal_pipeline} object.}
 
 \item{shell}{Character string specifying shell type: \code{"bash"} (default) or \code{"zsh"}.}
+
+\item{format}{Character string: \code{"commands"} (default, separate commands with &&)
+or \code{"native"} (single native GDAL pipeline command). Default is \code{"commands"}.}
 
 \item{...}{Additional arguments (unused).}
 }
@@ -23,8 +41,18 @@ render_shell_script(pipeline, shell = "bash", ...)
 A character string containing the shell script.
 }
 \description{
-Converts a \code{gdal_pipeline} into a shell script that executes the jobs sequentially.
+Converts a \code{gdal_pipeline} into a shell script that executes the jobs.
+
+By default, generates separate commands chained with \code{&&}. Set \code{format = "native"}
+to generate a shell script using a single native GDAL pipeline command instead.
+}
+\details{
+When \code{format = "commands"}, the script executes each job as a separate GDAL command,
+which is safer for hybrid workflows mixing pipeline and non-pipeline operations.
+
+When \code{format = "native"}, the script uses a single \verb{gdal raster/vector pipeline}
+command, which is more efficient as it avoids intermediate disk I/O.
 }
 \seealso{
-\code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}
+\code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}, \code{\link[=render_native_pipeline]{render_native_pipeline()}}
 }

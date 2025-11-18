@@ -1,16 +1,4 @@
 #!/usr/bin/env Rscript
-#
-# GDAL API Autogeneration Script
-#
-# This script automatically generates R function wrappers for GDAL commands
-# by parsing the output of `gdal --json-usage`. It should be run by package
-# developers when updating to a new GDAL version.
-#
-# Usage:
-#   Rscript build/generate_gdal_api.R
-#
-# This will populate the R/ directory with auto-generated wrapper functions.
-#
 
 library(processx)
 library(jsonlite)
@@ -135,31 +123,6 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
 #'   - job: The job object to extend from (if extending).
 #'   - merged_args: Arguments for creating a new job (if not extending).
 #'
-handle_job_input <- function(job, new_args, full_path) {
-  # If no job provided, create new job with merged arguments
-  if (is.null(job)) {
-    return(list(
-      should_extend = FALSE,
-      job = NULL,
-      merged_args = new_args
-    ))
-  }
-
-  # Validate job object
-  if (!inherits(job, 'gdal_job')) {
-    rlang::abort('job must be a gdal_job object or NULL')
-  }
-
-  # For base pipe integration, we always want to create/extend a pipeline
-  # If job has a pipeline, extend it
-  # If job has no pipeline, create one starting with this job
-  return(list(
-    should_extend = TRUE,
-    job = job,
-    merged_args = NULL
-  ))
-}
-
 
 #' Construct the documentation URL for a GDAL command.
 #'
@@ -672,6 +635,13 @@ parse_cli_command <- function(cli_command) {
 
   # Helper: determine if a token looks like a filename/path
   is_filename <- function(token) {
+    # Check for @filename patterns (file lists in GDAL)
+    # Type 1: @filename with extension (@input_files.txt)
+    if (grepl("^@[a-zA-Z0-9._/-]+\\.[a-zA-Z0-9]+$", token)) return(TRUE)
+    # Type 2: @filename without extension (@list)
+    if (grepl("^@[a-zA-Z0-9._-]+$", token)) return(TRUE)
+    # Type 3: In composite argument after pipe (@query.sql in "text"|@query.sql)
+    if (grepl("\\|@[a-zA-Z0-9._/-]+", token)) return(TRUE)
     # Has file extension (common patterns: .tif, .shp, .gpkg, etc.)
     if (grepl("\\.[a-zA-Z0-9]+$", token)) return(TRUE)
     # Looks like a path (has / or \ )
@@ -692,6 +662,9 @@ parse_cli_command <- function(cli_command) {
   }
 
   # Process remaining tokens as arguments and options
+  # Use a list to store options to handle repeatable flags (like -co appearing multiple times)
+  options_list <- list()  # List of list(flag_name, value) pairs
+  
   while (i <= length(tokens)) {
     token <- tokens[i]
 
@@ -703,8 +676,8 @@ parse_cli_command <- function(cli_command) {
         parts <- strsplit(token, "=", fixed = TRUE)[[1]]
         flag_name <- sub("^--?", "", parts[1])
         value <- paste(parts[-1], collapse = "=")  # Handle values with equals signs
-        result$options <- c(result$options, value)
-        names(result$options)[length(result$options)] <- flag_name
+        # Store as list entry to preserve repeats
+        options_list[[length(options_list) + 1]] <- list(name = flag_name, value = value)
         i <- i + 1
       } else {
         # Remove leading dashes
@@ -729,8 +702,8 @@ parse_cli_command <- function(cli_command) {
         if (flag_takes_value && i < length(tokens) && !grepl("^-", tokens[i + 1])) {
           # This flag likely has a value
           next_token <- tokens[i + 1]
-          result$options <- c(result$options, next_token)
-          names(result$options)[length(result$options)] <- flag_name
+          # Store as list entry to preserve repeats
+          options_list[[length(options_list) + 1]] <- list(name = flag_name, value = next_token)
           i <- i + 2
         } else {
           # This is a boolean flag
@@ -743,6 +716,17 @@ parse_cli_command <- function(cli_command) {
       result$positional_args <- c(result$positional_args, token)
       i <- i + 1
     }
+  }
+
+  # Convert options_list to named vector format for backward compatibility
+  # options_list contains all option entries including repeats; we preserve them in result$options
+  if (length(options_list) > 0) {
+    option_values <- sapply(options_list, function(x) x$value)
+    option_names <- sapply(options_list, function(x) x$name)
+    result$options <- option_values
+    names(result$options) <- option_names
+    # Also store the original list to track repeats
+    result$options_list <- options_list
   }
 
   result
@@ -883,7 +867,51 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
         # Remove existing quotes if present to avoid double-quoting
         val <- parsed_cli$positional_args[j]
         val <- gsub("^\"|\"$", "", val)  # Remove leading/trailing quotes
-        args <- c(args, sprintf('%s = "%s"', arg_name, val))
+        
+        # Check if this is a composite argument
+        param_meta <- if (!is.null(arg_mapping[[arg_name]])) arg_mapping[[arg_name]] else NULL
+        max_count <- if (!is.null(param_meta)) param_meta$max_count else 1
+        min_count <- if (!is.null(param_meta)) param_meta$min_count else 0
+        
+        # Detect composite: fixed-count with commas
+        is_composite <- (max_count == min_count && max_count > 1 && grepl(",", val))
+        
+        if (is_composite) {
+          # Parse composite argument
+          parts <- strsplit(val, ",\\s*")[[1]]
+          
+          # Determine if numeric (common for bbox, resolution, etc.)
+          is_numeric_arg <- grepl("bbox|resolution|size|extent|bounds|pixel|offset", arg_name, ignore.case = TRUE)
+          
+          if (is_numeric_arg) {
+            # Try to convert to numeric
+            numeric_parts <- suppressWarnings(as.numeric(parts))
+            if (!any(is.na(numeric_parts))) {
+              # All numeric
+              arg_value <- sprintf('c(%s)', paste(numeric_parts, collapse = ", "))
+            } else {
+              # Not all numeric - keep as strings
+              parts_quoted <- sprintf('"%s"', parts)
+              arg_value <- sprintf('c(%s)', paste(parts_quoted, collapse = ", "))
+            }
+          } else {
+            # Keep as strings
+            parts_quoted <- sprintf('"%s"', parts)
+            arg_value <- sprintf('c(%s)', paste(parts_quoted, collapse = ", "))
+          }
+          args <- c(args, sprintf('%s = %s', arg_name, arg_value))
+        } else {
+          # Single value - determine quoting based on type
+          is_numeric_val <- grepl("^-?\\d+(\\.\\d+)?$", val)
+          
+          if (is_numeric_val && !grepl("^0\\d", val)) {
+            # Numeric - don't quote
+            args <- c(args, sprintf('%s = %s', arg_name, val))
+          } else {
+            # String - quote
+            args <- c(args, sprintf('%s = "%s"', arg_name, val))
+          }
+        }
       }
     }
   }
@@ -897,8 +925,8 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
   }
 
   # Add key-value options (only if they match known function parameters)
+  # Handle repeatable options specially by grouping them into vectors
   if (length(parsed_cli$options) > 0) {
-    option_names <- names(parsed_cli$options)
     # Get valid parameter names from input_args metadata if available
     # Build mapping from GDAL flag names to R parameter names
     gdal_to_r_mapping <- character(0)
@@ -926,25 +954,113 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
       }
     }
 
-    for (i in seq_along(parsed_cli$options)) {
-      opt_name_cli <- option_names[i]  # Original CLI flag name from parsed command
-      opt_value <- parsed_cli$options[i]
-
-      # Map from CLI flag name to R parameter name
-      # First try direct mapping
-      opt_name_r <- if (opt_name_cli %in% names(gdal_to_r_mapping)) {
-        gdal_to_r_mapping[[opt_name_cli]]
-      } else {
-        # Fallback: normalize hyphens to underscores
-        gsub("-", "_", opt_name_cli)
+    # If we have the options_list (preserving repeats), use that for grouping
+    if (!is.null(parsed_cli$options_list) && length(parsed_cli$options_list) > 0) {
+      # Group options by flag name
+      option_groups <- list()
+      for (opt_entry in parsed_cli$options_list) {
+        opt_name_cli <- opt_entry$name
+        opt_value <- opt_entry$value
+        
+        # Map to R parameter name
+        opt_name_r <- if (opt_name_cli %in% names(gdal_to_r_mapping)) {
+          gdal_to_r_mapping[[opt_name_cli]]
+        } else {
+          gsub("-", "_", opt_name_cli)
+        }
+        
+        # Only include if valid parameter or no metadata
+        if (length(valid_params) == 0 || opt_name_r %in% valid_params) {
+          # Group by parameter name
+          if (!(opt_name_r %in% names(option_groups))) {
+            option_groups[[opt_name_r]] <- list()
+          }
+          
+          # Remove existing quotes
+          opt_value <- gsub("^\"|\"$", "", opt_value)
+          option_groups[[opt_name_r]] <- c(option_groups[[opt_name_r]], opt_value)
+        }
       }
+      
+      # Convert groups to arguments, handling both repeatable and composite arguments
+      for (opt_name_r in names(option_groups)) {
+        values <- option_groups[[opt_name_r]]
+        
+        # Check if this is a composite argument (fixed-count comma-separated values)
+        # by looking at arg_mapping
+        param_meta <- if (!is.null(arg_mapping[[opt_name_r]])) arg_mapping[[opt_name_r]] else NULL
+        max_count <- if (!is.null(param_meta)) param_meta$max_count else 1
+        min_count <- if (!is.null(param_meta)) param_meta$min_count else 0
+        
+        # Detect composite argument: single value with commas and fixed max_count > 1
+        is_composite <- (length(values) == 1 && max_count == min_count && max_count > 1 && grepl(",", values[[1]]))
+        
+        if (is_composite) {
+          # Parse composite argument: "x1,x2,x3,x4" -> c(x1, x2, x3, x4)
+          # Determine if numeric or character based on parameter name patterns
+          parts <- strsplit(values[[1]], ",\\s*")[[1]]
+          
+          # Try to detect if numeric (common for bbox, resolution, etc.)
+          is_numeric_arg <- grepl("bbox|resolution|size|extent|bounds|pixel|offset", opt_name_r, ignore.case = TRUE)
+          
+          if (is_numeric_arg) {
+            # Try to convert to numeric
+            numeric_parts <- suppressWarnings(as.numeric(parts))
+            if (!any(is.na(numeric_parts))) {
+              # All numeric - create numeric vector
+              arg_value <- sprintf('c(%s)', paste(numeric_parts, collapse = ", "))
+            } else {
+              # Not all numeric - keep as strings
+              parts_quoted <- sprintf('"%s"', parts)
+              arg_value <- sprintf('c(%s)', paste(parts_quoted, collapse = ", "))
+            }
+          } else {
+            # Keep as character strings
+            parts_quoted <- sprintf('"%s"', parts)
+            arg_value <- sprintf('c(%s)', paste(parts_quoted, collapse = ", "))
+          }
+          args <- c(args, sprintf('%s = %s', opt_name_r, arg_value))
+        }
+        # Check for repeatable options (multiple values for same parameter)
+        else if (length(values) > 1) {
+          # Multiple values - create c() vector (repeatable option)
+          values_quoted <- sprintf('"%s"', values)
+          arg_value <- sprintf('c(%s)', paste(values_quoted, collapse = ", "))
+          args <- c(args, sprintf('%s = %s', opt_name_r, arg_value))
+        } 
+        # Single value - quote if string, otherwise as-is
+        else if (length(values) == 1) {
+          # Check if value looks numeric
+          val <- values[[1]]
+          is_numeric_val <- grepl("^-?\\d+(\\.\\d+)?$", val)
+          
+          if (is_numeric_val && !grepl("^0\\d", val)) {
+            # Numeric value - don't quote
+            args <- c(args, sprintf('%s = %s', opt_name_r, val))
+          } else {
+            # String value - quote
+            args <- c(args, sprintf('%s = "%s"', opt_name_r, val))
+          }
+        }
+      }
+    } else {
+      # Fallback to old behavior if options_list not available
+      option_names <- names(parsed_cli$options)
+      for (i in seq_along(parsed_cli$options)) {
+        opt_name_cli <- option_names[i]
+        opt_value <- parsed_cli$options[i]
 
-      # Remove existing quotes if present to avoid double-quoting
-      opt_value <- gsub("^\"|\"$", "", opt_value)  # Remove leading/trailing quotes
+        opt_name_r <- if (opt_name_cli %in% names(gdal_to_r_mapping)) {
+          gdal_to_r_mapping[[opt_name_cli]]
+        } else {
+          gsub("-", "_", opt_name_cli)
+        }
 
-      # Only include if it's a valid parameter or we don't have metadata
-      if (length(valid_params) == 0 || opt_name_r %in% valid_params) {
-        args <- c(args, sprintf('%s = "%s"', opt_name_r, opt_value))
+        opt_value <- gsub("^\"|\"$", "", opt_value)
+
+        if (length(valid_params) == 0 || opt_name_r %in% valid_params) {
+          args <- c(args, sprintf('%s = "%s"', opt_name_r, opt_value))
+        }
       }
     }
   }
@@ -1438,8 +1554,11 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE) {
     # For base gdal function, support shortcuts: gdal(filename), gdal(pipeline), gdal(command_vector)
     args_signature <- paste(c("x = NULL", r_args$signature), collapse = ",\n  ")
   } else {
-    # Add job parameter first for pipe support
-    args_signature <- paste(c("job = NULL", r_args$signature), collapse = ",\n  ")
+    # For regular functions, the first positional argument accepts either:
+    # - A gdal_job object (piped from previous operation)
+    # - The actual data (e.g., input filename, dataset)
+    # Detection happens in the function body via inherits(first_arg, "gdal_job")
+    args_signature <- paste(r_args$signature, collapse = ",\n  ")
   }
 
   # Attempt to fetch enriched documentation
@@ -1521,18 +1640,55 @@ generate_r_arguments <- function(input_args, input_output_args) {
   option_params <- list()    # everything else
   
   # Classify all parameters from both lists
-  for (param in c(io_list, in_list)) {
+  # Parameters from input_output_arguments are ALWAYS positional by definition
+  for (i in seq_along(io_list)) {
+    param <- io_list[[i]]
     param_name <- if (is.null(param$name)) "" else as.character(param$name)
     
+    # Parameters from input_output_arguments are positional
+    # Mark them with a special flag
+    param$.from_io_args <- TRUE
+    param$.is_positional <- TRUE
+    
     # Classify based on name
-    is_input <- grepl("^input|^source|^dataset$", param_name, ignore.case = TRUE) && !grepl("output", param_name, ignore.case = TRUE)
-    is_output <- grepl("^output|^destination|^target", param_name, ignore.case = TRUE) && !grepl("input", param_name, ignore.case = TRUE)
+    # Match exactly: "input", "inputs", "source", "dataset" (no suffixes like "_format")
+    is_input <- grepl("^(input|inputs|source|dataset)$", param_name, ignore.case = TRUE) && !grepl("output", param_name, ignore.case = TRUE)
+    is_output <- grepl("^(output|destination|target)$", param_name, ignore.case = TRUE) && !grepl("input", param_name, ignore.case = TRUE)
     
     if (is_input) {
       input_params[[length(input_params) + 1]] <- param
     } else if (is_output) {
       output_params[[length(output_params) + 1]] <- param
     } else {
+      option_params[[length(option_params) + 1]] <- param
+    }
+  }
+  
+  # Process parameters from input_arguments
+  for (i in seq_along(in_list)) {
+    param <- in_list[[i]]
+    param_name <- if (is.null(param$name)) "" else as.character(param$name)
+    
+    # Parameters from input_arguments are NOT positional by default,
+    # but those matching input/output patterns will be reclassified and marked positional
+    param$.from_io_args <- FALSE
+    
+    # Classify based on name
+    # Match exactly: "input", "inputs", "source", "dataset" (no suffixes like "_format")
+    is_input <- grepl("^(input|inputs|source|dataset)$", param_name, ignore.case = TRUE) && !grepl("output", param_name, ignore.case = TRUE)
+    is_output <- grepl("^(output|destination|target)$", param_name, ignore.case = TRUE) && !grepl("input", param_name, ignore.case = TRUE)
+    
+    if (is_input) {
+      # Parameters classified as "input" are positional (will come first in sig)
+      param$.is_positional <- TRUE
+      input_params[[length(input_params) + 1]] <- param
+    } else if (is_output) {
+      # Parameters classified as "output" are positional
+      param$.is_positional <- TRUE
+      output_params[[length(output_params) + 1]] <- param
+    } else {
+      # Parameters that don't match input/output patterns are optional flags
+      param$.is_positional <- FALSE
       option_params[[length(option_params) + 1]] <- param
     }
   }
@@ -1552,22 +1708,40 @@ generate_r_arguments <- function(input_args, input_output_args) {
     if (is.na(is_req)) FALSE else is_req
   })
   
-  # Check if we have optional args followed by required args
-  has_mixed <- FALSE
-  for (i in 2:length(required_status)) {
-    if (!isTRUE(required_status[i-1]) && isTRUE(required_status[i])) {
-      has_mixed <- TRUE
-      break
-    }
-  }
+  # Strategy: We want inputs before outputs ALWAYS, even if output is required
+  # Because the semantic meaning (input→process→output) is more important than
+  # the technical requirement of having required params first in R signatures.
+  # We'll handle this by making optional inputs still come before required outputs.
   
-  # If mixed ordering detected, reorder to put required first, preserving relative order within each group
-  if (has_mixed) {
+  # Find the positions of input/output params in args_list
+  arg_names_list <- sapply(args_list, function(p) 
+    if(is.null(p$name)) "" else as.character(p$name))
+  
+  input_indices <- which(grepl("^(input|inputs|source|dataset)($|[_-])", arg_names_list, ignore.case = TRUE) & !grepl("output", arg_names_list, ignore.case = TRUE))
+  output_indices <- which(grepl("^(output|destination|target)($|[_-])", arg_names_list, ignore.case = TRUE) & !grepl("input", arg_names_list, ignore.case = TRUE))
+  
+  if (length(input_indices) > 0 && length(output_indices) > 0) {
+    # We have both inputs and outputs - ensure inputs come first
+    # Get indices of non-input, non-output params
+    other_indices <- setdiff(seq_along(args_list), c(input_indices, output_indices))
+    
+    # Reorder required/optional within each group to maintain R signature validity
+    input_required <- input_indices[required_status[input_indices]]
+    input_optional <- input_indices[!required_status[input_indices]]
+    output_required <- output_indices[required_status[output_indices]]
+    output_optional <- output_indices[!required_status[output_indices]]
+    other_required <- other_indices[required_status[other_indices]]
+    other_optional <- other_indices[!required_status[other_indices]]
+    
+    # Final order: input_required, input_optional, output_required, output_optional, other_required, other_optional
+    ordered_args_indices <- c(input_required, input_optional, output_required, output_optional, other_required, other_optional)
+  } else if (any(required_status)) {
+    # No special input/output handling needed, just ensure required before optional
     required_indices <- which(required_status)
     optional_indices <- which(!required_status)
     ordered_args_indices <- c(required_indices, optional_indices)
   } else {
-    # Use current order (which now has inputs before outputs)
+    # All optional or all required
     ordered_args_indices <- seq_along(args_list)
   }
 
@@ -1595,6 +1769,11 @@ generate_r_arguments <- function(input_args, input_output_args) {
 
     # Determine R type and default
     is_required <- ifelse(is.null(arg$required), FALSE, arg$required)
+    
+    # Detect if this is a positional parameter
+    # Parameters from input_output_arguments are always positional
+    is_positional <- ifelse(is.null(arg$.is_positional), FALSE, arg$.is_positional)
+    
     if (is_required) {
       # Required argument (no default)
       default_str <- ""
@@ -1621,7 +1800,8 @@ generate_r_arguments <- function(input_args, input_output_args) {
       type = arg_type,
       min_count = min_count,
       max_count = max_count,
-      default = default_val
+      default = default_val,
+      is_positional = is_positional
     )
   }
 
@@ -1821,14 +2001,14 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     doc <- paste0(doc, sprintf("#' @description\n%s\n#' \n#' See \\url{%s} for detailed GDAL documentation.\n", formatted_desc, doc_url))
   }
 
-  # For pipeline functions, add jobs parameter first
+  # For pipeline functions, add jobs parameter documentation
   if (is_pipeline) {
     doc <- paste0(doc, "#' @param jobs A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string\n")
   } else if (is_base_gdal) {
     doc <- paste0(doc, "#' @param x A filename (for 'gdal info'), a pipeline string (for 'gdal pipeline'), a command vector, or a gdal_job object from a piped operation\n")
-  } else {
-    doc <- paste0(doc, "#' @param job A gdal_job object from a piped operation, or NULL\n")
   }
+  # Note: For regular functions, the first positional argument is NOT documented separately
+  # because it's either a gdal_job (detected via inherits()) or the actual data argument
 
   # Document each parameter with rich metadata from JSON
   if (!is.null(arg_names) && length(arg_names) > 0) {
@@ -1957,6 +2137,14 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
         param_desc <- paste0(param_desc, " (ignored if jobs is provided)")
       }
 
+      # For the first positional argument (data arg), add note about gdal_job piping
+      if (!is_pipeline && !is_base_gdal && arg_names[1] == arg_name) {
+        param_desc <- paste0(
+          param_desc,
+          ". Can also be a [gdal_job] object to extend a pipeline"
+        )
+      }
+
       doc <- paste0(doc, sprintf("#' @param %s %s\n", arg_name, param_desc))
     }
   }
@@ -1992,9 +2180,15 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     for (i in seq_len(min(1, length(enriched_docs$examples)))) {
       cli_example <- trimws(enriched_docs$examples[i])
     if (nzchar(cli_example)) {
+      # Store original for fallback/error messages
+      cli_example_original <- cli_example
+      
       # Clean up the CLI example: remove line continuations (backslash-newline patterns)
-      # This handles multi-line examples from the documentation
-      cli_example <- gsub("\\s*\\\\\\s*\n\\s*", " ", cli_example)  # Replace "\ \n   " with space
+      # Handle various formats: "\ \n", "\\\n", "  \  \n  ", etc.
+      # Use perl=TRUE for extended regex patterns
+      cli_example <- gsub("\\s*\\\\\\s*$", " ", cli_example, perl = TRUE)  # Line-ending backslash
+      cli_example <- gsub("\\\\\\s*\n\\s*", " ", cli_example)  # Backslash-newline (any spaces)
+      cli_example <- gsub("\n\\s+", " ", cli_example)  # Newlines with leading whitespace
       cli_example <- gsub("\\s+", " ", cli_example)  # Normalize multiple spaces to single space
       cli_example <- trimws(cli_example)
       
@@ -2023,7 +2217,27 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
 
         # Add a comment describing what the example does
         if (examples_added == 0) {
-          doc <- paste0(doc, "#' # Example usage\n")
+          # Include source URL and GDAL command in the comment instead of generic "Example usage"
+          example_comment <- "#' # Example"
+          
+          # Add source URL if available
+          if (!is.null(enriched_docs) && !is.null(enriched_docs$url) && nzchar(enriched_docs$url)) {
+            example_comment <- paste0(example_comment, " (from ", enriched_docs$url, ")")
+          }
+          
+          # Add original GDAL command (already includes "gdal" or subcommand)
+          if (!is.null(cli_example_original) && nzchar(cli_example_original)) {
+            # Check if cli_example_original starts with "gdal" or a subcommand
+            cli_display <- if (grepl("^gdal ", cli_example_original)) {
+              cli_example_original
+            } else {
+              paste0("gdal ", cli_example_original)
+            }
+            example_comment <- paste0(example_comment, "\n#' # ", cli_display)
+          }
+          
+          example_comment <- paste0(example_comment, "\n")
+          doc <- paste0(doc, example_comment)
         }
         # Add the R code (with roxygen prefix on each line if multi-line)
         # Split by newlines and add #' prefix to each
@@ -2036,11 +2250,22 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     }
   }
 
-  # If we didn't get any valid examples, that's okay - commands may not have examples yet
-  if (has_examples && examples_added == 0) {
-    if (verbose) {
-      cat(sprintf("  [WARN] Failed to convert any examples for %s. Examples from GDAL docs may be in unsupported format.\n", func_name))
+  # If we didn't add any examples, add an informative placeholder
+  if (examples_added == 0) {
+    doc <- paste0(doc, "#' \\dontrun{\n")
+    if (exists("cli_example_original") && nzchar(cli_example_original)) {
+      doc <- paste0(doc, sprintf("#' # TODO: Convert this GDAL CLI example to R parameters:\n"))
+      doc <- paste0(doc, sprintf("#' # Original: %s\n", cli_example_original))
+      doc <- paste0(doc, sprintf("#' # For help on available parameters, run: ?%s\n", func_name))
+      doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
+    } else {
+      doc <- paste0(doc, sprintf("#' # TODO: No examples available for %s.\n", func_name))
+      doc <- paste0(doc, sprintf("#' # See GDAL documentation: https://gdal.org/programs/%s.html\n", 
+                                  tolower(gsub("_", "-", func_name))))
+      doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
     }
+    doc <- paste0(doc, "#' # gdal_job_run(job)\n")
+    doc <- paste0(doc, "#' }\n")
   }
 
   doc
@@ -2202,11 +2427,15 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
       }
     }
   } else {
-    # Handle job input for pipeline extension or argument merging
+    # Handle first argument: can be either a gdal_job (piped) or actual data (fresh call)
+    # Check if first argument exists and is a gdal_job
+    first_arg_name <- if (length(arg_names) > 0) arg_names[1] else NULL
+    
     body_lines <- c(body_lines, "  new_args <- list()")
 
     if (length(arg_names) > 0) {
-      for (arg_name in arg_names) {
+      for (i in seq_along(arg_names)) {
+        arg_name <- arg_names[i]
         body_lines <- c(
           body_lines,
           sprintf("  if (!missing(%s)) new_args[[%s]] <- %s", arg_name, deparse(arg_name), arg_name)
@@ -2214,25 +2443,60 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
       }
     }
 
-    body_lines <- c(body_lines, sprintf("  job_input <- handle_job_input(job, new_args, %s)", path_json))
-    body_lines <- c(body_lines, "  if (job_input$should_extend) {")
-    body_lines <- c(body_lines, sprintf("    return(extend_gdal_pipeline(job_input$job, %s, new_args))", path_json))
-    body_lines <- c(body_lines, "  } else {")
-    body_lines <- c(body_lines, sprintf("    merged_args <- job_input$merged_args", path_json))
-    body_lines <- c(body_lines, "  }")
+    # Handle the new pattern: first argument can be gdal_job OR data
+    if (!is.null(first_arg_name)) {
+      body_lines <- c(body_lines, "")
+      body_lines <- c(body_lines, sprintf("  # Check if first argument is a piped gdal_job or actual data"))
+      body_lines <- c(body_lines, sprintf("  if (!missing(%s) && inherits(%s, 'gdal_job')) {", first_arg_name, first_arg_name))
+      body_lines <- c(body_lines, sprintf("    # First argument is a piped job - extend the pipeline"))
+      body_lines <- c(body_lines, sprintf("    # Remove first_arg from new_args since it's the job, not data"))
+      body_lines <- c(body_lines, sprintf("    piped_job <- %s", first_arg_name))
+      body_lines <- c(body_lines, sprintf("    new_args[[%s]] <- NULL", deparse(first_arg_name)))
+      body_lines <- c(body_lines, sprintf("    new_args <- Filter(Negate(is.null), new_args)"))
+      body_lines <- c(body_lines, sprintf("    return(extend_gdal_pipeline(piped_job, %s, new_args))", path_json))
+      body_lines <- c(body_lines, "  }")
+      body_lines <- c(body_lines, "")
+      body_lines <- c(body_lines, sprintf("  # First argument is actual data or missing - create new job"))
+      body_lines <- c(body_lines, sprintf("  merged_args <- new_args"))
+    } else {
+      # No arguments at all
+      body_lines <- c(body_lines, "  merged_args <- new_args")
+    }
   }
 
   # Create gdal_job object
   body_lines <- c(body_lines, "")
+  
+  # Create arg_mapping list as a literal R list (embedded in the function)
+  # This allows .serialize_gdal_job to use metadata about composite arguments
+  if (length(arg_mapping) > 0) {
+    mapping_lines <- "  .arg_mapping <- list("
+    for (i in seq_along(arg_mapping)) {
+      arg_name <- names(arg_mapping)[i]
+      meta <- arg_mapping[[i]]
+      min_count <- if (is.null(meta$min_count)) "0" else meta$min_count
+      max_count <- if (is.null(meta$max_count)) "1" else meta$max_count
+      mapping_lines <- c(mapping_lines, sprintf("    %s = list(min_count = %s, max_count = %s),", arg_name, min_count, max_count))
+    }
+    # Remove trailing comma from last entry
+    mapping_lines[length(mapping_lines)] <- sub(",$", "", mapping_lines[length(mapping_lines)])
+    mapping_lines <- c(mapping_lines, "  )")
+    body_lines <- c(body_lines, mapping_lines)
+    body_lines <- c(body_lines, "")
+  } else {
+    body_lines <- c(body_lines, "  .arg_mapping <- NULL")
+    body_lines <- c(body_lines, "")
+  }
+  
   if (is_pipeline) {
     body_lines <- c(
       body_lines,
-      sprintf("  new_gdal_job(command_path = %s, arguments = args)", path_json)
+      sprintf("  new_gdal_job(command_path = %s, arguments = args, arg_mapping = .arg_mapping)", path_json)
     )
   } else {
     body_lines <- c(
       body_lines,
-      sprintf("  new_gdal_job(command_path = %s, arguments = merged_args)", path_json)
+      sprintf("  new_gdal_job(command_path = %s, arguments = merged_args, arg_mapping = .arg_mapping)", path_json)
     )
   }
 

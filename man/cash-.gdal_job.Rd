@@ -28,7 +28,5 @@ args <- job$arguments
 # Use convenience methods (creates new job, doesn't execute)
 job_with_co <- job$with_co("COMPRESS=LZW")
 
-# Execute the job
-# job_with_co$run()  # Uncomment to actually run
 
 }

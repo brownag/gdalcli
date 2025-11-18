@@ -4,12 +4,10 @@
 \alias{gdal_driver_openfilegdb_repack}
 \title{repack: Repack a FileGeoDatabase dataset}
 \usage{
-gdal_driver_openfilegdb_repack(job = NULL, dataset)
+gdal_driver_openfilegdb_repack(dataset)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{dataset}{FileGeoDatabase dataset (Dataset path) (required)}
+\item{dataset}{FileGeoDatabase dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -20,7 +18,8 @@ Repack a FileGeoDatabase dataset
 See \url{https://gdal.org/en/stable/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
 }
 \examples{
-# Example usage
+# Example
+# gdal driver openfilegdb repack my.gdb
 job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
 }
 \seealso{

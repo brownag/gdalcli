@@ -5,10 +5,9 @@
 \title{tile: Generate tiles in separate files from a raster dataset}
 \usage{
 gdal_raster_tile(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -45,13 +44,11 @@ gdal_raster_tile(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output directory (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output directory (required)}
 
 \item{output_format}{Output format (Default: \code{PNG})}
 
@@ -126,6 +123,12 @@ A \link{gdal_job} object.
 Generate tiles in separate files from a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_tile.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster tile --min-zoom=2 --max-zoom=5 input.tif output_folder
+job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom = 2, 
+    max_zoom = 5)
 }
 \seealso{
 Other gdal_raster_utilities: 

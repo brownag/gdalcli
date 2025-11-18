@@ -5,10 +5,9 @@
 \title{fill-nodata: Fill nodata raster regions by interpolation from edges}
 \usage{
 gdal_raster_fill_nodata(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   creation_option = NULL,
   overwrite = FALSE,
@@ -20,13 +19,11 @@ gdal_raster_fill_nodata(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -52,6 +49,11 @@ A \link{gdal_job} object.
 from valid pixels around the edges of the area.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster fill-nodata -b 2 --max-distance 50 --smoothing-iterations 3 \
+job <- gdal_raster_fill_nodata(max_distance = 50, smoothing_iterations = 3)
 }
 \seealso{
 Other gdal_raster_utilities: 

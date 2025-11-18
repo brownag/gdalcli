@@ -8,17 +8,22 @@
 #' `gdal vsi copy` copy files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_copy.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param source Source file or directory name (required)
+#' @param source Source file or directory name (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param destination Destination file or directory name (required)
 #' @param recursive Copy subdirectories recursively (Logical)
 #' @param skip_errors Skip errors (Logical)
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal vsi copy -r /vsis3/bucket/my_dir .
+#' # For help on available parameters, run: ?gdal_vsi_copy
+#' job <- gdal_vsi_copy()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_vsi_copy <- function(job = NULL,
-  source,
+gdal_vsi_copy <- function(source,
   destination,
   recursive = FALSE,
   skip_errors = FALSE) {
@@ -27,13 +32,27 @@ gdal_vsi_copy <- function(job = NULL,
   if (!missing(destination)) new_args[["destination"]] <- destination
   if (!missing(recursive)) new_args[["recursive"]] <- recursive
   if (!missing(skip_errors)) new_args[["skip_errors"]] <- skip_errors
-  job_input <- handle_job_input(job, new_args, c("vsi", "copy"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vsi", "copy"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(source) && inherits(source, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- source
+    new_args[["source"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vsi", "copy"), new_args))
   }
 
-  new_gdal_job(command_path = c("vsi", "copy"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    source = list(min_count = 0, max_count = 1),
+    destination = list(min_count = 0, max_count = 1),
+    recursive = list(min_count = 0, max_count = 1),
+    skip_errors = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vsi", "copy"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

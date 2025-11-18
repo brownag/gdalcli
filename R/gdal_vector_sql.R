@@ -8,13 +8,12 @@
 #' Apply SQL statement(s) to a dataset.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_sql.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input vector datasets (required). Exactly `1` value(s)
-#' @param output Output vector dataset (Dataset path) (required)
-#' @param sql SQL statement(s) (Character vector). Format: `<statement>|@<filename>` (required). `0` to `2147483647` value(s)
+#' @param input Input vector datasets (required). Exactly `1` value(s). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Output layer name(s) (Character vector). `0` to `2147483647` value(s)
+#' @param sql SQL statement(s) (Character vector). Format: `<statement>|@<filename>` (required). `0` to `2147483647` value(s)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
 #' @param layer_creation_option Layer creation option (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s)
@@ -26,14 +25,20 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal vector sql in.gpkg out.gpkg --output-layer country_sorted_by_pop --sql="SELECT * FROM country ORDER BY pop DESC"
+#' # For help on available parameters, run: ?gdal_vector_sql
+#' job <- gdal_vector_sql()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_vector_sql <- function(job = NULL,
-  input,
-  output,
-  sql,
+gdal_vector_sql <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
+  sql,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -44,11 +49,11 @@ gdal_vector_sql <- function(job = NULL,
   dialect = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
-  if (!missing(sql)) new_args[["sql"]] <- sql
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
+  if (!missing(sql)) new_args[["sql"]] <- sql
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
   if (!missing(creation_option)) new_args[["creation_option"]] <- creation_option
   if (!missing(layer_creation_option)) new_args[["layer_creation_option"]] <- layer_creation_option
@@ -57,13 +62,37 @@ gdal_vector_sql <- function(job = NULL,
   if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
   if (!missing(append)) new_args[["append"]] <- append
   if (!missing(dialect)) new_args[["dialect"]] <- dialect
-  job_input <- handle_job_input(job, new_args, c("vector", "sql"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector", "sql"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector", "sql"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector", "sql"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 1, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_layer = list(min_count = 0, max_count = 2147483647),
+    sql = list(min_count = 0, max_count = 2147483647),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1),
+    dialect = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "sql"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

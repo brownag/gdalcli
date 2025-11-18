@@ -10,8 +10,6 @@ set_name(pipeline, name)
 
 \method{set_name}{gdal_pipeline}(pipeline, name)
 
-\method{set_name}{gdal_pipeline}(pipeline, name)
-
 \method{set_name}{gdal_job}(pipeline, name)
 }
 \arguments{

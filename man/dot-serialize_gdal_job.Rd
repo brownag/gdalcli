@@ -22,6 +22,7 @@ This function handles:
 \item Converting argument names from snake_case to kebab-case (e.g., \code{dst_crs} → \code{dst-crs})
 \item Flattening vector arguments (e.g., \code{c("COL1=val1", "COL2=val2")} for a repeatable arg)
 \item Converting logical arguments to their flag equivalents
+\item Converting composite arguments (e.g., \code{c(2, 49, 3, 50)} for bbox → \verb{--bbox=2,49,3,50})
 }
 }
 \keyword{internal}

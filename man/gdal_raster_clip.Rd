@@ -5,10 +5,9 @@
 \title{clip: Clip a raster dataset}
 \usage{
 gdal_raster_clip(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -27,13 +26,11 @@ gdal_raster_clip(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input raster dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
@@ -72,6 +69,12 @@ A \link{gdal_job} object.
 Clip a raster dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster_clip.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal raster clip --bbox=2,49,3,50 --bbox-crs=EPSG:4326 in.tif out.tif --overwrite
+job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE, 
+    bbox = c(2, 49, 3, 50), bbox_crs = "EPSG:4326")
 }
 \seealso{
 Other gdal_raster_utilities: 

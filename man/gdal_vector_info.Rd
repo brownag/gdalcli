@@ -5,7 +5,6 @@
 \title{info: Return information on a vector dataset}
 \usage{
 gdal_vector_info(
-  job = NULL,
   input,
   input_format = NULL,
   output_format = NULL,
@@ -20,9 +19,7 @@ gdal_vector_info(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector dataset (Dataset path) (required)}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -54,7 +51,8 @@ vector dataset.
 See \url{https://gdal.org/en/stable/programs/gdal_vector_info.html} for detailed GDAL documentation.
 }
 \examples{
-# Example usage
+# Example
+# gdal vector info --format=text --features poly.gpkg
 job <- gdal_vector_info(features = "poly.gpkg")
 }
 \seealso{

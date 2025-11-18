@@ -8,25 +8,35 @@
 #' Repack a FileGeoDatabase dataset
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param dataset FileGeoDatabase dataset (Dataset path) (required)
+#' @param dataset FileGeoDatabase dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
-#' # Example usage
+#' # Example
+#' # gdal driver openfilegdb repack my.gdb
 #' job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
 #' @export
-gdal_driver_openfilegdb_repack <- function(job = NULL,
-  dataset) {
+gdal_driver_openfilegdb_repack <- function(dataset) {
   new_args <- list()
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
-  job_input <- handle_job_input(job, new_args, c("driver", "openfilegdb", "repack"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("driver", "openfilegdb", "repack"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(dataset) && inherits(dataset, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- dataset
+    new_args[["dataset"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("driver", "openfilegdb", "repack"), new_args))
   }
 
-  new_gdal_job(command_path = c("driver", "openfilegdb", "repack"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    dataset = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("driver", "openfilegdb", "repack"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

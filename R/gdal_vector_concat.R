@@ -8,13 +8,12 @@
 #' Concatenate vector datasets.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_concat.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input vector datasets (required). `1` to `2147483647` value(s)
-#' @param output Output vector dataset (Dataset path) (required)
+#' @param input Input vector datasets (required). `1` to `2147483647` value(s). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
 #' @param source_layer_field_name Name of the new field to add to contain identificoncation of the source layer, with value determined from 'source-layer-field-content'
 #' @param source_layer_field_content A string, possibly using \{AUTO_NAME\}, \{DS_NAME\}, \{DS_BASENAME\}, \{DS_INDEX\}, \{LAYER_NAME\}, \{LAYER_INDEX\}
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format ("GDALG" allowed)
 #' @param output_layer Name of the output vector layer (single mode), or template to name the output vector layers (stack mode)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -31,14 +30,16 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' # Example
+#' # gdal vector concat --mode=stack *.shp out.gpkg
+#' job <- gdal_vector_concat(input = "*.shp", output = "out.gpkg", mode = "stack")
 #' @export
-gdal_vector_concat <- function(job = NULL,
-  input,
-  output,
+gdal_vector_concat <- function(input,
   input_format = NULL,
   input_layer = NULL,
   source_layer_field_name = NULL,
   source_layer_field_content = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -54,11 +55,11 @@ gdal_vector_concat <- function(job = NULL,
   dst_crs = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
   if (!missing(source_layer_field_name)) new_args[["source_layer_field_name"]] <- source_layer_field_name
   if (!missing(source_layer_field_content)) new_args[["source_layer_field_content"]] <- source_layer_field_content
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -72,13 +73,42 @@ gdal_vector_concat <- function(job = NULL,
   if (!missing(field_strategy)) new_args[["field_strategy"]] <- field_strategy
   if (!missing(src_crs)) new_args[["src_crs"]] <- src_crs
   if (!missing(dst_crs)) new_args[["dst_crs"]] <- dst_crs
-  job_input <- handle_job_input(job, new_args, c("vector", "concat"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector", "concat"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector", "concat"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector", "concat"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 1, max_count = 2147483647),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    input_layer = list(min_count = 0, max_count = 2147483647),
+    source_layer_field_name = list(min_count = 0, max_count = 1),
+    source_layer_field_content = list(min_count = 0, max_count = 1),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_layer = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1),
+    mode = list(min_count = 0, max_count = 1),
+    field_strategy = list(min_count = 0, max_count = 1),
+    src_crs = list(min_count = 0, max_count = 1),
+    dst_crs = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "concat"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

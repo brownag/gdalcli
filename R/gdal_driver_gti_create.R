@@ -8,8 +8,7 @@
 #' Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_driver_gti_create.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input raster datasets (required). `0` to `2147483647` value(s)
+#' @param input Input raster datasets (required). `0` to `2147483647` value(s). Can also be a [gdal_job] object to extend a pipeline
 #' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format
 #' @param output_data_type Datatype of the virtual mosaic. Choices: Byte, Int8, UInt16, Int16, UInt32, ...
@@ -39,9 +38,12 @@
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
+#' # Example
+#' # gdal driver gti create --ot Byte --resolution=60,60 --band-count=3 --color-interpretation=Red,Green,Blue *.tif tile_index.gti.gpkg
+#' job <- gdal_driver_gti_create(input = "*.tif", output = "tile_index.gti.gpkg", 
+#'     resolution = c(60, 60), band_count = 3, color_interpretation = "Red,Green,Blue")
 #' @export
-gdal_driver_gti_create <- function(job = NULL,
-  input,
+gdal_driver_gti_create <- function(input,
   output,
   output_format = NULL,
   output_data_type = NULL,
@@ -96,13 +98,50 @@ gdal_driver_gti_create <- function(job = NULL,
   if (!missing(color_interpretation)) new_args[["color_interpretation"]] <- color_interpretation
   if (!missing(mask)) new_args[["mask"]] <- mask
   if (!missing(fetch_metadata)) new_args[["fetch_metadata"]] <- fetch_metadata
-  job_input <- handle_job_input(job, new_args, c("driver", "gti", "create"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("driver", "gti", "create"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("driver", "gti", "create"), new_args))
   }
 
-  new_gdal_job(command_path = c("driver", "gti", "create"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_data_type = list(min_count = 0, max_count = 1),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1),
+    layer = list(min_count = 0, max_count = 1),
+    recursive = list(min_count = 0, max_count = 1),
+    filename_filter = list(min_count = 0, max_count = 2147483647),
+    min_pixel_size = list(min_count = 0, max_count = 1),
+    max_pixel_size = list(min_count = 0, max_count = 1),
+    location_name = list(min_count = 0, max_count = 1),
+    absolute_path = list(min_count = 0, max_count = 1),
+    dst_crs = list(min_count = 0, max_count = 1),
+    metadata = list(min_count = 0, max_count = 2147483647),
+    xml_filename = list(min_count = 0, max_count = 1),
+    resolution = list(min_count = 2, max_count = 2),
+    bbox = list(min_count = 4, max_count = 4),
+    band_count = list(min_count = 0, max_count = 1),
+    nodata = list(min_count = 0, max_count = 2147483647),
+    color_interpretation = list(min_count = 0, max_count = 2147483647),
+    mask = list(min_count = 0, max_count = 1),
+    fetch_metadata = list(min_count = 0, max_count = 2147483647)
+  )
+
+  new_gdal_job(command_path = c("driver", "gti", "create"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

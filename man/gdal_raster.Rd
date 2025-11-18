@@ -4,12 +4,10 @@
 \alias{gdal_raster}
 \title{raster: Raster commands}
 \usage{
-gdal_raster(job = NULL, drivers = FALSE)
+gdal_raster(drivers = FALSE)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{drivers}{Display raster driver list as JSON document (Logical)}
+\item{drivers}{Display raster driver list as JSON document (Logical). Can also be a \link{gdal_job} object to extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -18,6 +16,15 @@ A \link{gdal_job} object.
 Raster commands.
 
 See \url{https://gdal.org/en/stable/programs/gdal_raster.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster info utm.tif
+# For help on available parameters, run: ?gdal_raster
+job <- gdal_raster()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

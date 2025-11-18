@@ -4,12 +4,10 @@
 \alias{gdal_mdim}
 \title{mdim: Multidimensional commands}
 \usage{
-gdal_mdim(job = NULL, drivers = FALSE)
+gdal_mdim(drivers = FALSE)
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{drivers}{Display multidimensional driver list as JSON document (Logical)}
+\item{drivers}{Display multidimensional driver list as JSON document (Logical). Can also be a \link{gdal_job} object to extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -18,6 +16,15 @@ A \link{gdal_job} object.
 Multidimensional commands.
 
 See \url{https://gdal.org/en/stable/programs/gdal_mdim.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal mdim info temperatures.nc
+# For help on available parameters, run: ?gdal_mdim
+job <- gdal_mdim()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_mdim_utilities: 

@@ -8,23 +8,39 @@
 #' The gdal vsi sozip utility can be used to:
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input ZIP filename (required)
+#' @param input Input ZIP filename (required). Can also be a [gdal_job] object to extend a pipeline
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal vsi sozip create my.gpkg my.gpkg.zip
+#' # For help on available parameters, run: ?gdal_vsi_sozip_list
+#' job <- gdal_vsi_sozip_list()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_vsi_sozip_list <- function(job = NULL,
-  input) {
+gdal_vsi_sozip_list <- function(input) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  job_input <- handle_job_input(job, new_args, c("vsi", "sozip", "list"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vsi", "sozip", "list"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vsi", "sozip", "list"), new_args))
   }
 
-  new_gdal_job(command_path = c("vsi", "sozip", "list"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vsi", "sozip", "list"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

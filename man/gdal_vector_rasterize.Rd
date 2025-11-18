@@ -5,10 +5,9 @@
 \title{rasterize: Burns vector geometries into a raster}
 \usage{
 gdal_vector_rasterize(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
   output_data_type = NULL,
@@ -38,13 +37,11 @@ gdal_vector_rasterize(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -105,6 +102,15 @@ A \link{gdal_job} object.
 Burns vector geometries into a raster.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
+}
+\examples{
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vector rasterize -b 1,2,3 --burn 255,0,0 -l mask mask.shp work.tif
+# For help on available parameters, run: ?gdal_vector_rasterize
+job <- gdal_vector_rasterize()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

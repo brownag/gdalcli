@@ -10,10 +10,9 @@
 #' values, you can choose from various interpolation methods.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_range.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input vector dataset (Dataset path) (required)
-#' @param output Output raster dataset (Dataset path) (required)
+#' @param input Input vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
+#' @param output Output raster dataset (Dataset path) (required)
 #' @param output_format Output format
 #' @param output_data_type Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: `Float64`)
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -40,11 +39,13 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' # Example
+#' # gdal vector grid invdist --power=2.0 --smoothing=1.0 --extent=85000,894000,89000,890000 \
+#' job <- gdal_vector_grid_range(extent = c(85000, 894000, 89000, 890000))
 #' @export
-gdal_vector_grid_range <- function(job = NULL,
-  input,
-  output,
+gdal_vector_grid_range <- function(input,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
@@ -70,8 +71,8 @@ gdal_vector_grid_range <- function(job = NULL,
   nodata = NULL) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_data_type)) new_args[["output_data_type"]] <- output_data_type
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -95,13 +96,49 @@ gdal_vector_grid_range <- function(job = NULL,
   if (!missing(min_points_per_quadrant)) new_args[["min_points_per_quadrant"]] <- min_points_per_quadrant
   if (!missing(max_points_per_quadrant)) new_args[["max_points_per_quadrant"]] <- max_points_per_quadrant
   if (!missing(nodata)) new_args[["nodata"]] <- nodata
-  job_input <- handle_job_input(job, new_args, c("vector", "grid", "range"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector", "grid", "range"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector", "grid", "range"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector", "grid", "range"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_data_type = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    extent = list(min_count = 4, max_count = 4),
+    resolution = list(min_count = 2, max_count = 2),
+    size = list(min_count = 2, max_count = 2),
+    crs = list(min_count = 0, max_count = 1),
+    overwrite = list(min_count = 0, max_count = 1),
+    layer = list(min_count = 0, max_count = 2147483647),
+    sql = list(min_count = 0, max_count = 1),
+    bbox = list(min_count = 4, max_count = 4),
+    zfield = list(min_count = 0, max_count = 1),
+    zoffset = list(min_count = 0, max_count = 1),
+    zmultiply = list(min_count = 0, max_count = 1),
+    radius = list(min_count = 0, max_count = 1),
+    radius1 = list(min_count = 0, max_count = 1),
+    radius2 = list(min_count = 0, max_count = 1),
+    angle = list(min_count = 0, max_count = 1),
+    min_points = list(min_count = 0, max_count = 1),
+    min_points_per_quadrant = list(min_count = 0, max_count = 1),
+    max_points_per_quadrant = list(min_count = 0, max_count = 1),
+    nodata = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "grid", "range"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

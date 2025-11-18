@@ -5,10 +5,9 @@
 \title{maximum: Create a regular grid from scattered points using the maximum value in the...}
 \usage{
 gdal_vector_grid_maximum(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
+  output,
   output_format = NULL,
   output_data_type = NULL,
   open_option = NULL,
@@ -35,13 +34,11 @@ gdal_vector_grid_maximum(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector dataset (Dataset path) (required)}
-
-\item{output}{Output raster dataset (Dataset path) (required)}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -98,6 +95,11 @@ a vector dataset. Input data will be interpolated to fill grid nodes with
 values, you can choose from various interpolation methods.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_maximum.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal vector grid invdist --power=2.0 --smoothing=1.0 --extent=85000,894000,89000,890000 \
+job <- gdal_vector_grid_maximum(extent = c(85000, 894000, 89000, 890000))
 }
 \seealso{
 Other gdal_vector_utilities: 

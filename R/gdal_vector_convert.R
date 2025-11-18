@@ -9,11 +9,10 @@
 #' different formats.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_vector_convert.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param input Input vector dataset (Dataset path) (required)
-#' @param output Output vector dataset (Dataset path) (required)
+#' @param input Input vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param input_format Input formats (Character vector). `0` to `2147483647` value(s) (Advanced)
 #' @param input_layer Input layer name(s) (Character vector). `0` to `2147483647` value(s)
+#' @param output Output vector dataset (Dataset path) (required)
 #' @param output_format Output format
 #' @param output_layer Output layer name
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>`. `0` to `2147483647` value(s) (Advanced)
@@ -26,12 +25,14 @@
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
+#' # Example
+#' # gdal vector convert poly.shp output.gpkg
+#' job <- gdal_vector_convert(input = "poly.shp", output = "output.gpkg")
 #' @export
-gdal_vector_convert <- function(job = NULL,
-  input,
-  output,
+gdal_vector_convert <- function(input,
   input_format = NULL,
   input_layer = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -43,9 +44,9 @@ gdal_vector_convert <- function(job = NULL,
   append = FALSE) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
-  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
   if (!missing(input_layer)) new_args[["input_layer"]] <- input_layer
+  if (!missing(output)) new_args[["output"]] <- output
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
   if (!missing(output_layer)) new_args[["output_layer"]] <- output_layer
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -55,13 +56,36 @@ gdal_vector_convert <- function(job = NULL,
   if (!missing(update)) new_args[["update"]] <- update
   if (!missing(overwrite_layer)) new_args[["overwrite_layer"]] <- overwrite_layer
   if (!missing(append)) new_args[["append"]] <- append
-  job_input <- handle_job_input(job, new_args, c("vector", "convert"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("vector", "convert"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(input) && inherits(input, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- input
+    new_args[["input"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("vector", "convert"), new_args))
   }
 
-  new_gdal_job(command_path = c("vector", "convert"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    input = list(min_count = 0, max_count = 1),
+    input_format = list(min_count = 0, max_count = 2147483647),
+    input_layer = list(min_count = 0, max_count = 2147483647),
+    output = list(min_count = 0, max_count = 1),
+    output_format = list(min_count = 0, max_count = 1),
+    output_layer = list(min_count = 0, max_count = 1),
+    open_option = list(min_count = 0, max_count = 2147483647),
+    creation_option = list(min_count = 0, max_count = 2147483647),
+    layer_creation_option = list(min_count = 0, max_count = 2147483647),
+    overwrite = list(min_count = 0, max_count = 1),
+    update = list(min_count = 0, max_count = 1),
+    overwrite_layer = list(min_count = 0, max_count = 1),
+    append = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("vector", "convert"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

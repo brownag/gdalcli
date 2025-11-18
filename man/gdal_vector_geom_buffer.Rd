@@ -5,14 +5,13 @@
 \title{buffer: Compute a buffer around geometries of a vector dataset}
 \usage{
 gdal_vector_geom_buffer(
-  job = NULL,
   input,
-  output,
-  distance,
   input_format = NULL,
   input_layer = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
+  distance,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -30,21 +29,19 @@ gdal_vector_geom_buffer(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
-
-\item{distance}{Distance to which to extend the geometry. (required)}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
 
+\item{output}{Output vector dataset (Dataset path) (required)}
+
 \item{output_format}{Output format ("GDALG" allowed)}
 
 \item{output_layer}{Output layer name}
+
+\item{distance}{Distance to which to extend the geometry. (required)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -81,6 +78,11 @@ A \link{gdal_job} object.
 Compute a buffer around geometries of a vector dataset.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_buffer.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal vector info poly.gpkg
+job <- gdal_vector_geom_buffer(input = "poly.gpkg")
 }
 \seealso{
 Other gdal_vector_utilities: 

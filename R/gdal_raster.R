@@ -8,23 +8,39 @@
 #' Raster commands.
 #' 
 #' See \url{https://gdal.org/en/stable/programs/gdal_raster.html} for detailed GDAL documentation.
-#' @param job A gdal_job object from a piped operation, or NULL
-#' @param drivers Display raster driver list as JSON document (Logical)
+#' @param drivers Display raster driver list as JSON document (Logical). Can also be a [gdal_job] object to extend a pipeline
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
+#' \dontrun{
+#' # TODO: Convert this GDAL CLI example to R parameters:
+#' # Original: gdal raster info utm.tif
+#' # For help on available parameters, run: ?gdal_raster
+#' job <- gdal_raster()
+#' # gdal_job_run(job)
+#' }
 #' @export
-gdal_raster <- function(job = NULL,
-  drivers = FALSE) {
+gdal_raster <- function(drivers = FALSE) {
   new_args <- list()
   if (!missing(drivers)) new_args[["drivers"]] <- drivers
-  job_input <- handle_job_input(job, new_args, c("raster"))
-  if (job_input$should_extend) {
-    return(extend_gdal_pipeline(job_input$job, c("raster"), new_args))
-  } else {
-    merged_args <- job_input$merged_args
+
+  # Check if first argument is a piped gdal_job or actual data
+  if (!missing(drivers) && inherits(drivers, 'gdal_job')) {
+    # First argument is a piped job - extend the pipeline
+    # Remove first_arg from new_args since it's the job, not data
+    piped_job <- drivers
+    new_args[["drivers"]] <- NULL
+    new_args <- Filter(Negate(is.null), new_args)
+    return(extend_gdal_pipeline(piped_job, c("raster"), new_args))
   }
 
-  new_gdal_job(command_path = c("raster"), arguments = merged_args)
+  # First argument is actual data or missing - create new job
+  merged_args <- new_args
+
+  .arg_mapping <- list(
+    drivers = list(min_count = 0, max_count = 1)
+  )
+
+  new_gdal_job(command_path = c("raster"), arguments = merged_args, arg_mapping = .arg_mapping)
 }
 

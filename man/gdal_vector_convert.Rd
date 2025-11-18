@@ -5,11 +5,10 @@
 \title{convert: Convert a vector dataset}
 \usage{
 gdal_vector_convert(
-  job = NULL,
   input,
-  output,
   input_format = NULL,
   input_layer = NULL,
+  output,
   output_format = NULL,
   output_layer = NULL,
   open_option = NULL,
@@ -22,15 +21,13 @@ gdal_vector_convert(
 )
 }
 \arguments{
-\item{job}{A gdal_job object from a piped operation, or NULL}
-
-\item{input}{Input vector dataset (Dataset path) (required)}
-
-\item{output}{Output vector dataset (Dataset path) (required)}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+
+\item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
@@ -58,6 +55,11 @@ A \link{gdal_job} object.
 different formats.
 
 See \url{https://gdal.org/en/stable/programs/gdal_vector_convert.html} for detailed GDAL documentation.
+}
+\examples{
+# Example
+# gdal vector convert poly.shp output.gpkg
+job <- gdal_vector_convert(input = "poly.shp", output = "output.gpkg")
 }
 \seealso{
 Other gdal_vector_utilities: 
