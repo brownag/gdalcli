@@ -21,7 +21,8 @@
 #' @param stream_in An R object to be streamed to `/vsistdin/`. Can be `NULL`,
 #'   a character string, or raw vector. If provided, overrides `x$stream_in`.
 #' @param stream_out_format Character string: `NULL` (default, no streaming),
-#'   `"text"` (return stdout as character), or `"raw"` (return as raw bytes).
+#'   `"text"` (return stdout as character), `"raw"` (return as raw bytes), or
+#'   `"json"` (capture output, parse as JSON, return as R list/vector).
 #'   If provided, overrides `x$stream_out_format`.
 #' @param env A named character vector of environment variables for the subprocess.
 #'   These are merged with `x$env_vars`, with explicit `env` values taking precedence.
@@ -143,6 +144,20 @@ gdal_job_run.gdal_job <- function(x,
       return(result$stdout)
     } else if (stream_out_final == "raw") {
       return(charToRaw(result$stdout))
+    } else if (stream_out_final == "json") {
+      # Try to parse as JSON
+      tryCatch({
+        return(yyjsonr::read_json_str(result$stdout))
+      }, error = function(e) {
+        cli::cli_warn(
+          c(
+            "Failed to parse output as JSON",
+            "x" = conditionMessage(e),
+            "i" = "Returning raw stdout instead"
+          )
+        )
+        return(result$stdout)
+      })
     }
   }
 
@@ -384,25 +399,88 @@ gdal_job_run_gdalraster <- function(job,
 
   # Serialize the job to GDAL CLI arguments
   args_serialized <- .serialize_gdal_job(job)
-  
+
+  if (length(args_serialized) < 2) {
+    cli::cli_abort("Invalid command path - need at least module and operation")
+  }
+
+  # Extract command path (module + operation) and remaining arguments
+  cmd <- args_serialized[1:2]  # e.g., c("raster", "info")
+  remaining_args <- if (length(args_serialized) > 2) args_serialized[-(1:2)] else character()
+
   if (verbose) {
     cli::cli_alert_info(sprintf("Executing (gdalraster): gdal %s", paste(args_serialized, collapse = " ")))
   }
 
   # Use gdalraster::gdal_alg() to execute the command
   tryCatch({
-    # Call gdalraster::gdal_alg() with the serialized arguments
-    result <- gdalraster::gdal_alg(paste(args_serialized, collapse = " "))
-    
-    # Handle output based on streaming format
-    if (!is.null(stream_out_format)) {
-      if (stream_out_format == "text") {
-        return(result)
-      } else if (stream_out_format == "raw") {
-        return(charToRaw(result))
+    # Define positional argument names (arguments that don't use -- prefix)
+    positional_arg_names <- c("input", "output", "src_dataset", "dest_dataset", "dataset")
+
+    # Collect positional and option arguments separately
+    positional_args <- character()
+    option_args <- character()
+
+    # Parse remaining arguments
+    i <- 1
+    while (i <= length(remaining_args)) {
+      arg_token <- remaining_args[i]
+
+      # Check if this is a flag (starts with --)
+      if (startsWith(arg_token, "--")) {
+        # This is an option argument
+        option_args <- c(option_args, arg_token)
+
+        # Check if next element is a value (not a flag)
+        if (i + 1 <= length(remaining_args) && !startsWith(remaining_args[i + 1], "--")) {
+          option_args <- c(option_args, remaining_args[i + 1])
+          i <- i + 2
+        } else {
+          i <- i + 1
+        }
+      } else {
+        # This is a positional argument
+        positional_args <- c(positional_args, arg_token)
+        i <- i + 1
       }
     }
-    
+
+    # Combine: option args first, then positional args
+    final_args <- c(option_args, positional_args)
+
+    # Instantiate the algorithm with command and all arguments
+    # We pass all args to gdal_alg since gdalraster needs positional args
+    # to be specified together with the command
+    alg <- gdalraster::gdal_alg(cmd = cmd, args = final_args)
+
+    # Run the algorithm
+    alg$run()
+
+    # Handle output based on streaming format
+    if (!is.null(stream_out_format)) {
+      # Get the algorithm output
+      output_text <- alg$output()
+      if (stream_out_format == "text") {
+        return(output_text)
+      } else if (stream_out_format == "raw") {
+        return(charToRaw(output_text))
+      } else if (stream_out_format == "json") {
+        # Try to parse as JSON
+        tryCatch({
+          return(yyjsonr::read_json_str(output_text))
+        }, error = function(e) {
+          cli::cli_warn(
+            c(
+              "Failed to parse output as JSON",
+              "x" = conditionMessage(e),
+              "i" = "Returning raw stdout instead"
+            )
+          )
+          return(output_text)
+        })
+      }
+    }
+
     invisible(TRUE)
   }, error = function(e) {
     cli::cli_abort(
@@ -469,11 +547,37 @@ gdal_job_run_reticulate <- function(job,
       
       # Build command string
       full_cmd <- paste(c(cmd_parts, args[-seq_along(cmd_parts)]), collapse = " ")
-      
+
       # Execute via Python GDAL
       # Note: gdal.alg.compute() expects command as string
       result <- gdal_py$alg$compute(full_cmd, quiet = !verbose)
-      
+
+      # Handle output based on streaming format
+      if (!is.null(stream_out_format)) {
+        # Note: result from gdal.alg.compute() may be a string or other type
+        if (is.character(result)) {
+          if (stream_out_format == "text") {
+            return(result)
+          } else if (stream_out_format == "raw") {
+            return(charToRaw(result))
+          } else if (stream_out_format == "json") {
+            # Try to parse as JSON
+            tryCatch({
+              return(yyjsonr::read_json_str(result))
+            }, error = function(e) {
+              cli::cli_warn(
+                c(
+                  "Failed to parse output as JSON",
+                  "x" = conditionMessage(e),
+                  "i" = "Returning raw result instead"
+                )
+              )
+              return(result)
+            })
+          }
+        }
+      }
+
       invisible(TRUE)
     },
     error = function(e) {

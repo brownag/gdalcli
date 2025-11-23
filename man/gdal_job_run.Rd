@@ -30,7 +30,8 @@ If \code{NULL} (default), dispatches to the appropriate S3 method based on \code
 a character string, or raw vector. If provided, overrides \code{x$stream_in}.}
 
 \item{stream_out_format}{Character string: \code{NULL} (default, no streaming),
-\code{"text"} (return stdout as character), or \code{"raw"} (return as raw bytes).
+\code{"text"} (return stdout as character), \code{"raw"} (return as raw bytes), or
+\code{"json"} (capture output, parse as JSON, return as R list/vector).
 If provided, overrides \code{x$stream_out_format}.}
 
 \item{env}{A named character vector of environment variables for the subprocess.

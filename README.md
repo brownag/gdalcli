@@ -63,6 +63,17 @@ print(job)
 #>   input: input.tif
 #>   output: output.tif
 #>   --output_format: COG
+
+# Access internal structure
+cat("Command path:", paste(job$command_path, collapse=" "), "\n")
+#> Command path: raster convert
+cat("Arguments:\n")
+#> Arguments:
+str(job$arguments)
+#> List of 3
+#>  $ input        : chr "input.tif"
+#>  $ output       : chr "output.tif"
+#>  $ output_format: chr "COG"
 ```
 
 ### Example 2: Adding Options to Jobs
@@ -189,7 +200,7 @@ cat("Saved GDALG file:\n")
 #> Saved GDALG file:
 cat(readLines(temp_file), sep = "\n")
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/RtmpHbO3SA/file3d50a1641050d4.gdalg.json'
+#> '/tmp/Rtmph1UVCZ/file3154e71d74922.gdalg.json'
 #> {
 #>   "gdalVersion": null,
 #>   "steps": [
@@ -282,6 +293,222 @@ cat(native_with_config, "\n")
 #> gdal raster pipeline ! reproject --dst-crs EPSG:3857 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write /vsis3/my-bucket/output.tif
 ```
 
+### Example 11: Inspecting Pipeline Structure
+
+``` r
+# Build a simple pipeline to inspect
+simple_pipeline <- gdal_raster_info(input = "input.tif") |>
+  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+  gdal_raster_convert(output = "output.tif")
+
+# Inspect the pipeline object
+cat("Pipeline object class:", class(simple_pipeline), "\n")
+#> Pipeline object class: gdal_job list
+cat("Has pipeline history:", !is.null(simple_pipeline$pipeline), "\n")
+#> Has pipeline history: TRUE
+
+# Access the pipeline structure
+pipe_obj <- simple_pipeline$pipeline
+cat("Number of jobs in pipeline:", length(pipe_obj$jobs), "\n")
+#> Number of jobs in pipeline: 3
+cat("\nJob details:\n")
+#> 
+#> Job details:
+for (i in seq_along(pipe_obj$jobs)) {
+  job <- pipe_obj$jobs[[i]]
+  cat(sprintf("  Job %d: %s\n", i, paste(job$command_path, collapse=" ")))
+  cat(sprintf("    Arguments: %s\n",
+              paste(names(job$arguments), collapse=", ")))
+}
+#>   Job 1: raster info
+#>     Arguments: input
+#>   Job 2: raster reproject
+#>     Arguments: dst_crs
+#>   Job 3: raster convert
+#>     Arguments: output
+```
+
+### Example 12: Detailed GDALG JSON Structure
+
+``` r
+# Build a pipeline with multiple steps
+pipeline_for_gdalg <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 10000,
+    dst_min = 0, dst_max = 255
+  ) |>
+  gdal_raster_convert(
+    output = "output.tif",
+    output_format = "COG"
+  ) |>
+  gdal_with_co("COMPRESS=LZW", "BLOCKXSIZE=512")
+
+# Save to GDALG format
+temp_gdalg <- tempfile(fileext = ".gdalg.json")
+gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg)
+
+# Display the full JSON
+cat("Full GDALG JSON file:\n")
+#> Full GDALG JSON file:
+cat(readLines(temp_gdalg), sep = "\n")
+#> Warning in readLines(temp_gdalg): incomplete final line found on
+#> '/tmp/Rtmph1UVCZ/file3154e45ebe087.gdalg.json'
+#> {
+#>   "gdalVersion": null,
+#>   "steps": [
+#>     {
+#>       "type": "reproject",
+#>       "name": "reproject_1",
+#>       "operation": "reproject",
+#>       "input": "input.tif",
+#>       "options": {
+#>         "dst_crs": "EPSG:32632"
+#>       }
+#>     },
+#>     {
+#>       "type": "scale",
+#>       "name": "scale_2",
+#>       "operation": "scale",
+#>       "options": {
+#>         "src_min": 0.0,
+#>         "src_max": 10000.0,
+#>         "dst_min": 0.0,
+#>         "dst_max": 255.0
+#>       }
+#>     },
+#>     {
+#>       "type": "write",
+#>       "name": "write_3",
+#>       "operation": "convert",
+#>       "output": "output.tif"
+#>     }
+#>   ]
+#> }
+
+# Parse and inspect GDALG structure
+loaded <- gdal_load_pipeline(temp_gdalg)
+cat("\n\nGDALG JSON parsed back to R:\n")
+#> 
+#> 
+#> GDALG JSON parsed back to R:
+cat("Loaded pipeline has", length(loaded$jobs), "jobs\n")
+#> Loaded pipeline has 3 jobs
+for (i in seq_along(loaded$jobs)) {
+  job <- loaded$jobs[[i]]
+  cat(sprintf("  Job %d: %s\n", i, paste(job$command_path, collapse=" ")))
+}
+#>   Job 1: raster reproject
+#>   Job 2: raster scale
+#>   Job 3: vector convert
+
+# Clean up
+unlink(temp_gdalg)
+```
+
+### Example 13: Config Options Propagation
+
+``` r
+# Build a pipeline with config options at different points
+config_pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_with_config("GDAL_CACHEMAX=512") |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 100,
+    dst_min = 0, dst_max = 255
+  ) |>
+  gdal_raster_convert(output = "output.tif") |>
+  gdal_with_config("OGR_SQL_DIALECT=SQLITE")
+
+# Inspect config options
+pipe_obj <- config_pipeline$pipeline
+cat("Config options by job:\n")
+#> Config options by job:
+for (i in seq_along(pipe_obj$jobs)) {
+  job <- pipe_obj$jobs[[i]]
+  cat(sprintf("Job %d (%s): ", i, paste(job$command_path, collapse=" ")))
+  if (length(job$config_options) > 0) {
+    for (config_name in names(job$config_options)) {
+      cat(sprintf("%s=%s ", config_name, job$config_options[[config_name]]))
+    }
+    cat("\n")
+  } else {
+    cat("(none)\n")
+  }
+}
+#> Job 1 (raster reproject): GDAL_CACHEMAX=512 
+#> Job 2 (raster scale): (none)
+#> Job 3 (raster convert): (none)
+
+# Render with config options
+cmd_with_config <- render_gdal_pipeline(config_pipeline$pipeline, format = "native")
+cat("\nRendered native command with config options:\n")
+#> 
+#> Rendered native command with config options:
+cat(cmd_with_config, "\n")
+#> gdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif
+```
+
+### Example 14: Sequential vs Native Rendering Comparison
+
+``` r
+# Create a pipeline
+comparison_pipeline <- gdal_raster_info(input = "input.tif") |>
+  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+  gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
+  gdal_raster_convert(output = "output.tif")
+
+# Get sequential command rendering
+seq_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "shell_chain")
+cat("Sequential command (separate GDAL commands chained with &&):\n")
+#> Sequential command (separate GDAL commands chained with &&):
+cat(seq_cmd, "\n\n")
+#> gdal raster info input.tif && gdal raster reproject --dst-crs EPSG:32632 && gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 && gdal raster convert output.tif
+
+# Get native command rendering
+native_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "native")
+cat("Native command (single GDAL pipeline):\n")
+#> Native command (single GDAL pipeline):
+cat(native_cmd, "\n\n")
+#> gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif
+
+# Compare as shell scripts
+cat("=== Sequential Shell Script ===\n")
+#> === Sequential Shell Script ===
+cat(render_shell_script(comparison_pipeline, format = "commands"), "\n\n")
+#> #!/bin/bash
+#> 
+#> set -e
+#> 
+#> # Job 1
+#> gdal raster info input.tif
+#> 
+#> # Job 2
+#> gdal raster reproject --dst-crs EPSG:32632
+#> 
+#> # Job 3
+#> gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255
+#> 
+#> # Job 4
+#> gdal raster convert output.tif
+#> 
+
+cat("=== Native Shell Script ===\n")
+#> === Native Shell Script ===
+cat(render_shell_script(comparison_pipeline, format = "native"), "\n")
+#> #!/bin/bash
+#> 
+#> set -e
+#> 
+#> # Native GDAL pipeline execution
+#> gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif
+#> 
+```
+
 ## Pipeline Features
 
 ### Native GDAL Pipeline Execution
@@ -296,7 +523,8 @@ pipeline <- gdal_raster_info(input = "input.tif") |>
   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "output.tif")
 
-# This would execute: gdal_job_run(pipeline, execution_mode = "native")
+# This pipeline would execute as a native GDAL command when passed to gdal_job_run()
+# gdal_job_run(pipeline) executes it using the default (sequential) or native mode
 ```
 
 Native mode runs the entire pipeline in a single GDAL command, avoiding
@@ -315,7 +543,7 @@ gdal_save_pipeline(pipeline, "workflow.gdalg.json")
 
 # Load and execute later
 loaded <- gdal_load_pipeline("workflow.gdalg.json")
-gdal_job_run(loaded, execution_mode = "native")
+gdal_job_run(loaded)
 ```
 
 GDALG provides perfect round-trip fidelity—all pipeline structure and
@@ -354,6 +582,69 @@ pipeline_with_config <- gdal_raster_reproject(
 render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
 #> [1] "gdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255"
 ```
+
+## Version Compatibility
+
+`gdalcli` supports GDAL 3.11 and later, with enhanced features available
+in GDAL 3.12+.
+
+### Minimum Requirements
+
+- **GDAL**: ≥ 3.11.3 (Unified CLI framework minimum)
+- **R**: ≥ 4.0.0
+- **gdalraster**: ≥ 2.2.0 (recommended for advanced features)
+
+### GDAL 3.11 Features
+
+Core GDAL unified CLI functionality available in GDAL 3.11+:
+
+- **80+ Algorithm Functions**: All raster, vector, and multidimensional
+  operations
+- **Pipeline Execution**: Native and sequential pipeline modes
+- **GDALG Format**: Save/load pipelines as JSON
+- **Configuration Options**: Full GDAL config option support
+- **VSI Support**: Virtual file system integration
+- **Shell Script Generation**: Export pipelines to executable bash/zsh
+
+### GDAL 3.12 Enhancements
+
+New algorithms and capabilities available in GDAL 3.12+:
+
+- **New Raster Algorithms**: blend, compare, neighbors, nodata-to-alpha,
+  pansharpen, proximity, rgb-to-palette, update, zonal-stats,
+  as-features
+- **New Vector Algorithms**: check-coverage, check-geometry,
+  clean-coverage, index, layer-algebra, make-point, partition,
+  set-field-type, simplify-coverage
+- **GDALG Format Driver**: Native support for GDALG as a format driver
+- **Advanced Features**: Enhanced pipeline capabilities and algorithm
+  metadata
+
+### Checking Version Support
+
+Use the discovery utilities to check version requirements:
+
+``` r
+# Check if GDAL meets minimum version
+if (gdal_check_version("3.11")) {
+  # Use gdalcli features
+}
+
+# Check for GDAL 3.12+ features
+if (gdal_check_version("3.12")) {
+  # Use new GDAL 3.12 algorithms
+}
+
+# List all available commands for current GDAL version
+all_commands <- gdal_list_commands()
+head(all_commands)
+
+# Get help for a specific command
+gdal_command_help("raster.info")
+```
+
+When regenerating the package with GDAL 3.12+ installed, all new
+algorithms are automatically discovered and wrapped as R functions.
 
 ## GDAL Function Categories
 
@@ -605,7 +896,8 @@ MIT License - see LICENSE file for details
 - **GDAL Pipeline Documentation**:
   <https://gdal.org/programs/gdalinfo.html> (see `gdal raster pipeline`,
   `gdal vector pipeline`)
-- **GDAL JSON Usage API**: <https://gdal.org/development/rfc/rfc90.html>
+- **GDAL JSON Usage API**:
+  <https://gdal.org/development/rfc/rfc_index.html> (RFC 90)
 - **GDAL Virtual File Systems**:
   <https://gdal.org/user/virtual_file_systems.html>
 - **GDAL Configuration Options**:

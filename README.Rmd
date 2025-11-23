@@ -56,6 +56,11 @@ job <- gdal_raster_convert(
 
 # Inspect the job object
 print(job)
+
+# Access internal structure
+cat("Command path:", paste(job$command_path, collapse=" "), "\n")
+cat("Arguments:\n")
+str(job$arguments)
 ```
 
 ### Example 2: Adding Options to Jobs
@@ -193,6 +198,134 @@ cat("Native pipeline with config options:\n")
 cat(native_with_config, "\n")
 ```
 
+### Example 11: Inspecting Pipeline Structure
+
+```{r}
+# Build a simple pipeline to inspect
+simple_pipeline <- gdal_raster_info(input = "input.tif") |>
+  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+  gdal_raster_convert(output = "output.tif")
+
+# Inspect the pipeline object
+cat("Pipeline object class:", class(simple_pipeline), "\n")
+cat("Has pipeline history:", !is.null(simple_pipeline$pipeline), "\n")
+
+# Access the pipeline structure
+pipe_obj <- simple_pipeline$pipeline
+cat("Number of jobs in pipeline:", length(pipe_obj$jobs), "\n")
+cat("\nJob details:\n")
+for (i in seq_along(pipe_obj$jobs)) {
+  job <- pipe_obj$jobs[[i]]
+  cat(sprintf("  Job %d: %s\n", i, paste(job$command_path, collapse=" ")))
+  cat(sprintf("    Arguments: %s\n",
+              paste(names(job$arguments), collapse=", ")))
+}
+```
+
+### Example 12: Detailed GDALG JSON Structure
+
+```{r}
+# Build a pipeline with multiple steps
+pipeline_for_gdalg <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 10000,
+    dst_min = 0, dst_max = 255
+  ) |>
+  gdal_raster_convert(
+    output = "output.tif",
+    output_format = "COG"
+  ) |>
+  gdal_with_co("COMPRESS=LZW", "BLOCKXSIZE=512")
+
+# Save to GDALG format
+temp_gdalg <- tempfile(fileext = ".gdalg.json")
+gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg)
+
+# Display the full JSON
+cat("Full GDALG JSON file:\n")
+cat(readLines(temp_gdalg), sep = "\n")
+
+# Parse and inspect GDALG structure
+loaded <- gdal_load_pipeline(temp_gdalg)
+cat("\n\nGDALG JSON parsed back to R:\n")
+cat("Loaded pipeline has", length(loaded$jobs), "jobs\n")
+for (i in seq_along(loaded$jobs)) {
+  job <- loaded$jobs[[i]]
+  cat(sprintf("  Job %d: %s\n", i, paste(job$command_path, collapse=" ")))
+}
+
+# Clean up
+unlink(temp_gdalg)
+```
+
+### Example 13: Config Options Propagation
+
+```{r}
+# Build a pipeline with config options at different points
+config_pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_with_config("GDAL_CACHEMAX=512") |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 100,
+    dst_min = 0, dst_max = 255
+  ) |>
+  gdal_raster_convert(output = "output.tif") |>
+  gdal_with_config("OGR_SQL_DIALECT=SQLITE")
+
+# Inspect config options
+pipe_obj <- config_pipeline$pipeline
+cat("Config options by job:\n")
+for (i in seq_along(pipe_obj$jobs)) {
+  job <- pipe_obj$jobs[[i]]
+  cat(sprintf("Job %d (%s): ", i, paste(job$command_path, collapse=" ")))
+  if (length(job$config_options) > 0) {
+    for (config_name in names(job$config_options)) {
+      cat(sprintf("%s=%s ", config_name, job$config_options[[config_name]]))
+    }
+    cat("\n")
+  } else {
+    cat("(none)\n")
+  }
+}
+
+# Render with config options
+cmd_with_config <- render_gdal_pipeline(config_pipeline$pipeline, format = "native")
+cat("\nRendered native command with config options:\n")
+cat(cmd_with_config, "\n")
+```
+
+### Example 14: Sequential vs Native Rendering Comparison
+
+```{r}
+# Create a pipeline
+comparison_pipeline <- gdal_raster_info(input = "input.tif") |>
+  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+  gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
+  gdal_raster_convert(output = "output.tif")
+
+# Get sequential command rendering
+seq_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "shell_chain")
+cat("Sequential command (separate GDAL commands chained with &&):\n")
+cat(seq_cmd, "\n\n")
+
+# Get native command rendering
+native_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "native")
+cat("Native command (single GDAL pipeline):\n")
+cat(native_cmd, "\n\n")
+
+# Compare as shell scripts
+cat("=== Sequential Shell Script ===\n")
+cat(render_shell_script(comparison_pipeline, format = "commands"), "\n\n")
+
+cat("=== Native Shell Script ===\n")
+cat(render_shell_script(comparison_pipeline, format = "native"), "\n")
+```
+
 ## Pipeline Features
 
 ### Native GDAL Pipeline Execution
@@ -206,7 +339,8 @@ pipeline <- gdal_raster_info(input = "input.tif") |>
   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "output.tif")
 
-# This would execute: gdal_job_run(pipeline, execution_mode = "native")
+# This pipeline would execute as a native GDAL command when passed to gdal_job_run()
+# gdal_job_run(pipeline) executes it using the default (sequential) or native mode
 ```
 
 Native mode runs the entire pipeline in a single GDAL command, avoiding intermediate disk I/O for large datasets.
@@ -224,7 +358,7 @@ gdal_save_pipeline(pipeline, "workflow.gdalg.json")
 
 # Load and execute later
 loaded <- gdal_load_pipeline("workflow.gdalg.json")
-gdal_job_run(loaded, execution_mode = "native")
+gdal_job_run(loaded)
 ```
 
 GDALG provides perfect round-trip fidelity—all pipeline structure and arguments are preserved.
@@ -261,6 +395,61 @@ pipeline_with_config <- gdal_raster_reproject(
 # Config options are included in native pipeline rendering
 render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
 ```
+
+## Version Compatibility
+
+`gdalcli` supports GDAL 3.11 and later, with enhanced features available in GDAL 3.12+.
+
+### Minimum Requirements
+
+- **GDAL**: ≥ 3.11.3 (Unified CLI framework minimum)
+- **R**: ≥ 4.0.0
+- **gdalraster**: ≥ 2.2.0 (recommended for advanced features)
+
+### GDAL 3.11 Features
+
+Core GDAL unified CLI functionality available in GDAL 3.11+:
+
+- **80+ Algorithm Functions**: All raster, vector, and multidimensional operations
+- **Pipeline Execution**: Native and sequential pipeline modes
+- **GDALG Format**: Save/load pipelines as JSON
+- **Configuration Options**: Full GDAL config option support
+- **VSI Support**: Virtual file system integration
+- **Shell Script Generation**: Export pipelines to executable bash/zsh
+
+### GDAL 3.12 Enhancements
+
+New algorithms and capabilities available in GDAL 3.12+:
+
+- **New Raster Algorithms**: blend, compare, neighbors, nodata-to-alpha, pansharpen, proximity, rgb-to-palette, update, zonal-stats, as-features
+- **New Vector Algorithms**: check-coverage, check-geometry, clean-coverage, index, layer-algebra, make-point, partition, set-field-type, simplify-coverage
+- **GDALG Format Driver**: Native support for GDALG as a format driver
+- **Advanced Features**: Enhanced pipeline capabilities and algorithm metadata
+
+### Checking Version Support
+
+Use the discovery utilities to check version requirements:
+
+```{r, eval=FALSE}
+# Check if GDAL meets minimum version
+if (gdal_check_version("3.11")) {
+  # Use gdalcli features
+}
+
+# Check for GDAL 3.12+ features
+if (gdal_check_version("3.12")) {
+  # Use new GDAL 3.12 algorithms
+}
+
+# List all available commands for current GDAL version
+all_commands <- gdal_list_commands()
+head(all_commands)
+
+# Get help for a specific command
+gdal_command_help("raster.info")
+```
+
+When regenerating the package with GDAL 3.12+ installed, all new algorithms are automatically discovered and wrapped as R functions.
 
 ## GDAL Function Categories
 
@@ -475,7 +664,7 @@ MIT License - see LICENSE file for details
 
 - **GDAL Unified CLI (≥3.11)**: [https://gdal.org/programs/index.html](https://gdal.org/programs/index.html)
 - **GDAL Pipeline Documentation**: [https://gdal.org/programs/gdalinfo.html](https://gdal.org/programs/gdalinfo.html) (see `gdal raster pipeline`, `gdal vector pipeline`)
-- **GDAL JSON Usage API**: [https://gdal.org/development/rfc/rfc90.html](https://gdal.org/development/rfc/rfc90.html)
+- **GDAL JSON Usage API**: [https://gdal.org/development/rfc/rfc_index.html](https://gdal.org/development/rfc/rfc_index.html) (RFC 90)
 - **GDAL Virtual File Systems**: [https://gdal.org/user/virtual_file_systems.html](https://gdal.org/user/virtual_file_systems.html)
 - **GDAL Configuration Options**: [https://gdal.org/user/configoptions.html](https://gdal.org/user/configoptions.html)
 - **Lazy Evaluation in R**: Inspired by dbplyr, rlang, and tidyverse design patterns

@@ -4,3 +4,4 @@ inst/GDAL_VERSION_INFO.json
 inst/cache/*.rds
 /doc/
 /Meta/
+README.html

@@ -80,7 +80,7 @@ list.files(system.file("extdata", package = "gdalraster"))
 
 # Lazy Evaluation Basics
 
-The core concept in `gdalcli` is **lazy evaluation**. Commands are built as `gdal_job` objects that specify what should be executed, but nothing actually runs until you call `gdal_run()`.
+The core concept in `gdalcli` is **lazy evaluation**. Commands are built as `gdal_job` objects that specify what should be executed, but nothing actually runs until you call `gdal_job_run()`.
 
 ## Building Job Specifications
 
@@ -114,7 +114,7 @@ job$arguments
 
 ## Executing Jobs
 
-Execute the job with `gdal_run()`:
+Execute the job with `gdal_job_run()`:
 
 ```{r execute-job}
 # Now execute the job
