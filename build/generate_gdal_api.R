@@ -1085,7 +1085,25 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
     # Build mapping from GDAL flag names to R parameter names
     gdal_to_r_mapping <- character(0)
     valid_params <- character(0)
-    
+
+    # Common GDAL options that should always be included even if not in metadata
+    # These are frequently used across many GDAL commands
+    common_gdal_options <- c(
+      "f" = "output_format",          # --format or -f
+      "of" = "output_format",         # --format -of
+      "format" = "output_format",     # --format
+      "co" = "creation_option",       # --creation-option or -co
+      "creation_option" = "creation_option",
+      "oo" = "open_option",           # --open-option or -oo
+      "open_option" = "open_option",
+      "t_srs" = "target_srs",         # --target-srs or -t_srs
+      "s_srs" = "source_srs",         # --source-srs or -s_srs
+      "q" = "quiet",                  # --quiet or -q
+      "quiet" = "quiet",
+      "v" = "verbose",                # --verbose or -v
+      "verbose" = "verbose"
+    )
+
     if (!is.null(input_args) && length(input_args) > 0) {
       # Convert input_args to list if it's a dataframe
       if (is.data.frame(input_args)) {
@@ -1093,7 +1111,7 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
       } else {
         args_list <- input_args
       }
-      
+
       # Build mapping from GDAL name -> R name
       for (arg in args_list) {
         if (!is.null(arg$name)) {
@@ -1107,6 +1125,17 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
         }
       }
     }
+
+    # Merge common GDAL options into mappings (metadata takes precedence)
+    for (gdal_flag in names(common_gdal_options)) {
+      if (!(gdal_flag %in% names(gdal_to_r_mapping))) {
+        gdal_to_r_mapping[gdal_flag] <- common_gdal_options[[gdal_flag]]
+        valid_params <- c(valid_params, common_gdal_options[[gdal_flag]])
+      }
+    }
+
+    # Remove duplicates from valid_params
+    valid_params <- unique(valid_params)
 
     # If we have the options_list (preserving repeats), use that for grouping
     if (!is.null(parsed_cli$options_list) && length(parsed_cli$options_list) > 0) {
