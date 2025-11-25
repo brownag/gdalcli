@@ -28,6 +28,9 @@
 #' # gdal raster mosaic --hide-nodata --dst-nodata=0,0,255 doq/*.tif doq_index.vrt
 #' job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", hide_nodata = TRUE, 
 #'     dst_nodata = "0,0,255")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_mosaic <- function(input = NULL,
   output,

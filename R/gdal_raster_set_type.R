@@ -24,6 +24,9 @@
 #' # Example
 #' # gdal raster set-type --datatype Float32 byte.tif float32.tif --overwrite
 #' job <- gdal_raster_set_type(input = "byte.tif", output = "float32.tif", overwrite = TRUE)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_set_type <- function(input,
   input_format = NULL,

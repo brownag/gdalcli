@@ -30,6 +30,9 @@
 #' # Example
 #' # gdal vector info poly.gpkg
 #' job <- gdal_vector_geom_simplify(input = "poly.gpkg")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_geom_simplify <- function(input,
   input_format = NULL,

@@ -17,6 +17,9 @@
 #' # gdal vsi move /vsis3/bucket/my.tif /vsis3/bucket/new_name.tif
 #' job <- gdal_vsi_move(source = "/vsis3/bucket/my.tif", 
 #'     destination = "/vsis3/bucket/new_name.tif")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vsi_move <- function(source,
   destination) {

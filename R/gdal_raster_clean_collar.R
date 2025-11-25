@@ -33,6 +33,9 @@
 #' # Example
 #' # gdal raster clean-collar --update my.tif
 #' job <- gdal_raster_clean_collar(update = "my.tif")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_clean_collar <- function(input,
   input_format = NULL,

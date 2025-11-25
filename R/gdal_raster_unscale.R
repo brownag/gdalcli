@@ -23,6 +23,9 @@
 #' # gdal raster unscale scaled_byte.tif unscaled_float32.tif --overwrite
 #' job <- gdal_raster_unscale(input = "scaled_byte.tif", output = "unscaled_float32.tif", 
 #'     overwrite = TRUE)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_unscale <- function(input,
   input_format = NULL,

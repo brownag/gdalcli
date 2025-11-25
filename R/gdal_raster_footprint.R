@@ -39,6 +39,9 @@
 #' # Example
 #' # gdal raster footprint my_raster.tif footprint.geojson
 #' job <- gdal_raster_footprint(input = "my_raster.tif", output = "footprint.geojson")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_footprint <- function(input,
   input_format = NULL,

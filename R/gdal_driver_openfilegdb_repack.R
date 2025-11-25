@@ -15,6 +15,9 @@
 #' # Example
 #' # gdal driver openfilegdb repack my.gdb
 #' job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_driver_openfilegdb_repack <- function(dataset) {
   new_args <- list()

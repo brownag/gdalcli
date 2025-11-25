@@ -25,6 +25,9 @@
 #' # Example
 #' # gdal raster sieve -b 2 -s 10 input.tif output.tif
 #' job <- gdal_raster_sieve(input = "input.tif", output = "output.tif")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_sieve <- function(input,
   input_format = NULL,

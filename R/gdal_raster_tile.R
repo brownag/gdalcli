@@ -51,6 +51,9 @@
 #' # gdal raster tile --min-zoom=2 --max-zoom=5 input.tif output_folder
 #' job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom = 2, 
 #'     max_zoom = 5)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_tile <- function(input,
   input_format = NULL,

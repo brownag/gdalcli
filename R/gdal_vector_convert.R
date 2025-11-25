@@ -28,6 +28,9 @@
 #' # Example
 #' # gdal vector convert poly.shp output.gpkg
 #' job <- gdal_vector_convert(input = "poly.shp", output = "output.gpkg")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_convert <- function(input,
   input_format = NULL,

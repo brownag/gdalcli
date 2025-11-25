@@ -26,6 +26,9 @@
 #' # Example
 #' # gdal raster aspect n43.dt0 out.tif --overwrite
 #' job <- gdal_raster_aspect(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_aspect <- function(input,
   input_format = NULL,

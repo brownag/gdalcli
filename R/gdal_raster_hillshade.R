@@ -31,6 +31,9 @@
 #' # gdal raster hillshade --zfactor=30 n43.dt0 out.tif --overwrite
 #' job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
 #'     zfactor = 30)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_hillshade <- function(input,
   input_format = NULL,

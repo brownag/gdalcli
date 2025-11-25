@@ -34,6 +34,9 @@
 #' # gdal raster viewshed --max-distance=500 --pos=-10147017,5108065 source.tif destination.tif
 #' job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 
 #'     max_distance = 500)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_viewshed <- function(input,
   input_format = NULL,

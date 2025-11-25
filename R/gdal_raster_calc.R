@@ -23,6 +23,9 @@
 #' # Example
 #' # gdal raster calc -i "A=file1.tif" -i "B=file2.tif" -i "C=file3.tif" --calc "A+B+C" -o out.tif
 #' job <- gdal_raster_calc(calc = "A+B+C")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_calc <- function(input,
   output,

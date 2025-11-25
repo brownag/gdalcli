@@ -33,6 +33,9 @@
 #' # gdal raster create --size=20,20 --band-count=3 --crs=EPSG:4326 --bbox=2,49,3,50 --burn 10 out.tif
 #' job <- gdal_raster_create(input = "out.tif", size = c(20, 20), band_count = 3, 
 #'     crs = "EPSG:4326", bbox = c(2, 49, 3, 50), burn = 10)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_create <- function(input = NULL,
   input_format = NULL,

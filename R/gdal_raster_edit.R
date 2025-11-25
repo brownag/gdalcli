@@ -24,6 +24,9 @@
 #' # Example
 #' # gdal raster edit --crs=EPSG:32632 my.tif
 #' job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_edit <- function(dataset,
   auxiliary = FALSE,

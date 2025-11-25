@@ -33,6 +33,9 @@
 #' # gdal raster clip --bbox=2,49,3,50 --bbox-crs=EPSG:4326 in.tif out.tif --overwrite
 #' job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE, 
 #'     bbox = c(2, 49, 3, 50), bbox_crs = "EPSG:4326")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_clip <- function(input,
   input_format = NULL,

@@ -33,6 +33,9 @@
 #' # Example
 #' # gdal vector concat --mode=stack *.shp out.gpkg
 #' job <- gdal_vector_concat(input = "*.shp", output = "out.gpkg", mode = "stack")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_concat <- function(input,
   input_format = NULL,

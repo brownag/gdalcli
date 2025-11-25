@@ -27,6 +27,9 @@
 #' # Example
 #' # gdal mdim convert in.nc out.vrt
 #' job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_mdim_convert <- function(input,
   input_format = NULL,

@@ -30,6 +30,9 @@
 #' # gdal vector pipeline ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
 #' job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write"), 
 #'     output = "out.gpkg", overwrite = TRUE)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_pipeline <- function(jobs = NULL,
   input = NULL,

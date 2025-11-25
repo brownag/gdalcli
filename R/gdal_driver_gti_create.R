@@ -42,6 +42,9 @@
 #' # gdal driver gti create --ot Byte --resolution=60,60 --band-count=3 --color-interpretation=Red,Green,Blue *.tif tile_index.gti.gpkg
 #' job <- gdal_driver_gti_create(input = "*.tif", output = "tile_index.gti.gpkg", 
 #'     resolution = c(60, 60), band_count = 3, color_interpretation = "Red,Green,Blue")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_driver_gti_create <- function(input,
   output,

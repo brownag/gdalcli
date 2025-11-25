@@ -37,6 +37,9 @@
 #' # gdal vector clip --bbox=2,49,3,50 --bbox-crs=EPSG:4326 in.gpkg out.gpkg --overwrite
 #' job <- gdal_vector_clip(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
 #'     bbox = c(2, 49, 3, 50), bbox_crs = "EPSG:4326")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_clip <- function(input,
   input_format = NULL,

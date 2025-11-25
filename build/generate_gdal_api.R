@@ -2244,6 +2244,12 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
         code_lines <- strsplit(r_code, "\n")[[1]]
         formatted_code <- paste(paste0("#' ", code_lines), collapse = "\n")
         doc <- paste0(doc, formatted_code, "\n")
+
+        # Add gdal_job_run() call wrapped in dontrun
+        doc <- paste0(doc, "#' \\dontrun{\n")
+        doc <- paste0(doc, "#'   result <- gdal_job_run(job)\n")
+        doc <- paste0(doc, "#' }\n")
+
         examples_added <- examples_added + 1
       }
     }

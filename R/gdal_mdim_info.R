@@ -24,6 +24,9 @@
 #' # Example
 #' # gdal mdim info netcdf-4d.nc
 #' job <- gdal_mdim_info(input = "netcdf-4d.nc")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_mdim_info <- function(input,
   open_option = NULL,

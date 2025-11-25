@@ -24,6 +24,9 @@
 #' # Example
 #' # gdal raster tri n43.dt0 out.tif --overwrite
 #' job <- gdal_raster_tri(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_tri <- function(input,
   input_format = NULL,

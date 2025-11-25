@@ -21,6 +21,9 @@
 #' # Example
 #' # gdal vsi sozip create my.gpkg my.gpkg.zip
 #' job <- gdal_vsi_sozip_optimize(input = "my.gpkg", output = "my.gpkg.zip")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vsi_sozip_optimize <- function(input,
   output,

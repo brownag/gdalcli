@@ -24,6 +24,9 @@
 #' # gdal raster select --band 3,2,1 bgr.tif rgb.tif --overwrite
 #' job <- gdal_raster_select(input = "bgr.tif", output = "rgb.tif", overwrite = TRUE, 
 #'     band = "3,2,1")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_select <- function(input,
   input_format = NULL,

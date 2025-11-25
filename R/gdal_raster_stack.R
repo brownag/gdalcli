@@ -26,6 +26,9 @@
 #' # Example
 #' # gdal raster stack red.tif green.tif blue.tif rgb.tif
 #' job <- gdal_raster_stack(input = c("red.tif", "green.tif", "blue.tif"), output = "rgb.tif")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_stack <- function(input = NULL,
   output,

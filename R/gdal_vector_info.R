@@ -26,6 +26,9 @@
 #' # Example
 #' # gdal vector info --format=text --features poly.gpkg
 #' job <- gdal_vector_info(features = "poly.gpkg")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_info <- function(input,
   input_format = NULL,

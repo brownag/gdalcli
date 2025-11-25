@@ -34,6 +34,9 @@
 #' # Example
 #' # gdal raster info utmsmall.tif
 #' job <- gdal_raster_info(input = "utmsmall.tif")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_info <- function(input,
   input_format = NULL,

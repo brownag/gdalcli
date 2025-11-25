@@ -15,6 +15,9 @@
 #' # Example
 #' # gdal driver gpkg repack my.gpkg
 #' job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_driver_gpkg_repack <- function(dataset) {
   new_args <- list()

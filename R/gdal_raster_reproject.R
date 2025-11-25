@@ -36,6 +36,9 @@
 #' # gdal raster reproject --dst-crs=EPSG:32632 in.tif out.tif --overwrite
 #' job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = TRUE, 
 #'     dst_crs = "EPSG:32632")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_reproject <- function(input,
   input_format = NULL,

@@ -35,6 +35,9 @@
 #' # Example
 #' # gdal raster contour --interval 100 elevation.tif contour.shp
 #' job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp", interval = 100)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_contour <- function(input,
   input_format = NULL,

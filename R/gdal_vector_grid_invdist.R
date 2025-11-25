@@ -46,6 +46,9 @@
 #' # gdal vector grid invdist --power=2.0 --smoothing=1.0 --extent=85000,894000,89000,890000 \
 #' job <- gdal_vector_grid_invdist(power = 2.0, smoothing = 1.0, 
 #'     extent = c(85000, 894000, 89000, 890000))
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_grid_invdist <- function(input,
   input_format = NULL,

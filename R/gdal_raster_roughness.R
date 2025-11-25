@@ -23,6 +23,9 @@
 #' # Example
 #' # gdal raster roughness n43.dt0 out.tif --overwrite
 #' job <- gdal_raster_roughness(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_roughness <- function(input,
   input_format = NULL,

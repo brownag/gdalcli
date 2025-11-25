@@ -29,6 +29,9 @@
 #' # gdal raster color-map --color-map=color-map.txt n43.dt0 out.tif --overwrite
 #' job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
 #'     color_map = "color-map.txt")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_color_map <- function(input,
   input_format = NULL,

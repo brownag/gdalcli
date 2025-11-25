@@ -23,6 +23,9 @@
 #' # Example
 #' # gdal raster convert --format=COG --co COMPRESS=JPEG utm.tif utm_cog.tif
 #' job <- gdal_raster_convert(input = "utm.tif", output = "utm_cog.tif")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_convert <- function(input,
   input_format = NULL,

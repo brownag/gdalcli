@@ -26,6 +26,9 @@
 #' # Example
 #' # gdal raster fill-nodata -b 2 --max-distance 50 --smoothing-iterations 3 \
 #' job <- gdal_raster_fill_nodata(max_distance = 50, smoothing_iterations = 3)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_fill_nodata <- function(input,
   input_format = NULL,

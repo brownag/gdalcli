@@ -23,6 +23,9 @@
 #' # Example
 #' # gdal raster tpi n43.dt0 out.tif --overwrite
 #' job <- gdal_raster_tpi(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_tpi <- function(input,
   input_format = NULL,

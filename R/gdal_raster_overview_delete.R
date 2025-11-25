@@ -17,6 +17,9 @@
 #' # Example
 #' # gdal raster overview delete my.tif
 #' job <- gdal_raster_overview_delete(dataset = "my.tif")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_overview_delete <- function(dataset,
   open_option = NULL,

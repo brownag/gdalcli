@@ -34,6 +34,9 @@
 #' # Example
 #' # gdal raster index doq/*.tif doq_index.gpkg
 #' job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_index <- function(input,
   source_crs_field_name = NULL,

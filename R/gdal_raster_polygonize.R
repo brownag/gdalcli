@@ -29,6 +29,9 @@
 #' # Example
 #' # gdal raster polygonize input.tif polygonize.shp
 #' job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_raster_polygonize <- function(input,
   input_format = NULL,

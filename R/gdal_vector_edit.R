@@ -35,6 +35,9 @@
 #' # gdal vector edit --crs=EPSG:4326 --geometry-type=POLYGONZM in.gpkg out.gpkg --overwrite
 #' job <- gdal_vector_edit(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
 #'     crs = "EPSG:4326", geometry_type = "POLYGONZM")
+#' \dontrun{
+#'   result <- gdal_job_run(job)
+#' }
 #' @export
 gdal_vector_edit <- function(input,
   input_format = NULL,
