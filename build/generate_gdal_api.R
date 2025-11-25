@@ -2403,15 +2403,18 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     cat(sprintf("  [WARN] No examples found for %s (status=%d)\n", func_name, if (is.null(enriched_docs)) NA else enriched_docs$status))
   }
   
+  # Initialize to capture first example attempt (for fallback display)
+  cli_example_original <- NULL
+
   if (has_examples) {
     # Parse and convert CLI examples to R code
     # Only take the first example to avoid duplicates
     for (i in seq_len(min(1, length(enriched_docs$examples)))) {
       cli_example <- trimws(enriched_docs$examples[i])
     if (nzchar(cli_example)) {
-      # Store original for fallback/error messages
+      # Store original for fallback/error messages (preserve even if conversion fails)
       cli_example_original <- cli_example
-      
+
       # Clean up the CLI example: remove line continuations (backslash-newline patterns)
       # Handle various formats: "\ \n", "\\\n", "  \  \n  ", etc.
       # Use perl=TRUE for extended regex patterns
@@ -2420,7 +2423,7 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       cli_example <- gsub("\n\\s+", " ", cli_example)  # Newlines with leading whitespace
       cli_example <- gsub("\\s+", " ", cli_example)  # Normalize multiple spaces to single space
       cli_example <- trimws(cli_example)
-      
+
       # Parse the CLI command
       parsed_cli <- parse_cli_command(cli_example)
 
@@ -2488,14 +2491,14 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
   # If we didn't add any examples, add an informative placeholder
   if (examples_added == 0) {
     doc <- paste0(doc, "#' \\dontrun{\n")
-    if (exists("cli_example_original") && nzchar(cli_example_original)) {
+    if (!is.null(cli_example_original) && nzchar(cli_example_original)) {
       doc <- paste0(doc, sprintf("#' # TODO: Convert this GDAL CLI example to R parameters:\n"))
       doc <- paste0(doc, sprintf("#' # Original: %s\n", cli_example_original))
       doc <- paste0(doc, sprintf("#' # For help on available parameters, run: ?%s\n", func_name))
       doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
     } else {
       doc <- paste0(doc, sprintf("#' # TODO: No examples available for %s.\n", func_name))
-      doc <- paste0(doc, sprintf("#' # See GDAL documentation: https://gdal.org/programs/%s.html\n", 
+      doc <- paste0(doc, sprintf("#' # See GDAL documentation: https://gdal.org/programs/%s.html\n",
                                   tolower(gsub("_", "-", func_name))))
       doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
     }
