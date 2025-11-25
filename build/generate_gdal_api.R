@@ -260,14 +260,27 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
 #' Construct the documentation URL for a GDAL command.
 #'
 #' Maps a command path (e.g., c("gdal", "raster", "info")) to the corresponding
-#' GDAL documentation URL.
+#' GDAL documentation URL. Uses version-aware base URL if version provided.
 #'
 #' @param full_path Character vector representing the command hierarchy.
-#' @param base_url Base URL for GDAL documentation (default: stable).
+#' @param base_url Base URL for GDAL documentation. If NULL, uses stable docs.
+#' @param gdal_version List from .parse_gdal_version() for version-aware URLs.
 #'
-#' @return Character string containing the full documentation URL, or NA if not found.
+#' @return Character string containing the full documentation URL.
 #'
-construct_doc_url <- function(full_path, base_url = "https://gdal.org/en/stable/programs") {
+construct_doc_url <- function(full_path, base_url = NULL, gdal_version = NULL) {
+  # Phase 2: Use version-aware base URL if version provided
+  if (is.null(base_url)) {
+    if (!is.null(gdal_version)) {
+      # Use version tag for documentation
+      version_str <- gdal_version$full
+      base_url <- sprintf("https://gdal.org/en/%s/programs", version_str)
+    } else {
+      # Fallback to stable docs
+      base_url <- "https://gdal.org/en/stable/programs"
+    }
+  }
+
   # Convert command path to documentation filename
   # e.g., c("gdal", "raster", "info") -> "gdal_raster_info"
   doc_name <- paste(full_path, collapse = "_")
@@ -285,30 +298,38 @@ construct_doc_url <- function(full_path, base_url = "https://gdal.org/en/stable/
 #' @param command_name Character string with the command name (e.g., "gdal_raster_info").
 #' @param timeout Numeric timeout in seconds for HTTP request (default: 10).
 #' @param verbose Logical whether to print debug messages.
+#' @param gdal_version List from .parse_gdal_version() for version-aware GitHub refs.
 #'
 #' @return List with elements:
 #'   - status: HTTP status code (200 for success, else error code)
 #'   - examples: Character vector of extracted example commands
 #'   - source: "rst" to indicate source type
 #'
-fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE) {
+fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE, gdal_version = NULL) {
   result <- list(
     status = NA_integer_,
     examples = character(0),
     source = "rst"
   )
-  
+
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
-  
+
   # Convert command name to RST filename
   # e.g., "gdal_raster_info" -> "gdal_raster_info.rst"
   rst_filename <- paste0(command_name, ".rst")
-  
+
   # Build raw GitHub URL for RST file
-  # Point to the master branch doc/source/programs/ directory
+  # Phase 2: Use version-aware GitHub reference
+  github_ref <- if (!is.null(gdal_version)) {
+    .get_github_ref(gdal_version)
+  } else {
+    "master"
+  }
+
   rst_url <- sprintf(
-    "https://raw.githubusercontent.com/OSGeo/gdal/master/doc/source/programs/%s",
+    "https://raw.githubusercontent.com/OSGeo/gdal/%s/doc/source/programs/%s",
+    github_ref,
     rst_filename
   )
   
@@ -1395,35 +1416,43 @@ create_doc_cache <- function(cache_dir = ".gdal_doc_cache") {
 #'
 #' @return List with enriched documentation data.
 #'
-fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = NULL, command_name = NULL) {
+fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = NULL, command_name = NULL, gdal_version = NULL) {
   # Ensure verbose is a logical
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
-  
+
+  # Phase 2: Construct version-aware base path for URL normalization
+  version_path <- if (!is.null(gdal_version)) {
+    gdal_version$full
+  } else {
+    "stable"
+  }
+
   # Use provided URL from GDAL JSON, or construct one if not provided
   if (is.null(url) || !nzchar(url)) {
-    url <- construct_doc_url(full_path)
+    url <- construct_doc_url(full_path, gdal_version = gdal_version)
   }
-  
-  # Normalize URL: ensure it includes /en/stable/ path if not present
+
+  # Normalize URL: ensure it includes /en/{version}/ path if not present
   # GDAL JSON URLs may be like https://gdal.org/programs/... or https://gdal.org/en/stable/programs/...
-  if (!grepl("/en/stable/", url)) {
-    url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", url)
+  version_pattern <- sprintf("/en/[0-9.]+|/en/stable", version_path)
+  if (!grepl(version_pattern, url)) {
+    url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), url)
   }
-  
+
   # For driver commands that may have driver-specific URLs, try /programs/ variant first
   # This handles cases like gdal_driver_gpkg_repack which should use /programs/gdal_driver_gpkg_repack.html
   # instead of /drivers/vector/gpkg.html
   primary_url <- url
   alternate_url <- NULL
-  
+
   if (length(full_path) > 2 && full_path[2] == "driver") {
     # This is a driver command - construct the /programs/ variant
-    programs_url <- construct_doc_url(full_path)
-    if (!grepl("/en/stable/", programs_url)) {
-      programs_url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", programs_url)
+    programs_url <- construct_doc_url(full_path, gdal_version = gdal_version)
+    if (!grepl(version_pattern, programs_url)) {
+      programs_url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), programs_url)
     }
-    
+
     # If the provided URL is a /drivers/ URL, we should try /programs/ first
     if (grepl("/drivers/", url)) {
       # Swap them - try /programs/ first as it's more likely to exist
@@ -1454,13 +1483,13 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
   # Then fall back to HTML scraping if RST doesn't have examples
   # Build command name for RST lookup (e.g., c("gdal", "raster", "info") -> "gdal_raster_info")
   command_name_for_rst <- paste(full_path, collapse = "_")
-  
+
   if (verbose) {
     cat(sprintf("  ⟳ Fetching RST examples: %s\n", command_name_for_rst))
   }
-  
+
   # Attempt to fetch examples from RST first
-  rst_result <- fetch_examples_from_rst(command_name_for_rst, verbose = verbose)
+  rst_result <- fetch_examples_from_rst(command_name_for_rst, verbose = verbose, gdal_version = gdal_version)
   
   if (rst_result$status == 200 && length(rst_result$examples) > 0) {
     if (verbose) {
@@ -1496,26 +1525,26 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     # Try using parent command URL (e.g., for gdal_vector_geom_buffer, try gdal_vector page)
     # This handles cases where subcommands don't have individual doc pages
     parent_path <- full_path[1:(length(full_path)-1)]
-    parent_url <- construct_doc_url(parent_path)
-    
-    # Normalize parent URL
-    if (!grepl("/en/stable/", parent_url)) {
-      parent_url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", parent_url)
+    parent_url <- construct_doc_url(parent_path, gdal_version = gdal_version)
+
+    # Normalize parent URL (Phase 2: Use version-aware pattern)
+    if (!grepl(version_pattern, parent_url)) {
+      parent_url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), parent_url)
     }
-    
+
     if (verbose) cat(sprintf("  [404] Trying parent: %s\n", parent_url))
     docs <- scrape_gdal_docs(parent_url, verbose = verbose, command_name = command_name)
-    
+
     # If parent also fails, try the grandparent (for deeply nested commands)
     if (docs$status == 404 && length(full_path) > 3) {
       grandparent_path <- full_path[1:(length(full_path)-2)]
-      grandparent_url <- construct_doc_url(grandparent_path)
-      
-      # Normalize grandparent URL
-      if (!grepl("/en/stable/", grandparent_url)) {
-        grandparent_url <- gsub("https://gdal.org/", "https://gdal.org/en/stable/", grandparent_url)
+      grandparent_url <- construct_doc_url(grandparent_path, gdal_version = gdal_version)
+
+      # Normalize grandparent URL (Phase 2: Use version-aware pattern)
+      if (!grepl(version_pattern, grandparent_url)) {
+        grandparent_url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), grandparent_url)
       }
-      
+
       if (verbose) cat(sprintf("  [404] Trying grandparent: %s\n", grandparent_url))
       docs <- scrape_gdal_docs(grandparent_url, verbose = verbose, command_name = command_name)
     }
@@ -1654,14 +1683,15 @@ crawl_gdal_api <- function(command_path = c("gdal")) {
 #' @param endpoint A list with full_path, description, and input_arguments.
 #' @param cache Documentation cache object (from create_doc_cache), or NULL to skip enrichment.
 #' @param verbose Logical. Print status messages during documentation fetching.
+#' @param gdal_version List from .parse_gdal_version() for version-aware documentation.
 #'
 #' @return A string containing the complete R function code (including roxygen).
 #'
-generate_function <- function(endpoint, cache = NULL, verbose = FALSE) {
+generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_version = NULL) {
   # Ensure verbose is a logical
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
-  
+
   full_path <- endpoint$full_path
   command_name <- if (is.null(endpoint$name)) tail(full_path, 1) else endpoint$name
   description <- if (is.null(endpoint$description)) "GDAL command." else endpoint$description
@@ -1701,7 +1731,7 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE) {
   if (!is.null(cache)) {
     # Extract the url from the endpoint JSON if available
     endpoint_url <- if (is.null(endpoint$url)) NULL else endpoint$url
-    enriched_docs <- fetch_enriched_docs(full_path, cache = cache, verbose = verbose, url = endpoint_url, command_name = command_name)
+    enriched_docs <- fetch_enriched_docs(full_path, cache = cache, verbose = verbose, url = endpoint_url, command_name = command_name, gdal_version = gdal_version)
   }
 
   # Generate roxygen documentation with enrichment
@@ -2898,7 +2928,8 @@ main <- function() {
         if (func_name %in% c("gdal", "gdal_raster", "gdal_vector", "gdal_mdim")) {
           cat(sprintf("  [DEBUG] Generating %s...\n", func_name))
         }
-        function_code <- generate_function(endpoint, cache = doc_cache, verbose = TRUE)
+        # Phase 2: Pass gdal_version to generate_function for version-aware URLs
+        function_code <- generate_function(endpoint, cache = doc_cache, verbose = TRUE, gdal_version = gdal_version)
         if (func_name %in% c("gdal", "gdal_raster", "gdal_vector", "gdal_mdim")) {
           cat(sprintf("  [DEBUG] Writing %s...\n", func_name))
         }
