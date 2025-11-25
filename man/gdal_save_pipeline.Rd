@@ -4,7 +4,14 @@
 \alias{gdal_save_pipeline}
 \title{Save GDAL Pipeline to GDALG Format}
 \usage{
-gdal_save_pipeline(pipeline, path, pretty = TRUE)
+gdal_save_pipeline(
+  pipeline,
+  path,
+  pretty = TRUE,
+  method = c("auto", "native", "json"),
+  overwrite = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{pipeline}{A gdal_pipeline or gdal_job object with pipeline}
@@ -12,6 +19,17 @@ gdal_save_pipeline(pipeline, path, pretty = TRUE)
 \item{path}{Character string specifying the path to save to (typically .gdalg.json)}
 
 \item{pretty}{Logical. If TRUE (default), formats JSON with indentation for readability}
+
+\item{method}{Character string: "auto" (default), "native", or "json"
+\itemize{
+\item "auto": Uses native GDALG driver if GDAL 3.11+ with driver available, else custom JSON
+\item "native": Forces native GDALG driver (requires GDAL 3.11+)
+\item "json": Forces custom JSON serialization
+}}
+
+\item{overwrite}{Logical. If TRUE, overwrites existing file (used with method="native")}
+
+\item{verbose}{Logical. If TRUE, prints diagnostic information}
 }
 \value{
 Invisibly returns the path where the pipeline was saved
@@ -21,6 +39,29 @@ Saves a gdal_pipeline object to a GDALG JSON file. GDALG is GDAL's abstract
 pipeline format, which can be saved to disk and loaded later for execution.
 }
 \details{
+This function supports two serialization methods:
+
+\strong{Method: "json" (Custom JSON)}
+\itemize{
+\item Works with any GDAL version
+\item Fast serialization (direct write)
+\item gdalcli-specific format
+}
+
+\strong{Method: "native" (GDALG Format Driver)}
+\itemize{
+\item Requires GDAL 3.11+ with GDALG driver
+\item Slower (runs GDAL pipeline internally)
+\item Universal GDAL compatibility
+\item Full GDAL metadata
+}
+
+\strong{Method: "auto" (Recommended)}
+\itemize{
+\item Automatically selects the best method for your system
+\item Uses native if available, falls back to JSON
+}
+
 The saved GDALG file can be:
 \itemize{
 \item Executed with GDAL command-line tools
@@ -34,8 +75,14 @@ The saved GDALG file can be:
 pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "out.tif")
 
-# Save to file
+# Save to file (auto-detects best method)
 gdal_save_pipeline(pipeline, "workflow.gdalg.json")
+
+# Force native GDALG driver
+gdal_save_pipeline(pipeline, "workflow_native.gdalg.json", method = "native")
+
+# Force custom JSON
+gdal_save_pipeline(pipeline, "workflow_json.gdalg.json", method = "json")
 
 # Load and execute later
 loaded <- gdal_load_pipeline("workflow.gdalg.json")
