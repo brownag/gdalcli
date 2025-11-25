@@ -1337,9 +1337,28 @@ generate_family_tag <- function(full_path) {
 #'
 #' @return List with methods: get(url), set(url, data), get_csv(), save_csv()
 #'
-create_doc_cache <- function(cache_dir = ".gdal_doc_cache") {
+create_doc_cache <- function(cache_dir = ".gdal_doc_cache", gdal_version = NULL) {
+    # Make cache version-aware
+  # Append version to cache directory if available
+  if (!is.null(gdal_version) && !is.null(gdal_version$full)) {
+    cache_dir <- sprintf("%s_%s", cache_dir, gdal_version$full)
+  }
+
   if (!dir.exists(cache_dir)) {
     dir.create(cache_dir, showWarnings = FALSE)
+  }
+
+  # Create version info file for future validation
+  version_info_file <- file.path(cache_dir, ".version_info")
+  if (!is.null(gdal_version)) {
+    tryCatch(
+      {
+        writeLines(sprintf("GDAL=%s", gdal_version$full), version_info_file)
+      },
+      error = function(e) {
+        warning("Failed to write cache version info")
+      }
+    )
   }
 
   csv_file <- file.path(cache_dir, "descriptions.csv")
@@ -2960,7 +2979,8 @@ main <- function() {
 
   # Initialize documentation cache (web enrichment is mandatory)
   cat("Initializing documentation cache for web enrichment...\n")
-  doc_cache <- create_doc_cache(".gdal_doc_cache")
+    # Pass gdal_version for version-aware caching
+  doc_cache <- create_doc_cache(".gdal_doc_cache", gdal_version = gdal_version)
   cat("(Web enrichment is required for examples)\n\n")
 
   generated_files <- character()
