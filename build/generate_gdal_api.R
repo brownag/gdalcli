@@ -13,6 +13,139 @@ library(magrittr)
 # ============================================================================
 
 # ============================================================================
+# Step 0a: GDAL Version Handling (PHASE 1 - NEW)
+# ============================================================================
+
+#' Parse GDAL version from "gdal --version" output
+#'
+#' Extracts version components from GDAL version string.
+#' Example input: "GDAL 3.11.4, released 2024-11-10"
+#' Returns: list(full = "3.11.4", major = 3, minor = 11, patch = 4)
+#'
+#' @param version_str Character string from `gdal --version`
+#'
+#' @return List with version components (full, major, minor, patch, rc)
+#'
+.parse_gdal_version <- function(version_str) {
+  version_str <- trimws(version_str)
+
+  # Extract version number (first component after GDAL prefix)
+  # Examples: "GDAL 3.11.4, ..." or "3.11.4"
+  match <- regexpr("[0-9]+\\.[0-9]+\\.[0-9]+(rc[0-9]+)?", version_str)
+  if (match == -1) {
+    return(NULL)
+  }
+
+  full_version <- regmatches(version_str, match)
+
+  # Parse semantic version
+  parts <- strsplit(full_version, "\\.")[[1]]
+
+  result <- list(
+    full = full_version,
+    major = as.integer(parts[1]),
+    minor = as.integer(parts[2]),
+    patch = if (length(parts) > 2) {
+      # Handle rc suffixes like "4rc1"
+      patch_str <- parts[3]
+      as.integer(sub("rc[0-9]+", "", patch_str))
+    } else {
+      0L
+    }
+  )
+
+  # Capture RC info if present
+  if (grepl("rc[0-9]+", full_version)) {
+    rc_match <- regexpr("rc[0-9]+", full_version)
+    result$rc <- regmatches(full_version, rc_match)
+  }
+
+  result
+}
+
+#' Get GDAL version at runtime
+#'
+#' Runs `gdal --version` and returns parsed version components.
+#'
+#' @return List with version components, or NULL if GDAL not available
+#'
+.get_gdal_version <- function() {
+  gdal_check <- tryCatch(
+    processx::run("gdal", "--version", error_on_status = TRUE),
+    error = function(e) NULL
+  )
+
+  if (is.null(gdal_check)) {
+    return(NULL)
+  }
+
+  version_str <- trimws(gdal_check$stdout)
+  .parse_gdal_version(version_str)
+}
+
+#' Generate GitHub branch reference for GDAL version
+#'
+#' Maps version to appropriate GitHub branch/tag.
+#' - For development: "master" or "main"
+#' - For releases: version tags like "v3.11.4"
+#'
+#' @param version_parsed List from .parse_gdal_version()
+#'
+#' @return Character string with GitHub branch/tag name
+#'
+.get_github_ref <- function(version_parsed) {
+  if (is.null(version_parsed)) {
+    return("master")  # Default fallback
+  }
+
+  # For now, use version tags for releases
+  # This can be enhanced to handle alpha/beta/rc builds
+  sprintf("v%s", version_parsed$full)
+}
+
+#' Write GDAL version metadata to file
+#'
+#' Creates inst/GDAL_VERSION_INFO.json with generation metadata
+#'
+#' @param version_parsed List from .parse_gdal_version()
+#' @param output_file Path to write metadata JSON
+#'
+#' @return Invisibly TRUE if successful
+#'
+.write_gdal_version_info <- function(version_parsed, output_file = "inst/GDAL_VERSION_INFO.json") {
+  if (is.null(version_parsed)) {
+    return(invisible(FALSE))
+  }
+
+  # Ensure output directory exists
+  output_dir <- dirname(output_file)
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+
+  metadata <- list(
+    generated_at = Sys.time(),
+    gdal_version = version_parsed$full,
+    gdal_version_parsed = version_parsed,
+    generation_date = as.character(Sys.Date()),
+    r_version = paste(R.version$major, R.version$minor, sep = "."),
+    packages = list(
+      processx = as.character(packageVersion("processx")),
+      jsonlite = as.character(packageVersion("jsonlite")),
+      rvest = as.character(packageVersion("rvest")),
+      httr = as.character(packageVersion("httr"))
+    )
+  )
+
+  # Write as JSON
+  json_content <- jsonlite::toJSON(metadata, pretty = TRUE, auto_unbox = TRUE)
+  writeLines(json_content, output_file)
+
+  cat(sprintf("Wrote GDAL version metadata to %s\n", output_file))
+  invisible(TRUE)
+}
+
+# ============================================================================
 # Step 0b: Documentation Enrichment Functions (NEW)
 # ============================================================================
 #'
@@ -2717,13 +2850,10 @@ apply_automatic_signature_fixups <- function(r_dir = "R") {
 # ============================================================================
 
 main <- function() {
-  # Check if GDAL is available
-  gdal_check <- tryCatch(
-    processx::run("gdal", "--version", error_on_status = TRUE),
-    error = function(e) NULL
-  )
+  # Phase 1: Check if GDAL is available and get version
+  gdal_version <- .get_gdal_version()
 
-  if (is.null(gdal_check)) {
+  if (is.null(gdal_version)) {
     cat("ERROR: GDAL command not found.\n")
     cat("Please ensure GDAL >= 3.11 is installed and in your PATH.\n")
     cat("Test with: gdal --version\n")
@@ -2731,7 +2861,11 @@ main <- function() {
   }
 
   cat("Crawling GDAL API...\n")
-  cat(sprintf("Using: %s\n\n", trimws(gdal_check$stdout)))
+  cat(sprintf("Using: GDAL %s\n", gdal_version$full))
+  cat(sprintf("GitHub Reference: v%s\n\n", gdal_version$full))
+
+  # Write version metadata to file for runtime introspection
+  .write_gdal_version_info(gdal_version)
 
   endpoints <- crawl_gdal_api(c("gdal"))
 
