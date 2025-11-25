@@ -8,6 +8,12 @@ library(httr)
 library(xml2)
 library(magrittr)
 
+# Source GDAL repo setup utilities
+source("build/setup_gdal_repo.R")
+
+# Global variable for local GDAL repo path
+.gdal_repo_path <- NULL
+
 # ============================================================================
 # Step 0: Helper Functions
 # ============================================================================
@@ -15,6 +21,23 @@ library(magrittr)
 # ============================================================================
 # Step 0a: GDAL Version Handling (PHASE 1 - NEW)
 # ============================================================================
+
+#' Normalize command names for comparison
+#'
+#' Converts command names with different separators (spaces, underscores, dashes)
+#' to a canonical form for consistent matching across formats.
+#'
+#' @param cmd_name Character string - command name in any format
+#'   (spaces, underscores, or dashes can be mixed)
+#'
+#' @return Character string - normalized command with spaces as separator
+#'
+.normalize_command_name <- function(cmd_name) {
+  # Replace all non-alphanumeric characters (spaces, underscores, dashes) with spaces
+  # Then collapse multiple spaces to single space
+  normalized <- gsub("[_\\-\\s]+", " ", cmd_name)
+  trimws(normalized)
+}
 
 #' Parse GDAL version from "gdal --version" output
 #'
@@ -305,7 +328,7 @@ construct_doc_url <- function(full_path, base_url = NULL, gdal_version = NULL) {
 #'   - examples: Character vector of extracted example commands
 #'   - source: "rst" to indicate source type
 #'
-fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE, gdal_version = NULL) {
+fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE, gdal_version = NULL, repo_dir = NULL) {
   result <- list(
     status = NA_integer_,
     examples = character(0),
@@ -317,10 +340,120 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
 
   # Convert command name to RST filename
   # e.g., "gdal_raster_info" -> "gdal_raster_info.rst"
-  rst_filename <- paste0(command_name, ".rst")
+  # Also normalize dashes to underscores to match actual GDAL RST file naming
+  # e.g., "gdal_raster_clean-collar" -> "gdal_raster_clean_collar.rst"
+  rst_filename <- paste0(gsub("-", "_", command_name), ".rst")
 
-  # Build raw GitHub URL for RST file
-  # Use version-aware GitHub reference
+  # Try to get RST from local repository first (no rate limiting, faster)
+  if (!is.null(repo_dir) && dir.exists(repo_dir)) {
+    local_rst_file <- file.path(repo_dir, "doc", "source", "programs", rst_filename)
+
+    # If individual RST file doesn't exist, try parent commands
+    # e.g., if gdal_vsi_sozip_create.rst doesn't exist, try gdal_vsi_sozip.rst
+    parent_candidates <- character(0)
+    if (!file.exists(local_rst_file)) {
+      # Parse command hierarchy and try progressively higher-level commands
+      cmd_parts <- strsplit(command_name, "_")[[1]]
+      if (length(cmd_parts) > 2) {
+        # Try parent commands: remove last part and try again
+        for (i in (length(cmd_parts) - 1):2) {
+          parent_cmd <- paste(cmd_parts[1:i], collapse = "_")
+          parent_candidates <- c(parent_candidates, parent_cmd)
+        }
+      }
+    } else {
+      parent_candidates <- c(local_rst_file)
+    }
+
+    # Try individual file first, then parent candidates
+    for (candidate_file in parent_candidates) {
+      if (!grepl("\\.rst$", candidate_file)) {
+        # If it's a command name, convert to file path
+        candidate_file <- file.path(repo_dir, "doc", "source", "programs",
+                                    paste0(gsub("-", "_", candidate_file), ".rst"))
+      }
+
+      if (file.exists(candidate_file)) {
+        if (verbose) {
+          cat(sprintf("  [DEBUG] Reading RST examples from local repo: %s\n", candidate_file))
+        }
+
+        tryCatch(
+          {
+            lines <- readLines(candidate_file, warn = FALSE)
+            # Join lines into single string for parsing
+            content <- paste(lines, collapse = "\n")
+            # Parse examples from RST file
+            examples <- .extract_examples_from_rst(content)
+
+            if (length(examples) > 0) {
+              # Filter examples to those matching the requested command
+              filtered_examples <- character(0)
+              # Normalize the requested command name for comparison
+              # e.g., "gdal_vsi_sozip_create" -> "gdal vsi sozip create"
+              normalized_cmd <- .normalize_command_name(command_name)
+              # Also get the parent command (all but last part)
+              cmd_parts <- strsplit(normalized_cmd, "\\s+")[[1]]
+              if (length(cmd_parts) > 1) {
+                normalized_parent <- paste(
+                  cmd_parts[-length(cmd_parts)], collapse = " ")
+              } else {
+                normalized_parent <- normalized_cmd
+              }
+
+              for (ex in examples) {
+                # Normalize the example command for comparison
+                normalized_ex <- .normalize_command_name(ex)
+
+                # Check if this example belongs to requested command
+                # Match if example starts with full or parent command
+                if (grepl(sprintf("^%s(\\s+|$)",
+                                  gsub("([.*+?^${}()|\\\\\\[\\]])",
+                                       "\\\\\\1", normalized_cmd)),
+                          normalized_ex, ignore.case = TRUE) ||
+                    (normalized_parent != normalized_cmd &&
+                     grepl(sprintf("^%s(\\s+|$)",
+                                   gsub("([.*+?^${}()|\\\\\\[\\]])",
+                                        "\\\\\\1", normalized_parent)),
+                           normalized_ex, ignore.case = TRUE))) {
+                  filtered_examples <- c(filtered_examples, ex)
+                }
+              }
+
+              # If filtering found results, use them; otherwise use all examples if from same parent
+              if (length(filtered_examples) > 0) {
+                examples <- filtered_examples
+              } else if (basename(candidate_file) == rst_filename) {
+                # Use all examples if from the individual file
+                # (don't filter parent file examples)
+              } else if (candidate_file != file.path(repo_dir, "doc", "source", "programs", rst_filename)) {
+                # If we're using a parent file, skip it if no matching examples found
+                # Only use it if we couldn't find the individual file
+                next
+              }
+
+              if (length(examples) > 0) {
+                if (verbose) {
+                  cat(sprintf("  [OK] Found %d examples in local RST\n", length(examples)))
+                }
+                result$status <- 200
+                result$examples <- examples
+                result$source <- "rst_local"
+                return(result)
+              }
+            }
+          },
+          error = function(e) {
+            if (verbose) {
+              cat(sprintf("  [WARN] Error reading local RST: %s\n", e$message))
+            }
+          }
+        )
+      }
+    }
+  }
+
+  # Fall back to GitHub if local not available
   github_ref <- if (!is.null(gdal_version)) {
     .get_github_ref(gdal_version)
   } else {
@@ -332,9 +465,9 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
     github_ref,
     rst_filename
   )
-  
+
   if (verbose) {
-    cat(sprintf("  [DEBUG] Attempting to fetch RST examples from %s\n", rst_url))
+    cat(sprintf("  [DEBUG] Attempting to fetch RST examples from GitHub: %s\n", rst_url))
   }
   
   # Attempt to fetch the RST file
@@ -420,58 +553,70 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
   # Find all code blocks starting from Examples section
   for (i in (start_idx + 1):length(lines)) {
     line <- lines[i]
-    
-    # Look for code-block directive: .. code-block:: bash
-    if (grepl("^\\s*\\.\\.\\s+code-block::\\s+bash", line, ignore.case = TRUE)) {
+
+    # Look for code-block directive: .. code-block:: bash or console
+    if (grepl("^\\s*\\.\\.\\s+code-block::\\s+(bash|console)", line, ignore.case = TRUE)) {
       # Get the indentation of the code block
       block_indent <- nchar(line) - nchar(trimws(line))
-      
+
       # Collect lines until we hit a non-indented line or end of content
       code_lines <- character(0)
       j <- i + 1
-      
+
       while (j <= length(lines)) {
         code_line <- lines[j]
-        
+
         # Skip empty lines at the start
         if (length(code_lines) == 0 && !nzchar(trimws(code_line))) {
           j <- j + 1
           next
         }
-        
+
         # Check if this line is still part of the code block (more indented)
         line_indent <- nchar(code_line) - nchar(trimws(code_line))
-        
+
         if (nzchar(trimws(code_line)) && line_indent <= block_indent) {
           # We've hit a non-code line, exit the block
           break
         }
-        
+
         # Remove indentation and add to code lines
         if (nzchar(trimws(code_line))) {
           # Remove the common indentation
           trimmed_line <- sub(sprintf("^\\s{%d}", block_indent + 4), "", code_line)
           code_lines <- c(code_lines, trimmed_line)
         }
-        
+
         j <- j + 1
       }
-      
+
       # Join code lines and extract command (remove shell prompt if present)
       if (length(code_lines) > 0) {
         code_block <- paste(code_lines, collapse = " ")
-        
+
         # Remove shell prompt ($) and leading/trailing whitespace
         code_block <- gsub("^\\s*\\$\\s*", "", code_block)
         code_block <- trimws(code_block)
-        
+
         if (nzchar(code_block)) {
           examples <- c(examples, code_block)
         }
       }
-      
+
       # Move to where the code block ended
       i <- j - 1
+    }
+
+    # Also look for command-output directive: .. command-output:: gdal ...
+    if (grepl("^\\s*\\.\\.\\s+command-output::\\s+gdal\\s+", line, ignore.case = TRUE)) {
+      # Extract the command from the directive line itself
+      # Pattern: .. command-output:: gdal vector info --format=text ...
+      directive_text <- trimws(sub("^\\s*\\.\\.\\s+command-output::\\s+", "", line))
+
+      if (nzchar(directive_text)) {
+        # Command is directly on the directive line
+        examples <- c(examples, directive_text)
+      }
     }
   }
   
@@ -1464,7 +1609,7 @@ create_doc_cache <- function(cache_dir = ".gdal_doc_cache", gdal_version = NULL)
 #'
 #' @return List with enriched documentation data.
 #'
-fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = NULL, command_name = NULL, gdal_version = NULL) {
+fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = NULL, command_name = NULL, gdal_version = NULL, repo_dir = NULL) {
   # Ensure verbose is a logical
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
@@ -1537,7 +1682,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
   }
 
   # Attempt to fetch examples from RST first
-  rst_result <- fetch_examples_from_rst(command_name_for_rst, verbose = verbose, gdal_version = gdal_version)
+  rst_result <- fetch_examples_from_rst(command_name_for_rst, verbose = verbose, gdal_version = gdal_version, repo_dir = repo_dir)
   
   if (rst_result$status == 200 && length(rst_result$examples) > 0) {
     if (verbose) {
@@ -1735,7 +1880,7 @@ crawl_gdal_api <- function(command_path = c("gdal")) {
 #'
 #' @return A string containing the complete R function code (including roxygen).
 #'
-generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_version = NULL) {
+generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_version = NULL, repo_dir = NULL) {
   # Ensure verbose is a logical
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
@@ -1779,7 +1924,7 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
   if (!is.null(cache)) {
     # Extract the url from the endpoint JSON if available
     endpoint_url <- if (is.null(endpoint$url)) NULL else endpoint$url
-    enriched_docs <- fetch_enriched_docs(full_path, cache = cache, verbose = verbose, url = endpoint_url, command_name = command_name, gdal_version = gdal_version)
+    enriched_docs <- fetch_enriched_docs(full_path, cache = cache, verbose = verbose, url = endpoint_url, command_name = command_name, gdal_version = gdal_version, repo_dir = repo_dir)
   }
 
   # Generate roxygen documentation with enrichment
@@ -2966,6 +3111,11 @@ main <- function() {
   # Write version metadata to file for runtime introspection
   .write_gdal_version_info(gdal_version)
 
+  # Set up local GDAL repository to avoid GitHub rate limiting
+  cat("Setting up local GDAL repository...\n")
+  repo_path <- setup_gdal_repo(gdal_version)
+  cat(sprintf("Using local GDAL repo at: %s\n\n", repo_path))
+
   endpoints <- crawl_gdal_api(c("gdal"))
 
   if (length(endpoints) == 0) {
@@ -2998,8 +3148,8 @@ main <- function() {
         if (func_name %in% c("gdal", "gdal_raster", "gdal_vector", "gdal_mdim")) {
           cat(sprintf("  [DEBUG] Generating %s...\n", func_name))
         }
-        # Pass gdal_version to generate_function for version-aware URLs
-        function_code <- generate_function(endpoint, cache = doc_cache, verbose = TRUE, gdal_version = gdal_version)
+        # Pass gdal_version and repo_path for version-aware URLs and local GDAL repo
+        function_code <- generate_function(endpoint, cache = doc_cache, verbose = TRUE, gdal_version = gdal_version, repo_dir = repo_path)
         if (func_name %in% c("gdal", "gdal_raster", "gdal_vector", "gdal_mdim")) {
           cat(sprintf("  [DEBUG] Writing %s...\n", func_name))
         }
