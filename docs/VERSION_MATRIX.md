@@ -13,14 +13,14 @@ This document defines feature availability and compatibility across GDAL and R v
 
 | Feature | GDAL 3.11 | GDAL 3.12+ | Status | Notes |
 |---------|-----------|-----------|--------|-------|
-| **CLI Framework** | ✅ Full | ✅ Full | Stable | Unified CLI available since GDAL 3.11 |
-| **80+ Algorithm Functions** | ✅ Yes | ✅ Yes + 9 new | Stable | Auto-generated from `gdal --json-usage` |
-| **Native Pipeline Execution** | ✅ Yes | ✅ Yes | Stable | `gdal raster/vector pipeline` commands |
-| **GDALG Format (JSON)** | ✅ Yes | ✅ Yes | Stable | Custom yyjsonr-based serialization |
-| **GDALG Format Driver** | ❌ No | ✅ Yes | New | Use `gdal ... --output-format GDALG` |
-| **Shell Script Rendering** | ✅ Yes | ✅ Yes | Stable | bash/zsh script export |
-| **Configuration Options** | ✅ Yes | ✅ Yes | Stable | Full GDAL config support |
-| **VSI Streaming** | ✅ Yes | ✅ Yes | Stable | `/vsistdin/`, `/vsistdout/`, cloud storage |
+| CLI Framework | Yes | Yes | Stable | Unified CLI available since GDAL 3.11 |
+| 80+ Algorithm Functions | Yes | Yes + 9 new | Stable | Auto-generated from gdal --json-usage |
+| Native Pipeline Execution | Yes | Yes | Stable | gdal raster/vector pipeline commands |
+| GDALG Format (JSON) | Yes | Yes | Stable | Custom yyjsonr-based serialization |
+| GDALG Format Driver | No | Yes | New | Use gdal ... --output-format GDALG |
+| Shell Script Rendering | Yes | Yes | Stable | bash/zsh script export |
+| Configuration Options | Yes | Yes | Stable | Full GDAL config support |
+| VSI Streaming | Yes | Yes | Stable | /vsistdin/, /vsistdout/, cloud storage |
 
 ## Backend Support
 
@@ -104,72 +104,68 @@ All three execution backends support the same feature set:
 ## Feature Availability by Release
 
 ### 0.1.x (GDAL 3.11 Foundation)
-```
-✅ 80+ auto-generated algorithm functions
-✅ Lazy evaluation framework
-✅ Pipe-aware job composition
-✅ Native pipeline execution
-✅ GDALG JSON format persistence
-✅ Shell script generation
-✅ processx backend
-✅ Configuration options
-✅ VSI streaming support
-❌ Advanced debugging (getExplicitlySetArgs)
-❌ Vector optimization (setVectorArgsFromObject)
-❌ GDALG format driver
-```
+
+[yes] 80+ auto-generated algorithm functions
+[yes] Lazy evaluation framework
+[yes] Pipe-aware job composition
+[yes] Native pipeline execution
+[yes] GDALG JSON format persistence
+[yes] Shell script generation
+[yes] processx backend
+[yes] Configuration options
+[yes] VSI streaming support
+[no] Advanced debugging (getExplicitlySetArgs)
+[no] Vector optimization (setVectorArgsFromObject)
+[no] GDALG format driver
 
 ### 0.2.x (Enhanced Execution)
-```
-✅ All 0.1.x features
-✅ gdalraster backend (C++ bindings)
-✅ reticulate backend (Python)
-✅ JSON output streaming (stream_out_format="json")
-✅ Discovery utilities (gdal_list_commands, gdal_command_help, gdal_check_version)
-✅ Enhanced error messages
-✅ Backend selection guide
-✅ Version compatibility documentation
-❌ GDAL 3.12 algorithms
-❌ GDALG format driver
-```
+
+[yes] All 0.1.x features
+[yes] gdalraster backend (C++ bindings)
+[yes] reticulate backend (Python)
+[yes] JSON output streaming (stream_out_format=json)
+[yes] Discovery utilities (gdal_list_commands, gdal_command_help, gdal_check_version)
+[yes] Enhanced error messages
+[yes] Backend selection guide
+[yes] Version compatibility documentation
+[no] GDAL 3.12 algorithms
+[no] GDALG format driver
 
 ### 0.3.x (GDAL 3.12+ Integration)
-```
-✅ All 0.2.x features
-✅ 9 new GDAL raster algorithms (blend, proximity, zonal-stats, etc.)
-✅ 5 new GDAL vector algorithms (layer-algebra, simplify-coverage, etc.)
-✅ GDALG format driver support
-✅ Version-conditional algorithm exposure
-✅ GDAL 3.12 feature detection
-✅ Performance improvements from native GDALG
-❌ getExplicitlySetArgs integration
-❌ setVectorArgsFromObject integration
-```
+
+[yes] All 0.2.x features
+[yes] 9 new GDAL raster algorithms (blend, proximity, zonal-stats, etc.)
+[yes] 5 new GDAL vector algorithms (layer-algebra, simplify-coverage, etc.)
+[yes] GDALG format driver support
+[yes] Version-conditional algorithm exposure
+[yes] GDAL 3.12 feature detection
+[yes] Performance improvements from native GDALG
+[no] getExplicitlySetArgs integration
+[no] setVectorArgsFromObject integration
 
 ### 0.4.x (Advanced Features)
-```
-✅ All 0.3.x features
-✅ getExplicitlySetArgs() for debugging
-✅ setVectorArgsFromObject() for vector workflows
-✅ Advanced job introspection
-✅ gdalraster 2.3.0+ integration
-✅ Performance optimizations
-```
+
+[yes] All 0.3.x features
+[yes] getExplicitlySetArgs() for debugging
+[yes] setVectorArgsFromObject() for vector workflows
+[yes] Advanced job introspection
+[yes] gdalraster 2.3.0+ integration
+[yes] Performance optimizations
 
 ## Testing & Validation Matrix
 
 | Component | GDAL 3.11 | GDAL 3.12 | GDR 2.2 | GDR 2.3 | Reticulate |
 |-----------|-----------|-----------|---------|---------|-----------|
-| CLI discovery | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Algorithm generation | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Lazy evaluation | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Native pipelines | ✅ | ✅ | ✅ | ✅ | ✅ |
-| GDALG persistence | ✅ | ✅ | ✅ | ✅ | ✅ |
-| JSON streaming | ✅ | ✅ | ✅ | ✅ | ✅ |
-| processx backend | ✅ | ✅ | ✅ | ✅ | ✅ |
-| gdalraster backend | N/A | ✅ | ✅ | ✅ | N/A |
-| Format driver | N/A | ✅ | N/A | ✅ | N/A |
-| Advanced features | N/A | N/A | N/A | ✅ | N/A |
+| CLI discovery | yes | yes | yes | yes | yes |
+| Algorithm generation | yes | yes | yes | yes | yes |
+| Lazy evaluation | yes | yes | yes | yes | yes |
+| Native pipelines | yes | yes | yes | yes | yes |
+| GDALG persistence | yes | yes | yes | yes | yes |
+| JSON streaming | yes | yes | yes | yes | yes |
+| processx backend | yes | yes | yes | yes | yes |
+| gdalraster backend | no | yes | yes | yes | no |
+| Format driver | no | yes | no | yes | no |
+| Advanced features | no | no | no | yes | no |
 
 (GDR = gdalraster, N/A = feature not applicable to this version)
 

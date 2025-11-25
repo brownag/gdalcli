@@ -34,7 +34,7 @@ The `getExplicitlySetArgs()` capability distinguishes between arguments that wer
 
 ### Implementation Details
 
-gdalcli leverages gdalraster's `GDALAlg` class, which provides built-in access to `GetExplicitlySetArgs()`. This means:
+gdalcli uses gdalraster's `GDALAlg` class, which provides built-in access to `GetExplicitlySetArgs()`. This means:
 
 - **No Rcpp bindings required** - Uses existing gdalraster infrastructure
 - **Full GDAL 3.12+ compatibility** - Works with all GDAL option types

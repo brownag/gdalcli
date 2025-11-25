@@ -1,5 +1,6 @@
 .gdal_doc_cache*/
 ..Rcheck
+build/gdal_repo/
 inst/GDAL_VERSION_INFO.json
 inst/cache/*.rds
 /doc/

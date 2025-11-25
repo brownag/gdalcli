@@ -14,14 +14,6 @@ source("build/setup_gdal_repo.R")
 # Global variable for local GDAL repo path
 .gdal_repo_path <- NULL
 
-# ============================================================================
-# Step 0: Helper Functions
-# ============================================================================
-
-# ============================================================================
-# Step 0a: GDAL Version Handling (PHASE 1 - NEW)
-# ============================================================================
-
 #' Normalize command names for comparison
 #'
 #' Converts command names with different separators (spaces, underscores, dashes)
