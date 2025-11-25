@@ -137,9 +137,9 @@ cat(seq_script, "\n")
 ### Example 8: GDALG Format - Save Pipeline
 
 ```{r}
-# Save pipeline to GDALG format
+# Save pipeline to GDALG format (using custom JSON method for examples)
 temp_file <- tempfile(fileext = ".gdalg.json")
-gdal_save_pipeline(pipeline, temp_file)
+gdal_save_pipeline(pipeline, temp_file, method = "json")
 
 # Display the saved GDALG JSON structure
 cat("Saved GDALG file:\n")
@@ -157,7 +157,7 @@ original_cmd <- render_gdal_pipeline(pipeline, format = "native")
 
 # Save to GDALG and load back
 temp_file <- tempfile(fileext = ".gdalg.json")
-gdal_save_pipeline(pipeline, temp_file)
+gdal_save_pipeline(pipeline, temp_file, method = "json")
 loaded_pipeline <- gdal_load_pipeline(temp_file)
 
 # Render the loaded pipeline
@@ -240,9 +240,9 @@ pipeline_for_gdalg <- gdal_raster_reproject(
   ) |>
   gdal_with_co("COMPRESS=LZW", "BLOCKXSIZE=512")
 
-# Save to GDALG format
+# Save to GDALG format (using custom JSON method for examples)
 temp_gdalg <- tempfile(fileext = ".gdalg.json")
-gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg)
+gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 
 # Display the full JSON
 cat("Full GDALG JSON file:\n")
@@ -375,6 +375,42 @@ writeLines(script, "process.sh")
 # Or as separate sequential commands
 script_seq <- render_shell_script(pipeline, format = "commands", shell = "bash")
 ```
+
+### GDALG Format: Native Format Driver Support (GDAL 3.11+)
+
+For maximum compatibility with GDAL tools across Python, C++, and CLI, use the native GDALG format driver:
+
+```{r, eval=FALSE}
+# Check if native GDALG driver is available
+if (gdal_has_gdalg_driver()) {
+  # Save using GDAL's native GDALG format driver
+  # This ensures compatibility with other GDAL tools
+  gdal_save_pipeline(pipeline, "workflow.gdalg.json", method = "native")
+
+  # Or explicitly use the native function
+  gdal_save_pipeline_native(pipeline, "workflow.gdalg.json")
+}
+
+# Auto-detection: automatically uses native driver if available, else custom JSON
+gdal_save_pipeline(pipeline, "workflow.gdalg.json", method = "auto")
+```
+
+**Comparison of serialization methods:**
+
+| Feature | Custom JSON | Native GDALG Driver |
+|---------|-------------|-------------------|
+| GDAL Version | Any | 3.11+ |
+| Speed | Fast | Moderate |
+| Compatibility | gdalcli-specific | Universal GDAL tools |
+| Metadata | Basic | Full GDAL metadata |
+| Use Case | Development, testing | Production, cross-tool workflows |
+
+**Method parameter:**
+- `method = "json"` - Uses custom JSON serialization (fast, backward compatible)
+- `method = "native"` - Uses GDAL's native GDALG format driver (requires GDAL 3.11+)
+- `method = "auto"` - Automatically selects best method based on GDAL version
+
+Both methods produce valid, portable GDALG files that can be loaded with `gdal_load_pipeline()`.
 
 ### Configuration Options in Pipelines
 
