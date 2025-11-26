@@ -894,13 +894,78 @@ GDALG files can be:
 
 ## Contributing
 
-Contributions are welcome! Please:
+Contributions are welcome! Here's how to get started:
 
-1.  Fork the repository
-2.  Create a feature branch (`git checkout -b feature/my-feature`)
-3.  Commit your changes (`git commit -am 'Add my feature'`)
-4.  Push to the branch (`git push origin feature/my-feature`)
-5.  Open a Pull Request
+### Setup
+
+```bash
+git clone https://github.com/brownag/gdalcli.git
+cd gdalcli
+Rscript -e "devtools::install_deps(dependencies = TRUE)"
+```
+
+### Code Conventions
+
+**Internal functions** (not exported):
+- Prefix with dot: `.error()`, `.validate_path_component()`
+- Use `@noRd` roxygen tag
+
+**Exported functions**:
+- Include `@export` in roxygen comments
+- All functions require roxygen documentation
+
+**S3 Methods**:
+- Use generic.class naming: `print.gdal_job`, `gdal_with_co.default`
+- Auto-registered via roxygen
+
+### Development Workflow
+
+```bash
+make dev        # Quick build (regenerate, docs, check-man)
+make test       # Run tests
+make docs       # Build documentation
+make check      # Full R CMD check
+```
+
+### Testing
+
+Add tests to `tests/testthat/` using testthat:
+
+```r
+test_that("descriptive test name", {
+  result <- my_function(input)
+  expect_equal(result, expected_value)
+})
+```
+
+### Git Workflow
+
+1. Create a branch: `git checkout -b feature/description`
+2. Make changes and test locally
+3. Commit with conventional commit format:
+   ```
+   type: brief description
+
+   Optional longer explanation if needed.
+   ```
+4. Push and open a PR
+
+**Commit types**: `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, `build`
+- Keep commits focused on a single concern
+- Keep subject line brief (50 chars preferred)
+
+### Before Opening a PR
+
+- Run `make dev` and `make test`
+- Run `make check-man` and fix any documentation errors
+- Keep PRs focused on a single concern
+- Use draft PR for work in progress
+- Rebase changes onto main branch rather than merge main into branch
+- Squash commits to combine related changes
+
+### Questions?
+
+Open an [issue](https://github.com/brownag/gdalcli/issues/) on GitHub.
 
 ## License
 
