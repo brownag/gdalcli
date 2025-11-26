@@ -9,7 +9,7 @@
 #' vector processing via Arrow-based data structures. On older GDAL versions,
 #' falls back to temporary file operations.
 #'
-#' @param x An sf object, spatial object, or data.frame with geometry column
+#' @param x A spatial object: sf, terra::SpatVector, or data.frame with geometry column
 #' @param operation Type of operation to perform:
 #'   - "translate": Convert between formats with spatial transformations
 #'   - "filter": Filter features by geometry or attribute
@@ -90,11 +90,36 @@ gdal_vector_from_object <- function(
   operation <- match.arg(operation)
   sql_dialect <- match.arg(sql_dialect)
 
-  if (!inherits(x, "sf")) {
+  # Check for spatial package requirements
+  is_sf <- inherits(x, "sf")
+  is_terra <- inherits(x, "SpatVector")
+
+  if (!is_sf && !is_terra) {
     cli::cli_abort(
       c(
-        "x must be an sf object",
-        "i" = sprintf("Got: %s", paste(class(x), collapse = ", "))
+        "x must be an sf or terra::SpatVector object",
+        "i" = sprintf("Got: %s", paste(class(x), collapse = ", ")),
+        "i" = "Install sf or terra package to use this function"
+      )
+    )
+  }
+
+  # Convert terra to sf if needed
+  if (is_terra) {
+    if (!requireNamespace("terra", quietly = TRUE)) {
+      cli::cli_abort("terra package required to process SpatVector objects")
+    }
+    # terra::st_as_sf() converts SpatVector to sf
+    x <- terra::st_as_sf(x)
+    is_sf <- TRUE
+  }
+
+  # Require sf for all processing paths
+  if (!requireNamespace("sf", quietly = TRUE)) {
+    cli::cli_abort(
+      c(
+        "sf package required for vector processing",
+        "i" = "Install with: install.packages('sf')"
       )
     )
   }

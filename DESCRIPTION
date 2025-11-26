@@ -34,6 +34,7 @@ Suggests:
     arrow (>= 10.0.0),
     reticulate (>= 1.28),
     sf,
+    terra,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
