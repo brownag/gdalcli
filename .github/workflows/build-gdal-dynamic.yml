@@ -1,3 +1,13 @@
+# Build Release for GDAL Version
+#
+# Manual workflow dispatch to build gdalcli for a specific GDAL version.
+# Compiles GDAL from source using Docker, generates API, runs tests.
+#
+# Testing/Debugging Strategy:
+# - On any branch: Workflow runs, generates API, creates release branch, but DOES NOT create tag
+# - On main branch: Workflow runs and creates official GitHub release + tag (if create_release='true')
+# - To test: Dispatch from a feature branch, iterate on fixes, then merge to main for official release
+#
 name: Build Release for GDAL Version
 
 on:
@@ -7,7 +17,7 @@ on:
         description: 'GDAL version (e.g., 3.11.4, 3.12.1)'
         required: true
       create_release:
-        description: 'Create GitHub release and tag?'
+        description: 'Create GitHub release and tag? (only effective on main branch)'
         required: true
         default: 'true'
         type: choice
@@ -165,7 +175,7 @@ jobs:
           echo "Created/updated branch: $BRANCH"
 
       - name: Create GitHub release
-        if: success() && github.event.inputs.create_release == 'true'
+        if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.validate.outputs.tag_name }}
@@ -195,6 +205,13 @@ jobs:
       - name: Summary
         if: always()
         run: |
+          RELEASE_INFO="❌ No (not on main branch)"
+          if [ "${{ github.ref }}" = "refs/heads/main" ] && [ "${{ github.event.inputs.create_release }}" = "true" ]; then
+            RELEASE_INFO="✓ Yes (${{ needs.validate.outputs.tag_name }})"
+          elif [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            RELEASE_INFO="❌ No (test branch - tag only created on main)"
+          fi
+
           cat >> $GITHUB_STEP_SUMMARY <<'EOF'
           ## Build Summary
 
@@ -202,6 +219,6 @@ jobs:
           |------|-------|
           | GDAL Version | ${{ needs.validate.outputs.gdal_version }} |
           | Release Branch | `${{ needs.validate.outputs.branch_name }}` |
-          | Release Tag | `${{ needs.validate.outputs.tag_name }}` |
           | Build Status | ${{ job.status }} |
+          | GitHub Release Tag | ${RELEASE_INFO} |
           EOF
