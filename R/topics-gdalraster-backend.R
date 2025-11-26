@@ -18,7 +18,7 @@
 #' - Works on Windows with binary package installation
 #' - Native R integration for data structures (sf objects, matrices, etc.)
 #' - In-memory vector processing with GDAL 3.12+ (gdalraster 2.3.0+)
-#' - Better debugging and error messages from C++ layer
+#' - Better debugging and .error messages from C++ layer
 #'
 #' **When to use:**
 #' - Windows systems without system GDAL installed

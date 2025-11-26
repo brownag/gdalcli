@@ -34,7 +34,6 @@ gdal_with_co <- function(x, ...) {
 
 #' @rdname gdal_with_co
 #' @export
-#' @noRd
 gdal_with_co.gdal_job <- function(x, ...) {
   new_options <- c(...)
 
@@ -53,7 +52,6 @@ gdal_with_co.gdal_job <- function(x, ...) {
 
 
 #' @export
-#' @noRd
 gdal_with_co.default <- function(x, ...) {
   rlang::abort(
     c(
@@ -99,7 +97,6 @@ gdal_with_lco <- function(x, ...) {
 
 #' @rdname gdal_with_lco
 #' @export
-#' @noRd
 gdal_with_lco.gdal_job <- function(x, ...) {
   new_options <- c(...)
 
@@ -115,7 +112,6 @@ gdal_with_lco.gdal_job <- function(x, ...) {
 
 
 #' @export
-#' @noRd
 gdal_with_lco.default <- function(x, ...) {
   rlang::abort(
     c(
@@ -160,7 +156,6 @@ gdal_with_oo <- function(x, ...) {
 
 #' @rdname gdal_with_oo
 #' @export
-#' @noRd
 gdal_with_oo.gdal_job <- function(x, ...) {
   new_options <- c(...)
 
@@ -176,7 +171,6 @@ gdal_with_oo.gdal_job <- function(x, ...) {
 
 
 #' @export
-#' @noRd
 gdal_with_oo.default <- function(x, ...) {
   rlang::abort(
     c(
@@ -222,7 +216,6 @@ gdal_with_config <- function(x, ...) {
 
 #' @rdname gdal_with_config
 #' @export
-#' @noRd
 gdal_with_config.gdal_job <- function(x, ...) {
   new_configs <- c(...)
 
@@ -254,7 +247,6 @@ gdal_with_config.gdal_job <- function(x, ...) {
 
 
 #' @export
-#' @noRd
 gdal_with_config.default <- function(x, ...) {
   rlang::abort(
     c(
@@ -318,7 +310,6 @@ gdal_with_env <- function(x, ...) {
 
 #' @rdname gdal_with_env
 #' @export
-#' @noRd
 gdal_with_env.gdal_job <- function(x, ...) {
   new_envs <- list(...)
 
@@ -360,7 +351,6 @@ gdal_with_env.gdal_job <- function(x, ...) {
 
 
 #' @export
-#' @noRd
 gdal_with_env.default <- function(x, ...) {
   rlang::abort(
     c(

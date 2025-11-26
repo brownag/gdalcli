@@ -19,12 +19,12 @@
 #'   (e.g., "2.2.0", "2.3.0")
 #' @param quietly Logical. If TRUE, suppresses warnings. If FALSE (default),
 #'   returns silently.
-#' @param error_on_unavailable Logical. If TRUE, raises an error when gdalraster
+#' @param error_on_unavailable Logical. If TRUE, raises an .error when gdalraster
 #'   is not available or version is too old. If FALSE (default), returns FALSE.
 #'
 #' @return
 #' Logical: TRUE if gdalraster is available and meets minimum version,
-#' FALSE otherwise (or error if error_on_unavailable = TRUE).
+#' FALSE otherwise (or .error if error_on_unavailable = TRUE).
 #'
 #' @details
 #' Version comparison uses semantic versioning: major.minor.patch.
@@ -51,7 +51,7 @@
   # Try to get gdalraster version
   current_version <- tryCatch({
     packageVersion("gdalraster")
-  }, error = function(e) {
+  }, .error = function(e) {
     if (!quietly) {
       cli::cli_warn("Could not determine gdalraster version: {e$message}")
     }
@@ -121,7 +121,7 @@
 
   tryCatch({
     as.character(packageVersion("gdalraster"))
-  }, error = function(e) NULL)
+  }, .error = function(e) NULL)
 }
 
 

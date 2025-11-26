@@ -50,13 +50,13 @@
 #' vsizip_url(archive_path = "data.zip", file_in_archive = "layer.shp")
 vsizip_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    archive_path <- validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
+    archive_path <- .validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
     if (!is.null(file_in_archive)) {
-      file_in_archive <- validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
+      file_in_archive <- .validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
     }
   }
 
-  compose_wrapper_vsi_path("vsizip", archive_path, file_in_archive, streaming)
+  .compose_wrapper_vsi_path("vsizip", archive_path, file_in_archive, streaming)
 }
 
 
@@ -97,13 +97,13 @@ vsizip_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FA
 #' vsitar_url(archive_path = "data.tar.gz", file_in_archive = "layer.shp")
 vsitar_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    archive_path <- validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
+    archive_path <- .validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
     if (!is.null(file_in_archive)) {
-      file_in_archive <- validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
+      file_in_archive <- .validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
     }
   }
 
-  compose_wrapper_vsi_path("vsitar", archive_path, file_in_archive, streaming)
+  .compose_wrapper_vsi_path("vsitar", archive_path, file_in_archive, streaming)
 }
 
 
@@ -140,13 +140,13 @@ vsitar_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FA
 #' vsi7z_url(archive_path = "data.7z", file_in_archive = "layer.shp")
 vsi7z_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    archive_path <- validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
+    archive_path <- .validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
     if (!is.null(file_in_archive)) {
-      file_in_archive <- validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
+      file_in_archive <- .validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
     }
   }
 
-  compose_wrapper_vsi_path("vsi7z", archive_path, file_in_archive, streaming)
+  .compose_wrapper_vsi_path("vsi7z", archive_path, file_in_archive, streaming)
 }
 
 
@@ -183,13 +183,13 @@ vsi7z_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FAL
 #' vsirar_url(archive_path = "data.rar", file_in_archive = "layer.shp")
 vsirar_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    archive_path <- validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
+    archive_path <- .validate_path_component(archive_path, "archive_path", allow_empty = FALSE)
     if (!is.null(file_in_archive)) {
-      file_in_archive <- validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
+      file_in_archive <- .validate_path_component(file_in_archive, "file_in_archive", allow_empty = FALSE)
     }
   }
 
-  compose_wrapper_vsi_path("vsirar", archive_path, file_in_archive, streaming)
+  .compose_wrapper_vsi_path("vsirar", archive_path, file_in_archive, streaming)
 }
 
 
@@ -237,16 +237,16 @@ vsisubfile_url <- function(offset = 0L, size = NULL, filename, ..., streaming = 
     if (!is.numeric(size) || size <= 0) {
       rlang::abort("Parameter 'size' must be a positive number.")
     }
-    filename <- validate_path_component(filename, "filename", allow_empty = FALSE)
+    filename <- .validate_path_component(filename, "filename", allow_empty = FALSE)
   }
 
   # Convert offset and size to integers for composition
   offset_int <- as.integer(offset)
   size_int <- as.integer(size)
 
-  prefix <- compose_vsi_prefix("vsisubfile", streaming)
+  prefix <- .compose_vsi_prefix("vsisubfile", streaming)
 
-  is_vsi <- is_vsi_path(filename)
+  is_vsi <- .is_vsi_path(filename)
 
   if (is_vsi) {
     # Explicit chaining: /vsisubfile/OFFSET_SIZE,{vsi_path}
@@ -296,15 +296,15 @@ vsisubfile_url <- function(offset = 0L, size = NULL, filename, ..., streaming = 
 #' vsicrypt_url(key = "mypassword", alg = "AES_256_GCM", filename = "encrypted.bin")
 vsicrypt_url <- function(key, filename, key_format = "plaintext", ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    key <- validate_path_component(key, "key", allow_empty = FALSE)
-    filename <- validate_path_component(filename, "filename", allow_empty = FALSE)
+    key <- .validate_path_component(key, "key", allow_empty = FALSE)
+    filename <- .validate_path_component(filename, "filename", allow_empty = FALSE)
   }
 
   key_format <- match.arg(key_format, c("plaintext", "base64"))
 
-  prefix <- compose_vsi_prefix("vsicrypt", streaming)
+  prefix <- .compose_vsi_prefix("vsicrypt", streaming)
 
-  is_vsi <- is_vsi_path(filename)
+  is_vsi <- .is_vsi_path(filename)
 
   # Determine key parameter syntax
   key_param <- if (key_format == "base64") "key_b64" else "key"
@@ -355,12 +355,12 @@ vsicrypt_url <- function(key, filename, key_format = "plaintext", ..., streaming
 #' vsicached_url(filename = vsi_url("vsis3", bucket = "data", key = "dem.tif"))
 vsicached_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    filename <- validate_path_component(filename, "filename", allow_empty = FALSE)
+    filename <- .validate_path_component(filename, "filename", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsicached", streaming)
+  prefix <- .compose_vsi_prefix("vsicached", streaming)
 
-  is_vsi <- is_vsi_path(filename)
+  is_vsi <- .is_vsi_path(filename)
 
   if (is_vsi) {
     paste0(prefix, "{", filename, "}")
@@ -404,12 +404,12 @@ vsicached_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
 #' vsisparse_url(filename = "sparse_data.bin")
 vsisparse_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    filename <- validate_path_component(filename, "filename", allow_empty = FALSE)
+    filename <- .validate_path_component(filename, "filename", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsisparse", streaming)
+  prefix <- .compose_vsi_prefix("vsisparse", streaming)
 
-  is_vsi <- is_vsi_path(filename)
+  is_vsi <- .is_vsi_path(filename)
 
   if (is_vsi) {
     paste0(prefix, "{", filename, "}")

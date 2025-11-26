@@ -14,7 +14,7 @@ gdal_check_version(minimum = "3.11", op = ">=")
 }
 \value{
 Logical \code{TRUE} if version requirement is met, \code{FALSE} otherwise.
-Raises an error if the version check fails.
+Raises an .error if the version check fails.
 }
 \description{
 Helper function to check if the installed GDAL version meets minimum requirements.

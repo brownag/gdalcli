@@ -2,9 +2,15 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{render_gdal_pipeline}
 \alias{render_gdal_pipeline}
+\alias{render_gdal_pipeline.gdal_job}
+\alias{render_gdal_pipeline.gdal_pipeline}
 \title{Render GDAL Pipeline as GDAL Pipeline Command}
 \usage{
 render_gdal_pipeline(pipeline, format = c("shell_chain", "native"), ...)
+
+\method{render_gdal_pipeline}{gdal_job}(pipeline, format = c("shell_chain", "native"), ...)
+
+\method{render_gdal_pipeline}{gdal_pipeline}(pipeline, format = c("shell_chain", "native"), ...)
 }
 \arguments{
 \item{pipeline}{A \code{gdal_pipeline} object.}

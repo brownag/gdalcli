@@ -58,7 +58,7 @@ By default, gdalcli uses this selection logic:
 
 3. Check if reticulate can access Python GDAL
    → If yes, use reticulate backend
-   → If no, error: no backends available
+   → If no, .error: no backends available
 }\if{html}{\out{</div>}}
 }
 
@@ -162,7 +162,7 @@ gdalcli:::.gdal_has_feature("setVectorArgsFromObject")
 }
 
 \subsection{Troubleshooting}{
-\subsection{"No backends available" error}{
+\subsection{"No backends available" .error}{
 
 Either gdalraster and processx are not installed:
 

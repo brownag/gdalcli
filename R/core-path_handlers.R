@@ -45,11 +45,11 @@
 #'
 vsis3_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
-    key <- validate_path_component(key, "key", allow_empty = FALSE)
+    bucket <- .validate_path_component(bucket, "bucket", allow_empty = FALSE)
+    key <- .validate_path_component(key, "key", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsis3", streaming)
+  prefix <- .compose_vsi_prefix("vsis3", streaming)
   paste0(prefix, bucket, "/", key)
 }
 
@@ -83,11 +83,11 @@ vsis3_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
 #' vsigs_url(bucket = "gcs-bucket", key = "path/to/file.tif")
 vsigs_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
-    key <- validate_path_component(key, "key", allow_empty = FALSE)
+    bucket <- .validate_path_component(bucket, "bucket", allow_empty = FALSE)
+    key <- .validate_path_component(key, "key", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsigs", streaming)
+  prefix <- .compose_vsi_prefix("vsigs", streaming)
   paste0(prefix, bucket, "/", key)
 }
 
@@ -122,11 +122,11 @@ vsigs_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
 #' vsiaz_url(container = "mycontainer", key = "data/shapefile.shp")
 vsiaz_url <- function(container, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    container <- validate_path_component(container, "container", allow_empty = FALSE)
-    key <- validate_path_component(key, "key", allow_empty = FALSE)
+    container <- .validate_path_component(container, "container", allow_empty = FALSE)
+    key <- .validate_path_component(key, "key", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsiaz", streaming)
+  prefix <- .compose_vsi_prefix("vsiaz", streaming)
   paste0(prefix, container, "/", key)
 }
 
@@ -157,11 +157,11 @@ vsiaz_url <- function(container, key, ..., streaming = FALSE, validate = FALSE) 
 #' vsiadls_url(filesystem = "myfs", path = "dir/file.parquet")
 vsiadls_url <- function(filesystem, path, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    filesystem <- validate_path_component(filesystem, "filesystem", allow_empty = FALSE)
-    path <- validate_path_component(path, "path", allow_empty = FALSE)
+    filesystem <- .validate_path_component(filesystem, "filesystem", allow_empty = FALSE)
+    path <- .validate_path_component(path, "path", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsiadls", streaming)
+  prefix <- .compose_vsi_prefix("vsiadls", streaming)
   paste0(prefix, filesystem, "/", path)
 }
 
@@ -196,11 +196,11 @@ vsiadls_url <- function(filesystem, path, ..., streaming = FALSE, validate = FAL
 #' vsioss_url(bucket = "my-bucket", key = "data/file.tif")
 vsioss_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
-    key <- validate_path_component(key, "key", allow_empty = FALSE)
+    bucket <- .validate_path_component(bucket, "bucket", allow_empty = FALSE)
+    key <- .validate_path_component(key, "key", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsioss", streaming)
+  prefix <- .compose_vsi_prefix("vsioss", streaming)
   paste0(prefix, bucket, "/", key)
 }
 
@@ -234,11 +234,11 @@ vsioss_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
 #' vsiswift_url(bucket = "container", key = "data/file.tif")
 vsiswift_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    bucket <- validate_path_component(bucket, "bucket", allow_empty = FALSE)
-    key <- validate_path_component(key, "key", allow_empty = FALSE)
+    bucket <- .validate_path_component(bucket, "bucket", allow_empty = FALSE)
+    key <- .validate_path_component(key, "key", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsiswift", streaming)
+  prefix <- .compose_vsi_prefix("vsiswift", streaming)
   paste0(prefix, bucket, "/", key)
 }
 
@@ -272,10 +272,10 @@ vsiswift_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) 
 #' vsicurl_url(url = "https://example.com/data/file.tif")
 vsicurl_url <- function(url, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    url <- validate_path_component(url, "url", allow_empty = FALSE)
+    url <- .validate_path_component(url, "url", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsicurl", streaming)
+  prefix <- .compose_vsi_prefix("vsicurl", streaming)
   paste0(prefix, url)
 }
 
@@ -309,7 +309,7 @@ vsicurl_url <- function(url, ..., streaming = FALSE, validate = FALSE) {
 #' vsigzip_url(path = "data/file.tif.gz")
 vsigzip_url <- function(path, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    path <- validate_path_component(path, "path", allow_empty = FALSE)
+    path <- .validate_path_component(path, "path", allow_empty = FALSE)
   }
 
   # Note: streaming parameter is ignored for gzip; always uses single path
@@ -346,7 +346,7 @@ vsigzip_url <- function(path, ..., streaming = FALSE, validate = FALSE) {
 #' vsimem_url(filename = "temp.tif")
 vsimem_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    filename <- validate_path_component(filename, "filename", allow_empty = FALSE)
+    filename <- .validate_path_component(filename, "filename", allow_empty = FALSE)
   }
 
   paste0("/vsimem/", filename)
@@ -378,10 +378,10 @@ vsimem_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
 #' vsihdfs_url(path = "hdfs://namenode:8020/user/data/file.tif")
 vsihdfs_url <- function(path, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    path <- validate_path_component(path, "path", allow_empty = FALSE)
+    path <- .validate_path_component(path, "path", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsihdfs", streaming)
+  prefix <- .compose_vsi_prefix("vsihdfs", streaming)
   paste0(prefix, path)
 }
 
@@ -411,9 +411,9 @@ vsihdfs_url <- function(path, ..., streaming = FALSE, validate = FALSE) {
 #' vsiwebhdfs_url(url = "http://namenode:50070/webhdfs/v1/data/file.tif")
 vsiwebhdfs_url <- function(url, ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
-    url <- validate_path_component(url, "url", allow_empty = FALSE)
+    url <- .validate_path_component(url, "url", allow_empty = FALSE)
   }
 
-  prefix <- compose_vsi_prefix("vsiwebhdfs", streaming)
+  prefix <- .compose_vsi_prefix("vsiwebhdfs", streaming)
   paste0(prefix, url)
 }

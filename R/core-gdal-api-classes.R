@@ -73,10 +73,10 @@ GdalApi <- function() {
 
   # Load from cache or build fresh
   if (file.exists(api_env$cache_file)) {
-    load_from_cache(api_env)
+    .load_from_cache(api_env)
   } else {
-    build_api_structure(api_env)
-    save_to_cache(api_env)
+    .build_api_structure(api_env)
+    .save_to_cache(api_env)
   }
 
   # Define the $ method for dynamic access
@@ -98,7 +98,6 @@ GdalApi <- function() {
 }
 
 #' @export
-#' @noRd
 print.GdalApi <- function(x, ...) {
   cat("<GdalApi>\n")
   cat(sprintf("GDAL version: %s\n", x$gdal_version))
@@ -113,7 +112,7 @@ print.GdalApi <- function(x, ...) {
 #' @param api_env The API environment
 #' @keywords internal
 #' @noRd
-build_api_structure <- function(api_env) {
+.build_api_structure <- function(api_env) {
   tryCatch(
     {
       # Get all available commands from gdalraster
@@ -165,7 +164,7 @@ build_api_structure <- function(api_env) {
         "Dynamic GDAL API built successfully (GDAL {api_env$gdal_version})"
       )
     },
-    error = function(e) {
+    .error = function(e) {
       cli::cli_abort(
         c(
           "Failed to build dynamic API structure",
@@ -180,7 +179,7 @@ build_api_structure <- function(api_env) {
 #' @param api_env The API environment
 #' @keywords internal
 #' @noRd
-load_from_cache <- function(api_env) {
+.load_from_cache <- function(api_env) {
   tryCatch(
     {
       cached <- readRDS(api_env$cache_file)
@@ -194,10 +193,10 @@ load_from_cache <- function(api_env) {
         "Dynamic GDAL API loaded from cache (GDAL {api_env$gdal_version})"
       )
     },
-    error = function(e) {
+    .error = function(e) {
       cli::cli_warn("Cache load failed, rebuilding...")
-      build_api_structure(api_env)
-      save_to_cache(api_env)
+      .build_api_structure(api_env)
+      .save_to_cache(api_env)
     }
   )
 }
@@ -206,7 +205,7 @@ load_from_cache <- function(api_env) {
 #' @param api_env The API environment
 #' @keywords internal
 #' @noRd
-save_to_cache <- function(api_env) {
+.save_to_cache <- function(api_env) {
   tryCatch(
     {
       # Get all group names (all elements except metadata)
@@ -225,7 +224,7 @@ save_to_cache <- function(api_env) {
 
       cli::cli_inform("API structure cached to {.file {api_env$cache_file}}")
     },
-    error = function(e) {
+    .error = function(e) {
       cli::cli_warn("Failed to save cache: {conditionMessage(e)}")
     }
   )
@@ -268,11 +267,11 @@ GdalApiSub <- function(group_name, command_list) {
     # Create the function for this command
     tryCatch(
       {
-        func <- create_gdal_function(cmd_path)
+        func <- .create_gdal_function(cmd_path)
         # Store directly in the environment
         sub_env[[cmd_name]] <- func
       },
-      error = function(e) {
+      .error = function(e) {
         cli::cli_warn("Failed to create function for {paste(cmd_path, collapse=' ')}: {conditionMessage(e)}")
       }
     )
@@ -303,7 +302,6 @@ GdalApiSub <- function(group_name, command_list) {
 }
 
 #' @export
-#' @noRd
 print.GdalApiSub <- function(x, ...) {
   cat(sprintf("<GdalApiSub: %s>\n", get("group_name", envir = x)))
   all_elements <- ls(x, all.names = TRUE)
@@ -316,7 +314,7 @@ print.GdalApiSub <- function(x, ...) {
 #' @param cmd_path Command path vector
 #' @keywords internal
 #' @noRd
-create_gdal_function <- function(cmd_path) {
+.create_gdal_function <- function(cmd_path) {
   # Capture the command path in closure
   captured_cmd <- cmd_path
 

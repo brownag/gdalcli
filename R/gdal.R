@@ -30,7 +30,7 @@ gdal <- function(x = NULL,
     # Check if x is a piped gdal_job
     if (inherits(x, 'gdal_job')) {
       # Merge arguments from piped job
-      merged_args <- merge_gdal_job_arguments(x$arguments, list(
+      merged_args <- .merge_gdal_job_arguments(x$arguments, list(
         drivers = drivers
       ))
       return(new_gdal_job(command_path = x$command_path, arguments = merged_args))

@@ -51,7 +51,7 @@
     } else {
       "unknown"
     }
-  }, error = function(e) "unknown")
+  }, .error = function(e) "unknown")
 
   assign("__gdal_version__", version, envir = .gdal_features_cache)
   version
@@ -117,7 +117,7 @@
   # Check if gdalraster version supports explicit args (1.2.0+)
   pkg_version <- tryCatch(
     utils::packageVersion("gdalraster"),
-    error = function(e) "0.0.0"
+    .error = function(e) "0.0.0"
   )
 
   as.numeric_version(pkg_version) >= as.numeric_version("1.2.0")
@@ -155,7 +155,7 @@
     } else {
       FALSE
     }
-  }, error = function(e) FALSE)
+  }, .error = function(e) FALSE)
 }
 
 #' Check GDALG Native Format Driver
@@ -214,11 +214,11 @@ gdal_capabilities <- function() {
     packages = list(
       gdalraster = tryCatch(
         as.character(utils::packageVersion("gdalraster")),
-        error = function(e) "not installed"
+        .error = function(e) "not installed"
       ),
       arrow = tryCatch(
         as.character(utils::packageVersion("arrow")),
-        error = function(e) "not installed"
+        .error = function(e) "not installed"
       )
     )
   )
@@ -235,7 +235,6 @@ gdal_capabilities <- function() {
 #'
 #' @keywords internal
 #' @export
-#' @noRd
 print.gdal_capabilities <- function(x, ...) {
   cat("GDAL Advanced Features Report\n")
   cat("==============================\n\n")

@@ -266,7 +266,7 @@
 
     # Check if GDALG is in the format list
     grepl("GDALG", result$stdout, ignore.case = TRUE)
-  }, error = function(e) {
+  }, .error = function(e) {
     FALSE
   })
 }
@@ -315,7 +315,7 @@ gdal_has_gdalg_driver <- function() {
     cli::cli_abort("Cannot export empty pipeline")
   }
 
-  # Use existing build_pipeline_from_jobs but exclude final write step if present
+  # Use existing .build_pipeline_from_jobs but exclude final write step if present
   jobs_to_render <- pipeline$jobs
 
   # Check if last job is a write operation (convert, create, tile)
@@ -339,7 +339,7 @@ gdal_has_gdalg_driver <- function() {
   }
 
   # Build pipeline string from remaining jobs
-  build_pipeline_from_jobs(jobs_to_render)
+  .build_pipeline_from_jobs(jobs_to_render)
 }
 
 #' Save GDAL Pipeline Using Native GDALG Format Driver
@@ -477,7 +477,7 @@ gdal_save_pipeline_native <- function(pipeline,
     }
 
     invisible(path)
-  }, error = function(e) {
+  }, .error = function(e) {
     cli::cli_abort(
       c(
         "Failed to generate native GDALG file",
@@ -651,7 +651,7 @@ gdal_load_pipeline <- function(path) {
   tryCatch({
     opts <- yyjsonr::opts_read_json(arr_of_objs_to_df = FALSE)
     gdalg <- yyjsonr::read_json_file(path, opts = opts)
-  }, error = function(e) {
+  }, .error = function(e) {
     rlang::abort(c(
       sprintf("Failed to parse GDALG file: %s", path),
       "x" = conditionMessage(e)
@@ -661,7 +661,7 @@ gdal_load_pipeline <- function(path) {
   # Convert GDALG to pipeline
   tryCatch({
     pipeline <- .gdalg_to_pipeline(gdalg)
-  }, error = function(e) {
+  }, .error = function(e) {
     rlang::abort(c(
       "Failed to convert GDALG to pipeline",
       "x" = conditionMessage(e)

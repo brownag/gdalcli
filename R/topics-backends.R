@@ -46,7 +46,7 @@
 #'
 #' 3. Check if reticulate can access Python GDAL
 #'    → If yes, use reticulate backend
-#'    → If no, error: no backends available
+#'    → If no, .error: no backends available
 #' ```
 #'
 #' ## Backend Configuration
@@ -140,7 +140,7 @@
 #'
 #' ## Troubleshooting
 #'
-#' ### "No backends available" error
+#' ### "No backends available" .error
 #'
 #' Either gdalraster and processx are not installed:
 #' ```r

@@ -46,7 +46,7 @@ These are merged with \code{x$env_vars}, with explicit \code{env} values taking 
 Depends on the streaming configuration:
 \itemize{
 \item If \code{stream_out_format = NULL} (default): Invisibly returns \code{TRUE} on success.
-Raises an R error if the GDAL process fails.
+Raises an R .error if the GDAL process fails.
 \item If \code{stream_out_format = "text"}: Returns the stdout as a character string.
 \item If \code{stream_out_format = "raw"}: Returns the stdout as a raw vector.
 }

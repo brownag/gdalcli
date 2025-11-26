@@ -84,7 +84,7 @@ new_gdal_pipeline <- function(jobs, name = NULL, description = NULL) {
 #'
 #' @keywords internal
 #' @noRd
-is_virtual_path <- function(path) {
+.is_virtual_path <- function(path) {
   if (!is.character(path) || length(path) != 1) {
     return(FALSE)
   }
@@ -122,7 +122,6 @@ is_virtual_path <- function(path) {
 #'
 #' @keywords internal
 #' @export
-#' @noRd
 print.gdal_pipeline <- function(x, ...) {
   cat("<gdal_pipeline>\n")
 
@@ -170,7 +169,6 @@ print.gdal_pipeline <- function(x, ...) {
 #'
 #' @keywords internal
 #' @export
-#' @noRd
 str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
   cat("<gdal_pipeline>")
   
@@ -291,7 +289,7 @@ gdal_job_run.gdal_pipeline <- function(x,
     # Execute the job
     tryCatch({
       gdal_job_run(job, ..., verbose = verbose)
-    }, error = function(e) {
+    }, .error = function(e) {
       cli::cli_abort(
         c(
           sprintf("Pipeline failed at job %d", i),
@@ -352,7 +350,7 @@ gdal_job_run.gdal_pipeline <- function(x,
   }
 
   # Render the native pipeline string
-  pipeline_str <- render_native_pipeline(pipeline)
+  pipeline_str <- .render_native_pipeline(pipeline)
 
   # Detect pipeline type (raster/vector) from first job
   if (length(pipeline$jobs) == 0) {
@@ -451,7 +449,7 @@ gdal_job_run.gdal_pipeline <- function(x,
     }
 
     invisible(TRUE)
-  }, error = function(e) {
+  }, .error = function(e) {
     cli::cli_abort(
       c(
         "Native GDAL pipeline execution failed",
@@ -481,20 +479,20 @@ gdal_job_run.gdal_pipeline <- function(x,
 #' @keywords internal
 #'
 #' @noRd
-render_native_pipeline <- function(pipeline) {
-  UseMethod("render_native_pipeline")
+.render_native_pipeline <- function(pipeline) {
+  UseMethod(".render_native_pipeline")
 }
 
-#' @rdname render_native_pipeline
+#' @rdname .render_native_pipeline
 #' @keywords internal
 #' @noRd
-render_native_pipeline.gdal_pipeline <- function(pipeline) {
+.render_native_pipeline.gdal_pipeline <- function(pipeline) {
   if (length(pipeline$jobs) == 0) {
     return("")
   }
 
-  # Use build_pipeline_from_jobs to generate the native pipeline string
-  build_pipeline_from_jobs(pipeline$jobs)
+  # Use .build_pipeline_from_jobs to generate the native pipeline string
+  .build_pipeline_from_jobs(pipeline$jobs)
 }
 
 #' Render GDAL Pipeline as GDAL Pipeline Command
@@ -525,7 +523,6 @@ render_gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), 
 
 #' @rdname render_gdal_pipeline
 #' @export
-#' @noRd
 render_gdal_pipeline.gdal_job <- function(pipeline, format = c("shell_chain", "native"), ...) {
   format <- match.arg(format)
 
@@ -540,7 +537,6 @@ render_gdal_pipeline.gdal_job <- function(pipeline, format = c("shell_chain", "n
 
 #' @rdname render_gdal_pipeline
 #' @export
-#' @noRd
 render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), ...) {
   format <- match.arg(format)
 
@@ -558,7 +554,7 @@ render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain
       "raster"  # Default to raster
     }
 
-    pipeline_str <- render_native_pipeline(pipeline)
+    pipeline_str <- .render_native_pipeline(pipeline)
     paste("gdal", cmd_type, "pipeline", pipeline_str)
   } else {
     # Render as sequence of separate GDAL commands (shell chain)
@@ -610,7 +606,6 @@ render_shell_script <- function(pipeline, shell = "bash", format = c("commands",
 
 #' @rdname render_shell_script
 #' @export
-#' @noRd
 render_shell_script.gdal_job <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {
   format <- match.arg(format)
 
@@ -637,7 +632,6 @@ render_shell_script.gdal_job <- function(pipeline, shell = "bash", format = c("c
 
 #' @rdname render_shell_script
 #' @export
-#' @noRd
 render_shell_script.gdal_pipeline <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {
   format <- match.arg(format)
 
@@ -669,7 +663,7 @@ render_shell_script.gdal_pipeline <- function(pipeline, shell = "bash", format =
     script_lines <- c(script_lines, "")
   }
 
-  # Add set -e for error handling
+  # Add set -e for .error handling
   script_lines <- c(script_lines, "set -e", "")
 
   if (format == "native") {
@@ -696,7 +690,7 @@ render_shell_script.gdal_pipeline <- function(pipeline, shell = "bash", format =
     pipeline_type <- if (length(cmd_path) > 0) cmd_path[1] else "raster"
 
     # Get just the pipeline string part (steps with !)
-    pipeline_str <- render_native_pipeline(pipeline)
+    pipeline_str <- .render_native_pipeline(pipeline)
 
     # Build full command with config options if any
     if (length(config_flags) > 0) {
@@ -743,7 +737,6 @@ add_job <- function(pipeline, job) {
 
 #' @rdname add_job
 #' @export
-#' @noRd
 add_job.gdal_pipeline <- function(pipeline, job) {
   if (!inherits(job, "gdal_job")) {
     rlang::abort("job must be a gdal_job object")
@@ -774,7 +767,6 @@ get_jobs <- function(pipeline) {
 
 #' @rdname get_jobs
 #' @export
-#' @noRd
 get_jobs.gdal_pipeline <- function(pipeline) {
   pipeline$jobs
 }
@@ -798,7 +790,6 @@ set_name <- function(pipeline, name) {
 
 #' @rdname set_name
 #' @export
-#' @noRd
 set_name.gdal_pipeline <- function(pipeline, name) {
   new_gdal_pipeline(
     pipeline$jobs,
@@ -826,7 +817,6 @@ set_description <- function(pipeline, description) {
 
 #' @rdname set_name
 #' @export
-#' @noRd
 set_name.gdal_job <- function(pipeline, name) {
   if (!is.null(pipeline$pipeline)) {
     # Modify the attached pipeline
@@ -849,7 +839,6 @@ set_name.gdal_job <- function(pipeline, name) {
 
 #' @rdname set_description
 #' @export
-#' @noRd
 set_description.gdal_pipeline <- function(pipeline, description) {
   new_gdal_pipeline(
     pipeline$jobs,
@@ -860,7 +849,6 @@ set_description.gdal_pipeline <- function(pipeline, description) {
 
 #' @rdname set_description
 #' @export
-#' @noRd
 set_description.gdal_job <- function(pipeline, description) {
   if (!is.null(pipeline$pipeline)) {
     # Modify the attached pipeline
@@ -923,7 +911,7 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
     # Check if the new job has an input argument
     if ("input" %in% names(new_job$arguments)) {
       new_input <- new_job$arguments$input
-      if (!is_virtual_path(new_input)) {
+      if (!.is_virtual_path(new_input)) {
         # User specified explicit input, don't connect
         needs_connection <- FALSE
       } else {
@@ -939,7 +927,7 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
       connection_path <- NULL
       if ("output" %in% names(last_job$arguments)) {
         last_output <- last_job$arguments$output
-        if (!is_virtual_path(last_output)) {
+        if (!.is_virtual_path(last_output)) {
           connection_path <- last_output
         }
       }
@@ -947,7 +935,7 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
       # If we have a connection path, set it as input for the new job
       if (!is.null(connection_path)) {
         if ("input" %in% names(new_job$arguments)) {
-          if (is_virtual_path(new_job$arguments$input)) {
+          if (.is_virtual_path(new_job$arguments$input)) {
             new_job$arguments$input <- connection_path
           }
         } else {
@@ -976,7 +964,7 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
     # Check if the new job has an input argument
     if ("input" %in% names(new_job$arguments)) {
       new_input <- new_job$arguments$input
-      if (!is_virtual_path(new_input)) {
+      if (!.is_virtual_path(new_input)) {
         # User specified explicit input, don't connect
         needs_connection <- FALSE
       } else {
@@ -992,7 +980,7 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
       connection_path <- NULL
       if ("output" %in% names(job$arguments)) {
         job_output <- job$arguments$output
-        if (!is_virtual_path(job_output)) {
+        if (!.is_virtual_path(job_output)) {
           connection_path <- job_output
         }
       }
@@ -1000,7 +988,7 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
       # If we have a connection path, set it as input for the new job
       if (!is.null(connection_path)) {
         if ("input" %in% names(new_job$arguments)) {
-          if (is_virtual_path(new_job$arguments$input)) {
+          if (.is_virtual_path(new_job$arguments$input)) {
             new_job$arguments$input <- connection_path
           }
         } else {

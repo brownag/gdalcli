@@ -107,7 +107,7 @@ gdal_list_commands <- function(command = NULL, output = "data.frame") {
     } else {
       cli::cli_abort("output must be 'data.frame' or 'list'")
     }
-  }, error = function(e) {
+  }, .error = function(e) {
     cli::cli_abort(
       c(
         "Failed to retrieve GDAL commands",
@@ -169,7 +169,7 @@ gdal_command_help <- function(command) {
     # Call gdalraster::gdal_usage() to get help for this command
     help_text <- gdalraster::gdal_usage(cmd_parts)
     return(help_text)
-  }, error = function(e) {
+  }, .error = function(e) {
     cli::cli_abort(
       c(
         "Failed to retrieve help for command: {command}",
@@ -193,7 +193,7 @@ gdal_command_help <- function(command) {
 #'
 #' @return
 #' Logical `TRUE` if version requirement is met, `FALSE` otherwise.
-#' Raises an error if the version check fails.
+#' Raises an .error if the version check fails.
 #'
 #' @examples
 #' \dontrun{
@@ -251,7 +251,7 @@ gdal_check_version <- function(minimum = "3.11", op = ">=") {
       # Fallback: try to get from gdal command-line
       result <- tryCatch(
         processx::run("gdal", c("--version"), error_on_status = FALSE),
-        error = function(e) NULL
+        .error = function(e) NULL
       )
 
       if (!is.null(result) && result$status == 0) {
@@ -275,7 +275,7 @@ gdal_check_version <- function(minimum = "3.11", op = ">=") {
         )
       }
     }
-  }, error = function(e) {
+  }, .error = function(e) {
     cli::cli_abort(
       c(
         "Failed to get GDAL version",

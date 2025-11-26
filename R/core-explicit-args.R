@@ -121,7 +121,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     # Get explicit args from GDALAlg object
     # GDALAlg$getExplicitlySetArgs() returns a named list
     job$alg$getExplicitlySetArgs()
-  }, error = function(e) {
+  }, .error = function(e) {
     cli::cli_warn(
       c(
         "Failed to extract explicit arguments from GDAL job",
@@ -154,15 +154,15 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 #' were explicitly set during GDAL job execution.
 #'
 #' @param job A `gdal_job` object
-#' @param status Status of execution ("pending", "success", "error")
-#' @param error_msg Optional error message if status is "error"
+#' @param status Status of execution ("pending", "success", ".error")
+#' @param error_msg Optional .error message if status is ".error"
 #'
 #' @return List with audit entry containing:
 #'   - timestamp: When audit entry was created
 #'   - job_command: The job's command path
 #'   - explicit_args: Arguments explicitly set by user
 #'   - status: Execution status
-#'   - error: Error message (if applicable)
+#'   - .error: Error message (if applicable)
 #'   - gdal_version: GDAL version at execution time
 #'   - r_version: R version at execution time
 #'
@@ -179,7 +179,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 .create_audit_entry <- function(job, status = "pending", error_msg = NULL) {
   explicit_args <- tryCatch(
     gdal_job_get_explicit_args(job),
-    error = function(e) character(0)
+    .error = function(e) character(0)
   )
 
   list(
@@ -187,7 +187,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     job_command = paste(job$command_path, collapse = " "),
     explicit_args = explicit_args,
     status = status,
-    error = error_msg,
+    .error = error_msg,
     gdal_version = gdalcli:::.gdal_get_version(),
     r_version = paste0(R.version$major, ".", R.version$minor)
   )
@@ -245,10 +245,10 @@ gdal_job_run_with_audit <- function(job, ..., audit_log = getOption("gdalcli.aud
   # Execute job
   result <- tryCatch({
     gdal_job_run(job, ...)
-  }, error = function(e) {
-    # Update audit entry with error
-    audit_entry$status <<- "error"
-    audit_entry$error <<- conditionMessage(e)
+  }, .error = function(e) {
+    # Update audit entry with .error
+    audit_entry$status <<- ".error"
+    audit_entry$.error <<- conditionMessage(e)
     rethrow(e)
   })
 

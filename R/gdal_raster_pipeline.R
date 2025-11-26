@@ -49,7 +49,7 @@ gdal_raster_pipeline <- function(jobs = NULL,
         rlang::abort(sprintf('jobs[[%d]] must be a gdal_job object', i))
       }
     }
-    pipeline <- build_pipeline_from_jobs(jobs)
+    pipeline <- .build_pipeline_from_jobs(jobs)
   }
 
   # Collect arguments

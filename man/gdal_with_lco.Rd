@@ -2,9 +2,12 @@
 % Please edit documentation in R/core-gdal_modifiers.R
 \name{gdal_with_lco}
 \alias{gdal_with_lco}
+\alias{gdal_with_lco.gdal_job}
 \title{Add Layer Creation Options to a GDAL Job}
 \usage{
 gdal_with_lco(x, ...)
+
+\method{gdal_with_lco}{gdal_job}(x, ...)
 }
 \arguments{
 \item{x}{A \link{gdal_job} object.}

@@ -124,7 +124,6 @@ new_gdal_job <- function(command_path,
 #'
 #' @keywords internal
 #' @export
-#' @noRd
 print.gdal_job <- function(x, ...) {
   cat("<gdal_job>\n")
   # Check if command_path already starts with "gdal"
@@ -212,7 +211,6 @@ print.gdal_job <- function(x, ...) {
 #'
 #' @keywords internal
 #' @export
-#' @noRd
 str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
   cat("<gdal_job>")
   
@@ -249,7 +247,7 @@ str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
 #' @keywords internal
 #'
 #' @noRd
-build_pipeline_from_jobs <- function(jobs) {
+.build_pipeline_from_jobs <- function(jobs) {
   if (length(jobs) == 0) {
     rlang::abort("jobs vector cannot be empty")
   }
@@ -435,7 +433,7 @@ build_pipeline_from_jobs <- function(jobs) {
 #'
 #' @keywords internal
 #' @noRd
-merge_gdal_job_arguments <- function(job_args, new_args) {
+.merge_gdal_job_arguments <- function(job_args, new_args) {
   # Start with empty list - only propagate specific arguments
   merged <- list()
 
@@ -564,7 +562,7 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
     "with_env" = function(...) gdal_with_env(x, ...),
     "with_lco" = function(...) gdal_with_lco(x, ...),
     "with_oo" = function(...) gdal_with_oo(x, ...),
-    "merge" = function(other, ...) merge_gdal_job_arguments(x$arguments, other$arguments),
+    "merge" = function(other, ...) .merge_gdal_job_arguments(x$arguments, other$arguments),
     "clone" = function(...) {
       new_gdal_job(
         command_path = x$command_path,
@@ -577,7 +575,7 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
         arg_mapping = x$arg_mapping
       )
     },
-    # Default: signal error
+    # Default: signal .error
     rlang::abort(sprintf("Unknown slot or method: %s", name))
   )
 }

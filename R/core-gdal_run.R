@@ -34,7 +34,7 @@
 #' @return
 #' Depends on the streaming configuration:
 #' - If `stream_out_format = NULL` (default): Invisibly returns `TRUE` on success.
-#'   Raises an R error if the GDAL process fails.
+#'   Raises an R .error if the GDAL process fails.
 #' - If `stream_out_format = "text"`: Returns the stdout as a character string.
 #' - If `stream_out_format = "raw"`: Returns the stdout as a raw vector.
 #'
@@ -92,7 +92,7 @@ gdal_job_run <- function(x, ..., backend = NULL) {
         )
       )
     }
-    return(gdal_job_run_gdalraster(x, ...))
+    return(.gdal_job_run_gdalraster(x, ...))
   } else if (backend == "reticulate") {
     if (!requireNamespace("reticulate", quietly = TRUE)) {
       cli::cli_abort(
@@ -103,7 +103,7 @@ gdal_job_run <- function(x, ..., backend = NULL) {
         )
       )
     }
-    return(gdal_job_run_reticulate(x, ...))
+    return(.gdal_job_run_reticulate(x, ...))
   } else if (backend == "processx") {
     return(gdal_job_run.gdal_job(x, ...))
   } else {
@@ -181,7 +181,7 @@ gdal_job_run.gdal_job <- function(x,
       # Try to parse as JSON
       tryCatch({
         return(yyjsonr::read_json_str(result$stdout))
-      }, error = function(e) {
+      }, .error = function(e) {
         cli::cli_warn(
           c(
             "Failed to parse output as JSON",
@@ -407,7 +407,7 @@ gdal_job_run.default <- function(x, ...) {
 #'
 #' @keywords internal
 #' @noRd
-gdal_job_run_gdalraster <- function(job,
+.gdal_job_run_gdalraster <- function(job,
                                stream_in = NULL,
                                stream_out_format = NULL,
                                env = NULL,
@@ -504,7 +504,7 @@ gdal_job_run_gdalraster <- function(job,
         # Try to parse as JSON
         tryCatch({
           return(yyjsonr::read_json_str(output_text))
-        }, error = function(e) {
+        }, .error = function(e) {
           cli::cli_warn(
             c(
               "Failed to parse output as JSON",
@@ -518,7 +518,7 @@ gdal_job_run_gdalraster <- function(job,
     }
 
     invisible(TRUE)
-  }, error = function(e) {
+  }, .error = function(e) {
     cli::cli_abort(
       c(
         "GDAL command failed via gdalraster",
@@ -539,7 +539,7 @@ gdal_job_run_gdalraster <- function(job,
 #'
 #' @keywords internal
 #' @noRd
-gdal_job_run_reticulate <- function(job,
+.gdal_job_run_reticulate <- function(job,
                                stream_in = NULL,
                                stream_out_format = NULL,
                                env = NULL,
@@ -600,7 +600,7 @@ gdal_job_run_reticulate <- function(job,
             # Try to parse as JSON
             tryCatch({
               return(yyjsonr::read_json_str(result))
-            }, error = function(e) {
+            }, .error = function(e) {
               cli::cli_warn(
                 c(
                   "Failed to parse output as JSON",
@@ -616,7 +616,7 @@ gdal_job_run_reticulate <- function(job,
 
       invisible(TRUE)
     },
-    error = function(e) {
+    .error = function(e) {
       cli::cli_abort(
         c(
           "GDAL command failed via reticulate",

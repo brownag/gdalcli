@@ -4,14 +4,14 @@
 #' path detection, and sanitization.
 #'
 #' @details
-#' - `is_vsi_path()`: Check if a path is a VSI path (starts with /vsi)
-#' - `validate_path_component()`: Validate a single path component
-#' - `sanitize_sas_token()`: Remove leading `?` and trailing `&` from SAS tokens
+#' - `.is_vsi_path()`: Check if a path is a VSI path (starts with /vsi)
+#' - `.validate_path_component()`: Validate a single path component
+#' - `.sanitize_sas_token()`: Remove leading `?` and trailing `&` from SAS tokens
 #'
 #' @keywords internal
 #' @name vsi_helpers
 #' @noRd
-is_vsi_path <- function(path) {
+.is_vsi_path <- function(path) {
   if (!is.character(path) || length(path) == 0) {
     return(FALSE)
   }
@@ -19,7 +19,7 @@ is_vsi_path <- function(path) {
 }
 
 
-validate_path_component <- function(component, name, allow_empty = FALSE, allow_na = TRUE) {
+.validate_path_component <- function(component, name, allow_empty = FALSE, allow_na = TRUE) {
   if (is.na(component)) {
     if (allow_na) {
       return(component)
@@ -50,7 +50,7 @@ validate_path_component <- function(component, name, allow_empty = FALSE, allow_
 }
 
 
-sanitize_sas_token <- function(token) {
+.sanitize_sas_token <- function(token) {
   if (!is.character(token) || length(token) != 1) {
     rlang::abort("SAS token must be a single character string.")
   }
@@ -91,7 +91,7 @@ sanitize_sas_token <- function(token) {
 #'
 #' @keywords internal
 #' @noRd
-compose_vsi_prefix <- function(handler, streaming = FALSE) {
+.compose_vsi_prefix <- function(handler, streaming = FALSE) {
   prefix <- tolower(handler)
   if (streaming) {
     prefix <- paste0(prefix, "_streaming")
@@ -117,10 +117,10 @@ compose_vsi_prefix <- function(handler, streaming = FALSE) {
 #'
 #' @keywords internal
 #' @noRd
-compose_wrapper_vsi_path <- function(handler, archive_path, file_in_archive = NULL, streaming = FALSE) {
-  prefix <- compose_vsi_prefix(handler, streaming)
+.compose_wrapper_vsi_path <- function(handler, archive_path, file_in_archive = NULL, streaming = FALSE) {
+  prefix <- .compose_vsi_prefix(handler, streaming)
 
-  is_vsi <- is_vsi_path(archive_path)
+  is_vsi <- .is_vsi_path(archive_path)
 
   if (is_vsi) {
     # Explicit chaining syntax with curly braces

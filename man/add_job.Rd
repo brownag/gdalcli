@@ -2,9 +2,12 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{add_job}
 \alias{add_job}
+\alias{add_job.gdal_pipeline}
 \title{Add Job to Pipeline}
 \usage{
 add_job(pipeline, job)
+
+\method{add_job}{gdal_pipeline}(pipeline, job)
 }
 \arguments{
 \item{pipeline}{A \code{gdal_pipeline} object.}

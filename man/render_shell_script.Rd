@@ -2,9 +2,25 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{render_shell_script}
 \alias{render_shell_script}
+\alias{render_shell_script.gdal_job}
+\alias{render_shell_script.gdal_pipeline}
 \title{Render GDAL Pipeline as Shell Script}
 \usage{
 render_shell_script(
+  pipeline,
+  shell = "bash",
+  format = c("commands", "native"),
+  ...
+)
+
+\method{render_shell_script}{gdal_job}(
+  pipeline,
+  shell = "bash",
+  format = c("commands", "native"),
+  ...
+)
+
+\method{render_shell_script}{gdal_pipeline}(
   pipeline,
   shell = "bash",
   format = c("commands", "native"),

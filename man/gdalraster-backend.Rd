@@ -24,7 +24,7 @@ gdalcli automatically selects the best available backend:
 \item Works on Windows with binary package installation
 \item Native R integration for data structures (sf objects, matrices, etc.)
 \item In-memory vector processing with GDAL 3.12+ (gdalraster 2.3.0+)
-\item Better debugging and error messages from C++ layer
+\item Better debugging and .error messages from C++ layer
 }
 
 \strong{When to use:}

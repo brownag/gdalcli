@@ -41,7 +41,7 @@ gdal_version_check <- function() {
   pkg_info <- if (file.exists(pkg_info_path)) {
     tryCatch(
       jsonlite::fromJSON(pkg_info_path),
-      error = function(e) list(gdal_version = "unknown")
+      .error = function(e) list(gdal_version = "unknown")
     )
   } else {
     list(gdal_version = "unknown")
@@ -56,7 +56,7 @@ gdal_version_check <- function() {
         list(version = "unknown")
       }
     },
-    error = function(e) list(version = "unknown")
+    .error = function(e) list(version = "unknown")
   )
 
   # Extract version strings
