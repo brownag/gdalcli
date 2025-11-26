@@ -26,6 +26,7 @@
 #' \dontrun{
 #'   .gdal_get_version()
 #' }
+#' @noRd
 .gdal_get_version <- function() {
   if (exists("__gdal_version__", envir = .gdal_features_cache)) {
     return(get("__gdal_version__", envir = .gdal_features_cache))
@@ -74,6 +75,7 @@
 #'   .gdal_has_feature("explicit_args")
 #'   .gdal_has_feature("arrow_vectors")
 #' }
+#' @noRd
 .gdal_has_feature <- function(feature = c("explicit_args", "arrow_vectors", "gdalg_native")) {
   feature <- match.arg(feature)
 
@@ -100,6 +102,7 @@
 #' Internal check: GDAL 3.12+ with gdalraster Rcpp binding support
 #'
 #' @keywords internal
+#' @noRd
 .check_explicit_args_available <- function() {
   # Requires GDAL 3.12+
   if (!gdal_check_version("3.12", op = ">=")) {
@@ -125,6 +128,7 @@
 #' Internal check: GDAL 3.12+ with Arrow support
 #'
 #' @keywords internal
+#' @noRd
 .check_arrow_vectors_available <- function() {
   # Requires GDAL 3.12+
   if (!gdal_check_version("3.12", op = ">=")) {
@@ -140,6 +144,7 @@
 #' Checks if GDAL has Arrow driver compiled in
 #'
 #' @keywords internal
+#' @noRd
 .check_gdal_has_arrow_driver <- function() {
   tryCatch({
     if (requireNamespace("gdalraster", quietly = TRUE)) {
@@ -158,6 +163,7 @@
 #' Internal check: GDAL 3.11+ with GDALG driver support
 #'
 #' @keywords internal
+#' @noRd
 .check_gdalg_native_available <- function() {
   # Requires GDAL 3.11+
   if (!gdal_check_version("3.11", op = ">=")) {
@@ -229,6 +235,7 @@ gdal_capabilities <- function() {
 #'
 #' @keywords internal
 #' @export
+#' @noRd
 print.gdal_capabilities <- function(x, ...) {
   cat("GDAL Advanced Features Report\n")
   cat("==============================\n\n")
@@ -261,6 +268,7 @@ print.gdal_capabilities <- function(x, ...) {
 #' or after environment changes.
 #'
 #' @keywords internal
+#' @noRd
 .clear_feature_cache <- function() {
   rm(list = ls(envir = .gdal_features_cache, all.names = TRUE),
      envir = .gdal_features_cache)
@@ -274,6 +282,7 @@ print.gdal_capabilities <- function(x, ...) {
 #' @return List of cached feature entries
 #'
 #' @keywords internal
+#' @noRd
 .get_feature_cache <- function() {
   as.list(.gdal_features_cache)
 }

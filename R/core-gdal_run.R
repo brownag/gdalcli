@@ -120,6 +120,7 @@ gdal_job_run <- function(x, ..., backend = NULL) {
 
 #' @rdname gdal_job_run
 #' @export
+#' @noRd
 gdal_job_run.gdal_job <- function(x,
                               stream_in = NULL,
                               stream_out_format = NULL,
@@ -216,6 +217,7 @@ gdal_job_run.gdal_job <- function(x,
 #' @return A character vector of arguments ready for processx.
 #'
 #' @keywords internal
+#' @noRd
 .serialize_gdal_job <- function(job) {
   # Skip the "gdal" prefix if present
   command_parts <- if (length(job$command_path) > 0 && job$command_path[1] == "gdal") job$command_path[-1] else job$command_path
@@ -325,6 +327,7 @@ gdal_job_run.gdal_job <- function(x,
 #' @return A named character vector of all environment variables to pass to processx.
 #'
 #' @keywords internal
+#' @noRd
 .merge_env_vars <- function(job_env, explicit_env, config_opts) {
   # Start with job environment variables
   merged <- job_env
@@ -375,6 +378,7 @@ gdal_job_run.gdal_job <- function(x,
 #'
 #' @keywords internal
 #' @export
+#' @noRd
 gdal_job_run.default <- function(x, ...) {
   rlang::abort(
     c(
@@ -404,6 +408,7 @@ gdal_job_run.default <- function(x, ...) {
 #' - If `stream_out_format = "text"`: Returns stdout as character string
 #'
 #' @keywords internal
+#' @noRd
 gdal_job_run_gdalraster <- function(job,
                                stream_in = NULL,
                                stream_out_format = NULL,

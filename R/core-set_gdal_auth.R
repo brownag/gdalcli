@@ -62,6 +62,7 @@ set_gdal_auth <- function(handler, ...) {
 
 #' @export
 #' @rdname set_gdal_auth
+#' @noRd
 set_gdal_auth.default <- function(handler, ...) {
   rlang::abort(
     c(
@@ -115,6 +116,7 @@ set_gdal_auth.default <- function(handler, ...) {
 #' # Public bucket (no authentication)
 #' set_gdal_auth("s3", no_sign_request = TRUE)
 #' }
+#' @noRd
 set_gdal_auth.s3 <- function(handler, access_key_id = NULL, secret_access_key = NULL,
                                session_token = NULL, region = NULL, no_sign_request = FALSE, ...) {
   if (no_sign_request) {
@@ -205,6 +207,7 @@ set_gdal_auth.s3 <- function(handler, access_key_id = NULL, secret_access_key = 
 #' # Using SAS token (? and & are auto-stripped)
 #' set_gdal_auth("azure", account = "myaccount", sas_token = "?st=2019...")
 #' }
+#' @noRd
 set_gdal_auth.azure <- function(handler, connection_string = NULL, account = NULL,
                                  access_key = NULL, sas_token = NULL, no_sign_request = FALSE, ...) {
   # Count how many authentication methods were provided
@@ -284,6 +287,7 @@ set_gdal_auth.azure <- function(handler, connection_string = NULL, account = NUL
 #' # Public bucket
 #' set_gdal_auth("gs", no_sign_request = TRUE)
 #' }
+#' @noRd
 set_gdal_auth.gs <- function(handler, credentials_file = NULL, no_sign_request = FALSE, ...) {
   methods_provided <- sum(!is.null(credentials_file), no_sign_request)
 
@@ -349,6 +353,7 @@ set_gdal_auth.gs <- function(handler, credentials_file = NULL, no_sign_request =
 #'   secret_access_key = "..."
 #' )
 #' }
+#' @noRd
 set_gdal_auth.oss <- function(handler, endpoint = NULL, access_key_id = NULL,
                                secret_access_key = NULL, session_token = NULL,
                                no_sign_request = FALSE, ...) {
@@ -419,6 +424,7 @@ set_gdal_auth.oss <- function(handler, endpoint = NULL, access_key_id = NULL,
 #'   project_domain_name = "Default"
 #' )
 #' }
+#' @noRd
 set_gdal_auth.swift_v3 <- function(handler, auth_url, username, password, project_name,
                                     project_domain_name = "default", ...) {
   Sys.setenv(OS_IDENTITY_API_VERSION = "3")
@@ -460,6 +466,7 @@ set_gdal_auth.swift_v3 <- function(handler, auth_url, username, password, projec
 #'   key = "testkey"
 #' )
 #' }
+#' @noRd
 set_gdal_auth.swift_v1 <- function(handler, auth_v1_url, user, key, ...) {
   Sys.setenv(SWIFT_AUTH_V1_URL = auth_v1_url)
   Sys.setenv(SWIFT_USER = user)

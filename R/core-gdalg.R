@@ -28,6 +28,7 @@
 #' @return A list representing a GDALG step definition
 #'
 #' @keywords internal
+#' @noRd
 .job_to_gdalg_step <- function(job, step_number) {
   # Determine step type from command_path
   cmd_path <- job$command_path
@@ -97,6 +98,7 @@
 #' @return A list representing the complete GDALG structure
 #'
 #' @keywords internal
+#' @noRd
 .pipeline_to_gdalg <- function(pipeline) {
   if (!inherits(pipeline, "gdal_pipeline")) {
     rlang::abort("Expected gdal_pipeline object")
@@ -137,6 +139,7 @@
 #' @return A gdal_pipeline object
 #'
 #' @keywords internal
+#' @noRd
 .gdalg_to_pipeline <- function(gdalg) {
   if (!is.list(gdalg)) {
     rlang::abort("GDALG must be a list")
@@ -187,6 +190,7 @@
 #' @return A gdal_job object
 #'
 #' @keywords internal
+#' @noRd
 .gdalg_step_to_job <- function(step, step_number) {
   # Determine command path from step type and operation
   step_type <- step$type %||% "unknown"
@@ -247,6 +251,7 @@
 #' the list of available formats by running `gdal raster convert --formats`.
 #'
 #' @keywords internal
+#' @noRd
 .check_gdalg_driver <- function() {
   tryCatch({
     result <- processx::run(
@@ -304,6 +309,7 @@ gdal_has_gdalg_driver <- function() {
 #' @return Character string representing the pipeline (without final write)
 #'
 #' @keywords internal
+#' @noRd
 .build_pipeline_for_gdalg_export <- function(pipeline) {
   if (length(pipeline$jobs) == 0) {
     cli::cli_abort("Cannot export empty pipeline")

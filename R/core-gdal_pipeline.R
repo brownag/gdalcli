@@ -83,6 +83,7 @@ new_gdal_pipeline <- function(jobs, name = NULL, description = NULL) {
 #' @return Logical indicating if the path is a virtual file system path.
 #'
 #' @keywords internal
+#' @noRd
 is_virtual_path <- function(path) {
   if (!is.character(path) || length(path) != 1) {
     return(FALSE)
@@ -121,6 +122,7 @@ is_virtual_path <- function(path) {
 #'
 #' @keywords internal
 #' @export
+#' @noRd
 print.gdal_pipeline <- function(x, ...) {
   cat("<gdal_pipeline>\n")
 
@@ -168,6 +170,7 @@ print.gdal_pipeline <- function(x, ...) {
 #'
 #' @keywords internal
 #' @export
+#' @noRd
 str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
   cat("<gdal_pipeline>")
   
@@ -230,6 +233,7 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #' }
 #'
 #' @export
+#' @noRd
 gdal_job_run.gdal_pipeline <- function(x,
                                        execution_mode = c("sequential", "native"),
                                        stream_in = NULL,
@@ -328,6 +332,7 @@ gdal_job_run.gdal_pipeline <- function(x,
 #' @return Invisibly returns TRUE on success, or captured output if stream_out_format is set.
 #'
 #' @keywords internal
+#' @noRd
 .gdal_job_run_native_pipeline <- function(pipeline,
                                           stream_in = NULL,
                                           stream_out_format = NULL,
@@ -476,12 +481,14 @@ gdal_job_run.gdal_pipeline <- function(x,
 #'
 #' @keywords internal
 #'
+#' @noRd
 render_native_pipeline <- function(pipeline) {
   UseMethod("render_native_pipeline")
 }
 
 #' @rdname render_native_pipeline
 #' @keywords internal
+#' @noRd
 render_native_pipeline.gdal_pipeline <- function(pipeline) {
   if (length(pipeline$jobs) == 0) {
     return("")
@@ -519,6 +526,7 @@ render_gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), 
 
 #' @rdname render_gdal_pipeline
 #' @export
+#' @noRd
 render_gdal_pipeline.gdal_job <- function(pipeline, format = c("shell_chain", "native"), ...) {
   format <- match.arg(format)
 
@@ -533,6 +541,7 @@ render_gdal_pipeline.gdal_job <- function(pipeline, format = c("shell_chain", "n
 
 #' @rdname render_gdal_pipeline
 #' @export
+#' @noRd
 render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), ...) {
   format <- match.arg(format)
 
@@ -602,6 +611,7 @@ render_shell_script <- function(pipeline, shell = "bash", format = c("commands",
 
 #' @rdname render_shell_script
 #' @export
+#' @noRd
 render_shell_script.gdal_job <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {
   format <- match.arg(format)
 
@@ -628,6 +638,7 @@ render_shell_script.gdal_job <- function(pipeline, shell = "bash", format = c("c
 
 #' @rdname render_shell_script
 #' @export
+#' @noRd
 render_shell_script.gdal_pipeline <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {
   format <- match.arg(format)
 
@@ -733,6 +744,7 @@ add_job <- function(pipeline, job) {
 
 #' @rdname add_job
 #' @export
+#' @noRd
 add_job.gdal_pipeline <- function(pipeline, job) {
   if (!inherits(job, "gdal_job")) {
     rlang::abort("job must be a gdal_job object")
@@ -763,6 +775,7 @@ get_jobs <- function(pipeline) {
 
 #' @rdname get_jobs
 #' @export
+#' @noRd
 get_jobs.gdal_pipeline <- function(pipeline) {
   pipeline$jobs
 }
@@ -786,6 +799,7 @@ set_name <- function(pipeline, name) {
 
 #' @rdname set_name
 #' @export
+#' @noRd
 set_name.gdal_pipeline <- function(pipeline, name) {
   new_gdal_pipeline(
     pipeline$jobs,
@@ -813,6 +827,7 @@ set_description <- function(pipeline, description) {
 
 #' @rdname set_name
 #' @export
+#' @noRd
 set_name.gdal_job <- function(pipeline, name) {
   if (!is.null(pipeline$pipeline)) {
     # Modify the attached pipeline
@@ -835,6 +850,7 @@ set_name.gdal_job <- function(pipeline, name) {
 
 #' @rdname set_description
 #' @export
+#' @noRd
 set_description.gdal_pipeline <- function(pipeline, description) {
   new_gdal_pipeline(
     pipeline$jobs,
@@ -845,6 +861,7 @@ set_description.gdal_pipeline <- function(pipeline, description) {
 
 #' @rdname set_description
 #' @export
+#' @noRd
 set_description.gdal_job <- function(pipeline, description) {
   if (!is.null(pipeline$pipeline)) {
     # Modify the attached pipeline

@@ -175,6 +175,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 #'   )
 #'   audit_entry <- .create_audit_entry(job, status = "success")
 #' }
+#' @noRd
 .create_audit_entry <- function(job, status = "pending", error_msg = NULL) {
   explicit_args <- tryCatch(
     gdal_job_get_explicit_args(job),
@@ -237,6 +238,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 #' }
 #'
 #' @export
+#' @noRd
 gdal_job_run_with_audit <- function(job, ..., audit_log = getOption("gdalcli.audit_logging", FALSE)) {
   # Create pre-execution audit entry
   audit_entry <- .create_audit_entry(job, status = "pending")

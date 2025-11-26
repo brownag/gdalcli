@@ -115,6 +115,7 @@ gdal_version_check <- function() {
 #' @return Character in format "X.Y" or "unknown" if parsing fails
 #'
 #' @keywords internal
+#' @noRd
 .extract_major_minor <- function(version_string) {
   if (!nzchar(version_string) || version_string == "unknown") {
     return("unknown")

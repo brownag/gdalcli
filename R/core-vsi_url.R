@@ -135,6 +135,7 @@ vsi_url <- function(handler, ..., streaming = FALSE, validate = FALSE) {
 #' Helper: Internal documentation generator for available VSI methods
 #'
 #' @keywords internal
+#' @noRd
 .methods_vsi_url <- function() {
   # List all available methods for inclusion in roxygen2 documentation
   methods <- c(

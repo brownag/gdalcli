@@ -10,6 +10,7 @@
 #'
 #' @keywords internal
 #' @name vsi_helpers
+#' @noRd
 is_vsi_path <- function(path) {
   if (!is.character(path) || length(path) == 0) {
     return(FALSE)
@@ -89,6 +90,7 @@ sanitize_sas_token <- function(token) {
 #' @return Character string like "/vsis3" or "/vsis3_streaming" with leading slash
 #'
 #' @keywords internal
+#' @noRd
 compose_vsi_prefix <- function(handler, streaming = FALSE) {
   prefix <- tolower(handler)
   if (streaming) {
@@ -114,6 +116,7 @@ compose_vsi_prefix <- function(handler, streaming = FALSE) {
 #' - Otherwise uses standard syntax: `/handler/archive_path/file_in_archive`
 #'
 #' @keywords internal
+#' @noRd
 compose_wrapper_vsi_path <- function(handler, archive_path, file_in_archive = NULL, streaming = FALSE) {
   prefix <- compose_vsi_prefix(handler, streaming)
 

@@ -181,6 +181,7 @@ gdal_vector_from_object <- function(
 #' C++ Rcpp bindings. Fastest execution path for vector operations.
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_from_object_gdalraster <- function(
     x, operation, output_format, output_crs, sql, sql_dialect,
     filter, keep_fields, ...) {
@@ -243,6 +244,7 @@ gdal_vector_from_object <- function(
 #' Internal function for in-memory Arrow processing
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_from_object_arrow <- function(
     x, operation, output_format, output_crs, sql, sql_dialect,
     filter, keep_fields, ...) {
@@ -295,6 +297,7 @@ gdal_vector_from_object <- function(
 #' Internal function using temporary files for vector operations
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_from_object_tempfile <- function(
     x, operation, output_format, output_crs, sql, sql_dialect,
     filter, keep_fields, ...) {
@@ -339,6 +342,7 @@ gdal_vector_from_object <- function(
 #' Arrow Vector Translation
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_translate_arrow <- function(
     arrow_table, output_crs, keep_fields, output_format, ...) {
   # In-memory translation using Arrow
@@ -366,6 +370,7 @@ gdal_vector_from_object <- function(
 #' Arrow Vector Filtering
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_filter_arrow <- function(
     arrow_table, filter, keep_fields, ...) {
   # Convert to sf and filter
@@ -389,6 +394,7 @@ gdal_vector_from_object <- function(
 #' Arrow Vector SQL Execution
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_sql_arrow <- function(
     arrow_table, sql, sql_dialect, keep_fields, ...) {
   # Convert to sf and execute SQL via temporary datasource
@@ -407,6 +413,7 @@ gdal_vector_from_object <- function(
 #' Arrow Vector Info
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_info_arrow <- function(arrow_table) {
   # Get information about Arrow-based layer
   list(
@@ -420,6 +427,7 @@ gdal_vector_from_object <- function(
 #' Temporary File Vector Translation
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_translate_tempfile <- function(
     input_file, output_file, output_crs, keep_fields, ...) {
   # Use standard gdal_vector_translate
@@ -441,6 +449,7 @@ gdal_vector_from_object <- function(
 #' Temporary File Vector Filtering
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_filter_tempfile <- function(
     input_file, output_file, filter, keep_fields, ...) {
   # Use gdal_vector_filter with SQL
@@ -461,6 +470,7 @@ gdal_vector_from_object <- function(
 #' Temporary File Vector SQL
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_sql_tempfile <- function(
     input_file, output_file, sql, sql_dialect, keep_fields, ...) {
   # Use gdal_vector_sql
@@ -477,6 +487,7 @@ gdal_vector_from_object <- function(
 #' Temporary File Vector Info
 #'
 #' @keywords internal
+#' @noRd
 .gdal_vector_info_tempfile <- function(input_file) {
   # Use gdal_vector_info
   gdal_vector_info(input_file)
@@ -485,6 +496,7 @@ gdal_vector_from_object <- function(
 #' Check SQL Dialect Availability
 #'
 #' @keywords internal
+#' @noRd
 .gdal_has_sql_dialect <- function(dialect) {
   # Check if GDAL supports specified SQL dialect
   tryCatch({

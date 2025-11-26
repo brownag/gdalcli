@@ -413,6 +413,7 @@ gdal_auth_swift <- function(auth_version = "3") {
 
 
 #' @keywords internal
+#' @noRd
 sanitize_sas_token <- function(sas_token) {
   # Remove leading ?
   if (substr(sas_token, 1, 1) == "?") {

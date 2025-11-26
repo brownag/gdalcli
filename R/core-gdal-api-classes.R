@@ -98,6 +98,7 @@ GdalApi <- function() {
 }
 
 #' @export
+#' @noRd
 print.GdalApi <- function(x, ...) {
   cat("<GdalApi>\n")
   cat(sprintf("GDAL version: %s\n", x$gdal_version))
@@ -111,6 +112,7 @@ print.GdalApi <- function(x, ...) {
 #' Build API structure for GdalApi
 #' @param api_env The API environment
 #' @keywords internal
+#' @noRd
 build_api_structure <- function(api_env) {
   tryCatch(
     {
@@ -177,6 +179,7 @@ build_api_structure <- function(api_env) {
 #' Load API structure from cache
 #' @param api_env The API environment
 #' @keywords internal
+#' @noRd
 load_from_cache <- function(api_env) {
   tryCatch(
     {
@@ -202,6 +205,7 @@ load_from_cache <- function(api_env) {
 #' Save API structure to cache
 #' @param api_env The API environment
 #' @keywords internal
+#' @noRd
 save_to_cache <- function(api_env) {
   tryCatch(
     {
@@ -299,6 +303,7 @@ GdalApiSub <- function(group_name, command_list) {
 }
 
 #' @export
+#' @noRd
 print.GdalApiSub <- function(x, ...) {
   cat(sprintf("<GdalApiSub: %s>\n", get("group_name", envir = x)))
   all_elements <- ls(x, all.names = TRUE)
@@ -310,6 +315,7 @@ print.GdalApiSub <- function(x, ...) {
 #' Create GDAL function for a command
 #' @param cmd_path Command path vector
 #' @keywords internal
+#' @noRd
 create_gdal_function <- function(cmd_path) {
   # Capture the command path in closure
   captured_cmd <- cmd_path

@@ -30,6 +30,7 @@
 #' Version comparison uses semantic versioning: major.minor.patch.
 #'
 #' @keywords internal
+#' @noRd
 .check_gdalraster_version <- function(min_version = "2.2.0",
                                       quietly = FALSE,
                                       error_on_unavailable = FALSE) {
@@ -112,6 +113,7 @@
 #' @return Character string with version (e.g., "2.2.0") or NULL if not available.
 #'
 #' @keywords internal
+#' @noRd
 .get_gdalraster_version <- function() {
   if (!requireNamespace("gdalraster", quietly = TRUE)) {
     return(NULL)
@@ -148,6 +150,7 @@
 #' than repeated version checks.
 #'
 #' @keywords internal
+#' @noRd
 .get_gdalraster_features <- function() {
   version <- .get_gdalraster_version()
 
@@ -189,6 +192,7 @@
 #' repeated version checks. Cache is set on first call and reused.
 #'
 #' @keywords internal
+#' @noRd
 .gdal_has_feature <- function(feature_name, quietly = FALSE) {
   # Use package-level cache to avoid repeated checks
   pkg_env <- parent.env(environment())
