@@ -15,9 +15,9 @@ gdal_vsi_sozip_validate(input, stdout = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-The gdal vsi sozip utility can be used to:
+Validate a ZIP file, possibly using SOZIP optimization.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

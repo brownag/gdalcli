@@ -59,12 +59,15 @@ A \link{gdal_job} object.
 \description{
 Create a polygon feature dataset from a raster band.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster polygonize input.tif polygonize.shp
 job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

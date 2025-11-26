@@ -45,15 +45,18 @@ gdal_raster_fill_nodata(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster fill-nodata} fills nodata areas by interpolating
-from valid pixels around the edges of the area.
+Fill nodata raster regions by interpolation from edges.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster fill-nodata -b 2 --max-distance 50 --smoothing-iterations 3 \
-job <- gdal_raster_fill_nodata(max_distance = 50, smoothing_iterations = 3)
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster fill-nodata -b 2 --max-distance 50 --smoothing-iterations 3 \  --strategy nearest --mask mask.tif \  input.tif output.tif
+# For help on available parameters, run: ?gdal_raster_fill_nodata
+job <- gdal_raster_fill_nodata()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

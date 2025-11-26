@@ -7,7 +7,7 @@
 \usage{
 gdal_job_run(x, ..., backend = NULL)
 
-\method{gdal_job_run}{gdal_job}(
+gdal_job_run.gdal_job(
   x,
   stream_in = NULL,
   stream_out_format = NULL,
@@ -21,10 +21,13 @@ gdal_job_run(x, ..., backend = NULL)
 
 \item{...}{Additional arguments passed to specific methods.}
 
-\item{backend}{Character string specifying the backend to use: \code{"processx"} (default,
-uses processx::run), \code{"gdalraster"} (uses gdalraster's C++ bindings, if available),
-or \code{"reticulate"} (uses Python's osgeo.gdal via reticulate, if available).
-If \code{NULL} (default), dispatches to the appropriate S3 method based on \code{x}'s class.}
+\item{backend}{Character string specifying the backend to use: \code{"processx"} (subprocess-based,
+always available if GDAL installed), \code{"gdalraster"} (C++ bindings, if gdalraster installed),
+or \code{"reticulate"} (Python osgeo.gdal via reticulate, if available).
+If \code{NULL} (default), auto-selects the best available backend:
+gdalraster if available (faster, no subprocess), otherwise processx.
+Control auto-selection with \code{options(gdalcli.prefer_backend = 'gdalraster')} or
+\code{options(gdalcli.prefer_backend = 'processx')}.}
 
 \item{stream_in}{An R object to be streamed to \verb{/vsistdin/}. Can be \code{NULL},
 a character string, or raw vector. If provided, overrides \code{x$stream_in}.}

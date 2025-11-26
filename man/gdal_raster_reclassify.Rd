@@ -39,10 +39,9 @@ gdal_raster_reclassify(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster reclassify} reclassifies values in an input dataset.
-A file (or string) specifies the mapping of input pixel values or ranges to output files.
+Reclassify values in a raster dataset
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_reclassify.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_reclassify.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

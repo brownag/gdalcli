@@ -54,19 +54,17 @@ gdal_raster_clean_collar(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster clean-collar} scans a (8-bit) image and sets all pixels that
-are nearly or exactly black (the default), white or one or more custom colors around the collar
-to black or white.
-This is often used to "fix up" lossy compressed air photos so that color pixels can be
-treated as transparent when mosaicing. The output format must use lossless compression
-if either alpha band or mask band is not set.
+Clean the collar of a raster dataset, removing noise.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster clean-collar --update my.tif
 job <- gdal_raster_clean_collar(update = "my.tif")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

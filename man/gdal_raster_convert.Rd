@@ -36,15 +36,18 @@ gdal_raster_convert(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster convert} can be used to convert raster data between
-different formats.
+Convert a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_convert.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_convert.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster convert --format=COG --co COMPRESS=JPEG utm.tif utm_cog.tif
-job <- gdal_raster_convert(input = "utm.tif", output = "utm_cog.tif")
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal raster convert --format=COG --co COMPRESS=JPEG utm.tif utm_cog.tif
+# For help on available parameters, run: ?gdal_raster_convert
+job <- gdal_raster_convert()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

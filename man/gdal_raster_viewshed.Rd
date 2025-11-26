@@ -71,13 +71,16 @@ A \link{gdal_job} object.
 \description{
 Compute the viewshed of a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster viewshed --max-distance=500 --pos=-10147017,5108065 source.tif destination.tif
 job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 
     max_distance = 500)
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

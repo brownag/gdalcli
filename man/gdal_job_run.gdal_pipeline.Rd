@@ -5,7 +5,7 @@
 \title{Check if Path is Virtual File System
 Execute a GDAL Pipeline}
 \usage{
-\method{gdal_job_run}{gdal_pipeline}(
+gdal_job_run.gdal_pipeline(
   x,
   execution_mode = c("sequential", "native"),
   stream_in = NULL,
@@ -57,5 +57,5 @@ gdal_job_run(pipeline, execution_mode = "native")
 
 }
 \seealso{
-\code{\link[=gdal_job_run.gdal_job]{gdal_job_run.gdal_job()}}, \code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=render_native_pipeline]{render_native_pipeline()}}
+\code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}
 }

@@ -2,12 +2,9 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{get_jobs}
 \alias{get_jobs}
-\alias{get_jobs.gdal_pipeline}
 \title{Get Pipeline Jobs}
 \usage{
 get_jobs(pipeline)
-
-\method{get_jobs}{gdal_pipeline}(pipeline)
 }
 \arguments{
 \item{pipeline}{A \code{gdal_pipeline} object.}

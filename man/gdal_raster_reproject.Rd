@@ -77,13 +77,16 @@ A \link{gdal_job} object.
 \description{
 Reproject a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster reproject --dst-crs=EPSG:32632 in.tif out.tif --overwrite
 job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = TRUE, 
     dst_crs = "EPSG:32632")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

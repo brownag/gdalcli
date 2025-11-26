@@ -2,12 +2,9 @@
 % Please edit documentation in R/core-gdal_modifiers.R
 \name{gdal_with_co}
 \alias{gdal_with_co}
-\alias{gdal_with_co.gdal_job}
 \title{Add Creation Options to a GDAL Job}
 \usage{
 gdal_with_co(x, ...)
-
-\method{gdal_with_co}{gdal_job}(x, ...)
 }
 \arguments{
 \item{x}{A \link{gdal_job} object.}

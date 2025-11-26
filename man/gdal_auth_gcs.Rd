@@ -16,3 +16,12 @@ Named character vector of environment variables for \code{\link[=gdal_with_env]{
 Reads Google Cloud Storage authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
 Set \code{GOOGLE_APPLICATION_CREDENTIALS} environment variable pointing to JSON credentials file.
 }
+\details{
+Design choices:
+\itemize{
+\item Prevents accidental hardcoding of secrets in R scripts
+\item Reduces risk of leaking credentials via version control or logs
+\item Encourages secure credential management via .Renviron
+\item Follows security best practices (12-factor app)
+}
+}

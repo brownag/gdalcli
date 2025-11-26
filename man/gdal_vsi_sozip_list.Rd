@@ -13,9 +13,9 @@ gdal_vsi_sozip_list(input)
 A \link{gdal_job} object.
 }
 \description{
-The gdal vsi sozip utility can be used to:
+List content of a ZIP file, with SOZIP related information.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

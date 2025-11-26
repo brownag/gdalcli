@@ -50,12 +50,15 @@ A \link{gdal_job} object.
 \description{
 Combine together input bands into a multi-band output, either virtual (VRT) or materialized.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_stack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_stack.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster stack red.tif green.tif blue.tif rgb.tif
 job <- gdal_raster_stack(input = c("red.tif", "green.tif", "blue.tif"), output = "rgb.tif")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

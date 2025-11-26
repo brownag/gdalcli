@@ -86,12 +86,16 @@ A \link{gdal_job} object.
 \description{
 Modify the geometry type of a vector dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_set-type.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_set-type.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
-# gdal vector info poly.gpkg
-job <- gdal_vector_geom_set_type(input = "poly.gpkg")
+# gdal vector geom set-type --geometry-type=MULTIPOLYGON in.shp out.gpkg --overwrite
+job <- gdal_vector_geom_set_type(input = "in.shp", output = "out.gpkg", overwrite = TRUE, 
+    geometry_type = "MULTIPOLYGON")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

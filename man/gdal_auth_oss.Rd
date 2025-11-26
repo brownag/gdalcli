@@ -16,3 +16,12 @@ Named character vector of environment variables for \code{\link[=gdal_with_env]{
 Reads Alibaba Cloud OSS authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
 Set \code{OSS_ENDPOINT}, \code{OSS_ACCESS_KEY_ID}, and \code{OSS_SECRET_ACCESS_KEY} in \verb{~/.Renviron}.
 }
+\details{
+Credentials are \strong{intentionally not accepted as function arguments} because:
+\itemize{
+\item Prevents accidental hardcoding of secrets in R scripts
+\item Reduces risk of leaking credentials via version control or logs
+\item Encourages secure credential management via .Renviron
+\item Follows security best practices (12-factor app)
+}
+}

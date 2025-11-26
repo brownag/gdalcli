@@ -59,12 +59,15 @@ A \link{gdal_job} object.
 \description{
 Swap X and Y coordinates of geometries of a vector dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_swap-xy.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_swap-xy.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
-# gdal vector info poly.gpkg
-job <- gdal_vector_geom_swap_xy(input = "poly.gpkg")
+# gdal vector geom swap-xy in.gpkg out.gpkg --overwrite
+job <- gdal_vector_geom_swap_xy(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE)
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

@@ -2,12 +2,9 @@
 % Please edit documentation in R/core-gdal_modifiers.R
 \name{gdal_with_env}
 \alias{gdal_with_env}
-\alias{gdal_with_env.gdal_job}
 \title{Add Environment Variables to a GDAL Job}
 \usage{
 gdal_with_env(x, ...)
-
-\method{gdal_with_env}{gdal_job}(x, ...)
 }
 \arguments{
 \item{x}{A \link{gdal_job} object.}

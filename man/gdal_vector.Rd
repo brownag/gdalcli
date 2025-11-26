@@ -15,7 +15,7 @@ A \link{gdal_job} object.
 \description{
 Vector commands.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

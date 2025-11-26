@@ -2,15 +2,9 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{render_gdal_pipeline}
 \alias{render_gdal_pipeline}
-\alias{render_gdal_pipeline.gdal_job}
-\alias{render_gdal_pipeline.gdal_pipeline}
 \title{Render GDAL Pipeline as GDAL Pipeline Command}
 \usage{
 render_gdal_pipeline(pipeline, format = c("shell_chain", "native"), ...)
-
-\method{render_gdal_pipeline}{gdal_job}(pipeline, format = c("shell_chain", "native"), ...)
-
-\method{render_gdal_pipeline}{gdal_pipeline}(pipeline, format = c("shell_chain", "native"), ...)
 }
 \arguments{
 \item{pipeline}{A \code{gdal_pipeline} object.}
@@ -31,5 +25,5 @@ By default, renders as a sequence of separate GDAL commands (\verb{gdal cmd1 && 
 Set \code{format = "native"} to generate native GDAL pipeline syntax.
 }
 \seealso{
-\code{\link[=render_shell_script]{render_shell_script()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}, \code{\link[=render_native_pipeline]{render_native_pipeline()}}
+\code{\link[=render_shell_script]{render_shell_script()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}
 }

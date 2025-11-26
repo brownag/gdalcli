@@ -77,12 +77,16 @@ A \link{gdal_job} object.
 \description{
 Compute a buffer around geometries of a vector dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_buffer.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_buffer.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
-# gdal vector info poly.gpkg
-job <- gdal_vector_geom_buffer(input = "poly.gpkg")
+# gdal vector geom buffer --distance=1000 in.gpkg out.gpkg --overwrite
+job <- gdal_vector_geom_buffer(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
+    distance = 1000)
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

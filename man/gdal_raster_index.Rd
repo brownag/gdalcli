@@ -74,12 +74,15 @@ A \link{gdal_job} object.
 \description{
 Create a vector index of raster datasets.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_index.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_index.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster index doq/*.tif doq_index.gpkg
 job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

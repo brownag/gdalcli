@@ -90,16 +90,18 @@ gdal_vector_grid_maximum(
 A \link{gdal_job} object.
 }
 \description{
-This program creates a regular grid (raster) from the scattered data read from
-a vector dataset. Input data will be interpolated to fill grid nodes with
-values, you can choose from various interpolation methods.
+Create a regular grid from scattered points using the maximum value in the search ellipse.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_grid_maximum.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_grid_maximum.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal vector grid invdist --power=2.0 --smoothing=1.0 --extent=85000,894000,89000,890000 \
-job <- gdal_vector_grid_maximum(extent = c(85000, 894000, 89000, 890000))
+\dontrun{
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal vector grid invdist --power=2.0 --smoothing=1.0 --extent=85000,894000,89000,890000 \     --size=400,400 -l dem dem.vrt dem.tif
+# For help on available parameters, run: ?gdal_vector_grid_maximum
+job <- gdal_vector_grid_maximum()
+# gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

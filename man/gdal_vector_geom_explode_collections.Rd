@@ -65,12 +65,16 @@ A \link{gdal_job} object.
 \description{
 Explode geometries of type collection of a vector dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_explode-collections.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_explode-collections.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
-# gdal vector info poly.gpkg
-job <- gdal_vector_geom_explode_collections(input = "poly.gpkg")
+# gdal vector geom explode-collections --geometry-type=POINT --skip-on-type-mismatch in.gpkg points.shp --overwrite
+job <- gdal_vector_geom_explode_collections(input = "in.gpkg", output = "points.shp", 
+    skip_on_type_mismatch = TRUE, overwrite = TRUE, geometry_type = "POINT")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

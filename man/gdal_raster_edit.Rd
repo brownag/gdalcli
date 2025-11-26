@@ -44,12 +44,15 @@ A \link{gdal_job} object.
 \description{
 Edit a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster edit --crs=EPSG:32632 my.tif
 job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

@@ -17,14 +17,14 @@ A \link{gdal_job} object.
 \description{
 List layers of a PDF dataset
 
-See \url{https://gdal.org/en/stable/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
 }
 \examples{
+# Example
+# gdal driver pdf list-layers autotest/gdrivers/data/pdf/adobe_style_geospatial.pdf
+job <- gdal_driver_pdf_list_layers(input = "autotest/gdrivers/data/pdf/adobe_style_geospatial.pdf")
 \dontrun{
-# TODO: No examples available for gdal_driver_pdf_list_layers.
-# See GDAL documentation: https://gdal.org/programs/gdal-driver-pdf-list-layers.html
-job <- gdal_driver_pdf_list_layers()
-# gdal_job_run(job)
+  result <- gdal_job_run(job)
 }
 }
 \seealso{

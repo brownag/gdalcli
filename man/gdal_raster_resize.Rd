@@ -41,7 +41,7 @@ A \link{gdal_job} object.
 \description{
 Resize a raster dataset without changing the georeferenced extents.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_resize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_resize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

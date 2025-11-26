@@ -39,10 +39,9 @@ gdal_raster_pixel_info(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster pixel-info} provide a mechanism to query information about
-a pixel given its location in one of a variety of coordinate systems.
+Return information on a pixel of a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

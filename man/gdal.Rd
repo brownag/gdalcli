@@ -17,12 +17,13 @@ A \link{gdal_job} object.
 \description{
 Main gdal entry point.
 
-See \url{https://gdal.org/en/stable/programs/gdal.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
-# TODO: No examples available for gdal.
-# See GDAL documentation: https://gdal.org/programs/gdal.html
+# TODO: Convert this GDAL CLI example to R parameters:
+# Original: gdal info utm.tif
+# For help on available parameters, run: ?gdal
 job <- gdal()
 # gdal_job_run(job)
 }

@@ -2,12 +2,9 @@
 % Please edit documentation in R/core-gdal_modifiers.R
 \name{gdal_with_oo}
 \alias{gdal_with_oo}
-\alias{gdal_with_oo.gdal_job}
 \title{Add Open Options to a GDAL Job}
 \usage{
 gdal_with_oo(x, ...)
-
-\method{gdal_with_oo}{gdal_job}(x, ...)
 }
 \arguments{
 \item{x}{A \link{gdal_job} object.}

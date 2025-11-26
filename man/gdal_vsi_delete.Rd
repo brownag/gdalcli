@@ -15,9 +15,9 @@ gdal_vsi_delete(filename, recursive = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal vsi delete} delete files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
+Delete files located on GDAL Virtual System Interface (VSI).
 
-See \url{https://gdal.org/en/stable/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

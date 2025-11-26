@@ -47,12 +47,15 @@ A \link{gdal_job} object.
 \description{
 Remove small polygons from a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_sieve.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_sieve.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster sieve -b 2 -s 10 input.tif output.tif
 job <- gdal_raster_sieve(input = "input.tif", output = "output.tif")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

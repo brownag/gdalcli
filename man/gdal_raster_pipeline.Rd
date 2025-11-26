@@ -41,12 +41,12 @@ A \link{gdal_job} object.
 \description{
 Process a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal raster pipeline ! read in.tif ! reproject --dst-crs=EPSG:32632 ! edit --metadata AUTHOR=EvenR ! write out.tif --overwrite
+# Original: gdal raster pipeline --progress ! read in.tif ! reproject --dst-crs=EPSG:32632 ! edit --metadata AUTHOR=EvenR ! write out.tif --overwrite
 # For help on available parameters, run: ?gdal_raster_pipeline
 job <- gdal_raster_pipeline()
 # gdal_job_run(job)

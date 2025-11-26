@@ -2,12 +2,9 @@
 % Please edit documentation in R/core-gdal_modifiers.R
 \name{gdal_with_config}
 \alias{gdal_with_config}
-\alias{gdal_with_config.gdal_job}
 \title{Add GDAL Configuration Options to a GDAL Job}
 \usage{
 gdal_with_config(x, ...)
-
-\method{gdal_with_config}{gdal_job}(x, ...)
 }
 \arguments{
 \item{x}{A \link{gdal_job} object.}

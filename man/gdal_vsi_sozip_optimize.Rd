@@ -33,14 +33,17 @@ gdal_vsi_sozip_optimize(
 A \link{gdal_job} object.
 }
 \description{
-The gdal vsi sozip utility can be used to:
+Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal vsi sozip create my.gpkg my.gpkg.zip
 job <- gdal_vsi_sozip_optimize(input = "my.gpkg", output = "my.gpkg.zip")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vsi_utilities: 

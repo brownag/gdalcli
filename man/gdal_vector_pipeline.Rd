@@ -59,13 +59,16 @@ A \link{gdal_job} object.
 \description{
 Process a vector dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
-# gdal vector pipeline ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
-job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write"), 
+# gdal vector pipeline --progress ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
+job <- gdal_vector_pipeline(input = c("read", "in.gpkg", "!", "reproject", "!", "write"), 
     output = "out.gpkg", overwrite = TRUE)
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

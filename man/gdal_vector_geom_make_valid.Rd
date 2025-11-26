@@ -65,12 +65,15 @@ A \link{gdal_job} object.
 \description{
 Fix validity of geometries of a vector dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_geom_make-valid.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_make-valid.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
-# gdal vector info poly.gpkg
-job <- gdal_vector_geom_make_valid(input = "poly.gpkg")
+# gdal vector geom make-valid in.gpkg out.gpkg --overwrite
+job <- gdal_vector_geom_make_valid(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE)
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

@@ -27,9 +27,9 @@ gdal_vsi_sync(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal vsi sync} synchronize files and directories located on GDAL Virtual File Systems (compressed, network hosted, etc...): /vsimem, /vsizip, /vsitar, /vsicurl, ....
+Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
 
-See \url{https://gdal.org/en/stable/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

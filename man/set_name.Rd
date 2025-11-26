@@ -2,15 +2,9 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{set_name}
 \alias{set_name}
-\alias{set_name.gdal_pipeline}
-\alias{set_name.gdal_job}
 \title{Set Pipeline Name}
 \usage{
 set_name(pipeline, name)
-
-\method{set_name}{gdal_pipeline}(pipeline, name)
-
-\method{set_name}{gdal_job}(pipeline, name)
 }
 \arguments{
 \item{pipeline}{A \code{gdal_pipeline} object.}

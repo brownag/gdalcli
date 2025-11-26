@@ -62,12 +62,12 @@ A \link{gdal_job} object.
 \description{
 Reproject a vector dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal vector pipeline ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
+# Original: gdal vector pipeline --progress ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
 # For help on available parameters, run: ?gdal_vector_reproject
 job <- gdal_vector_reproject()
 # gdal_job_run(job)

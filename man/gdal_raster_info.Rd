@@ -69,15 +69,17 @@ gdal_raster_info(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster info} lists various information about a GDAL supported
-raster dataset.
+Return information on a raster dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_info.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster info utmsmall.tif
 job <- gdal_raster_info(input = "utmsmall.tif")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

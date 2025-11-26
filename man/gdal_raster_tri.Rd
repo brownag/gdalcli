@@ -44,12 +44,15 @@ A \link{gdal_job} object.
 \description{
 Generate a Terrain Ruggedness Index (TRI) map
 
-See \url{https://gdal.org/en/stable/programs/gdal_raster_tri.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_tri.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal raster tri n43.dt0 out.tif --overwrite
 job <- gdal_raster_tri(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_raster_utilities: 

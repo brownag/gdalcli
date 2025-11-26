@@ -2,25 +2,9 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{render_shell_script}
 \alias{render_shell_script}
-\alias{render_shell_script.gdal_job}
-\alias{render_shell_script.gdal_pipeline}
 \title{Render GDAL Pipeline as Shell Script}
 \usage{
 render_shell_script(
-  pipeline,
-  shell = "bash",
-  format = c("commands", "native"),
-  ...
-)
-
-\method{render_shell_script}{gdal_job}(
-  pipeline,
-  shell = "bash",
-  format = c("commands", "native"),
-  ...
-)
-
-\method{render_shell_script}{gdal_pipeline}(
   pipeline,
   shell = "bash",
   format = c("commands", "native"),
@@ -54,5 +38,5 @@ When \code{format = "native"}, the script uses a single \verb{gdal raster/vector
 command, which is more efficient as it avoids intermediate disk I/O.
 }
 \seealso{
-\code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}, \code{\link[=render_native_pipeline]{render_native_pipeline()}}
+\code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=gdal_job_run.gdal_pipeline]{gdal_job_run.gdal_pipeline()}}
 }

@@ -71,12 +71,15 @@ A \link{gdal_job} object.
 \description{
 Concatenate vector datasets.
 
-See \url{https://gdal.org/en/stable/programs/gdal_vector_concat.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_concat.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
-# gdal vector concat --mode=stack *.shp out.gpkg
-job <- gdal_vector_concat(input = "*.shp", output = "out.gpkg", mode = "stack")
+# gdal vector concat --stack *.shp out.gpkg
+job <- gdal_vector_concat(input = "out.gpkg")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_vector_utilities: 

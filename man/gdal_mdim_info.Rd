@@ -39,15 +39,17 @@ gdal_mdim_info(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal mdim info} lists various information about a GDAL supported
-multidimensional dataset.
+Return information on a multidimensional dataset.
 
-See \url{https://gdal.org/en/stable/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
 # Example
 # gdal mdim info netcdf-4d.nc
 job <- gdal_mdim_info(input = "netcdf-4d.nc")
+\dontrun{
+  result <- gdal_job_run(job)
+}
 }
 \seealso{
 Other gdal_mdim_utilities: 
