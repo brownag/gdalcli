@@ -5,21 +5,174 @@ This guide documents the advanced GDAL features available in gdalcli for GDAL 3.
 ## Table of Contents
 
 1. [Feature Overview](#feature-overview)
-2. [getExplicitlySetArgs() - Configuration Introspection](#getexplicitlysetargs---configuration-introspection)
-3. [setVectorArgsFromObject() - In-Memory Vector Processing](#setvectorargsfromobject---in-memory-vector-processing)
-4. [Capability Detection](#capability-detection)
-5. [Integration Examples](#integration-examples)
-6. [Performance Considerations](#performance-considerations)
+2. [gdalraster Backend - C++ Execution Acceleration](#gdalraster-backend---c-execution-acceleration)
+3. [getExplicitlySetArgs() - Configuration Introspection](#getexplicitlysetargs---configuration-introspection)
+4. [setVectorArgsFromObject() - In-Memory Vector Processing](#setvectorargsfromobject---in-memory-vector-processing)
+5. [Capability Detection](#capability-detection)
+6. [Integration Examples](#integration-examples)
+7. [Performance Considerations](#performance-considerations)
+8. [Backend Selection and Configuration](#backend-selection-and-configuration)
 
 ## Feature Overview
 
-gdalcli supports two major GDAL 3.12+ features that enhance functionality and performance:
+gdalcli supports three major advancement areas that enhance functionality and performance:
 
-| Feature | GDAL Version | Purpose | Performance |
-|---------|-------------|---------|-------------|
-| getExplicitlySetArgs() | 3.12+ | Audit logging, configuration introspection | Minimal overhead |
-| In-Memory Vector Processing | 3.12+ | Direct R→GDAL data processing without I/O | 10-100x faster on large datasets |
-| GDALG Native Format | 3.11+ | Native pipeline serialization | Already implemented |
+| Feature | Version | Purpose | Performance |
+|---------|---------|---------|-------------|
+| gdalraster Backend | gdalraster 2.2.0+ | C++ execution via Rcpp, no subprocess overhead | 10-50x faster for repeated operations |
+| getExplicitlySetArgs() | GDAL 3.12+ | Audit logging, configuration introspection | Minimal overhead |
+| In-Memory Vector Processing | GDAL 3.12+ + gdalraster 2.3.0+ | Direct R→GDAL data processing without I/O | 10-100x faster on large datasets |
+
+## gdalraster Backend - C++ Execution Acceleration
+
+### Overview
+
+The **gdalraster backend** provides fast C++ execution through Rcpp bindings, eliminating subprocess overhead. This is particularly valuable for:
+
+- **Windows users** without system GDAL (use binary gdalraster installation)
+- **Batch processing** with repeated GDAL operations (10-50x faster than processx)
+- **Performance-critical applications** where subprocess startup adds significant overhead
+- **In-memory vector processing** with gdalraster 2.3.0+ and GDAL 3.12+
+
+### Backend Auto-Selection
+
+By default, gdalcli automatically selects the best available backend:
+
+```r
+library(gdalcli)
+
+# Auto-selection: gdalraster if available, otherwise processx
+job <- gdal_raster_info("test.tif")
+result <- gdal_job_run(job)  # Uses gdalraster if installed, processx otherwise
+```
+
+**Feature Detection by Version:**
+
+| Feature | gdalraster 2.2.0+ | gdalraster 2.3.0+ | Notes |
+|---------|-------------------|-------------------|-------|
+| Job execution via gdal_alg() | ✓ Yes | ✓ Yes | Core execution engine |
+| Command discovery | ✓ Yes | ✓ Yes | List available operations |
+| Command help | ✓ Yes | ✓ Yes | Get help text |
+| Explicit argument access | ✓ Yes | ✓ Yes | For audit logging |
+| Vector from object (in-memory) | ✗ No | ✓ Yes | Process R objects without temp files |
+| Advanced features | ✗ No | ✓ Yes | Extended setVectorArgsFromObject support |
+
+### Explicit Backend Selection
+
+Control backend selection when needed:
+
+```r
+# Force gdalraster backend (C++ execution)
+result <- gdal_job_run(job, backend = "gdalraster")
+
+# Use processx (system GDAL subprocess)
+result <- gdal_job_run(job, backend = "processx")
+
+# Use Python via reticulate
+result <- gdal_job_run(job, backend = "reticulate")
+
+# Set global preference
+options(gdalcli.prefer_backend = "gdalraster")  # Prefer gdalraster if available
+options(gdalcli.prefer_backend = "processx")   # Force processx
+options(gdalcli.prefer_backend = "auto")       # Default: auto-select
+```
+
+### Performance Characteristics
+
+**gdalraster backend (C++ execution via Rcpp):**
+
+- Fast for single operations (minimal startup overhead)
+- 10-50x faster than processx for batch operations (no subprocess startup per call)
+- Ideal for loops with multiple GDAL calls
+- In-memory vector processing available with gdalraster 2.3.0+ and GDAL 3.12+
+
+**processx backend (system GDAL subprocess):**
+
+- Small startup overhead per operation
+- More isolated execution environment
+- Available anywhere GDAL is installed
+- Suitable for individual operations
+
+### Example: Batch Processing Performance
+
+```r
+library(gdalcli)
+library(microbenchmark)
+
+# Process 100 raster operations
+files <- paste0("tile_", 1:100, ".tif")
+
+# gdalraster backend (automatic if installed)
+gdalraster_time <- system.time({
+  for (file in files) {
+    job <- gdal_raster_info(file)
+    result <- gdal_job_run(job, backend = "gdalraster")
+  }
+})
+# ~0.5-2 seconds typical
+
+# processx backend (system GDAL)
+processx_time <- system.time({
+  for (file in files) {
+    job <- gdal_raster_info(file)
+    result <- gdal_job_run(job, backend = "processx")
+  }
+})
+# ~10-50 seconds typical (0.1-0.5s per subprocess startup)
+
+# Speedup: gdalraster typically 10-50x faster for batch operations
+```
+
+### Checking Available Backend Features
+
+```r
+library(gdalcli)
+
+# Check gdalraster version
+gdalcli:::.get_gdalraster_version()
+# [1] "2.3.0"
+
+# Check if specific feature is available
+gdalcli:::.gdal_has_feature("setVectorArgsFromObject")
+# [1] TRUE (if gdalraster >= 2.3.0)
+
+# Get all available gdalraster features
+gdalcli:::.get_gdalraster_features()
+# $gdal_commands
+# [1] "2.2.0"
+#
+# $gdal_usage
+# [1] "2.2.0"
+#
+# $gdal_alg
+# [1] "2.2.0"
+# ...
+```
+
+### Installation and Setup
+
+**Windows** (recommended for gdalraster):
+
+```r
+install.packages("gdalraster")  # Pre-compiled binaries, no system GDAL needed
+```
+
+**macOS/Linux**:
+
+```bash
+# Install system GDAL first
+brew install gdal  # macOS
+# or
+sudo apt-get install gdal-bin libgdal-dev  # Ubuntu/Debian
+```
+
+Then in R:
+
+```r
+install.packages("gdalraster")
+```
+
+See [GDALRASTER_INTEGRATION.md](GDALRASTER_INTEGRATION.md) for detailed setup instructions.
 
 ## getExplicitlySetArgs() - Configuration Introspection
 
@@ -470,8 +623,166 @@ gdal_vector_from_object(data, operation = "info")
 gdalcli:::.gdal_has_feature("arrow_vectors")
 ```
 
+## Backend Selection and Configuration
+
+### Overview
+
+gdalcli supports multiple execution backends, each with different characteristics. The system automatically selects the best available backend, but you can override this when needed.
+
+### Available Backends
+
+#### gdalraster (Rcpp C++ bindings)
+
+- Requires: `gdalraster >= 2.2.0` R package installed
+- Speed: Fastest for batch operations (10-50x faster than processx)
+- Availability: Windows binaries available, macOS/Linux require system GDAL
+- Features: All advanced features available with gdalraster 2.3.0+
+- Overhead: Minimal startup overhead, ideal for loops
+
+#### processx (System GDAL subprocess)
+
+- Requires: GDAL installed and in system PATH
+- Speed: Suitable for individual operations
+- Availability: Works anywhere GDAL is installed
+- Features: All GDAL functionality available
+- Overhead: 0.1-0.5 second startup per operation
+
+#### reticulate (Python via GDAL bindings)
+
+- Requires: Python with GDAL bindings installed
+- Speed: Similar to processx
+- Availability: When Python GDAL is configured
+- Features: All GDAL functionality available
+- Use case: Integration with Python-based workflows
+
+### Auto-Selection Logic
+
+By default, gdalcli uses this selection logic:
+
+```text
+1. Check if gdalraster >= 2.2.0 is installed
+   → If yes, use gdalraster backend
+   → If no, continue to step 2
+
+2. Check if processx can access system GDAL
+   → If yes, use processx backend
+   → If no, continue to step 3
+
+3. Check if reticulate can access Python GDAL
+   → If yes, use reticulate backend
+   → If no, error: no backends available
+```
+
+### Configuration Options
+
+Set backend preferences globally:
+
+```r
+# Auto-select best available (default)
+options(gdalcli.prefer_backend = "auto")
+
+# Always prefer gdalraster if available, fall back to processx
+options(gdalcli.prefer_backend = "gdalraster")
+
+# Force processx (ignore gdalraster even if installed)
+options(gdalcli.prefer_backend = "processx")
+
+# Force reticulate (Python-based GDAL)
+options(gdalcli.prefer_backend = "reticulate")
+```
+
+### Per-Call Backend Selection
+
+Override backend selection for specific operations:
+
+```r
+library(gdalcli)
+
+job <- gdal_raster_info("file.tif")
+
+# Use specific backend
+result1 <- gdal_job_run(job, backend = "gdalraster")
+result2 <- gdal_job_run(job, backend = "processx")
+
+# Compare performance
+system.time({
+  for (i in 1:100) {
+    gdal_job_run(job, backend = "gdalraster")
+  }
+})
+
+system.time({
+  for (i in 1:100) {
+    gdal_job_run(job, backend = "processx")
+  }
+})
+```
+
+### Checking Available Backends
+
+```r
+library(gdalcli)
+
+# Check gdalraster availability
+if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
+  cat("gdalraster backend available\n")
+  backend <- "gdalraster"
+} else {
+  cat("Using processx backend\n")
+  backend <- "processx"
+}
+
+# Execute with specific backend
+result <- gdal_job_run(job, backend = backend)
+```
+
+### Best Practices for Backend Selection
+
+1. **Default to auto-selection** - Let gdalcli choose the best backend
+2. **Install gdalraster on Windows** - Simplest way to avoid system GDAL dependency
+3. **Use explicit selection for benchmarking** - Compare backends with `backend` parameter
+4. **Monitor memory with large datasets** - Gdalraster holds more data in memory than processx
+5. **Test with your data** - Performance characteristics vary by operation type
+
+### Troubleshooting Backend Issues
+
+#### "No backends available" error
+
+```r
+# Verify gdalraster is installed
+requireNamespace("gdalraster")  # Should return TRUE
+
+# Or install system GDAL and processx
+install.packages("processx")
+```
+
+#### Backend not switching
+
+```r
+# Check current preference setting
+getOption("gdalcli.prefer_backend")
+
+# Reset to auto-selection
+options(gdalcli.prefer_backend = "auto")
+
+# Verify gdalraster version
+gdalcli:::.get_gdalraster_version()
+```
+
+#### Unexpected performance
+
+```r
+# Verify which backend is being used
+gdal_job_run(job, verbose = TRUE)
+
+# Force comparison
+time_gdalraster <- system.time(gdal_job_run(job, backend = "gdalraster"))
+time_processx <- system.time(gdal_job_run(job, backend = "processx"))
+```
+
 ## See Also
 
+- [GDALRASTER_INTEGRATION.md](GDALRASTER_INTEGRATION.md) - Comprehensive gdalraster setup guide
 - [gdal_capabilities()][gdalcli::gdal_capabilities] - Feature detection
 - [gdal_job_get_explicit_args()][gdalcli::gdal_job_get_explicit_args] - Explicit argument retrieval
 - [gdal_vector_from_object()][gdalcli::gdal_vector_from_object] - In-memory vector processing

@@ -41,8 +41,8 @@
 #'
 #' @export
 gdal_list_commands <- function(command = NULL, output = "data.frame") {
-  # Check if gdalraster is available for this capability
-  if (!requireNamespace("gdalraster", quietly = TRUE)) {
+  # Check if gdalraster is available with command discovery support
+  if (!.check_gdalraster_version("2.2.0", quietly = TRUE)) {
     cli::cli_abort(
       c(
         "gdalraster package required for command discovery",
@@ -52,12 +52,12 @@ gdal_list_commands <- function(command = NULL, output = "data.frame") {
     )
   }
 
-  # Check if gdal_commands is available
-  if (!exists("gdal_commands", where = asNamespace("gdalraster"))) {
+  # Verify gdal_commands function exists
+  if (!.gdal_has_feature("gdal_commands", quietly = TRUE)) {
     cli::cli_abort(
       c(
-        "gdal_commands not found in gdalraster namespace",
-        "i" = "Requires gdalraster version 2.2.0 or later with GDAL 3.11+"
+        "GDAL command discovery not available",
+        "i" = "Requires gdalraster >= 2.2.0 with GDAL 3.11+"
       )
     )
   }
@@ -128,8 +128,8 @@ gdal_command_help <- function(command) {
     cli::cli_abort("command must be a single character string (e.g., 'raster.info')")
   }
 
-  # Check if gdalraster is available
-  if (!requireNamespace("gdalraster", quietly = TRUE)) {
+  # Check if gdalraster is available with help support
+  if (!.check_gdalraster_version("2.2.0", quietly = TRUE)) {
     cli::cli_abort(
       c(
         "gdalraster package required for command help",
@@ -139,12 +139,12 @@ gdal_command_help <- function(command) {
     )
   }
 
-  # Check if gdal_usage is available
-  if (!exists("gdal_usage", where = asNamespace("gdalraster"))) {
+  # Verify gdal_usage function exists
+  if (!.gdal_has_feature("gdal_usage", quietly = TRUE)) {
     cli::cli_abort(
       c(
-        "gdal_usage not found in gdalraster namespace",
-        "i" = "Requires gdalraster version 2.2.0 or later with GDAL 3.11+"
+        "GDAL command help not available",
+        "i" = "Requires gdalraster >= 2.2.0 with GDAL 3.11+"
       )
     )
   }

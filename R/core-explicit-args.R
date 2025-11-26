@@ -92,12 +92,13 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     return(character(0))
   }
 
-  # Check feature availability
-  if (!gdalcli:::.gdal_has_feature("explicit_args")) {
+  # Check if gdalraster is available with feature support
+  if (!.gdal_has_feature("getExplicitlySetArgs", quietly = TRUE)) {
     cli::cli_inform(
       c(
-        "Explicit argument support not available in gdalraster",
-        "i" = "Requires gdalraster >= 1.2.0 with Rcpp bindings",
+        "Explicit argument support not available",
+        "i" = "Requires gdalraster >= 2.2.0 and GDAL 3.12+",
+        "i" = "Install gdalraster with: install.packages('gdalraster')",
         "i" = "Feature unavailable. Returning empty vector."
       )
     )

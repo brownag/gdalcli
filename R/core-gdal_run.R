@@ -14,10 +14,13 @@
 #'
 #' @param x An S3 object to be executed. Typically a [gdal_job].
 #' @param ... Additional arguments passed to specific methods.
-#' @param backend Character string specifying the backend to use: `"processx"` (default,
-#'   uses processx::run), `"gdalraster"` (uses gdalraster's C++ bindings, if available),
-#'   or `"reticulate"` (uses Python's osgeo.gdal via reticulate, if available).
-#'   If `NULL` (default), dispatches to the appropriate S3 method based on `x`'s class.
+#' @param backend Character string specifying the backend to use: `"processx"` (subprocess-based,
+#'   always available if GDAL installed), `"gdalraster"` (C++ bindings, if gdalraster installed),
+#'   or `"reticulate"` (Python osgeo.gdal via reticulate, if available).
+#'   If `NULL` (default), auto-selects the best available backend:
+#'   gdalraster if available (faster, no subprocess), otherwise processx.
+#'   Control auto-selection with `options(gdalcli.prefer_backend = 'gdalraster')` or
+#'   `options(gdalcli.prefer_backend = 'processx')`.
 #' @param stream_in An R object to be streamed to `/vsistdin/`. Can be `NULL`,
 #'   a character string, or raw vector. If provided, overrides `x$stream_in`.
 #' @param stream_out_format Character string: `NULL` (default, no streaming),
@@ -63,25 +66,55 @@
 #'
 #' @export
 gdal_job_run <- function(x, ..., backend = NULL) {
-  # Allow explicit backend selection
-  if (!is.null(backend)) {
-    if (backend == "gdalraster" && requireNamespace("gdalraster", quietly = TRUE)) {
-      return(gdal_job_run_gdalraster(x, ...))
-    } else if (backend == "reticulate" && requireNamespace("reticulate", quietly = TRUE)) {
-      return(gdal_job_run_reticulate(x, ...))
-    } else if (backend == "processx") {
-      return(gdal_job_run.gdal_job(x, ...))
-    } else {
-      cli::cli_abort(
-        c(
-          "Unknown backend: {backend}",
-          "i" = "Supported backends: 'processx', 'gdalraster', 'reticulate'"
-        )
-      )
+  # Handle backend selection
+  if (is.null(backend)) {
+    # Auto-select backend based on availability and user preference
+    backend <- getOption("gdalcli.prefer_backend", "auto")
+
+    if (backend == "auto") {
+      # Auto-select: prefer gdalraster if available and functional
+      if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
+        backend <- "gdalraster"
+      } else {
+        backend <- "processx"  # fallback
+      }
     }
   }
 
-  UseMethod("gdal_job_run")
+  # Dispatch to appropriate backend
+  if (backend == "gdalraster") {
+    if (!requireNamespace("gdalraster", quietly = TRUE)) {
+      cli::cli_abort(
+        c(
+          "gdalraster package required for gdalraster backend",
+          "i" = "Install with: install.packages('gdalraster')",
+          "i" = "Or use backend = 'processx' (default fallback)"
+        )
+      )
+    }
+    return(gdal_job_run_gdalraster(x, ...))
+  } else if (backend == "reticulate") {
+    if (!requireNamespace("reticulate", quietly = TRUE)) {
+      cli::cli_abort(
+        c(
+          "reticulate package required for reticulate backend",
+          "i" = "Install with: install.packages('reticulate')",
+          "i" = "Or use backend = 'processx' (default fallback)"
+        )
+      )
+    }
+    return(gdal_job_run_reticulate(x, ...))
+  } else if (backend == "processx") {
+    return(gdal_job_run.gdal_job(x, ...))
+  } else {
+    cli::cli_abort(
+      c(
+        "Unknown backend: {backend}",
+        "i" = "Supported backends: 'processx', 'gdalraster', 'reticulate'",
+        "i" = "Set option: options(gdalcli.prefer_backend = 'gdalraster')"
+      )
+    )
+  }
 }
 
 

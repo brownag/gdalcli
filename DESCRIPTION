@@ -31,7 +31,9 @@ Imports:
     processx (>= 3.8.0)
 Suggests:
     gdalraster (>= 2.2.0),
+    arrow (>= 10.0.0),
     reticulate (>= 1.28),
+    sf,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
