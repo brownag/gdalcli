@@ -71,32 +71,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image for GDAL ${{ needs.validate.outputs.gdal_version }}
+        uses: docker/build-push-action@v5
         with:
-          r-version: 'latest'
+          context: .
+          file: .github/dockerfiles/Dockerfile.template
+          target: base
+          build-args: |
+            GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
+            GDAL_RELEASE_TYPE=tagged
+          tags: |
+            gdalcli:gdal-${{ needs.validate.outputs.gdal_short }}-dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
 
-      - name: Install system dependencies
+      - name: Extract generated API from Docker image
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgdal-dev gdal-bin
+          # Create container and extract generated R files
+          CONTAINER=$(docker create gdalcli:gdal-${{ needs.validate.outputs.gdal_short }}-dev)
+          docker cp $CONTAINER:/workspace/gdalcli/R . || docker cp $CONTAINER:/workspace/gdalcli/man . || true
+          docker rm $CONTAINER
 
-      - name: Verify GDAL installation
-        run: |
-          gdal_translate --version
-          gdalinfo --version
+          # Verify API was generated
+          if [ ! -d "R" ] || [ -z "$(ls -A R/*.R 2>/dev/null | grep -v '^R/aaa' | grep -v '^R/zzz' | head -5)" ]; then
+            echo "ERROR: No API generated in Docker image"
+            exit 1
+          fi
 
-      - name: Install R dependencies
-        run: |
-          install.packages(c("devtools", "roxygen2", "testthat", "remotes"))
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-
-      - name: Generate API for GDAL ${{ needs.validate.outputs.gdal_version }}
-        run: |
-          Rscript build/generate_gdal_api.R
-          roxygen2::roxygenise()
-        shell: Rscript {0}
+          echo "Generated API files:"
+          ls -la R/gdal_*.R | head -20
 
       - name: Update DESCRIPTION
         run: |
@@ -110,6 +117,17 @@ jobs:
           sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
 
           cat DESCRIPTION | grep -E "^Version:|^SystemRequirements:"
+
+      - name: Set up R for local checks
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'latest'
+
+      - name: Install R dependencies
+        run: |
+          install.packages(c("devtools", "roxygen2", "testthat", "remotes"))
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
 
       - name: Build and check package
         run: |
