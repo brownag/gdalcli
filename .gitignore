@@ -6,3 +6,4 @@ inst/cache/*.rds
 /doc/
 /Meta/
 README.html
+.github/development/
