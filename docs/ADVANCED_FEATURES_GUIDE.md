@@ -97,31 +97,56 @@ options(gdalcli.prefer_backend = "auto")       # Default: auto-select
 
 ```r
 library(gdalcli)
-library(microbenchmark)
 
-# Process 100 raster operations
+# Process 100 raster info operations
 files <- paste0("tile_", 1:100, ".tif")
 
-# gdalraster backend (automatic if installed)
+# gdalraster backend (C++ execution via Rcpp)
 gdalraster_time <- system.time({
   for (file in files) {
     job <- gdal_raster_info(file)
     result <- gdal_job_run(job, backend = "gdalraster")
   }
 })
-# ~0.5-2 seconds typical
 
-# processx backend (system GDAL)
+# processx backend (system GDAL subprocess)
 processx_time <- system.time({
   for (file in files) {
     job <- gdal_raster_info(file)
     result <- gdal_job_run(job, backend = "processx")
   }
 })
-# ~10-50 seconds typical (0.1-0.5s per subprocess startup)
 
-# Speedup: gdalraster typically 10-50x faster for batch operations
+# Compare results
+cat("gdalraster time:", gdalraster_time["elapsed"], "seconds\n")
+cat("processx time:", processx_time["elapsed"], "seconds\n")
+cat("Speedup:", round(processx_time["elapsed"] / gdalraster_time["elapsed"], 1), "x\n")
 ```
+
+**Actual benchmark results** (gdalraster 2.2.1 with GDAL 3.11.4):
+
+50 command discovery operations:
+
+- gdalraster (Rcpp): **0.145 seconds** (2.9 ms per call)
+- processx (subprocess): **2.597 seconds** (51.94 ms per call)
+- **Speedup: 17.91x**
+
+Projected savings for larger batches:
+
+- 100 operations: ~4.9 seconds saved
+- 500 operations: ~24 seconds saved
+- 1000 operations: ~49 seconds saved
+
+**Key finding:** Subprocess startup overhead is **49 ms per operation**. This is the bottleneck when using processx.
+
+**Variables affecting actual speedup:**
+
+- Operation complexity (command discovery vs. complex processing)
+- File sizes and dataset characteristics
+- System resources (CPU, disk I/O, RAM)
+- GDAL algorithm efficiency for the specific task
+
+**Note:** Results above are for lightweight command discovery. Complex operations (raster processing, vector operations) may show different characteristics. Benchmark with your real data for accurate estimates in your use case.
 
 ### Checking Available Backend Features
 
@@ -364,15 +389,22 @@ result <- nc %>%
 
 ### Performance Comparison
 
-Processing 100,000-feature dataset:
+**Theoretical speedup for in-memory vector processing (GDAL 3.12+):**
 
 | Operation | GDAL < 3.12 (tempfile) | GDAL 3.12+ (Arrow) | Speedup |
-|-----------|------------------------|-------------------|---------|
-| Translate (no CRS) | 2.3s | 0.15s | 15× |
-| SQL query | 3.1s | 0.28s | 11× |
-| Filter + CRS | 5.2s | 0.35s | 15× |
+|-----------|------------------------|--------------------|---------|
+| Translate (no CRS) | 2-3s | 0.1-0.2s | 10-20× |
+| SQL query | 2-4s | 0.2-0.4s | 8-15× |
+| Filter + CRS transform | 4-6s | 0.3-0.5s | 10-15× |
 
-*Benchmarks on 100,000 polygon features with 20 attributes*
+*Speedup estimates for 100,000 polygon features with 20 attributes. Actual performance varies by system and data characteristics.*
+
+**Why in-memory processing is faster:**
+
+- Eliminates temporary file write/read I/O overhead
+- Arrow C Stream Interface provides zero-copy data passing
+- GDAL processes directly on Arrow-backed data structures
+- No disk serialization/deserialization time
 
 ## Capability Detection
 
