@@ -200,11 +200,12 @@ gdal_auth_azure <- function(no_sign_request = FALSE) {
 #'
 #' @return Named character vector of environment variables for [gdal_with_env()].
 #'
-#' @export
-#' - OK Prevents accidental hardcoding of secrets in R scripts
-#' - OK Reduces risk of leaking credentials via version control or logs
-#' - OK Encourages secure credential management via .Renviron
-#' - OK Follows security best practices (12-factor app)
+#' @details
+#' Design choices:
+#' - Prevents accidental hardcoding of secrets in R scripts
+#' - Reduces risk of leaking credentials via version control or logs
+#' - Encourages secure credential management via .Renviron
+#' - Follows security best practices (12-factor app)
 #'
 #' @export
 gdal_auth_gcs <- function(no_sign_request = FALSE) {
@@ -268,12 +269,12 @@ gdal_auth_gcs <- function(no_sign_request = FALSE) {
 #'
 #' @return Named character vector of environment variables for [gdal_with_env()].
 #'
-#' @export
+#' @details
 #' Credentials are **intentionally not accepted as function arguments** because:
-#' - OK Prevents accidental hardcoding of secrets in R scripts
-#' - OK Reduces risk of leaking credentials via version control or logs
-#' - OK Encourages secure credential management via .Renviron
-#' - OK Follows security best practices (12-factor app)
+#' - Prevents accidental hardcoding of secrets in R scripts
+#' - Reduces risk of leaking credentials via version control or logs
+#' - Encourages secure credential management via .Renviron
+#' - Follows security best practices (12-factor app)
 #'
 #' @export
 gdal_auth_oss <- function(no_sign_request = FALSE) {

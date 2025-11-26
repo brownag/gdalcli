@@ -120,7 +120,6 @@ gdal_job_run <- function(x, ..., backend = NULL) {
 
 #' @rdname gdal_job_run
 #' @export
-#' @noRd
 gdal_job_run.gdal_job <- function(x,
                               stream_in = NULL,
                               stream_out_format = NULL,
@@ -378,7 +377,6 @@ gdal_job_run.gdal_job <- function(x,
 #'
 #' @keywords internal
 #' @export
-#' @noRd
 gdal_job_run.default <- function(x, ...) {
   rlang::abort(
     c(

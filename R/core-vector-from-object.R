@@ -72,7 +72,7 @@
 #'
 #' @seealso
 #' [gdal_capabilities()] to check feature availability,
-#' [gdal_vector_translate()], [gdal_vector_sql()]
+#' [gdal_vector_convert()], [gdal_vector_sql()]
 #'
 #' @export
 gdal_vector_from_object <- function(

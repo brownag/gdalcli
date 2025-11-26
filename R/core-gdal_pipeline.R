@@ -218,7 +218,7 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #'   streaming output) returns the captured output.
 #'
 #' @seealso
-#' [gdal_job_run.gdal_job()], [render_gdal_pipeline()], [render_native_pipeline()]
+#' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()]
 #'
 #' @examples
 #' \dontrun{
@@ -233,7 +233,6 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #' }
 #'
 #' @export
-#' @noRd
 gdal_job_run.gdal_pipeline <- function(x,
                                        execution_mode = c("sequential", "native"),
                                        stream_in = NULL,
@@ -515,7 +514,7 @@ render_native_pipeline.gdal_pipeline <- function(pipeline) {
 #' @return A character string containing the GDAL pipeline command.
 #'
 #' @seealso
-#' [render_shell_script()], [gdal_job_run.gdal_pipeline()], [render_native_pipeline()]
+#' [render_shell_script()], [gdal_job_run.gdal_pipeline()]
 #'
 #' @export
 render_gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), ...) {
@@ -600,7 +599,7 @@ render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain
 #' command, which is more efficient as it avoids intermediate disk I/O.
 #'
 #' @seealso
-#' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()], [render_native_pipeline()]
+#' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()]
 #'
 #' @export
 render_shell_script <- function(pipeline, shell = "bash", format = c("commands", "native"), ...) {

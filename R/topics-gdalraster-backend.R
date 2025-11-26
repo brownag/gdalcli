@@ -134,7 +134,7 @@ NULL
 #' - `.get_gdalraster_features()` - List available features by version
 #' - `.gdal_has_feature()` - Check specific feature with caching
 #'
-#' See [R/core-gdalraster-detection.R] for implementation details.
+#' See `core-gdalraster-detection.R` for implementation details.
 #'
 #' @keywords internal
 #' @name gdalraster-detection
