@@ -4,7 +4,7 @@
 \alias{gdal_job_run.default}
 \title{Default gdal_job_run Method}
 \usage{
-gdal_job_run.default(x, ...)
+\method{gdal_job_run}{default}(x, ...)
 }
 \description{
 Default gdal_job_run Method

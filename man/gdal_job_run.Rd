@@ -7,7 +7,7 @@
 \usage{
 gdal_job_run(x, ..., backend = NULL)
 
-gdal_job_run.gdal_job(
+\method{gdal_job_run}{gdal_job}(
   x,
   stream_in = NULL,
   stream_out_format = NULL,

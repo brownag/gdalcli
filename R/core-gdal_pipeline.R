@@ -231,6 +231,7 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #' }
 #'
 #' @export
+#' @method gdal_job_run gdal_pipeline
 gdal_job_run.gdal_pipeline <- function(x,
                                        execution_mode = c("sequential", "native"),
                                        stream_in = NULL,
