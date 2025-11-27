@@ -201,7 +201,11 @@
   if (!exists(cache_name, where = pkg_env, inherits = FALSE)) {
     # Cache not yet created, build it
     features <- .get_gdalraster_features()
-    assign(cache_name, features, envir = pkg_env)
+    # Use tryCatch to handle locked environments gracefully
+    tryCatch(
+      assign(cache_name, features, envir = pkg_env),
+      error = function(e) NULL  # Silently fail if environment is locked
+    )
   } else {
     # Get from cache
     features <- get(cache_name, pos = pkg_env)

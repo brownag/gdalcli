@@ -109,7 +109,7 @@ RUN gdal --version && \
 # Use cached GDAL from stage 1, add R environment and generate API
 # Fast rebuild when only R code changes (1-2 min)
 # ============================================================================
-FROM ${BASE_IMAGE} AS base
+FROM rocker/r-ver:4.5 AS base
 
 ARG GDAL_VERSION=3.11.1
 ARG GDAL_RELEASE_TYPE=tagged
@@ -117,12 +117,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL gdal.version="${GDAL_VERSION}" \
       gdal.release_type="${GDAL_RELEASE_TYPE}" \
-      r.version="4.5+" \
+      r.version="4.5" \
       version="0.2.0" \
       maintainer="gdalcli contributors" \
       stage="base"
 
-# Install runtime dependencies and R
+# Install GDAL runtime and build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
@@ -134,7 +134,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnetcdf-dev \
     libopenjp2-7-dev \
     libpng-dev \
-    libpq5 \
+    libpq-dev \
     libproj-dev \
     libssl-dev \
     libxml2-dev \
@@ -142,8 +142,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     postgresql-client \
     python3-dev \
-    r-base \
-    r-base-dev \
     sqlite3 \
     zlib1g-dev && \
     rm -rf /var/lib/apt/lists/*
@@ -161,29 +159,17 @@ RUN gdal --version && \
     which gdalinfo && \
     gdalinfo --version
 
-# Create non-root user (use -o to allow non-unique UID if it already exists)
-RUN useradd -m -u 1000 -o builder 2>/dev/null || true
-
 # Set environment variables
-ENV R_LIBS_USER="/usr/local/lib/R/site-library" \
-    GDAL_CONFIG=/usr/local/bin/gdal-config \
+ENV GDAL_CONFIG=/usr/local/bin/gdal-config \
     GDAL_VERSION="${GDAL_VERSION}" \
     GDAL_RELEASE_TYPE="${GDAL_RELEASE_TYPE}" \
     LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH}" \
     PATH="/usr/local/bin:${PATH}"
 
-# Install core R packages via apt for reliability
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    r-cran-rlang \
-    r-cran-cli \
-    r-cran-processx \
-    r-cran-jsonlite \
-    r-cran-digest \
-    r-cran-glue \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install remaining build-time packages via R (rvest, httr, xml2, roxygen2, devtools, testthat)
-RUN R --quiet --no-save -e "install.packages(c('rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat', 'yyjsonr'), repos='https://cran.r-project.org', Ncpus=4)"
+# Install build-time packages via R
+RUN install2.r --error --skipinstalled \
+    rlang cli processx yyjsonr digest glue \
+    rvest httr xml2 roxygen2 devtools testthat
 
 # Copy repository - this layer will rebuild on any code change
 COPY . /workspace/gdalcli/
@@ -195,14 +181,17 @@ RUN Rscript build/generate_gdal_api.R
 # Update documentation
 RUN Rscript -e "roxygen2::roxygenise()"
 
+# Install gdalcli package
+RUN R CMD INSTALL .
+
 # Verify environment
 RUN Rscript -e "library(gdalcli); gdal_check_version(); gdal_capabilities()"
 
 # ============================================================================
 # STAGE 3: runtime
-# Minimal production image with only runtime dependencies
+# Minimal production image with rocker base and only runtime dependencies
 # ============================================================================
-FROM ubuntu:24.04 AS runtime
+FROM rocker/r-ver:4.5 AS runtime
 
 ARG GDAL_VERSION=3.11.1
 
@@ -211,7 +200,7 @@ LABEL gdal.version="${GDAL_VERSION}" \
       maintainer="gdalcli contributors" \
       stage="runtime"
 
-# Install runtime dependencies only (no build tools)
+# Install runtime dependencies only (no build tools, but keep dev libs for linked dependencies)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libcurl4-openssl-dev \
@@ -228,22 +217,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2 \
     libxerces-c3.2 \
     libzip4 \
-    r-base \
     sqlite3 \
     zlib1g && \
     rm -rf /var/lib/apt/lists/* && \
     find /usr/share/doc -type f -delete && \
     find /usr/share/man -type f -delete
-
-# Install R package imports (required for runtime)
-RUN R --quiet --no-save <<'EOF'
-packages <- c(
-  "rlang", "cli", "processx", "yyjsonr", "digest", "glue"
-)
-install.packages(packages,
-                 repos = "https://cran.r-project.org",
-                 Ncpus = 4)
-EOF
 
 # Copy GDAL libraries and binaries from base stage
 COPY --from=base /usr/local/lib /usr/local/lib
@@ -253,24 +231,17 @@ COPY --from=base /usr/local/share /usr/local/share
 # Update library cache
 RUN ldconfig
 
-# Copy R libraries from base stage
+# Copy R libraries from base stage (includes gdalcli and all dependencies)
 COPY --from=base /usr/local/lib/R /usr/local/lib/R
 
-# Copy built package from base stage (only necessary files)
-COPY --from=base /workspace/gdalcli/R /opt/gdalcli/R
-COPY --from=base /workspace/gdalcli/man /opt/gdalcli/man
-COPY --from=base /workspace/gdalcli/DESCRIPTION /opt/gdalcli/DESCRIPTION
-COPY --from=base /workspace/gdalcli/NAMESPACE /opt/gdalcli/NAMESPACE
-
-# Create non-root user
-RUN useradd -m -u 1000 builder
-
 # Set environment variables
-ENV R_LIBS_USER="/usr/local/lib/R/site-library" \
-    GDAL_CONFIG=/usr/local/bin/gdal-config \
+ENV GDAL_CONFIG=/usr/local/bin/gdal-config \
     GDAL_VERSION="${GDAL_VERSION}" \
     LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH}" \
     PATH="/usr/local/bin:${PATH}"
+
+# Create non-root user
+RUN useradd -m -u 1000 builder 2>/dev/null || true
 
 USER builder
 WORKDIR /data

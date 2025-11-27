@@ -13,7 +13,8 @@
 #' @name advanced_features_framework
 
 # Environment for caching feature capabilities
-.gdal_features_cache <- new.env(parent = emptyenv())
+# Cache for feature availability - uses base environment to avoid package namespace locks
+.gdal_features_cache <- new.env(parent = baseenv())
 
 #' Get Current GDAL Version String
 #'
@@ -92,8 +93,11 @@
     FALSE
   )
 
-  # Cache result
-  assign(feature, available, envir = .gdal_features_cache)
+  # Cache result - use tryCatch to handle locked environments gracefully
+  tryCatch(
+    assign(feature, available, envir = .gdal_features_cache),
+    error = function(e) NULL  # Silently fail if environment is locked
+  )
   available
 }
 
@@ -214,11 +218,11 @@ gdal_capabilities <- function() {
     packages = list(
       gdalraster = tryCatch(
         as.character(utils::packageVersion("gdalraster")),
-        .error = function(e) "not installed"
+        error = function(e) "not installed"
       ),
       arrow = tryCatch(
         as.character(utils::packageVersion("arrow")),
-        .error = function(e) "not installed"
+        error = function(e) "not installed"
       )
     )
   )
