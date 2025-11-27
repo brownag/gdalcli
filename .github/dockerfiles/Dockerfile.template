@@ -217,9 +217,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libexpat1 \
     libgeos-c1v5 \
-    libhdf5-103 \
+    libhdf5-103-1t64 \
     libjsoncpp25 \
-    libnetcdf15 \
+    libnetcdf19 \
     libopenjp2-7 \
     libpng16-16t64 \
     libpq5 \
