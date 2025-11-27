@@ -681,7 +681,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## License
 
-GPL-3 License - see LICENSE file for details
+MIT License - see LICENSE file for details
 
 ## References
 

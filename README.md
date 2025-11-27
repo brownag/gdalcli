@@ -175,7 +175,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/RtmpBWwQHo/file678e043d01369.gdalg.json'
+#> '/tmp/Rtmputfe5f/filea4ab77fe4e679.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -306,7 +306,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/RtmpBWwQHo/file678e05b866cff.gdalg.json'
+#> '/tmp/Rtmputfe5f/filea4ab716c615a8.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -810,7 +810,7 @@ for guidelines.
 
 ## License
 
-GPL-3 License - see LICENSE file for details
+MIT License - see LICENSE file for details
 
 ## References
 

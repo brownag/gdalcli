@@ -17,7 +17,7 @@ Description: An auto-generated R wrapper for the modern GDAL unified CLI
     reserves the right to modify, rename, reorganize, and change the behavior of the utility 
     until it is frozen in a future feature release of GDAL. Use tagged versions of the package
     to pin a specific version of the GDAL CLI.
-License: GPL (>= 3)
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
