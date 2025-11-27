@@ -36,9 +36,11 @@ LABEL gdal.version="${GDAL_VERSION}" \
       stage="gdal-compiled"
 
 # Install build dependencies for compiling GDAL from source
+# Using ccache for faster rebuilds (cache persists across layer builds)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
+    ccache \
     cmake \
     curl \
     git \
@@ -70,6 +72,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 # Download and compile GDAL from GitHub releases or branches
+# Enable ccache for faster rebuilds, use nproc to get available cores
 RUN mkdir -p /tmp/gdal-build && cd /tmp/gdal-build && \
     if [ "${GDAL_RELEASE_TYPE}" = "tagged" ]; then \
       GDAL_URL="https://github.com/OSGeo/gdal/releases/download/v${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz"; \
@@ -100,9 +103,14 @@ RUN mkdir -p /tmp/gdal-build && cd /tmp/gdal-build && \
     DIR=$(ls -d gdal* 2>/dev/null | head -1) && \
     cd "$DIR" && \
     mkdir -p build && cd build && \
+    export PATH=/usr/lib/ccache:$PATH && \
+    export CCACHE_MAXSIZE=5G && \
+    echo "Building GDAL with $(nproc) cores" && \
     cmake .. \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=/usr/local \
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache \
       -DBUILD_SHARED_LIBS=ON \
       -DGDAL_USE_CURL=ON \
       -DGDAL_USE_NETCDF=ON \
@@ -116,7 +124,8 @@ RUN mkdir -p /tmp/gdal-build && cd /tmp/gdal-build && \
       -DGDAL_USE_PNG=ON \
       -DGDAL_USE_OPENJPEG=ON \
       -DGDAL_USE_JSONCPP=ON && \
-    cmake --build . -j4 && \
+    cmake --build . -j$(nproc) && \
+    echo "GDAL build complete" && \
     cmake --install . && \
     cd / && \
     rm -rf /tmp/gdal-build && \

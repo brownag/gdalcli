@@ -71,7 +71,8 @@ jobs:
 
   build:
     needs: validate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-8core
+    timeout-minutes: 120
     permissions:
       contents: write
 
@@ -95,9 +96,17 @@ jobs:
             GDAL_RELEASE_TYPE=tagged
           tags: |
             gdalcli:gdal-${{ needs.validate.outputs.gdal_short }}-dev
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=gdal-${{ needs.validate.outputs.gdal_version }}
+          cache-to: type=gha,mode=max,scope=gdal-${{ needs.validate.outputs.gdal_version }}
           load: true
+          build-contexts: |
+            context=.github/dockerfiles
+
+      - name: Show build progress
+        run: |
+          echo "Docker build started at $(date)"
+          echo "Building GDAL ${{ needs.validate.outputs.gdal_version }} with 8 cores"
+          echo "Monitor progress with: docker buildx ls && docker buildx logs"
 
       - name: Extract generated API from Docker image
         run: |
