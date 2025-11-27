@@ -13,7 +13,7 @@
 #' |---------|---------|---------|-------------|
 #' | gdalraster Backend | gdalraster 2.2.0+ | C++ execution via Rcpp, no subprocess overhead | 10-50x faster for repeated operations |
 #' | getExplicitlySetArgs() | GDAL 3.12+ | Audit logging, configuration introspection | Minimal overhead |
-#' | In-Memory Vector Processing | GDAL 3.12+ + gdalraster 2.3.0+ | Direct R→GDAL data processing without I/O | 10-100x faster on large datasets |
+#' | In-Memory Vector Processing | GDAL 3.12+ + gdalraster 2.3.0+ | Direct R->GDAL data processing without I/O | 10-100x faster on large datasets |
 #'
 #' ## getExplicitlySetArgs() - Configuration Introspection
 #'
@@ -69,9 +69,9 @@
 #'
 #' | Operation | GDAL < 3.12 (tempfile) | GDAL 3.12+ (Arrow) | Speedup |
 #' |-----------|------------------------|--------------------|---------|
-#' | Translate (no CRS) | 2-3s | 0.1-0.2s | 10-20× |
-#' | SQL query | 2-4s | 0.2-0.4s | 8-15× |
-#' | Filter + CRS transform | 4-6s | 0.3-0.5s | 10-15× |
+#' | Translate (no CRS) | 2-3s | 0.1-0.2s | 10-20x |
+#' | SQL query | 2-4s | 0.2-0.4s | 8-15x |
+#' | Filter + CRS transform | 4-6s | 0.3-0.5s | 10-15x |
 #'
 #' *Speedup estimates for 100,000 polygon features with 20 attributes.
 #' Actual performance varies by system and data characteristics.*
@@ -122,14 +122,27 @@
 #'
 #' ## Version Compatibility Matrix
 #'
-#' | Feature | GDAL 3.11 | GDAL 3.12+ | gdalraster 2.2.0+ | gdalraster 2.3.0+ |
-#' |---------|-----------|-----------|------------------|------------------|
-#' | Job execution via gdal_alg() | ✓ | ✓ | ✓ | ✓ |
-#' | Command discovery | ✓ | ✓ | ✓ | ✓ |
-#' | Command help | ✓ | ✓ | ✓ | ✓ |
-#' | Explicit argument access | ✗ | ✓ | ✓ | ✓ |
-#' | Arrow vector processing | ✗ | ✓ | ✗ | ✓ |
-#' | setVectorArgsFromObject | ✗ | ✓ | ✗ | ✓ |
+#' **GDAL 3.11** (Baseline):
+#' - Job execution via `gdal_alg()`
+#' - Command discovery
+#' - Command help
+#'
+#' **GDAL 3.12+** (Advanced features):
+#' - All of the above, plus:
+#' - Explicit argument access
+#' - Arrow vector processing
+#' - `setVectorArgsFromObject()`
+#'
+#' **gdalraster 2.2.0+** (C++ execution):
+#' - Job execution via `gdal_alg()`
+#' - Command discovery
+#' - Command help
+#' - Explicit argument access
+#'
+#' **gdalraster 2.3.0+** (Advanced vector processing):
+#' - All of the above, plus:
+#' - Arrow vector processing
+#' - `setVectorArgsFromObject()`
 #'
 #' **Minimum requirements:**
 #' - gdalraster >= 2.2.0 for basic execution
@@ -151,7 +164,7 @@
 #' ### Memory Considerations
 #'
 #' In-memory processing requires:
-#' - ~2-3x the dataset size in RAM (sf→Arrow conversion + processing)
+#' - ~2-3x the dataset size in RAM (sf->Arrow conversion + processing)
 #' - Suitable for most datasets < 1GB
 #' - Monitor memory for very large datasets
 #'

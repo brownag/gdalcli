@@ -34,7 +34,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sync.html} for detailed GD
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal vsi sync -r my_directory/ /vsis3/bucket/my_directory
+# $ gdal vsi sync -r my_directory/ /vsis3/bucket/my_directory
 # For help on available parameters, run: ?gdal_vsi_sync
 job <- gdal_vsi_sync()
 # gdal_job_run(job)

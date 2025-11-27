@@ -20,7 +20,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vector.html} for detailed GDAL
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal vector info poly.gpkg
+# $ gdal vector info poly.gpkg
 # For help on available parameters, run: ?gdal_vector
 job <- gdal_vector()
 # gdal_job_run(job)

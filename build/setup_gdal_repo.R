@@ -77,8 +77,8 @@ setup_gdal_repo <- function(gdal_version = NULL, repo_dir = "build/gdal_repo") {
         setwd(repo_dir)
         
         # Check current branch/tag
-        current <- processx::run("git", c("rev-parse", "--abbrev-ref", "HEAD"), stdout = TRUE)$stdout
-        current <- trimws(current)
+        result <- processx::run("git", c("rev-parse", "--abbrev-ref", "HEAD"), stdout = "|")
+        current <- trimws(result$stdout)
         
         if (current != version_tag) {
           cat(sprintf("Checking out version %s (currently on %s)...\n", version_tag, current))

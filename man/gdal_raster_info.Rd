@@ -74,8 +74,7 @@ Return information on a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_info.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster info utmsmall.tif
+$ gdal raster info utmsmall.tif
 job <- gdal_raster_info(input = "utmsmall.tif")
 \dontrun{
   result <- gdal_job_run(job)

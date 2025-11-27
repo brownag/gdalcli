@@ -40,7 +40,7 @@ gdal_version_check <- function() {
 
   pkg_info <- if (file.exists(pkg_info_path)) {
     tryCatch(
-      jsonlite::fromJSON(pkg_info_path),
+      yyjsonr::read_json_file(pkg_info_path),
       .error = function(e) list(gdal_version = "unknown")
     )
   } else {

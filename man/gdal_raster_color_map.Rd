@@ -50,8 +50,7 @@ Generate a RGB or RGBA dataset from a single band, using a color map
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster color-map --color-map=color-map.txt n43.dt0 out.tif --overwrite
+$ gdal raster color-map --color-map=color-map.txt n43.dt0 out.tif --overwrite
 job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
     color_map = "color-map.txt")
 \dontrun{

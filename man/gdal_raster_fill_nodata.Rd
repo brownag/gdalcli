@@ -52,7 +52,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_fill-nodata.html} for d
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal raster fill-nodata -b 2 --max-distance 50 --smoothing-iterations 3 \  --strategy nearest --mask mask.tif \  input.tif output.tif
+# $ gdal raster fill-nodata -b 2 --max-distance 50 --smoothing-iterations 3 \  --strategy nearest --mask mask.tif \  input.tif output.tif
 # For help on available parameters, run: ?gdal_raster_fill_nodata
 job <- gdal_raster_fill_nodata()
 # gdal_job_run(job)

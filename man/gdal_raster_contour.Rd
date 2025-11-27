@@ -80,8 +80,7 @@ Creates a vector contour from a raster elevation model (DEM).
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster contour --interval 100 elevation.tif contour.shp
+$ gdal raster contour --interval 100 elevation.tif contour.shp
 job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp", interval = 100)
 \dontrun{
   result <- gdal_job_run(job)

@@ -56,8 +56,7 @@ Build a mosaic, either virtual (VRT) or materialized.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster mosaic --hide-nodata --dst-nodata=0,0,255 doq/*.tif doq_index.vrt
+$ gdal raster mosaic --hide-nodata --dst-nodata=0,0,255 doq/*.tif doq_index.vrt
 job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", hide_nodata = TRUE, 
     dst_nodata = "0,0,255")
 \dontrun{

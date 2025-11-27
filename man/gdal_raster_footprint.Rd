@@ -92,8 +92,7 @@ Compute the footprint of a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster footprint my_raster.tif footprint.geojson
+$ gdal raster footprint my_raster.tif footprint.geojson
 job <- gdal_raster_footprint(input = "my_raster.tif", output = "footprint.geojson")
 \dontrun{
   result <- gdal_job_run(job)

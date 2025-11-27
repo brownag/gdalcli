@@ -14,7 +14,7 @@ gdalcli supports three major advancement areas:\tabular{llll}{
    Feature \tab Version \tab Purpose \tab Performance \cr
    gdalraster Backend \tab gdalraster 2.2.0+ \tab C++ execution via Rcpp, no subprocess overhead \tab 10-50x faster for repeated operations \cr
    getExplicitlySetArgs() \tab GDAL 3.12+ \tab Audit logging, configuration introspection \tab Minimal overhead \cr
-   In-Memory Vector Processing \tab GDAL 3.12+ + gdalraster 2.3.0+ \tab Direct R→GDAL data processing without I/O \tab 10-100x faster on large datasets \cr
+   In-Memory Vector Processing \tab GDAL 3.12+ + gdalraster 2.3.0+ \tab Direct R->GDAL data processing without I/O \tab 10-100x faster on large datasets \cr
 }
 
 }
@@ -75,9 +75,9 @@ on R objects avoid temporary files:
 
 \strong{Theoretical speedup} for in-memory vector processing (GDAL 3.12+):\tabular{llll}{
    Operation \tab GDAL < 3.12 (tempfile) \tab GDAL 3.12+ (Arrow) \tab Speedup \cr
-   Translate (no CRS) \tab 2-3s \tab 0.1-0.2s \tab 10-20× \cr
-   SQL query \tab 2-4s \tab 0.2-0.4s \tab 8-15× \cr
-   Filter + CRS transform \tab 4-6s \tab 0.3-0.5s \tab 10-15× \cr
+   Translate (no CRS) \tab 2-3s \tab 0.1-0.2s \tab 10-20x \cr
+   SQL query \tab 2-4s \tab 0.2-0.4s \tab 8-15x \cr
+   Filter + CRS transform \tab 4-6s \tab 0.3-0.5s \tab 10-15x \cr
 }
 
 
@@ -131,16 +131,37 @@ caps <- gdal_capabilities()
 }\if{html}{\out{</div>}}
 }
 
-\subsection{Version Compatibility Matrix}{\tabular{lllll}{
-   Feature \tab GDAL 3.11 \tab GDAL 3.12+ \tab gdalraster 2.2.0+ \tab gdalraster 2.3.0+ \cr
-   Job execution via gdal_alg() \tab ✓ \tab ✓ \tab ✓ \tab ✓ \cr
-   Command discovery \tab ✓ \tab ✓ \tab ✓ \tab ✓ \cr
-   Command help \tab ✓ \tab ✓ \tab ✓ \tab ✓ \cr
-   Explicit argument access \tab ✗ \tab ✓ \tab ✓ \tab ✓ \cr
-   Arrow vector processing \tab ✗ \tab ✓ \tab ✗ \tab ✓ \cr
-   setVectorArgsFromObject \tab ✗ \tab ✓ \tab ✗ \tab ✓ \cr
+\subsection{Version Compatibility Matrix}{
+
+\strong{GDAL 3.11} (Baseline):
+\itemize{
+\item Job execution via \code{gdal_alg()}
+\item Command discovery
+\item Command help
 }
 
+\strong{GDAL 3.12+} (Advanced features):
+\itemize{
+\item All of the above, plus:
+\item Explicit argument access
+\item Arrow vector processing
+\item \code{setVectorArgsFromObject()}
+}
+
+\strong{gdalraster 2.2.0+} (C++ execution):
+\itemize{
+\item Job execution via \code{gdal_alg()}
+\item Command discovery
+\item Command help
+\item Explicit argument access
+}
+
+\strong{gdalraster 2.3.0+} (Advanced vector processing):
+\itemize{
+\item All of the above, plus:
+\item Arrow vector processing
+\item \code{setVectorArgsFromObject()}
+}
 
 \strong{Minimum requirements:}
 \itemize{
@@ -168,7 +189,7 @@ Use \code{gdal_vector_from_object()} when:
 
 In-memory processing requires:
 \itemize{
-\item ~2-3x the dataset size in RAM (sf→Arrow conversion + processing)
+\item ~2-3x the dataset size in RAM (sf->Arrow conversion + processing)
 \item Suitable for most datasets < 1GB
 \item Monitor memory for very large datasets
 }

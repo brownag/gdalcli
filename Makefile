@@ -1,4 +1,4 @@
-.PHONY: help regen regen-fast docs docs-web check check-man vignettes install build test clean all
+.PHONY: help regen docs docs-web check check-man vignettes install build test clean all
 
 # Variables
 R := Rscript
@@ -14,7 +14,6 @@ help:
 	@echo ""
 	@echo "REGENERATION:"
 	@echo "  regen              Regenerate all auto-generated functions (with web docs enrichment)"
-	@echo "  regen-fast         Regenerate functions without web enrichment (faster)"
 	@echo "  regen-clean        Clean cache and regenerate with full enrichment"
 	@echo ""
 	@echo "DOCUMENTATION:"
@@ -35,7 +34,7 @@ help:
 	@echo ""
 	@echo "CONVENIENCE:"
 	@echo "  all                regen + docs + check (full development build)"
-	@echo "  dev                regen-fast + docs + check-man (quick dev iteration)"
+	@echo "  dev                regen + docs + check-man (quick dev iteration)"
 	@echo ""
 	@echo "ENVIRONMENT VARIABLES:"
 	@echo "  SKIP_ENRICHMENT    Set to 'true' to skip web doc enrichment (default: false)"
@@ -138,11 +137,9 @@ all: regen docs check
 	@echo "[OK] Full development build complete!"
 	@echo "============================================"
 
-dev: regen-fast docs check-man
+dev: regen docs check-man
 	@echo ""
 	@echo "============================================"
 	@echo "[OK] Quick dev build complete!"
 	@echo "============================================"
 	@echo ""
-	@echo "Tip: Use 'make regen' for full web enrichment"
-	@echo "     before committing changes"

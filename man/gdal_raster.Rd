@@ -20,7 +20,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster.html} for detailed GDAL
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal raster info utm.tif
+# $ gdal raster info utm.tif
 # For help on available parameters, run: ?gdal_raster
 job <- gdal_raster()
 # gdal_job_run(job)

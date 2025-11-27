@@ -44,8 +44,7 @@ Return information on a multidimensional dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal mdim info netcdf-4d.nc
+$ gdal mdim info netcdf-4d.nc
 job <- gdal_mdim_info(input = "netcdf-4d.nc")
 \dontrun{
   result <- gdal_job_run(job)

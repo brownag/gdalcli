@@ -37,16 +37,16 @@
 #'
 #' ```
 #' 1. Check if gdalraster >= 2.2.0 is installed
-#'    → If yes, use gdalraster backend
-#'    → If no, continue to step 2
+#'    -> If yes, use gdalraster backend
+#'    -> If no, continue to step 2
 #'
 #' 2. Check if processx can access system GDAL
-#'    → If yes, use processx backend
-#'    → If no, continue to step 3
+#'    -> If yes, use processx backend
+#'    -> If no, continue to step 3
 #'
 #' 3. Check if reticulate can access Python GDAL
-#'    → If yes, use reticulate backend
-#'    → If no, .error: no backends available
+#'    -> If yes, use reticulate backend
+#'    -> If no, .error: no backends available
 #' ```
 #'
 #' ## Backend Configuration

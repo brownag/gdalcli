@@ -20,7 +20,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_list.html} for detai
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal vsi sozip create my.gpkg my.gpkg.zip
+# $ gdal vsi sozip create my.gpkg my.gpkg.zip
 # For help on available parameters, run: ?gdal_vsi_sozip_list
 job <- gdal_vsi_sozip_list()
 # gdal_job_run(job)

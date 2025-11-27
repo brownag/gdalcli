@@ -97,16 +97,21 @@ Then install the R package:
 
 }
 
-\subsection{Feature Availability by Version}{\tabular{llll}{
-   Feature \tab gdalraster 2.2.0+ \tab gdalraster 2.3.0+ \tab Notes \cr
-   Job execution via gdal_alg() \tab ✓ Yes \tab ✓ Yes \tab Core execution engine \cr
-   Command discovery \tab ✓ Yes \tab ✓ Yes \tab List available operations \cr
-   Command help \tab ✓ Yes \tab ✓ Yes \tab Get help text \cr
-   Explicit argument access \tab ✓ Yes \tab ✓ Yes \tab For audit logging \cr
-   Vector from object (in-memory) \tab ✗ No \tab ✓ Yes \tab Process R objects without temp files \cr
-   Advanced features \tab ✗ No \tab ✓ Yes \tab Extended functionality \cr
+\subsection{Feature Availability by Version}{
+
+\strong{gdalraster 2.2.0+} provides:
+\itemize{
+\item Job execution via \code{gdal_alg()}
+\item Command discovery (list available operations)
+\item Command help (get help text)
+\item Explicit argument access (for audit logging)
 }
 
+\strong{gdalraster 2.3.0+} adds:
+\itemize{
+\item Vector from object (in-memory) - Process R objects without temp files
+\item Advanced features - Extended functionality
+}
 
 \strong{Minimum requirements:}
 \itemize{

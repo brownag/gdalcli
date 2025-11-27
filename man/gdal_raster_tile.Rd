@@ -125,8 +125,7 @@ Generate tiles in separate files from a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_tile.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster tile --min-zoom=2 --max-zoom=5 input.tif output_folder
+$ gdal raster tile --min-zoom=2 --max-zoom=5 input.tif output_folder
 job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom = 2, 
     max_zoom = 5)
 \dontrun{

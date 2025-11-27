@@ -41,8 +41,7 @@ Modify the data type of bands of a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_set-type.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster set-type --datatype Float32 byte.tif float32.tif --overwrite
+$ gdal raster set-type --datatype Float32 byte.tif float32.tif --overwrite
 job <- gdal_raster_set_type(input = "byte.tif", output = "float32.tif", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)

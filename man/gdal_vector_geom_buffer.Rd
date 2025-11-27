@@ -80,8 +80,7 @@ Compute a buffer around geometries of a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_buffer.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal vector geom buffer --distance=1000 in.gpkg out.gpkg --overwrite
+$ gdal vector geom buffer --distance=1000 in.gpkg out.gpkg --overwrite
 job <- gdal_vector_geom_buffer(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
     distance = 1000)
 \dontrun{

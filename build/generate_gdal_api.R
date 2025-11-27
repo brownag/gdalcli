@@ -1620,7 +1620,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
 
   # Normalize URL: ensure it includes /en/{version}/ path if not present
   # GDAL JSON URLs may be like https://gdal.org/programs/... or https://gdal.org/en/stable/programs/...
-  version_pattern <- sprintf("/en/[0-9.]+|/en/stable", version_path)
+  version_pattern <- "/en/[0-9.]+|/en/stable"
   if (!grepl(version_pattern, url)) {
     url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), url)
   }
@@ -1670,7 +1670,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
   command_name_for_rst <- paste(full_path, collapse = "_")
 
   if (verbose) {
-    cat(sprintf("  ⟳ Fetching RST examples: %s\n", command_name_for_rst))
+    cat(sprintf("  [*] Fetching RST examples: %s\n", command_name_for_rst))
   }
 
   # Attempt to fetch examples from RST first
@@ -1694,7 +1694,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
 
   # RST didn't have examples, try HTML scraping
   if (verbose) {
-    cat(sprintf("  ⟳ Fetching HTML: %s\n", primary_url))
+    cat(sprintf("  [*] Fetching HTML: %s\n", primary_url))
   }
   
   docs <- scrape_gdal_docs(primary_url, verbose = verbose, command_name = command_name)
@@ -2075,7 +2075,7 @@ generate_r_arguments <- function(input_args, input_output_args) {
   })
   
   # Strategy: We want inputs before outputs ALWAYS, even if output is required
-  # Because the semantic meaning (input→process→output) is more important than
+  # Because the semantic meaning (input->process->output) is more important than
   # the technical requirement of having required params first in R signatures.
   # We'll handle this by making optional inputs still come before required outputs.
   
@@ -2587,12 +2587,7 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
         # Add a comment describing what the example does
         if (examples_added == 0) {
           # Include source URL and GDAL command in the comment instead of generic "Example usage"
-          example_comment <- "#' # Example"
-          
-          # Add source URL if available
-          if (!is.null(enriched_docs) && !is.null(enriched_docs$url) && nzchar(enriched_docs$url)) {
-            example_comment <- paste0(example_comment, " (from ", enriched_docs$url, ")")
-          }
+          example_comment <- ""
           
           # Add original GDAL command (already includes "gdal" or subcommand)
           if (!is.null(cli_example_original) && nzchar(cli_example_original)) {
@@ -2602,7 +2597,36 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
             } else {
               paste0("gdal ", cli_example_original)
             }
-            example_comment <- paste0(example_comment, "\n#' # ", cli_display)
+            
+            # Split long CLI examples into multiple comment lines
+            # Each line breaks on spaces to stay under 100 characters
+            if (nchar(cli_display) > 90) {
+              # Split into parts: "gdal command" + rest of args
+              parts <- strsplit(cli_display, "\\s+")[[1]]
+              cli_lines <- character()
+              current_line <- parts[1]
+              
+              for (j in 2:length(parts)) {
+                test_line <- paste(current_line, parts[j])
+                if (nchar(test_line) <= 85) {
+                  current_line <- test_line
+                } else {
+                  cli_lines <- c(cli_lines, current_line)
+                  current_line <- parts[j]
+                }
+              }
+              if (nzchar(current_line)) {
+                cli_lines <- c(cli_lines, current_line)
+              }
+              
+              # Add as multiple comment lines - use $ shell prompt style
+              example_comment <- paste0(example_comment, "\n#' # $ ", cli_lines[1])
+              for (k in 2:length(cli_lines)) {
+                example_comment <- paste0(example_comment, "\n#' ", cli_lines[k])
+              }
+            } else {
+              example_comment <- paste0(example_comment, "\n#' $ ", cli_display)
+            }
           }
           
           example_comment <- paste0(example_comment, "\n")
@@ -2630,7 +2654,7 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     doc <- paste0(doc, "#' \\dontrun{\n")
     if (!is.null(cli_example_original) && nzchar(cli_example_original)) {
       doc <- paste0(doc, sprintf("#' # TODO: Convert this GDAL CLI example to R parameters:\n"))
-      doc <- paste0(doc, sprintf("#' # Original: %s\n", cli_example_original))
+      doc <- paste0(doc, sprintf("#' # $ %s\n", cli_example_original))
       doc <- paste0(doc, sprintf("#' # For help on available parameters, run: ?%s\n", func_name))
       doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
     } else {
@@ -3187,3 +3211,4 @@ main <- function() {
 if (!interactive()) {
   main()
 }
+warnings()

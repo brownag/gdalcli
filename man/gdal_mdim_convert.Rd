@@ -56,8 +56,7 @@ Convert a multidimensional dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal mdim convert in.nc out.vrt
+$ gdal mdim convert in.nc out.vrt
 job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")
 \dontrun{
   result <- gdal_job_run(job)

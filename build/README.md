@@ -27,17 +27,14 @@ The `generate_gdal_api.R` script:
 From the package root directory:
 
 ```bash
-# Quick regeneration (without web enrichment - much faster)
-make regen-fast
-
-# Full regeneration with web enrichment
+# Regeneration with web enrichment
 make regen
 
 # Clean cache and regenerate
 make regen-clean
 
 # Full development workflow
-make dev        # regen-fast + docs + check-man
+make dev        # regen + docs + check-man
 make all        # regen + docs + check
 
 # View all available targets

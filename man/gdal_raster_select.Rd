@@ -44,8 +44,7 @@ Select a subset of bands from a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_select.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster select --band 3,2,1 bgr.tif rgb.tif --overwrite
+$ gdal raster select --band 3,2,1 bgr.tif rgb.tif --overwrite
 job <- gdal_raster_select(input = "bgr.tif", output = "rgb.tif", overwrite = TRUE, 
     band = "3,2,1")
 \dontrun{

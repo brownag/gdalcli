@@ -59,8 +59,7 @@ Clean the collar of a raster dataset, removing noise.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster clean-collar --update my.tif
+$ gdal raster clean-collar --update my.tif
 job <- gdal_raster_clean_collar(update = "my.tif")
 \dontrun{
   result <- gdal_job_run(job)

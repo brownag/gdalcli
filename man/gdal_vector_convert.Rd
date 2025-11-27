@@ -56,8 +56,7 @@ Convert a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_convert.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal vector convert poly.shp output.gpkg
+$ gdal vector convert poly.shp output.gpkg
 job <- gdal_vector_convert(input = "poly.shp", output = "output.gpkg")
 \dontrun{
   result <- gdal_job_run(job)

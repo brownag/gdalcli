@@ -18,8 +18,7 @@ Repack a FileGeoDatabase dataset
 See \url{https://gdal.org/en/3.11.4/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal driver openfilegdb repack my.gdb
+$ gdal driver openfilegdb repack my.gdb
 job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
 \dontrun{
   result <- gdal_job_run(job)

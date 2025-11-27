@@ -46,7 +46,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_resize.html} for detail
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal raster resize --size=1000,500 -r cubic in.tif out.tif --overwrite
+# $ gdal raster resize --size=1000,500 -r cubic in.tif out.tif --overwrite
 # For help on available parameters, run: ?gdal_raster_resize
 job <- gdal_raster_resize()
 # gdal_job_run(job)

@@ -20,7 +20,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_mdim.html} for detailed GDAL d
 \examples{
 \dontrun{
 # TODO: Convert this GDAL CLI example to R parameters:
-# Original: gdal mdim info temperatures.nc
+# $ gdal mdim info temperatures.nc
 # For help on available parameters, run: ?gdal_mdim
 job <- gdal_mdim()
 # gdal_job_run(job)

@@ -77,14 +77,15 @@
 #'
 #' ## Feature Availability by Version
 #'
-#' | Feature | gdalraster 2.2.0+ | gdalraster 2.3.0+ | Notes |
-#' |---------|-------------------|-------------------|-------|
-#' | Job execution via gdal_alg() | ✓ Yes | ✓ Yes | Core execution engine |
-#' | Command discovery | ✓ Yes | ✓ Yes | List available operations |
-#' | Command help | ✓ Yes | ✓ Yes | Get help text |
-#' | Explicit argument access | ✓ Yes | ✓ Yes | For audit logging |
-#' | Vector from object (in-memory) | ✗ No | ✓ Yes | Process R objects without temp files |
-#' | Advanced features | ✗ No | ✓ Yes | Extended functionality |
+#' **gdalraster 2.2.0+** provides:
+#' - Job execution via `gdal_alg()`
+#' - Command discovery (list available operations)
+#' - Command help (get help text)
+#' - Explicit argument access (for audit logging)
+#'
+#' **gdalraster 2.3.0+** adds:
+#' - Vector from object (in-memory) - Process R objects without temp files
+#' - Advanced features - Extended functionality
 #'
 #' **Minimum requirements:**
 #' - gdalraster >= 2.2.0 for basic execution

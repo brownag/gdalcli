@@ -206,11 +206,11 @@ gdal_job_run.gdal_job <- function(x,
 #' vector suitable for passing to the `gdal` command-line executable.
 #'
 #' This function handles:
-#' - Serializing the command path (e.g., `["vector", "convert"]` → `"vector", "convert"`)
-#' - Converting argument names from snake_case to kebab-case (e.g., `dst_crs` → `dst-crs`)
+#' - Serializing the command path (e.g., `["vector", "convert"]` -> `"vector", "convert"`)
+#' - Converting argument names from snake_case to kebab-case (e.g., `dst_crs` -> `dst-crs`)
 #' - Flattening vector arguments (e.g., `c("COL1=val1", "COL2=val2")` for a repeatable arg)
 #' - Converting logical arguments to their flag equivalents
-#' - Converting composite arguments (e.g., `c(2, 49, 3, 50)` for bbox → `--bbox=2,49,3,50`)
+#' - Converting composite arguments (e.g., `c(2, 49, 3, 50)` for bbox -> `--bbox=2,49,3,50`)
 #'
 #' @param job A [gdal_job] object.
 #'

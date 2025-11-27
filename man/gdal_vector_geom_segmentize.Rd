@@ -65,8 +65,7 @@ Segmentize geometries of a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_segmentize.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal vector geom segmentize --max-length=1000 in.gpkg out.gpkg --overwrite
+$ gdal vector geom segmentize --max-length=1000 in.gpkg out.gpkg --overwrite
 job <- gdal_vector_geom_segmentize(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
     max_length = 1000)
 \dontrun{

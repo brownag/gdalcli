@@ -248,7 +248,7 @@ print.gdal_capabilities <- function(x, ...) {
   features_info <- sprintf(
     "  %-20s %s\n",
     names(x$features),
-    ifelse(unlist(x$features), "✓ Available", "✗ Unavailable")
+    ifelse(unlist(x$features), "[+] Available", "[-] Unavailable")
   )
   cat(paste(features_info, collapse = ""))
   cat("\n")

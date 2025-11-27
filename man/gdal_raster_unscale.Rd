@@ -41,8 +41,7 @@ Convert scaled values of a raster dataset into unscaled values.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_unscale.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster unscale scaled_byte.tif unscaled_float32.tif --overwrite
+$ gdal raster unscale scaled_byte.tif unscaled_float32.tif --overwrite
 job <- gdal_raster_unscale(input = "scaled_byte.tif", output = "unscaled_float32.tif", 
     overwrite = TRUE)
 \dontrun{

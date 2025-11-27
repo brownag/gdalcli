@@ -134,7 +134,7 @@
 #' @description
 #' Internal function that converts a GDALG JSON structure to a gdal_pipeline object.
 #'
-#' @param gdalg A list representing a GDALG structure (from jsonlite::fromJSON)
+#' @param gdalg A list representing a GDALG structure (from yyjsonr::read_json_file)
 #'
 #' @return A gdal_pipeline object
 #'

@@ -65,8 +65,7 @@ Simplify geometries of a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_simplify.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal vector geom simplify --tolerance=1000 in.gpkg out.gpkg --overwrite
+$ gdal vector geom simplify --tolerance=1000 in.gpkg out.gpkg --overwrite
 job <- gdal_vector_geom_simplify(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
     tolerance = 1000)
 \dontrun{

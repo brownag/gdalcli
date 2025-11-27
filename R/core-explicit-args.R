@@ -249,7 +249,7 @@ gdal_job_run_with_audit <- function(job, ..., audit_log = getOption("gdalcli.aud
     # Update audit entry with .error
     audit_entry$status <<- ".error"
     audit_entry$.error <<- conditionMessage(e)
-    rethrow(e)
+    rlang::cnd_signal(e)
   })
 
   # Update audit entry with success

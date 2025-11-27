@@ -18,8 +18,7 @@ Repack/vacuum in-place a GeoPackage dataset
 See \url{https://gdal.org/en/3.11.4/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal driver gpkg repack my.gpkg
+$ gdal driver gpkg repack my.gpkg
 job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")
 \dontrun{
   result <- gdal_job_run(job)

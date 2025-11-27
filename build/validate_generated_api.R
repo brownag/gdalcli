@@ -72,13 +72,13 @@ for (file in generated_r_files) {
 
 # Print summary
 cat("Validation Results:\n")
-cat(sprintf("  ✓ Files with version metadata:    %3d/%d\n",
+cat(sprintf("  [+] Files with version metadata:    %3d/%d\n",
   validation_stats$with_version_metadata, validation_stats$total_files))
-cat(sprintf("  ✓ Files with dontrun wrapping:   %3d/%d\n",
+cat(sprintf("  [+] Files with dontrun wrapping:   %3d/%d\n",
   validation_stats$with_dontrun_wrapping, validation_stats$total_files))
-cat(sprintf("  ✓ Files with version-aware URLs: %3d/%d\n",
+cat(sprintf("  [+] Files with version-aware URLs: %3d/%d\n",
   validation_stats$with_version_aware_urls, validation_stats$total_files))
-cat(sprintf("  ✗ Files with Phase comments:     %3d/%d\n",
+cat(sprintf("  [-] Files with Phase comments:     %3d/%d\n",
   validation_stats$with_phase_comments, validation_stats$total_files))
 
 # Print issues if any
@@ -99,9 +99,9 @@ success <- validation_stats$with_phase_comments == 0 &&
            validation_stats$with_dontrun_wrapping == validation_stats$total_files
 
 if (success) {
-  cat("✓ Validation PASSED\n")
+  cat("[+] Validation PASSED\n")
 } else {
-  cat("✗ Validation FAILED\n")
+  cat("[-] Validation FAILED\n")
   quit(status = 1)
 }
 cat(sep_line, "\n", sep = "")

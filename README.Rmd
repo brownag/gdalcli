@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# gdalcli: A Generative R Frontend for the GDAL (≥3.11) Unified CLI
+# gdalcli: A Generative R Frontend for the GDAL (>=3.11) Unified CLI
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
@@ -353,7 +353,7 @@ loaded <- gdal_load_pipeline("workflow.gdalg.json")
 gdal_job_run(loaded)
 ```
 
-GDALG provides perfect round-trip fidelity—all pipeline structure and arguments are preserved.
+GDALG provides perfect round-trip fidelity - all pipeline structure and arguments are preserved.
 
 ### Shell Script Generation
 
@@ -430,9 +430,9 @@ render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
 
 ### Minimum Requirements
 
-- **GDAL**: ≥ 3.11.3 (Unified CLI framework minimum)
-- **R**: ≥ 4.0.0
-- **gdalraster**: ≥ 2.2.0 (recommended for advanced features)
+- **GDAL**: >= 3.11.3 (Unified CLI framework minimum)
+- **R**: >= 4.0.0
+- **gdalraster**: >= 2.2.0 (recommended for advanced features)
 
 ### GDAL 3.11 Features
 
@@ -686,7 +686,7 @@ MIT License - see LICENSE file for details
 
 ## References
 
-- **GDAL Unified CLI (≥3.11)**: [https://gdal.org/programs/index.html](https://gdal.org/programs/index.html)
+- **GDAL Unified CLI (>=3.11)**: [https://gdal.org/programs/index.html](https://gdal.org/programs/index.html)
 - **GDAL Pipeline Documentation**: [https://gdal.org/programs/gdalinfo.html](https://gdal.org/programs/gdalinfo.html) (see `gdal raster pipeline`, `gdal vector pipeline`)
 - **GDAL JSON Usage API**: [https://gdal.org/development/rfc/rfc_index.html](https://gdal.org/development/rfc/rfc_index.html) (RFC 90)
 - **GDAL Virtual File Systems**: [https://gdal.org/user/virtual_file_systems.html](https://gdal.org/user/virtual_file_systems.html)
@@ -698,4 +698,4 @@ MIT License - see LICENSE file for details
 
 ## Acknowledgments
 
-This package is built on GDAL's unified CLI (≥3.11) and the GDAL development team's work.
+This package is built on GDAL's unified CLI (>=3.11) and the GDAL development team's work.

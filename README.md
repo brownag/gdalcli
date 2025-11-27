@@ -176,7 +176,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/Rtmpv94E3v/file30a9c3418eb57.gdalg.json'
+#> '/tmp/Rtmpidufwn/file14e6766a304f7.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -308,7 +308,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/Rtmpv94E3v/file30a9c2f7c38b5.gdalg.json'
+#> '/tmp/Rtmpidufwn/file14e672c65c6f9.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   

@@ -65,8 +65,7 @@ Generate a shaded relief map
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
 }
 \examples{
-# Example
-# gdal raster hillshade --zfactor=30 n43.dt0 out.tif --overwrite
+$ gdal raster hillshade --zfactor=30 n43.dt0 out.tif --overwrite
 job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
     zfactor = 30)
 \dontrun{
