@@ -681,19 +681,14 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## License
 
-MIT License - see LICENSE file for details
+GPL-3 License - see LICENSE file for details
 
 ## References
 
 - **GDAL Unified CLI (>=3.11)**: [https://gdal.org/programs/index.html](https://gdal.org/programs/index.html)
-- **GDAL Pipeline Documentation**: [https://gdal.org/programs/gdalinfo.html](https://gdal.org/programs/gdalinfo.html) (see `gdal raster pipeline`, `gdal vector pipeline`)
-- **GDAL JSON Usage API**: [https://gdal.org/development/rfc/rfc_index.html](https://gdal.org/development/rfc/rfc_index.html) (RFC 90)
+- **GDAL RFCs**: [https://gdal.org/development/rfc/](https://gdal.org/development/rfc/) 
 - **GDAL Virtual File Systems**: [https://gdal.org/user/virtual_file_systems.html](https://gdal.org/user/virtual_file_systems.html)
 - **GDAL Configuration Options**: [https://gdal.org/user/configoptions.html](https://gdal.org/user/configoptions.html)
-- **Lazy Evaluation in R**: Inspired by dbplyr, rlang, and tidyverse design patterns
-- **S3 Object System**: [https://adv-r.hadley.nz/s3.html](https://adv-r.hadley.nz/s3.html)
-- **processx Package**: [https://processx.r-lib.org/](https://processx.r-lib.org/)
-- **yyjsonr Package**: [https://cran.r-project.org/web/packages/yyjsonr/index.html](https://cran.r-project.org/web/packages/yyjsonr/index.html)
 
 ## Acknowledgments
 

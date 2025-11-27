@@ -126,70 +126,121 @@ new_gdal_job <- function(command_path,
 #' @export
 print.gdal_job <- function(x, ...) {
   cat("<gdal_job>\n")
-  # Check if command_path already starts with "gdal"
-  if (length(x$command_path) > 0 && x$command_path[1] == "gdal") {
-    cat("Command: ", paste(x$command_path, collapse = " "), "\n")
-  } else {
-    cat("Command:  gdal", paste(x$command_path, collapse = " "), "\n")
-  }
-
-  if (length(x$arguments) > 0) {
-    cat("Arguments:\n")
-    for (i in seq_along(x$arguments)) {
-      arg_name <- names(x$arguments)[i]
-      arg_val <- x$arguments[[i]]
-
-      # Check if this is a positional argument
-      positional_args <- c("input", "output", "src_dataset", "dest_dataset", "dataset")
-      is_positional <- arg_name %in% positional_args
-
-      # Format the argument value for display
-      if (is.null(arg_val)) {
-        val_str <- "NULL"
-      } else if (is.logical(arg_val)) {
-        val_str <- as.character(arg_val)
-      } else if (length(arg_val) == 1) {
-        val_str <- as.character(arg_val)
-      } else {
-        val_str <- paste0("[", paste(as.character(arg_val), collapse = ", "), "]")
-      }
-
-      if (is_positional) {
-        cat(sprintf("  %s: %s\n", arg_name, val_str))
-      } else {
-        cat(sprintf("  --%s: %s\n", arg_name, val_str))
-      }
-    }
-  }
-
-  if (length(x$config_options) > 0) {
-    cat("Config Options:\n")
-    for (i in seq_along(x$config_options)) {
-      opt_name <- names(x$config_options)[i]
-      opt_val <- x$config_options[i]
-      cat(sprintf("  %s=%s\n", opt_name, opt_val))
-    }
-  }
-
-  if (length(x$env_vars) > 0) {
-    cat("Environment Variables:\n")
-    for (i in seq_along(x$env_vars)) {
-      var_name <- names(x$env_vars)[i]
-      var_val <- x$env_vars[i]
-      cat(sprintf("  %s=%s\n", var_name, var_val))
-    }
-  }
-
-  if (!is.null(x$stream_in)) {
-    cat("Input Streaming: Yes (via /vsistdin/)\n")
-  }
-
-  if (!is.null(x$stream_out_format)) {
-    cat(sprintf("Output Streaming: %s (via /vsistdout/)\n", x$stream_out_format))
-  }
-
+  
+  # If this job has a pipeline, show the full pipeline structure
   if (!is.null(x$pipeline)) {
-    cat(sprintf("Pipeline History: %d prior jobs\n", length(x$pipeline$jobs)))
+    cat("Pipeline: ", length(x$pipeline$jobs), " step(s)\n", sep = "")
+    
+    for (i in seq_along(x$pipeline$jobs)) {
+      job <- x$pipeline$jobs[[i]]
+      
+      # Get command name
+      cmd_path <- job$command_path
+      if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
+        cmd_path <- cmd_path[-1]
+      }
+      cmd_name <- if (length(cmd_path) >= 2) {
+        paste(cmd_path, collapse = " ")
+      } else {
+        "unknown"
+      }
+      
+      # Get input/output if present
+      input_str <- if (!is.null(job$arguments$input)) {
+        sprintf(" (input: %s)", job$arguments$input)
+      } else {
+        ""
+      }
+      
+      output_str <- if (!is.null(job$arguments$output)) {
+        sprintf(" (output: %s)", job$arguments$output)
+      } else {
+        ""
+      }
+      
+      cat(sprintf("  [%d] %s%s%s\n", i, cmd_name, input_str, output_str))
+    }
+    
+    # Show wrapper-level config options if present
+    if (length(x$config_options) > 0) {
+      cat("Config Options:\n")
+      for (i in seq_along(x$config_options)) {
+        opt_name <- names(x$config_options)[i]
+        opt_val <- x$config_options[i]
+        cat(sprintf("  %s=%s\n", opt_name, opt_val))
+      }
+    }
+    
+    # Show wrapper-level creation options if present
+    if (!is.null(x$arguments[["creation-option"]]) && length(x$arguments[["creation-option"]]) > 0) {
+      cat("Creation Options:\n")
+      for (co in x$arguments[["creation-option"]]) {
+        cat(sprintf("  %s\n", co))
+      }
+    }
+  } else {
+    # Single job (no pipeline)
+    # Check if command_path already starts with "gdal"
+    if (length(x$command_path) > 0 && x$command_path[1] == "gdal") {
+      cat("Command: ", paste(x$command_path, collapse = " "), "\n")
+    } else {
+      cat("Command:  gdal", paste(x$command_path, collapse = " "), "\n")
+    }
+
+    if (length(x$arguments) > 0) {
+      cat("Arguments:\n")
+      for (i in seq_along(x$arguments)) {
+        arg_name <- names(x$arguments)[i]
+        arg_val <- x$arguments[[i]]
+
+        # Check if this is a positional argument
+        positional_args <- c("input", "output", "src_dataset", "dest_dataset", "dataset")
+        is_positional <- arg_name %in% positional_args
+
+        # Format the argument value for display
+        if (is.null(arg_val)) {
+          val_str <- "NULL"
+        } else if (is.logical(arg_val)) {
+          val_str <- as.character(arg_val)
+        } else if (length(arg_val) == 1) {
+          val_str <- as.character(arg_val)
+        } else {
+          val_str <- paste0("[", paste(as.character(arg_val), collapse = ", "), "]")
+        }
+
+        if (is_positional) {
+          cat(sprintf("  %s: %s\n", arg_name, val_str))
+        } else {
+          cat(sprintf("  --%s: %s\n", arg_name, val_str))
+        }
+      }
+    }
+
+    if (length(x$config_options) > 0) {
+      cat("Config Options:\n")
+      for (i in seq_along(x$config_options)) {
+        opt_name <- names(x$config_options)[i]
+        opt_val <- x$config_options[i]
+        cat(sprintf("  %s=%s\n", opt_name, opt_val))
+      }
+    }
+
+    if (length(x$env_vars) > 0) {
+      cat("Environment Variables:\n")
+      for (i in seq_along(x$env_vars)) {
+        var_name <- names(x$env_vars)[i]
+        var_val <- x$env_vars[i]
+        cat(sprintf("  %s=%s\n", var_name, var_val))
+      }
+    }
+
+    if (!is.null(x$stream_in)) {
+      cat("Input Streaming: Yes (via /vsistdin/)\n")
+    }
+
+    if (!is.null(x$stream_out_format)) {
+      cat(sprintf("Output Streaming: %s (via /vsistdout/)\n", x$stream_out_format))
+    }
   }
 
   invisible(x)

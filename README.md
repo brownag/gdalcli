@@ -129,11 +129,10 @@ pipeline <- gdal_raster_reproject(
 
 pipeline
 #> <gdal_job>
-#> Command:  gdal raster reproject 
-#> Arguments:
-#>   input: input.tif
-#>   --dst_crs: EPSG:32632
-#> Pipeline History: 3 prior jobs
+#> Pipeline: 3 step(s)
+#>   [1] raster reproject (input: input.tif)
+#>   [2] raster scale
+#>   [3] raster convert (output: output.tif)
 ```
 
 ### Example 5: Rendering Pipeline to Native GDAL Format
@@ -176,7 +175,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/Rtmpx90vbf/file6534312918df2.gdalg.json'
+#> '/tmp/RtmpBWwQHo/file678e043d01369.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -307,7 +306,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/Rtmpx90vbf/file653431be0f80d.gdalg.json'
+#> '/tmp/RtmpBWwQHo/file678e05b866cff.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -811,26 +810,16 @@ for guidelines.
 
 ## License
 
-MIT License - see LICENSE file for details
+GPL-3 License - see LICENSE file for details
 
 ## References
 
 - **GDAL Unified CLI (\>=3.11)**: <https://gdal.org/programs/index.html>
-- **GDAL Pipeline Documentation**:
-  <https://gdal.org/programs/gdalinfo.html> (see `gdal raster pipeline`,
-  `gdal vector pipeline`)
-- **GDAL JSON Usage API**:
-  <https://gdal.org/development/rfc/rfc_index.html> (RFC 90)
+- **GDAL RFCs**: <https://gdal.org/development/rfc/>
 - **GDAL Virtual File Systems**:
   <https://gdal.org/user/virtual_file_systems.html>
 - **GDAL Configuration Options**:
   <https://gdal.org/user/configoptions.html>
-- **Lazy Evaluation in R**: Inspired by dbplyr, rlang, and tidyverse
-  design patterns
-- **S3 Object System**: <https://adv-r.hadley.nz/s3.html>
-- **processx Package**: <https://processx.r-lib.org/>
-- **yyjsonr Package**:
-  <https://cran.r-project.org/web/packages/yyjsonr/index.html>
 
 ## Acknowledgments
 
