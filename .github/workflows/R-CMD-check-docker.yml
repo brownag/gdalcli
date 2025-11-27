@@ -1,0 +1,83 @@
+name: R-CMD-check (Docker)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions: read-all
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}:gdal-3.11.4-latest
+      options: --user=builder
+
+    strategy:
+      fail-fast: false
+      matrix:
+        r-version: ['release', 'devel']
+
+    name: R ${{ matrix.r-version }} / GDAL 3.11.4
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify GDAL environment
+        run: |
+          echo "=== System Info ===" 
+          uname -a
+          echo "=== GDAL ===" 
+          gdal --version
+          which gdal
+          echo "=== R ===" 
+          R --version | head -6
+          echo "=== R packages ===" 
+          Rscript -e "sessionInfo()"
+
+      - name: Verify gdalcli package
+        run: |
+          Rscript -e "library(gdalcli); cat('gdalcli loaded successfully\n'); gdal_capabilities()"
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: /home/builder/.cache/R
+          key: r-${{ matrix.r-version }}-${{ hashFiles('DESCRIPTION') }}
+          restore-keys: r-${{ matrix.r-version }}-
+
+      - name: Install package development dependencies
+        run: |
+          Rscript -e "devtools::install_dev_deps()"
+
+      - name: Generate GDAL API
+        run: |
+          Rscript build/generate_gdal_api.R
+
+      - name: Document package
+        run: |
+          Rscript -e "roxygen2::roxygenise()"
+
+      - name: Run R CMD check
+        run: |
+          Rscript -e "devtools::check(args = c('--no-manual', '--compact-vignettes=gs+qpdf'))"
+
+      - name: Run package tests
+        run: |
+          Rscript -e "devtools::test()"
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          if [ -f gdalcli.Rcheck/tests/test_pipeline.Rout ]; then
+            cat gdalcli.Rcheck/tests/test_pipeline.Rout
+          fi
+
+      - name: Upload check results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: check-results-${{ matrix.r-version }}
+          path: gdalcli.Rcheck/
+          retention-days: 7

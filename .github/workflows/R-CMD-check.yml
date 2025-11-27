@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         r-version: ['release', 'devel']
-        gdal-version: ['3.11', '3.12']
+        gdal-version: ['3.11']
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}

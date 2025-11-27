@@ -182,8 +182,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     r-cran-glue \
     && rm -rf /var/lib/apt/lists/*
 
-# Install remaining build-time packages via R (rvest, httr, xml2, roxygen2)
-RUN R --quiet --no-save -e "install.packages(c('rvest', 'httr', 'xml2', 'roxygen2'), repos='https://cran.r-project.org', Ncpus=4)"
+# Install remaining build-time packages via R (rvest, httr, xml2, roxygen2, devtools, testthat)
+RUN R --quiet --no-save -e "install.packages(c('rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat', 'yyjsonr'), repos='https://cran.r-project.org', Ncpus=4)"
 
 # Copy repository - this layer will rebuild on any code change
 COPY . /workspace/gdalcli/
@@ -191,6 +191,12 @@ WORKDIR /workspace/gdalcli
 
 # Generate dynamic API based on installed GDAL
 RUN Rscript build/generate_gdal_api.R
+
+# Update documentation
+RUN Rscript -e "roxygen2::roxygenise()"
+
+# Verify environment
+RUN Rscript -e "library(gdalcli); gdal_check_version(); gdal_capabilities()"
 
 # ============================================================================
 # STAGE 3: runtime
@@ -232,7 +238,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install R package imports (required for runtime)
 RUN R --quiet --no-save <<'EOF'
 packages <- c(
-  "rlang", "cli", "processx", "jsonlite", "digest", "glue"
+  "rlang", "cli", "processx", "yyjsonr", "digest", "glue"
 )
 install.packages(packages,
                  repos = "https://cran.r-project.org",
@@ -250,8 +256,11 @@ RUN ldconfig
 # Copy R libraries from base stage
 COPY --from=base /usr/local/lib/R /usr/local/lib/R
 
-# Copy generated package from base stage
+# Copy built package from base stage (only necessary files)
 COPY --from=base /workspace/gdalcli/R /opt/gdalcli/R
+COPY --from=base /workspace/gdalcli/man /opt/gdalcli/man
+COPY --from=base /workspace/gdalcli/DESCRIPTION /opt/gdalcli/DESCRIPTION
+COPY --from=base /workspace/gdalcli/NAMESPACE /opt/gdalcli/NAMESPACE
 
 # Create non-root user
 RUN useradd -m -u 1000 builder
@@ -269,3 +278,6 @@ WORKDIR /data
 # Verify runtime environment
 RUN gdal --version && \
     echo "Runtime environment ready for GDAL ${GDAL_VERSION}"
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD gdal --version && Rscript -e "library(gdalcli); TRUE" || exit 1
