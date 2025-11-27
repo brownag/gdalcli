@@ -1,8 +1,21 @@
 # Dynamic GDAL Compilation Dockerfile Template
-# Build with: docker build --build-arg GDAL_VERSION=3.11.1 --build-arg GDAL_RELEASE_TYPE=tagged ...
+# Build with: docker build --build-arg GDAL_VERSION=3.11.4 --build-arg GDAL_RELEASE_TYPE=tagged ...
 #
-# GDAL_VERSION: e.g., "3.11.1", "3.12.0", "latest" (for dev from main)
-# GDAL_RELEASE_TYPE: "tagged" (use v{version} tag), "latest" (use main branch), "dev" (compile from main)
+# GDAL_VERSION: 
+#   - For GDAL_RELEASE_TYPE=tagged: specific version (e.g., "3.11.4")
+#   - For GDAL_RELEASE_TYPE=latest: ignored (will detect latest release automatically)
+#   - For GDAL_RELEASE_TYPE=dev*: ignored (will use specified branch)
+#
+# GDAL_RELEASE_TYPE:
+#   - "tagged" (default): Use specific version tag (requires GDAL_VERSION)
+#                        Example: GDAL_VERSION=3.11.4 GDAL_RELEASE_TYPE=tagged
+#   - "latest": Use latest stable release from GitHub (queries API for newest)
+#                        Example: GDAL_RELEASE_TYPE=latest
+#   - "dev": Use master branch (development version, most recent code)
+#                        Example: GDAL_RELEASE_TYPE=dev
+#   - "dev:branch_name": Use any specific branch from GitHub
+#                        Example: GDAL_RELEASE_TYPE=dev:some-feature
+#                                 (will clone --depth 1 -b some-feature)
 #
 
 ARG BASE_IMAGE=ubuntu:24.04
@@ -56,15 +69,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g-dev && \
     rm -rf /var/lib/apt/lists/*
 
-# Download and compile GDAL from GitHub releases
+# Download and compile GDAL from GitHub releases or branches
 RUN mkdir -p /tmp/gdal-build && cd /tmp/gdal-build && \
     if [ "${GDAL_RELEASE_TYPE}" = "tagged" ]; then \
       GDAL_URL="https://github.com/OSGeo/gdal/releases/download/v${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz"; \
       echo "Downloading tagged release: $GDAL_URL"; \
       curl -fsSL "$GDAL_URL" -o gdal.tar.gz; \
-    elif [ "${GDAL_RELEASE_TYPE}" = "latest" ] || [ "${GDAL_RELEASE_TYPE}" = "dev" ]; then \
-      echo "Cloning GDAL development version from main branch"; \
-      git clone --depth 1 https://github.com/OSGeo/gdal.git gdal-src; \
+    elif [ "${GDAL_RELEASE_TYPE}" = "latest" ]; then \
+      echo "Finding latest GDAL release..."; \
+      LATEST_RELEASE=$(curl -fsSL https://api.github.com/repos/OSGeo/gdal/releases/latest | grep -o '"tag_name": "v[^"]*"' | cut -d'"' -f4 | sed 's/^v//'); \
+      echo "Latest GDAL release: $LATEST_RELEASE"; \
+      GDAL_URL="https://github.com/OSGeo/gdal/releases/download/v${LATEST_RELEASE}/gdal-${LATEST_RELEASE}.tar.gz"; \
+      curl -fsSL "$GDAL_URL" -o gdal.tar.gz; \
+    elif [ "${GDAL_RELEASE_TYPE#dev}" != "${GDAL_RELEASE_TYPE}" ]; then \
+      BRANCH="${GDAL_RELEASE_TYPE#dev:}"; \
+      if [ -z "$BRANCH" ] || [ "$BRANCH" = "${GDAL_RELEASE_TYPE}" ]; then \
+        BRANCH="master"; \
+      fi; \
+      echo "Cloning GDAL from branch: $BRANCH"; \
+      git clone --depth 1 --branch "$BRANCH" https://github.com/OSGeo/gdal.git gdal-src; \
       cd gdal-src && \
       tar czf ../gdal.tar.gz --exclude=.git . && \
       cd ..; \
