@@ -286,7 +286,105 @@ str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
 }
 
 
-#' Build a GDAL pipeline string from a sequence of gdal_job objects.
+#' Subsetting and Access Methods for GDAL Jobs
+#'
+#' @description
+#' Provides subsetting operators for `gdal_job` objects.
+#'
+#' - `[` extracts specific job(s) from a pipeline, returning a `gdal_job`
+#' - `length()` returns the number of pipeline jobs (or 1 if standalone)
+#' - `c()` combines multiple jobs into a pipeline
+#' - `$` and `[[` use standard list semantics for property access
+#'
+#' @param x A `gdal_job` object.
+#' @param i Index, property name, or value.
+#' @param name Property name for `$` and `$<-`.
+#' @param value New value for assignment operators.
+#' @param ... Multiple `gdal_job` objects for `c()`.
+#' @param recursive Ignored (for S3 consistency).
+#'
+#' @examples
+#' \dontrun{
+#' pipeline <- gdal_raster_reproject(input = "input.tif", dst_crs = "EPSG:32632") |>
+#'   gdal_raster_scale(src_min = 0, src_max = 100) |>
+#'   gdal_raster_convert(output = "output.tif")
+#'
+#' length(pipeline)           # Returns 3
+#' pipeline[1]                # First job
+#' pipeline[1:2]              # First two jobs
+#' pipeline$command_path      # Access property
+#' pipeline$config_options <- c("OPT=VALUE")  # Set property
+#'
+#' job1 <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632")
+#' job2 <- gdal_raster_scale(src_min = 0, src_max = 100)
+#' job3 <- gdal_raster_convert(output = "out.tif")
+#' combined <- c(job1, job2, job3)  # Combine into pipeline
+#' }
+#'
+#' @name gdal_job-subsetting
+#' @aliases [.gdal_job length.gdal_job [<-.gdal_job $<-.gdal_job [[<-.gdal_job c.gdal_job
+NULL
+
+
+#' @rdname gdal_job-subsetting
+#' @export
+`[.gdal_job` <- function(x, i) {
+  # If no pipeline, return self (only one job)
+  if (is.null(x$pipeline)) {
+    if (i == 1) {
+      return(x)
+    } else {
+      rlang::abort("Index out of bounds: job has only 1 step")
+    }
+  }
+
+  # With pipeline, extract job(s) from pipeline
+  if (is.numeric(i)) {
+    if (any(i < 1) || any(i > length(x$pipeline$jobs))) {
+      rlang::abort(sprintf("Index out of bounds: job has %d steps", length(x$pipeline$jobs)))
+    }
+    
+    selected_jobs <- x$pipeline$jobs[i]
+    
+    # If selecting a single job, return it directly
+    if (length(i) == 1) {
+      return(selected_jobs[[1]])
+    }
+    
+    # If selecting multiple jobs, create a new pipeline job wrapper
+    new_pipeline <- new_gdal_pipeline(selected_jobs, name = x$pipeline$name, description = x$pipeline$description)
+    return(new_gdal_job(
+      command_path = x$command_path,
+      arguments = list(),
+      config_options = character(),
+      env_vars = character(),
+      pipeline = new_pipeline
+    ))
+  } else if (is.logical(i)) {
+    if (length(i) != length(x$pipeline$jobs)) {
+      rlang::abort(sprintf("Logical index length %d does not match job count %d", length(i), length(x$pipeline$jobs)))
+    }
+    return(x[which(i)])
+  } else {
+    rlang::abort("Index must be numeric or logical")
+  }
+}
+
+
+#' @rdname gdal_job-subsetting
+#' @export
+length.gdal_job <- function(x) {
+  if (is.null(x$pipeline)) 1L else length(x$pipeline$jobs)
+}
+
+
+#' @rdname gdal_job-subsetting
+#' @export
+names.gdal_job <- function(x) {
+  c("command_path", "arguments", "config_options", "env_vars",
+    "stream_in", "stream_out_format", "pipeline", "arg_mapping")
+}
+
 #'
 #' This function takes a vector of gdal_job objects and constructs a pipeline
 #' string suitable for use with gdal raster/vector pipeline commands.
@@ -599,12 +697,12 @@ str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
 #' 
 #' @export
 `$.gdal_job` <- function(x, name) {
-  # Handle slot access using base list access to avoid recursion
-  if (name %in% c("command_path", "arguments", "config_options", "env_vars", "stream_in", "stream_out_format", "pipeline", "arg_mapping")) {
+  # Try direct property access first using standard list semantics
+  if (name %in% names(x)) {
     return(.subset2(x, name))
   }
   
-  # Handle convenience methods
+  # Then try convenience methods
   switch(name,
     "run" = function(...) gdal_job_run(x, ...),
     "print" = function(...) print(x, ...),
@@ -615,84 +713,110 @@ str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
     "with_oo" = function(...) gdal_with_oo(x, ...),
     "merge" = function(other, ...) .merge_gdal_job_arguments(x$arguments, other$arguments),
     "clone" = function(...) {
-      new_gdal_job(
-        command_path = x$command_path,
-        arguments = x$arguments,
-        config_options = x$config_options,
-        env_vars = x$env_vars,
-        stream_in = x$stream_in,
-        stream_out_format = x$stream_out_format,
-        pipeline = x$pipeline,
-        arg_mapping = x$arg_mapping
-      )
+      props <- as.list(x)
+      do.call(new_gdal_job, props)
     },
-    # Default: signal .error
+    # Default: signal error
     rlang::abort(sprintf("Unknown slot or method: %s", name))
   )
 }
 
 
-#' Double Bracket Access for GDAL Job Objects
-#'
-#' Provides access to `gdal_job` slots using double brackets `[[`.
-#' This is consistent with standard R list behavior.
-#'
-#' @param x A `gdal_job` object.
-#' @param i The slot name or index.
-#' @param ... Additional arguments (unused).
-#'
-#' @return The slot value.
-#'
+#' @rdname gdal_job-subsetting
 #' @export
-`[[.gdal_job` <- function(x, i, ...) {
-  # Allow both named and indexed access
-  if (is.character(i)) {
-    # Named access
-    if (i %in% names(x)) {
-      return(x[[i]])
-    } else {
-      rlang::abort(sprintf("Unknown slot: %s", i))
-    }
-  } else if (is.numeric(i)) {
-    # Indexed access (treat as list)
-    return(x[[i]])
-  } else {
-    rlang::abort("Invalid index type")
-  }
+`$<-.gdal_job` <- function(x, name, value) {
+  # Use base list assignment to avoid recursion through [[<-
+  x_list <- unclass(x)
+  x_list[[name]] <- value
+  class(x_list) <- c("gdal_job", "list")
+  x_list
 }
 
 
-#' Double Bracket Assignment for GDAL Job Objects
-#'
-#' Allows modification of `gdal_job` slots using double brackets `[[<-`.
-#' Note: This creates a new job object (immutable pattern).
-#'
-#' @param x A `gdal_job` object.
-#' @param i The slot name.
-#' @param value The new value.
-#'
-#' @return A new `gdal_job` object with the modified slot.
-#'
+#' @rdname gdal_job-subsetting
 #' @export
 `[[<-.gdal_job` <- function(x, i, value) {
-  if (!is.character(i)) {
-    rlang::abort("Slot names must be character strings")
-  }
-  
-  # Validate slot name
-  valid_slots <- c("command_path", "arguments", "config_options", "env_vars", "stream_in", "stream_out_format", "pipeline")
-  if (!(i %in% valid_slots)) {
-    rlang::abort(sprintf("Unknown slot: %s. Valid slots: %s", i, paste(valid_slots, collapse = ", ")))
-  }
-  
-  # Create new job with modified slot
-  new_job <- x  # Copy all slots
-  new_job[[i]] <- value
-  
-  # Ensure it remains a gdal_job object
-  class(new_job) <- c("gdal_job", "list")
-  new_job
+  # Use base list assignment to avoid recursion
+  x_list <- unclass(x)
+  x_list[[i]] <- value
+  class(x_list) <- c("gdal_job", "list")
+  x_list
 }
+
+
+#' @rdname gdal_job-subsetting
+#' @export
+`[<-.gdal_job` <- function(x, i, value) {
+  if (is.null(x$pipeline)) {
+    rlang::abort("Cannot use [<- on a standalone job (no pipeline)")
+  }
+  
+  # Ensure value is a list of gdal_job objects
+  if (inherits(value, "gdal_job")) {
+    value <- list(value)
+  } else if (!is.list(value)) {
+    rlang::abort("Replacement value must be a gdal_job or list of gdal_job objects")
+  }
+  
+  # Check all items are gdal_job objects
+  for (v in value) {
+    if (!inherits(v, "gdal_job")) {
+      rlang::abort("All items in replacement value must be gdal_job objects")
+    }
+  }
+  
+  # Replace jobs in pipeline
+  new_jobs <- x$pipeline$jobs
+  new_jobs[i] <- value
+  
+  new_pipeline <- new_gdal_pipeline(new_jobs, name = x$pipeline$name, description = x$pipeline$description)
+  new_gdal_job(
+    command_path = x$command_path,
+    arguments = list(),
+    config_options = character(),
+    env_vars = character(),
+    pipeline = new_pipeline
+  )
+}
+
+
+#' @rdname gdal_job-subsetting
+#' @export
+c.gdal_job <- function(..., recursive = FALSE) {
+  jobs <- list(...)
+  
+  # Flatten any nested pipelines
+  flattened_jobs <- list()
+  for (job in jobs) {
+    if (!inherits(job, "gdal_job")) {
+      rlang::abort("All arguments to c() must be gdal_job objects")
+    }
+    
+    if (!is.null(job$pipeline)) {
+      # Job is a pipeline wrapper - extract its jobs
+      flattened_jobs <- c(flattened_jobs, job$pipeline$jobs)
+    } else {
+      # Job is standalone - add it directly
+      flattened_jobs <- c(flattened_jobs, list(job))
+    }
+  }
+  
+  # Create wrapper with combined pipeline
+  new_pipeline <- new_gdal_pipeline(
+    flattened_jobs,
+    name = NULL,
+    description = "Combined pipeline"
+  )
+  
+  new_gdal_job(
+    command_path = character(),
+    arguments = list(),
+    config_options = character(),
+    env_vars = character(),
+    pipeline = new_pipeline
+  )
+}
+
 
 
 # ============================================================================
