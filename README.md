@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# gdalcli: A Generative R Frontend for the GDAL (≥3.11) Unified CLI
+# gdalcli: A Generative R Frontend for the GDAL (\>=3.11) Unified CLI
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
@@ -176,7 +176,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/Rtmpidufwn/file14e6766a304f7.gdalg.json'
+#> '/tmp/Rtmpx90vbf/file6534312918df2.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -246,10 +246,9 @@ complex_pipeline <- gdal_raster_reproject(
   gdal_with_config("AWS_REGION=us-west-2", "AWS_REQUEST_PAYER=requester")
 
 # Render with config options included
-native_with_config <- render_gdal_pipeline(complex_pipeline$pipeline, format = "native")
-# Native pipeline with config options:
+native_with_config <- render_gdal_pipeline(complex_pipeline, format = "native")
 native_with_config
-#> [1] "gdal raster pipeline ! reproject --dst-crs EPSG:3857 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write /vsis3/my-bucket/output.tif"
+#> [1] "gdal raster pipeline --config AWS_REGION=us-west-2 --config AWS_REQUEST_PAYER=requester --co COMPRESS=LZW --co BLOCKXSIZE=256 ! reproject --dst-crs EPSG:3857 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write /vsis3/my-bucket/output.tif"
 ```
 
 ### Example 11: Inspecting Pipeline Structure
@@ -308,7 +307,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/Rtmpidufwn/file14e672c65c6f9.gdalg.json'
+#> '/tmp/Rtmpx90vbf/file653431be0f80d.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -371,8 +370,8 @@ for (i in seq_along(pipe_obj$jobs)) {
 }
 
 # Render with config options
-render_gdal_pipeline(config_pipeline$pipeline, format = "native")
-#> [1] "gdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif"
+render_gdal_pipeline(config_pipeline, format = "native")
+#> [1] "gdal raster pipeline --config GDAL_CACHEMAX=512 --config OGR_SQL_DIALECT=SQLITE ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif"
 ```
 
 ### Example 14: Sequential vs Native Rendering Comparison
@@ -434,7 +433,7 @@ loaded <- gdal_load_pipeline("workflow.gdalg.json")
 gdal_job_run(loaded)
 ```
 
-GDALG provides perfect round-trip fidelity—all pipeline structure and
+GDALG provides perfect round-trip fidelity - all pipeline structure and
 arguments are preserved.
 
 ### Shell Script Generation
@@ -517,9 +516,9 @@ in GDAL 3.12+.
 
 ### Minimum Requirements
 
-- **GDAL**: ≥ 3.11.3 (Unified CLI framework minimum)
-- **R**: ≥ 4.0.0
-- **gdalraster**: ≥ 2.2.0 (recommended for advanced features)
+- **GDAL**: \>= 3.11.3 (Unified CLI framework minimum)
+- **R**: \>= 4.0.0
+- **gdalraster**: \>= 2.2.0 (recommended for advanced features)
 
 ### GDAL 3.11 Features
 
@@ -816,7 +815,7 @@ MIT License - see LICENSE file for details
 
 ## References
 
-- **GDAL Unified CLI (≥3.11)**: <https://gdal.org/programs/index.html>
+- **GDAL Unified CLI (\>=3.11)**: <https://gdal.org/programs/index.html>
 - **GDAL Pipeline Documentation**:
   <https://gdal.org/programs/gdalinfo.html> (see `gdal raster pipeline`,
   `gdal vector pipeline`)
@@ -835,5 +834,5 @@ MIT License - see LICENSE file for details
 
 ## Acknowledgments
 
-This package is built on GDAL’s unified CLI (≥3.11) and the GDAL
+This package is built on GDAL’s unified CLI (\>=3.11) and the GDAL
 development team’s work.

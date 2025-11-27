@@ -10,7 +10,13 @@ render_gdal_pipeline(pipeline, format = c("shell_chain", "native"), ...)
 
 \method{render_gdal_pipeline}{gdal_job}(pipeline, format = c("shell_chain", "native"), ...)
 
-\method{render_gdal_pipeline}{gdal_pipeline}(pipeline, format = c("shell_chain", "native"), ...)
+\method{render_gdal_pipeline}{gdal_pipeline}(
+  pipeline,
+  format = c("shell_chain", "native"),
+  wrapper_config = character(),
+  wrapper_creation_option = NULL,
+  ...
+)
 }
 \arguments{
 \item{pipeline}{A \code{gdal_pipeline} object.}

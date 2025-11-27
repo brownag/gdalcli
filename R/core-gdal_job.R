@@ -98,7 +98,7 @@ new_gdal_job <- function(command_path,
   job <- list(
     command_path = command_path,
     arguments = as.list(arguments),
-    config_options = as.character(config_options),
+    config_options = if (is.character(config_options)) config_options else as.character(config_options),
     env_vars = as.character(env_vars),
     stream_in = stream_in,
     stream_out_format = stream_out_format,
@@ -369,8 +369,8 @@ str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
     # Convert remaining arguments to CLI flags for pipeline context
     # Skip arguments that shouldn't be in pipeline (like pipeline, input_format, output_format)
     skip_args <- c("pipeline", "input_format", "output_format", "open_option",
-                    "creation_option", "layer_creation_option", "input_layer",
-                    "output_layer", "overwrite", "update", "append", "overwrite_layer")
+                    "creation_option", "creation-option", "layer_creation_option", "layer-creation-option",
+                    "input_layer", "output_layer", "overwrite", "update", "append", "overwrite_layer")
 
     for (arg_name in names(args_copy)) {
       arg_val <- args_copy[[arg_name]]

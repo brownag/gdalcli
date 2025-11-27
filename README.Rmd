@@ -194,8 +194,7 @@ complex_pipeline <- gdal_raster_reproject(
   gdal_with_config("AWS_REGION=us-west-2", "AWS_REQUEST_PAYER=requester")
 
 # Render with config options included
-native_with_config <- render_gdal_pipeline(complex_pipeline$pipeline, format = "native")
-# Native pipeline with config options:
+native_with_config <- render_gdal_pipeline(complex_pipeline, format = "native")
 native_with_config
 ```
 
@@ -296,7 +295,7 @@ for (i in seq_along(pipe_obj$jobs)) {
 }
 
 # Render with config options
-render_gdal_pipeline(config_pipeline$pipeline, format = "native")
+render_gdal_pipeline(config_pipeline, format = "native")
 ```
 
 ### Example 14: Sequential vs Native Rendering Comparison

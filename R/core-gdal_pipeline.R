@@ -528,7 +528,9 @@ render_gdal_pipeline.gdal_job <- function(pipeline, format = c("shell_chain", "n
   format <- match.arg(format)
 
   if (!is.null(pipeline$pipeline)) {
-    render_gdal_pipeline(pipeline$pipeline, format = format, ...)
+    # This job has a pipeline attached
+    # Render the pipeline collecting config and creation options from wrapper job
+    render_gdal_pipeline(pipeline$pipeline, format = format, ..., wrapper_config = pipeline$config_options, wrapper_creation_option = pipeline$arguments[["creation-option"]])
   } else {
     # No pipeline history, render just this job
     args <- .serialize_gdal_job(pipeline)
@@ -538,7 +540,7 @@ render_gdal_pipeline.gdal_job <- function(pipeline, format = c("shell_chain", "n
 
 #' @rdname render_gdal_pipeline
 #' @export
-render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), ...) {
+render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain", "native"), wrapper_config = character(), wrapper_creation_option = NULL, ...) {
   format <- match.arg(format)
 
   if (length(pipeline$jobs) == 0) {
@@ -555,8 +557,59 @@ render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain
       "raster"  # Default to raster
     }
 
+    # Collect all config and creation options from all jobs
+    config_flags <- character()
+    seen_configs <- character()  # Track which config keys we've seen
+    
+    for (job in pipeline$jobs) {
+      # Add config options
+      if (length(job$config_options) > 0) {
+        for (i in seq_along(job$config_options)) {
+          config_name <- names(job$config_options)[i]
+          config_val <- job$config_options[i]
+          config_flags <- c(config_flags,
+                           sprintf("--config %s=%s", config_name, config_val))
+          seen_configs <- c(seen_configs, config_name)
+        }
+      }
+      
+      # Add creation options (as --co flags)
+      if (!is.null(job$arguments[["creation-option"]]) && 
+          length(job$arguments[["creation-option"]]) > 0) {
+        for (co in job$arguments[["creation-option"]]) {
+          config_flags <- c(config_flags, sprintf("--co %s", co))
+        }
+      }
+    }
+    
+    # Add wrapper job's config options only if not already from a pipeline job
+    if (length(wrapper_config) > 0) {
+      for (i in seq_along(wrapper_config)) {
+        config_name <- names(wrapper_config)[i]
+        if (!(config_name %in% seen_configs)) {
+          config_val <- wrapper_config[i]
+          config_flags <- c(config_flags,
+                           sprintf("--config %s=%s", config_name, config_val))
+        }
+      }
+    }
+    
+    # Add wrapper job's creation options
+    if (!is.null(wrapper_creation_option) && length(wrapper_creation_option) > 0) {
+      for (co in wrapper_creation_option) {
+        config_flags <- c(config_flags, sprintf("--co %s", co))
+      }
+    }
+
     pipeline_str <- .render_native_pipeline(pipeline)
-    paste("gdal", cmd_type, "pipeline", pipeline_str)
+    
+    # Build command with config/co flags if present
+    if (length(config_flags) > 0) {
+      config_str <- paste(config_flags, collapse = " ")
+      paste("gdal", cmd_type, "pipeline", config_str, pipeline_str)
+    } else {
+      paste("gdal", cmd_type, "pipeline", pipeline_str)
+    }
   } else {
     # Render as sequence of separate GDAL commands (shell chain)
     commands <- character()
@@ -998,7 +1051,24 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
       }
     }
 
-    new_pipeline <- new_gdal_pipeline(list(job, new_job))
+    # Create a clean first job (without creation options and config options - those stay on wrapper)
+    first_job_clean <- new_gdal_job(
+      command_path = job$command_path,
+      arguments = job$arguments,  # Keep other arguments
+      config_options = character(),  # Don't carry config options to pipeline
+      env_vars = character(),  # Don't carry env vars to pipeline
+      stream_in = job$stream_in,
+      stream_out_format = job$stream_out_format,
+      pipeline = NULL
+    )
+    
+    # Manually clear creation options from the first job's arguments
+    first_job_clean$arguments[["creation-option"]] <- NULL
+    first_job_clean$arguments[["layer-creation-option"]] <- NULL
+    first_job_clean$arguments[["creation_option"]] <- NULL
+    first_job_clean$arguments[["layer_creation_option"]] <- NULL
+
+    new_pipeline <- new_gdal_pipeline(list(first_job_clean, new_job))
 
     # Return a new job that represents the new pipeline
     # Use the same properties as the input job, but with the new pipeline
