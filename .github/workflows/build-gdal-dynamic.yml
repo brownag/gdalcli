@@ -32,10 +32,6 @@ on:
         options:
           - 'osgeo'
           - 'source'
-      r_version:
-        description: 'R version to use (e.g., 4.4, 4.5)'
-        required: true
-        default: '4.5'
       package_version:
         description: 'Base package version (e.g., 0.2.0)'
         required: true
@@ -209,7 +205,6 @@ jobs:
             GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
             GDAL_RELEASE_TYPE=tagged
             GDAL_IMAGE_TAG=${{ needs.validate.outputs.gdal_image_tag }}
-            R_VERSION=${{ github.event.inputs.r_version }}
             PACKAGE_VERSION=${{ github.event.inputs.package_version }}
           tags: |
             gdalcli:gdal-${{ needs.validate.outputs.gdal_short }}-dev
@@ -232,7 +227,6 @@ jobs:
           else
             echo "Compiling GDAL ${{ needs.validate.outputs.gdal_version }} from source"
           fi
-          echo "R version: ${{ github.event.inputs.r_version }}"
           echo "Package version: ${{ github.event.inputs.package_version }}"
           echo ""
           if [ "${{ github.event.inputs.gdal_build_mode }}" = "osgeo" ]; then
@@ -332,7 +326,6 @@ jobs:
             - GDAL Version: ${{ needs.validate.outputs.gdal_version }}
             - Build Mode: ${{ github.event.inputs.gdal_build_mode }}
             - Architecture: ${{ github.event.inputs.architecture }}
-            - R Version: ${{ github.event.inputs.r_version }}
             - Package Version: ${{ github.event.inputs.package_version }}
             - Release Branch: ${{ needs.validate.outputs.branch_name }}
             - R Package Version: ${{ github.event.inputs.package_version }}+gdal-${{ needs.validate.outputs.gdal_short }}
@@ -364,7 +357,6 @@ jobs:
           | GDAL Version | ${{ needs.validate.outputs.gdal_version }} |
           | Build Mode | ${{ github.event.inputs.gdal_build_mode }} |
           | Architecture | ${{ github.event.inputs.architecture }} |
-          | R Version | ${{ github.event.inputs.r_version }} |
           | Package Version | ${{ github.event.inputs.package_version }} |
           | Release Branch | `${{ needs.validate.outputs.branch_name }}` |
           | Build Status | ${{ job.status }} |

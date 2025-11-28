@@ -12,7 +12,7 @@
 # GDAL_VERSION: GDAL version to use
 # GDAL_RELEASE_TYPE: "tagged", "latest", or "dev*"
 # GDAL_IMAGE_TAG: Tag for OSGeo images (auto-detected in workflow)
-# R_VERSION: R version to install (default: 4.5)
+# R_VERSION: R version label (always installs latest from R project repository)
 # PACKAGE_VERSION: Base package version (default: 0.2.0)
 #
 
@@ -20,7 +20,7 @@ ARG GDAL_BUILD_MODE=osgeo
 ARG GDAL_VERSION=3.11.1
 ARG GDAL_RELEASE_TYPE=tagged
 ARG GDAL_IMAGE_TAG=ubuntu-small-amd64-${GDAL_VERSION}
-ARG R_VERSION=4.5
+ARG R_VERSION=latest
 ARG PACKAGE_VERSION=0.2.0
 
 # ============================================================================
