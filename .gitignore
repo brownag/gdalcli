@@ -7,3 +7,4 @@ inst/cache/*.rds
 /Meta/
 README.html
 .github/development/
+.github/GHA_LOGS/

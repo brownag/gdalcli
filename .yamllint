@@ -1,0 +1,8 @@
+extends: default
+
+rules:
+  line-length: disable  # GitHub Actions expressions often need long lines
+  truthy:
+    allowed-values: ['true', 'false', 'True', 'False', 'TRUE', 'FALSE']
+    check-keys: false
+  trailing-spaces: enable

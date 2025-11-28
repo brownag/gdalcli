@@ -1,12 +1,16 @@
+---
 # Build Release for GDAL Version
 #
 # Manual workflow dispatch to build gdalcli for a specific GDAL version.
 # Compiles GDAL from source using Docker, generates API, runs tests.
 #
 # Testing/Debugging Strategy:
-# - On any branch: Workflow runs, generates API, creates release branch, but DOES NOT create tag
-# - On main branch: Workflow runs and creates official GitHub release + tag (if create_release='true')
-# - To test: Dispatch from a feature branch, iterate on fixes, then merge to main for official release
+# - On any branch: Workflow runs, generates API, creates release branch,
+#   but DOES NOT create tag
+# - On main branch: Workflow runs and creates official GitHub release + tag
+#   (if create_release='true')
+# - To test: Dispatch from a feature branch, iterate on fixes, then merge
+#   to main for official release
 #
 name: Build Release for GDAL Version
 
@@ -14,8 +18,28 @@ on:
   workflow_dispatch:
     inputs:
       gdal_version:
-        description: 'GDAL version (e.g., 3.11.4, 3.12.1)'
+        description: |
+          GDAL version (e.g., 3.11.4, 3.12.0) or "latest" for most recent
+          stable release
         required: true
+      gdal_build_mode:
+        description: |
+          GDAL build mode: osgeo (use pre-built OSGeo images) or source
+          (compile from source)
+        required: true
+        default: 'osgeo'
+        type: choice
+        options:
+          - 'osgeo'
+          - 'source'
+      r_version:
+        description: 'R version to use (e.g., 4.4, 4.5)'
+        required: true
+        default: '4.5'
+      package_version:
+        description: 'Base package version (e.g., 0.2.0)'
+        required: true
+        default: '0.2.0'
       create_release:
         description: 'Create GitHub release and tag? (only effective on main branch)'
         required: true
@@ -24,6 +48,17 @@ on:
         options:
           - 'true'
           - 'false'
+      architecture:
+        description: |
+          Target architecture: amd64 (x86_64) or arm64. For OSGeo builds,
+          arm64 should work as drop-in replacement. For source builds,
+          arm64 compilation will be slower and less tested.
+        required: true
+        default: 'amd64'
+        type: choice
+        options:
+          - 'amd64'
+          - 'arm64'
 
 jobs:
   validate:
@@ -33,13 +68,26 @@ jobs:
       gdal_short: ${{ steps.parse.outputs.gdal_short }}
       branch_name: ${{ steps.parse.outputs.branch_name }}
       tag_name: ${{ steps.parse.outputs.tag_name }}
+      gdal_image_tag: ${{ steps.check-image.outputs.selected_gdal_image_tag }}
     steps:
       - name: Validate and parse GDAL version
         id: parse
         run: |
           VERSION="${{ github.event.inputs.gdal_version }}"
 
-          # Validate semver format (X.Y.Z)
+          # Handle "latest" special case
+          if [ "$VERSION" = "latest" ]; then
+            echo "Fetching latest GDAL version..."
+            LATEST_VERSION=$(curl -fsSL https://api.github.com/repos/OSGeo/gdal/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+            if [ -z "$LATEST_VERSION" ] || [ "$LATEST_VERSION" = "null" ]; then
+              echo "ERROR: Failed to fetch latest GDAL version"
+              exit 1
+            fi
+            echo "Latest GDAL version: $LATEST_VERSION"
+            VERSION="$LATEST_VERSION"
+          fi
+
+          # Validate semver format (X.Y.Z) or "latest"
           if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "ERROR: Invalid version format: $VERSION (expected X.Y.Z)"
             exit 1
@@ -69,10 +117,70 @@ jobs:
           echo "  Branch: $BRANCH"
           echo "  Tag: $TAG"
 
+      - name: Check OSGeo GDAL image availability
+        id: check-image
+        if: github.event.inputs.gdal_build_mode == 'osgeo'
+        run: |
+          GDAL_VERSION="${{ steps.parse.outputs.gdal_version }}"
+          ARCH="${{ github.event.inputs.architecture }}"
+
+          # Try different tag formats in order of preference
+          if [ "$ARCH" = "arm64" ]; then
+            TAGS_TO_TRY=(
+              "ubuntu-small-arm64-${GDAL_VERSION}"
+              "ubuntu-small-${GDAL_VERSION}"
+              "ubuntu-small-arm64-latest"
+              "ubuntu-small-latest"
+              "ubuntu-small-arm64"
+              "ubuntu-small"
+              "latest"
+            )
+          else
+            TAGS_TO_TRY=(
+              "ubuntu-small-amd64-${GDAL_VERSION}"
+              "ubuntu-small-${GDAL_VERSION}"
+              "ubuntu-small-amd64-latest"
+              "ubuntu-small-latest"
+              "ubuntu-small-amd64"
+              "ubuntu-small"
+              "latest"
+            )
+          fi
+
+          SELECTED_TAG=""
+          for TAG in "${TAGS_TO_TRY[@]}"; do
+            IMAGE_TAG="ghcr.io/osgeo/gdal:${TAG}"
+            echo "Checking: $IMAGE_TAG"
+
+            if docker buildx imagetools inspect "$IMAGE_TAG" >/dev/null 2>&1; then
+              echo "Found OSGeo GDAL image: $IMAGE_TAG"
+              SELECTED_TAG="$TAG"
+              break
+            fi
+          done
+
+          if [ -z "$SELECTED_TAG" ]; then
+            echo "No suitable OSGeo GDAL image found for version ${GDAL_VERSION} (${ARCH})"
+            exit 1
+          fi
+
+          echo "selected_gdal_image_tag=$SELECTED_TAG" >> $GITHUB_OUTPUT
+
+      - name: Set default image tag for source builds
+        id: set-default-tag
+        if: github.event.inputs.gdal_build_mode == 'source'
+        run: |
+          ARCH="${{ github.event.inputs.architecture }}"
+          if [ "$ARCH" = "arm64" ]; then
+            echo "selected_gdal_image_tag=ubuntu-small-arm64-${{ steps.parse.outputs.gdal_version }}" >> $GITHUB_OUTPUT
+          else
+            echo "selected_gdal_image_tag=ubuntu-small-amd64-${{ steps.parse.outputs.gdal_version }}" >> $GITHUB_OUTPUT
+          fi
+
   build:
     needs: validate
     runs-on: ubuntu-24.04-8core
-    timeout-minutes: 120
+    timeout-minutes: ${{ github.event.inputs.gdal_build_mode == 'osgeo' && 30 || 60 }}
     permissions:
       contents: write
 
@@ -85,6 +193,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Check existing cache
+        run: |
+          echo "Checking for existing Docker cache..."
+          docker buildx du --filter scope=gdal-${{ github.event.inputs.gdal_build_mode }}-${{ needs.validate.outputs.gdal_version }} || echo "No base image cache found"
+
       - name: Build Docker image for GDAL ${{ needs.validate.outputs.gdal_version }}
         uses: docker/build-push-action@v5
         with:
@@ -92,21 +205,41 @@ jobs:
           file: .github/dockerfiles/Dockerfile.template
           target: base
           build-args: |
+            GDAL_BUILD_MODE=${{ github.event.inputs.gdal_build_mode }}
             GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
             GDAL_RELEASE_TYPE=tagged
+            GDAL_IMAGE_TAG=${{ needs.validate.outputs.gdal_image_tag }}
+            R_VERSION=${{ github.event.inputs.r_version }}
+            PACKAGE_VERSION=${{ github.event.inputs.package_version }}
           tags: |
             gdalcli:gdal-${{ needs.validate.outputs.gdal_short }}-dev
-          cache-from: type=gha,scope=gdal-${{ needs.validate.outputs.gdal_version }}
-          cache-to: type=gha,mode=max,scope=gdal-${{ needs.validate.outputs.gdal_version }}
+          platforms: linux/${{ github.event.inputs.architecture }}
+          cache-from: |
+            type=gha,scope=gdal-${{ github.event.inputs.gdal_build_mode }}-${{ needs.validate.outputs.gdal_version }}
+          cache-to: |
+            type=gha,mode=max,scope=gdal-${{ github.event.inputs.gdal_build_mode }}-${{ needs.validate.outputs.gdal_version }}
           load: true
           build-contexts: |
             context=.github/dockerfiles
 
-      - name: Show build progress
+      - name: Show build progress and cache status
         run: |
           echo "Docker build started at $(date)"
-          echo "Building GDAL ${{ needs.validate.outputs.gdal_version }} with 8 cores"
-          echo "Monitor progress with: docker buildx ls && docker buildx logs"
+          echo "Build mode: ${{ github.event.inputs.gdal_build_mode }}"
+          echo "Architecture: ${{ github.event.inputs.architecture }}"
+          if [ "${{ github.event.inputs.gdal_build_mode }}" = "osgeo" ]; then
+            echo "Using OSGeo GDAL ${{ needs.validate.outputs.gdal_version }} image: ${{ needs.validate.outputs.gdal_image_tag }}"
+          else
+            echo "Compiling GDAL ${{ needs.validate.outputs.gdal_version }} from source"
+          fi
+          echo "R version: ${{ github.event.inputs.r_version }}"
+          echo "Package version: ${{ github.event.inputs.package_version }}"
+          echo ""
+          if [ "${{ github.event.inputs.gdal_build_mode }}" = "osgeo" ]; then
+            echo "Build time: ~5-15 minutes"
+          else
+            echo "Build time: ~30-45 minutes"
+          fi
 
       - name: Extract generated API from Docker image
         run: |
@@ -197,8 +330,12 @@ jobs:
 
             ## Details
             - GDAL Version: ${{ needs.validate.outputs.gdal_version }}
+            - Build Mode: ${{ github.event.inputs.gdal_build_mode }}
+            - Architecture: ${{ github.event.inputs.architecture }}
+            - R Version: ${{ github.event.inputs.r_version }}
+            - Package Version: ${{ github.event.inputs.package_version }}
             - Release Branch: ${{ needs.validate.outputs.branch_name }}
-            - R Package Version: 0.2.0+gdal-${{ needs.validate.outputs.gdal_short }}
+            - R Package Version: ${{ github.event.inputs.package_version }}+gdal-${{ needs.validate.outputs.gdal_short }}
 
             ## Installation
             From release branch:
@@ -214,11 +351,9 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          RELEASE_INFO="❌ No (not on main branch)"
+          RELEASE_INFO="No (not on main branch)"
           if [ "${{ github.ref }}" = "refs/heads/main" ] && [ "${{ github.event.inputs.create_release }}" = "true" ]; then
-            RELEASE_INFO="✓ Yes (${{ needs.validate.outputs.tag_name }})"
-          elif [ "${{ github.ref }}" != "refs/heads/main" ]; then
-            RELEASE_INFO="❌ No (test branch - tag only created on main)"
+            RELEASE_INFO="Yes (${{ needs.validate.outputs.tag_name }})"
           fi
 
           cat >> $GITHUB_STEP_SUMMARY <<'EOF'
@@ -227,7 +362,11 @@ jobs:
           | Item | Value |
           |------|-------|
           | GDAL Version | ${{ needs.validate.outputs.gdal_version }} |
+          | Build Mode | ${{ github.event.inputs.gdal_build_mode }} |
+          | Architecture | ${{ github.event.inputs.architecture }} |
+          | R Version | ${{ github.event.inputs.r_version }} |
+          | Package Version | ${{ github.event.inputs.package_version }} |
           | Release Branch | `${{ needs.validate.outputs.branch_name }}` |
           | Build Status | ${{ job.status }} |
-          | GitHub Release Tag | ${RELEASE_INFO} |
+          | GitHub Release | ${RELEASE_INFO} |
           EOF
