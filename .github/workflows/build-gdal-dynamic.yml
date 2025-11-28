@@ -314,6 +314,10 @@ jobs:
             any::roxygen2
             any::testthat
             any::remotes
+            any::arrow
+            any::reticulate
+            any::knitr
+            any::rmarkdown
           extra-packages: any::rcmdcheck
           needs: check
           cache-version: 1
