@@ -37,18 +37,9 @@ jobs:
           echo "=== R packages ===" 
           Rscript -e "sessionInfo()"
 
-      - name: Cache R packages
-        uses: actions/cache@v4
-        with:
-          path: /home/builder/.cache/R
-          key: r-docker-${{ matrix.r-version }}-${{ hashFiles('DESCRIPTION') }}
-          restore-keys: |
-            r-docker-${{ matrix.r-version }}-
-
       - name: Install package development dependencies
         run: |
-          # Dependencies are pre-installed in the base image
-          echo "Development dependencies already installed in base image"
+          Rscript -e "if (!require('devtools', quietly=TRUE)) install.packages('devtools', repos='https://cran.rstudio.com/')"
 
       - name: Generate GDAL API
         run: |
