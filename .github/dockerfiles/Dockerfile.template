@@ -191,7 +191,7 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
 
 # Install build-time packages via R (skip if using pre-built base)
 RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
-    Rscript -e "install.packages(c('remotes', 'rlang', 'cli', 'processx', 'yyjsonr', 'digest', 'glue', 'rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat'), repos='https://cran.rstudio.com/', Ncpus=parallel::detectCores())"; \
+    Rscript -e "install.packages(c('remotes', 'rlang', 'cli', 'processx', 'yyjsonr', 'digest', 'glue', 'rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat', 'arrow', 'reticulate', 'knitr', 'rmarkdown', 'rcmdcheck'), repos='https://cran.rstudio.com/', Ncpus=parallel::detectCores())"; \
     fi
 
 # Copy repository - this layer will rebuild on any code change

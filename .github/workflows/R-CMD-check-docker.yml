@@ -48,8 +48,8 @@ jobs:
 
       - name: Install package development dependencies
         run: |
-          Rscript -e "install.packages('devtools', lib = Sys.getenv('R_LIBS_USER'), repos = 'https://cran.rstudio.com/')"
-          Rscript -e ".libPaths(Sys.getenv('R_LIBS_USER')); devtools::install_dev_deps()"
+          # Dependencies are pre-installed in the base image
+          echo "Development dependencies already installed in base image"
 
       - name: Generate GDAL API
         run: |
