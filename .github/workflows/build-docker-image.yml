@@ -66,6 +66,7 @@ jobs:
             type=raw,value=gdal-${{ matrix.gdal-version }}-latest
 
       - name: Build and push Docker image
+        id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -75,6 +76,7 @@ jobs:
           build-args: |
             GDAL_VERSION=${{ matrix.gdal-version }}
             GDAL_RELEASE_TYPE=tagged
+            GDAL_IMAGE_TAG=ubuntu-small-${{ matrix.gdal-version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
