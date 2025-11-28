@@ -189,13 +189,18 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
     LD_LIBRARY_PATH="/usr/lib:${LD_LIBRARY_PATH}" \
     PATH="/usr/bin:${PATH}"
 
+# Copy repository for dependency installation
+COPY DESCRIPTION /tmp/gdalcli/
+WORKDIR /tmp/gdalcli
+
 # Install build-time packages via R (skip if using pre-built base)
 RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
-    Rscript -e "install.packages(c('remotes', 'rlang', 'cli', 'processx', 'yyjsonr', 'digest', 'glue', 'rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat', 'arrow', 'reticulate', 'knitr', 'rmarkdown', 'rcmdcheck'), repos='https://cran.rstudio.com/', Ncpus=parallel::detectCores())"; \
+    Rscript -e "install.packages(c('remotes', 'devtools'), repos='https://cran.rstudio.com/')"; \
+    Rscript -e "remotes::install_deps(dependencies = TRUE, repos='https://cran.rstudio.com/')"; \
     fi
 
-# Copy repository - this layer will rebuild on any code change
-COPY . /workspace/gdalcli/
+# Clean up temporary files
+RUN rm -rf /tmp/gdalcli
 WORKDIR /workspace/gdalcli
 
 # Generate dynamic API based on installed GDAL
