@@ -155,9 +155,15 @@ LABEL gdal.version="${GDAL_VERSION}" \
       stage="base"
 
 # Install R and additional dependencies needed for R package building
+# Add R project's official repository for latest R version
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
+    gnupg \
+    lsb-release && \
+    curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | gpg --dearmor -o /usr/share/keyrings/r-project.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/r-project.gpg] https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" > /etc/apt/sources.list.d/r-project.list && \
+    apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libssl-dev \
     libxml2-dev \
@@ -178,9 +184,7 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
     PATH="/usr/bin:${PATH}"
 
 # Install build-time packages via R
-RUN install2.r --error --skipinstalled \
-    rlang cli processx yyjsonr digest glue \
-    rvest httr xml2 roxygen2 devtools testthat
+RUN Rscript -e "install.packages(c('remotes', 'rlang', 'cli', 'processx', 'yyjsonr', 'digest', 'glue', 'rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat'), repos='https://cran.rstudio.com/', Ncpus=parallel::detectCores())"
 
 # Copy repository - this layer will rebuild on any code change
 COPY . /workspace/gdalcli/
@@ -224,9 +228,14 @@ LABEL gdal.version="${GDAL_VERSION}" \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
+    gnupg \
     libcurl4-openssl-dev \
     libssl3 \
     libxml2 \
+    lsb-release && \
+    curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | gpg --dearmor -o /usr/share/keyrings/r-project.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/r-project.gpg] https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" > /etc/apt/sources.list.d/r-project.list && \
+    apt-get update && apt-get install -y --no-install-recommends \
     r-base-core && \
     rm -rf /var/lib/apt/lists/* && \
     find /usr/share/doc -type f -delete && \
