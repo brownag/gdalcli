@@ -24,14 +24,15 @@ on:
         required: true
       gdal_build_mode:
         description: |
-          GDAL build mode: osgeo (use pre-built OSGeo images) or source
-          (compile from source)
+          GDAL build mode: osgeo (use pre-built OSGeo images), source
+          (compile from source), or prebuilt (use pre-built gdalcli base images)
         required: true
         default: 'osgeo'
         type: choice
         options:
           - 'osgeo'
           - 'source'
+          - 'prebuilt'
       package_version:
         description: 'Base package version (e.g., 0.2.0)'
         required: true
@@ -173,6 +174,25 @@ jobs:
             echo "selected_gdal_image_tag=ubuntu-small-amd64-${{ steps.parse.outputs.gdal_version }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check pre-built base image availability
+        id: check-prebuilt
+        if: github.event.inputs.gdal_build_mode == 'prebuilt'
+        run: |
+          VERSION="${{ steps.parse.outputs.gdal_version }}"
+          ARCH="${{ github.event.inputs.architecture }}"
+          
+          IMAGE_TAG="ghcr.io/brownag/gdalcli:base-gdal-${VERSION}-${ARCH}"
+          echo "Checking pre-built base image: $IMAGE_TAG"
+          
+          if docker buildx imagetools inspect "$IMAGE_TAG" >/dev/null 2>&1; then
+            echo "Found pre-built base image: $IMAGE_TAG"
+            echo "selected_gdal_image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          else
+            echo "ERROR: Pre-built base image not found: $IMAGE_TAG"
+            echo "Please run the 'Build GDAL Base Images' workflow first to create this image."
+            exit 1
+          fi
+
   build:
     needs: validate
     runs-on: ubuntu-latest
@@ -205,6 +225,8 @@ jobs:
             GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
             GDAL_RELEASE_TYPE=tagged
             GDAL_IMAGE_TAG=${{ needs.validate.outputs.gdal_image_tag }}
+            USE_PREBUILT_BASE=${{ github.event.inputs.gdal_build_mode == 'prebuilt' && 'true' || 'false' }}
+            R_VERSION=latest
             PACKAGE_VERSION=${{ github.event.inputs.package_version }}
           tags: |
             gdalcli:gdal-${{ needs.validate.outputs.gdal_short }}-dev
@@ -224,6 +246,8 @@ jobs:
           echo "Architecture: ${{ github.event.inputs.architecture }}"
           if [ "${{ github.event.inputs.gdal_build_mode }}" = "osgeo" ]; then
             echo "Using OSGeo GDAL ${{ needs.validate.outputs.gdal_version }} image: ${{ needs.validate.outputs.gdal_image_tag }}"
+          elif [ "${{ github.event.inputs.gdal_build_mode }}" = "prebuilt" ]; then
+            echo "Using pre-built gdalcli base image for GDAL ${{ needs.validate.outputs.gdal_version }}"
           else
             echo "Compiling GDAL ${{ needs.validate.outputs.gdal_version }} from source"
           fi
@@ -231,6 +255,8 @@ jobs:
           echo ""
           if [ "${{ github.event.inputs.gdal_build_mode }}" = "osgeo" ]; then
             echo "Build time: ~5-15 minutes"
+          elif [ "${{ github.event.inputs.gdal_build_mode }}" = "prebuilt" ]; then
+            echo "Build time: ~2-5 minutes"
           else
             echo "Build time: ~30-45 minutes"
           fi
@@ -268,6 +294,16 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: 'latest'
+
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/R
+            ~/R/x86_64-pc-linux-gnu-library
+          key: r-packages-${{ runner.os }}-latest-${{ hashFiles('DESCRIPTION') }}
+          restore-keys: |
+            r-packages-${{ runner.os }}-latest-
 
       - name: Install R dependencies
         run: |

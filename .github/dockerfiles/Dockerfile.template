@@ -7,11 +7,11 @@
 #
 # GDAL_BUILD_MODE:
 #   - "osgeo" (default): Use OSGeo pre-built images
-#   - "source": Compile GDAL from source
-#
+# GDAL_BUILD_MODE: osgeo, source, or prebuilt
 # GDAL_VERSION: GDAL version to use
 # GDAL_RELEASE_TYPE: "tagged", "latest", or "dev*"
 # GDAL_IMAGE_TAG: Tag for OSGeo images (auto-detected in workflow)
+# USE_PREBUILT_BASE: Use pre-built gdalcli base images (true/false)
 # R_VERSION: R version label (always installs latest from R project repository)
 # PACKAGE_VERSION: Base package version (default: 0.2.0)
 #
@@ -20,12 +20,13 @@ ARG GDAL_BUILD_MODE=osgeo
 ARG GDAL_VERSION=3.11.1
 ARG GDAL_RELEASE_TYPE=tagged
 ARG GDAL_IMAGE_TAG=ubuntu-small-amd64-${GDAL_VERSION}
+ARG USE_PREBUILT_BASE=false
 ARG R_VERSION=latest
 ARG PACKAGE_VERSION=0.2.0
 
 # ============================================================================
 # STAGE 1: gdal-base
-# Either uses OSGeo pre-built images or compiles GDAL from source
+# Either uses OSGeo pre-built images, compiles from source, or uses pre-built gdalcli base images
 # ============================================================================
 FROM ghcr.io/osgeo/gdal:${GDAL_IMAGE_TAG} AS gdal-base-osgeo
 
@@ -138,12 +139,16 @@ RUN gdal --version && \
     which gdalinfo && \
     gdalinfo --version
 
+# Pre-built base image stage (for faster builds)
+FROM ghcr.io/brownag/gdalcli:base-gdal-${GDAL_VERSION}-amd64 AS gdal-base-prebuilt
+
 # Select the appropriate GDAL base stage
 FROM gdal-base-${GDAL_BUILD_MODE} AS gdal-base
 
 ARG GDAL_VERSION=3.11.1
 ARG GDAL_RELEASE_TYPE=tagged
-ARG R_VERSION=4.5
+ARG USE_PREBUILT_BASE=false
+ARG R_VERSION=latest
 ARG PACKAGE_VERSION=0.2.0
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -154,9 +159,9 @@ LABEL gdal.version="${GDAL_VERSION}" \
       maintainer="gdalcli contributors" \
       stage="base"
 
-# Install R and additional dependencies needed for R package building
-# Add R project's official repository for latest R version
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install R and packages only if not using pre-built base
+RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
+    apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     gnupg \
@@ -169,7 +174,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     r-base-dev \
     r-recommended && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*; \
+    fi
 
 # Verify GDAL is accessible (already installed in OSGeo image)
 RUN gdal --version && \
@@ -183,8 +189,10 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
     LD_LIBRARY_PATH="/usr/lib:${LD_LIBRARY_PATH}" \
     PATH="/usr/bin:${PATH}"
 
-# Install build-time packages via R
-RUN Rscript -e "install.packages(c('remotes', 'rlang', 'cli', 'processx', 'yyjsonr', 'digest', 'glue', 'rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat'), repos='https://cran.rstudio.com/', Ncpus=parallel::detectCores())"
+# Install build-time packages via R (skip if using pre-built base)
+RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
+    Rscript -e "install.packages(c('remotes', 'rlang', 'cli', 'processx', 'yyjsonr', 'digest', 'glue', 'rvest', 'httr', 'xml2', 'roxygen2', 'devtools', 'testthat'), repos='https://cran.rstudio.com/', Ncpus=parallel::detectCores())"; \
+    fi
 
 # Copy repository - this layer will rebuild on any code change
 COPY . /workspace/gdalcli/
