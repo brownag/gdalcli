@@ -48,7 +48,7 @@ jobs:
 
       - name: Install package development dependencies
         run: |
-          Rscript -e "devtools::install_dev_deps()"
+          Rscript -e "install.packages('devtools'); devtools::install_dev_deps()"
 
       - name: Generate GDAL API
         run: |
