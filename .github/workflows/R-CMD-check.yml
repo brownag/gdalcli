@@ -50,6 +50,16 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+          packages: |
+            any::arrow
+            any::reticulate
+            any::knitr
+            any::rmarkdown
+            any::testthat
+
+      - name: Install gdalraster from source
+        run: |
+          Rscript -e "install.packages('gdalraster', type = 'source', repos = 'https://cran.rstudio.com/')"
 
       - uses: r-lib/actions/check-r-package@v2
         with:
