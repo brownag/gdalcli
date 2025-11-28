@@ -241,7 +241,7 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
 # Create non-root user
 RUN useradd -m -u 1000 builder 2>/dev/null || true
 
-USER builder
+# USER builder
 WORKDIR /data
 
 # Verify runtime environment
