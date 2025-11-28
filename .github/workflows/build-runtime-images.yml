@@ -71,6 +71,7 @@ jobs:
           file: ./.github/dockerfiles/Dockerfile.template
           platforms: linux/amd64
           push: true
+          target: gdal-base
           build-args: |
             GDAL_BUILD_MODE=prebuilt
             GDAL_VERSION=${{ matrix.gdal-version }}
