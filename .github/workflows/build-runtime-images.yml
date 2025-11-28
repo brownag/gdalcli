@@ -10,7 +10,7 @@ on:
       - master
     paths:
       - '.github/dockerfiles/Dockerfile.template'
-      - '.github/workflows/build-docker-image.yml'
+      - '.github/workflows/build-runtime-images.yml'
   workflow_dispatch:
     inputs:
       gdal_version:

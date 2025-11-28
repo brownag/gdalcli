@@ -7,7 +7,7 @@ set -e
 
 REPO_OWNER="${REPO_OWNER:-brownag}"
 REPO_NAME="${REPO_NAME:-gdalcli}"
-WORKFLOW_FILE="build-gdal-dynamic.yml"
+WORKFLOW_FILE="build-releases.yml"
 
 # ============================================================================
 # Common Build Scenarios
