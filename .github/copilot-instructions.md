@@ -29,6 +29,64 @@ UNDER NO CIRCUMSTANCES SHOULD YOU EVER PUSH TO A REMOTE GIT REPOSITORY
 - **Environment-Based Auth**: Credentials read from environment variables, never passed as arguments
 - **Process Isolation**: Each command runs in isolated subprocess with injected environment
 
+## CI/CD Workflows
+
+The project uses GitHub Actions for automated testing, building, and deployment. Workflows are organized by purpose:
+
+### Testing Workflows
+
+**R-CMD-check-ubuntu.yml**
+- **Purpose**: Comprehensive R CMD check on native Ubuntu/GitHub runners
+- **Trigger**: Push to main, pull requests
+- **Environment**: Ubuntu 22.04 with GDAL 3.11+ from ubuntugis PPA
+- **Coverage**: Full R CMD check including vignettes, tests, and gdalraster compatibility
+- **When to use**: Standard CI for all changes
+
+**R-CMD-check-docker.yml** 
+- **Purpose**: R CMD check in isolated Docker containers
+- **Trigger**: Push to main, pull requests
+- **Environment**: Custom Docker images with controlled GDAL versions
+- **Coverage**: Full R CMD check with pre-installed dependencies
+- **When to use**: Verify Docker compatibility and controlled environments
+
+### Build Workflows
+
+**build-base-images.yml**
+- **Purpose**: Build reusable GDAL base images for CI
+- **Trigger**: Manual dispatch
+- **Output**: `ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64` images
+- **When to run**: When GDAL versions change or base image updates needed
+
+**build-runtime-images.yml**
+- **Purpose**: Build full runtime Docker images with gdalcli installed
+- **Trigger**: Weekly schedule, main branch pushes, manual dispatch
+- **Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest` images
+- **When to run**: Automated weekly builds or when runtime images need updates
+
+**build-releases.yml**
+- **Purpose**: Dynamic package builds and GitHub releases
+- **Trigger**: Manual dispatch with parameters
+- **Output**: Release branches, GitHub releases, package binaries
+- **When to run**: When creating new package releases for specific GDAL versions
+
+### Workflow Selection Guide
+
+| Scenario | Recommended Workflow | Notes |
+|----------|---------------------|-------|
+| Code changes | R-CMD-check-ubuntu.yml + R-CMD-check-docker.yml | Both run automatically on PRs |
+| GDAL version updates | build-base-images.yml → build-runtime-images.yml | Update base images first |
+| Package releases | build-releases.yml | Manual workflow with version parameters |
+| Docker issues | R-CMD-check-docker.yml | Isolated testing environment |
+| Performance testing | R-CMD-check-docker.yml | Consistent environment |
+
+### Manual Workflow Triggers
+
+Some workflows require manual triggering via GitHub Actions:
+
+- **build-base-images.yml**: Set `push_images=true` to publish to GHCR
+- **build-runtime-images.yml**: Specify `gdal_version` (default: 3.11.4)  
+- **build-releases.yml**: Configure `gdal_version`, `package_version`, `create_release`, etc.
+
 ## Development Workflow
 
 ### Building the Package
