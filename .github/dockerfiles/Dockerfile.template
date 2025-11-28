@@ -1,35 +1,44 @@
-# Dynamic GDAL Dockerfile Template
-# Build with: docker build --build-arg GDAL_VERSION=3.11.4 --build-arg GDAL_RELEASE_TYPE=tagged ...
+# Streamlined Multi-Stage GDAL Dockerfile
+# Build with: docker build --target <stage> --build-arg GDAL_VERSION=3.11.4 ...
 #
-# Supports two build modes:
-# 1. OSGeo images: Uses pre-built OSGeo GDAL Docker images (faster, but less customizable)
-# 2. Source compilation: Compiles GDAL from source (slower, but fully customizable)
+# Build Stages (in order):
+# 1. gdal-base-osgeo/gdal-base-source: GDAL installation (OSGeo or source)
+# 2. system-base: System dependencies for R
+# 3. r-base: R installation
+# 4. r-packages: R package dependencies (devtools, processx, gdalraster, etc.)
+# 5. gdalcli-build: API generation and package build
+# 6. gdalcli-runtime: Final runtime image with gdalcli installed
 #
-# GDAL_BUILD_MODE:
-#   - "osgeo" (default): Use OSGeo pre-built images
-# GDAL_BUILD_MODE: osgeo, source, or prebuilt
-# GDAL_VERSION: GDAL version to use
-# GDAL_RELEASE_TYPE: "tagged", "latest", or "dev*"
+# Build Arguments:
+# GDAL_BUILD_MODE: "osgeo" (use OSGeo images) or "source" (compile from source)
+# GDAL_VERSION: GDAL version to use (e.g., 3.11.4)
+# GDAL_RELEASE_TYPE: "tagged", "latest", or "dev:branch"
 # GDAL_IMAGE_TAG: Tag for OSGeo images (auto-detected in workflow)
-# USE_PREBUILT_BASE: Use pre-built gdalcli base images (true/false)
-# R_VERSION: R version label (always installs latest from R project repository)
-# PACKAGE_VERSION: Base package version (default: 0.2.0)
+# R_VERSION: R version label (always installs latest from R project)
+# PACKAGE_VERSION: Package version (default: 0.2.0)
+#
+# Target Usage:
+# - deps images: --target r-packages (GDAL + R + all dependencies for CI)
+# - full images: --target gdalcli-runtime (complete runtime with gdalcli)
 #
 
 ARG GDAL_BUILD_MODE=osgeo
 ARG GDAL_VERSION=3.11.1
 ARG GDAL_RELEASE_TYPE=tagged
 ARG GDAL_IMAGE_TAG=ubuntu-small-amd64-${GDAL_VERSION}
-ARG USE_PREBUILT_BASE=false
 ARG R_VERSION=latest
 ARG PACKAGE_VERSION=0.2.0
 
 # ============================================================================
-# STAGE 1: gdal-base
-# Either uses OSGeo pre-built images, compiles from source, or uses pre-built gdalcli base images
+# STAGE 1a: GDAL Base (OSGeo Images)
+# Use pre-built GDAL images from OSGeo for faster builds
 # ============================================================================
 FROM ghcr.io/osgeo/gdal:${GDAL_IMAGE_TAG} AS gdal-base-osgeo
 
+# ============================================================================
+# STAGE 1b: GDAL Base (Source Compilation)
+# Compile GDAL from source for custom configurations
+# ============================================================================
 FROM ubuntu:24.04 AS gdal-base-source
 
 ARG GDAL_VERSION=3.11.1
@@ -139,36 +148,30 @@ RUN gdal --version && \
     which gdalinfo && \
     gdalinfo --version
 
-# Pre-built base image stage (for faster builds)
-FROM ghcr.io/brownag/gdalcli:base-gdal-${GDAL_VERSION}-amd64 AS gdal-base-prebuilt
-
-# Select the appropriate GDAL base stage
-FROM gdal-base-${GDAL_BUILD_MODE} AS gdal-base
+# ============================================================================
+# STAGE 2: System Base
+# Select appropriate GDAL source and install system dependencies for R
+# ============================================================================
+FROM gdal-base-${GDAL_BUILD_MODE} AS system-base
 
 ARG GDAL_VERSION=3.11.1
 ARG GDAL_RELEASE_TYPE=tagged
-ARG USE_PREBUILT_BASE=false
 ARG R_VERSION=latest
 ARG PACKAGE_VERSION=0.2.0
 ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL gdal.version="${GDAL_VERSION}" \
       gdal.release_type="${GDAL_RELEASE_TYPE}" \
-      r.version="${R_VERSION}" \
-      version="${PACKAGE_VERSION}" \
       maintainer="gdalcli contributors" \
-      stage="base"
+      stage="system-base"
 
-# Install R and packages only if not using pre-built base
-RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
-    apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies for R and gdalcli
+# These rarely change, so they get their own layer for better caching
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     gnupg \
-    lsb-release && \
-    curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | gpg --dearmor -o /usr/share/keyrings/r-project.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/r-project.gpg] https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" > /etc/apt/sources.list.d/r-project.list && \
-    apt-get update && apt-get install -y --no-install-recommends \
+    lsb-release \
     libcurl4-openssl-dev \
     libfontconfig1-dev \
     libfreetype6-dev \
@@ -178,15 +181,52 @@ RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
     libssl-dev \
     libtiff-dev \
     libxml2-dev \
-    r-base-dev \
-    r-recommended && \
-    rm -rf /var/lib/apt/lists/*; \
-    fi
+    pandoc && \
+    rm -rf /var/lib/apt/lists/*
 
-# Verify GDAL is accessible (already installed in OSGeo image)
+# Verify GDAL is accessible
 RUN gdal --version && \
     which gdalinfo && \
     gdalinfo --version
+
+# ============================================================================
+# STAGE 3: R Base
+# Install R from CRAN repository
+# ============================================================================
+FROM system-base AS r-base
+
+ARG R_VERSION=latest
+ARG DEBIAN_FRONTEND=noninteractive
+
+LABEL r.version="${R_VERSION}" \
+      stage="r-base"
+
+# Install R (version-specific layer for better cache granularity)
+RUN curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | \
+    gpg --dearmor -o /usr/share/keyrings/r-project.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/r-project.gpg] https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" > \
+    /etc/apt/sources.list.d/r-project.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    r-base-dev \
+    r-recommended && \
+    rm -rf /var/lib/apt/lists/*
+
+# Verify R installation
+RUN R --version
+
+# ============================================================================
+# STAGE 4: R Packages
+# Install R package dependencies (changes when DESCRIPTION updates)
+# ============================================================================
+FROM r-base AS r-packages
+
+ARG GDAL_VERSION=3.11.1
+ARG GDAL_RELEASE_TYPE=tagged
+ARG PACKAGE_VERSION=0.2.0
+
+LABEL version="${PACKAGE_VERSION}" \
+      stage="r-packages"
 
 # Set environment variables
 ENV GDAL_CONFIG=/usr/bin/gdal-config \
@@ -194,40 +234,84 @@ ENV GDAL_CONFIG=/usr/bin/gdal-config \
     GDAL_RELEASE_TYPE="${GDAL_RELEASE_TYPE}" \
     PATH="/usr/bin:${PATH}"
 
-# Copy repository for dependency installation
+# Copy DESCRIPTION for dependency resolution
 COPY DESCRIPTION /tmp/gdalcli/
 WORKDIR /tmp/gdalcli
 
-# Install build-time packages via R (skip if using pre-built base)
-RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
-    Rscript -e "install.packages(c('remotes', 'devtools'), repos='https://cran.rstudio.com/')"; \
-    Rscript -e "install.packages(c('processx', 'jsonlite', 'glue', 'httr'), repos='https://cran.rstudio.com/')"; \
-    Rscript -e "remotes::install_deps(dependencies = TRUE, repos='https://cran.rstudio.com/')"; \
-    fi
+# Install R package dependencies in separate layers by frequency of change
+# Layer 1: Core development tools (rarely change)
+RUN Rscript -e "install.packages(c('remotes', 'devtools', 'roxygen2'), repos='https://cran.rstudio.com/')"
 
-# Clean up temporary files
-RUN rm -rf /tmp/gdalcli
+# Layer 2: Build-time dependencies (rarely change)
+RUN Rscript -e "install.packages(c('processx', 'jsonlite', 'glue', 'httr'), repos='https://cran.rstudio.com/')"
 
-# Copy full source code for API generation and package building
+# Layer 3: Package dependencies from DESCRIPTION (changes with updates)
+RUN Rscript -e "remotes::install_deps(dependencies = TRUE, repos='https://cran.rstudio.com/')"
+
+# Clean up
+RUN rm -rf /tmp/gdalcli /tmp/downloaded_packages /tmp/*.rds
+
+# Verify key packages are installed
+RUN Rscript -e "library(processx); library(jsonlite); library(gdalraster); cat('All dependencies installed\n')"
+
+# ============================================================================
+# STAGE 5: gdalcli Build
+# Generate API and build package (changes frequently during development)
+# ============================================================================
+FROM r-packages AS gdalcli-build
+
+ARG GDAL_VERSION=3.11.1
+ARG PACKAGE_VERSION=0.2.0
+
+LABEL version="${PACKAGE_VERSION}" \
+      stage="gdalcli-build"
+
+# Copy full source code
 COPY . /workspace/gdalcli/
 WORKDIR /workspace/gdalcli
 
-# Generate dynamic API based on installed GDAL
-RUN echo "Starting API generation at $(date)" && \
+# Generate dynamic API based on installed GDAL version
+RUN echo "=== Generating GDAL API at $(date) ===" && \
     Rscript build/generate_gdal_api.R && \
-    echo "API generation completed at $(date)"
+    echo "=== API generation completed at $(date) ==="
 
-# Update documentation
-RUN echo "Starting documentation build at $(date)" && \
+# Update package documentation
+RUN echo "=== Building documentation at $(date) ===" && \
     Rscript -e "roxygen2::roxygenise()" && \
-    echo "Documentation build completed at $(date)"
+    echo "=== Documentation build completed at $(date) ==="
+
+# Build package tarball for installation
+RUN echo "=== Building package at $(date) ===" && \
+    R CMD build . && \
+    echo "=== Package build completed at $(date) ==="
+
+# ============================================================================
+# STAGE 6: gdalcli Runtime
+# Final runtime image with gdalcli installed and verified
+# ============================================================================
+FROM r-packages AS gdalcli-runtime
+
+ARG GDAL_VERSION=3.11.1
+ARG PACKAGE_VERSION=0.2.0
+
+LABEL version="${PACKAGE_VERSION}" \
+      stage="gdalcli-runtime"
+
+# Copy built package from build stage
+COPY --from=gdalcli-build /workspace/gdalcli/*.tar.gz /tmp/
 
 # Install gdalcli package
-RUN echo "Starting package installation at $(date)" && \
-    R CMD INSTALL . && \
-    echo "Package installation completed at $(date)"
+RUN echo "=== Installing gdalcli at $(date) ===" && \
+    R CMD INSTALL /tmp/gdalcli_*.tar.gz && \
+    rm /tmp/gdalcli_*.tar.gz && \
+    echo "=== Package installation completed at $(date) ==="
 
-# Verify environment
-RUN echo "Starting environment verification at $(date)" && \
-    Rscript -e "library(gdalcli); gdal_check_version(); gdal_capabilities()" && \
-    echo "Environment verification completed at $(date)"
+# Verify installation
+RUN echo "=== Verifying gdalcli installation ===" && \
+    Rscript -e "library(gdalcli); gdal_check_version(); print(gdal_capabilities()); cat('gdalcli successfully installed\n')"
+
+# Set working directory for users
+WORKDIR /workspace
+
+# Default command: start R
+CMD ["R"]

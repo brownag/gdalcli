@@ -1,0 +1,313 @@
+---
+# Build GDAL Docker Images (Consolidated)
+#
+# Builds both dependency images (deps) and full runtime images for gdalcli.
+# Replaces the previous build-base-images.yml and build-runtime-images.yml.
+#
+# Image naming:
+# - deps-gdal-X.Y.Z-amd64: Base images with GDAL + R + dependencies (for CI)
+# - gdal-X.Y.Z-latest: Full runtime images with gdalcli installed (for users)
+#
+# This workflow should run:
+# - Weekly on Saturday at 00:00 UTC
+# - On manual dispatch
+# - On pushes to main that affect Docker files
+#
+name: Build GDAL Docker Images
+
+on:
+  schedule:
+    # Build weekly on Saturday at 00:00 UTC
+    - cron: '0 0 * * SAT'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/dockerfiles/Dockerfile.template'
+      - '.github/workflows/build-docker-images.yml'
+      - 'DESCRIPTION'
+  workflow_dispatch:
+    inputs:
+      gdal_version:
+        description: 'GDAL version to build'
+        required: false
+        default: '3.11.4'
+        type: string
+      image_stage:
+        description: 'Image stage to build'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - 'both'
+          - 'deps'
+          - 'full'
+      push_images:
+        description: 'Push images to GitHub Container Registry?'
+        required: true
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      disable_cache:
+        description: 'Disable Docker layer caching to force fresh rebuild?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      cache_version:
+        description: 'Cache version (increment to invalidate existing cache)'
+        required: false
+        default: 'v2'
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-deps:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.image_stage != 'full' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        gdal_version: ['3.11.4', '3.12.0']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event.inputs.push_images != 'false'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract GDAL short version
+        id: parse
+        run: |
+          VERSION="${{ matrix.gdal_version }}"
+          SHORT=$(echo "$VERSION" | cut -d. -f1-2)
+          echo "gdal_short=$SHORT" >> $GITHUB_OUTPUT
+
+      - name: Check OSGeo GDAL image availability
+        id: check-image
+        run: |
+          GDAL_VERSION="${{ matrix.gdal_version }}"
+
+          TAGS_TO_TRY=(
+            "ubuntu-small-amd64-${GDAL_VERSION}"
+            "ubuntu-small-${GDAL_VERSION}"
+            "ubuntu-small-amd64-latest"
+            "ubuntu-small-latest"
+            "ubuntu-small-amd64"
+            "ubuntu-small"
+            "latest"
+          )
+
+          SELECTED_TAG=""
+          for TAG in "${TAGS_TO_TRY[@]}"; do
+            IMAGE_TAG="ghcr.io/osgeo/gdal:${TAG}"
+            echo "Checking: $IMAGE_TAG"
+
+            if docker buildx imagetools inspect "$IMAGE_TAG" >/dev/null 2>&1; then
+              echo "Found OSGeo GDAL image: $IMAGE_TAG"
+              SELECTED_TAG="$TAG"
+              break
+            fi
+          done
+
+          if [ -z "$SELECTED_TAG" ]; then
+            echo "No suitable OSGeo GDAL image found for version ${GDAL_VERSION}"
+            exit 1
+          fi
+
+          echo "selected_gdal_image_tag=$SELECTED_TAG" >> $GITHUB_OUTPUT
+
+      - name: Build and push GDAL deps image
+        id: build-deps
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .github/dockerfiles/Dockerfile.template
+          target: r-packages
+          build-args: |
+            GDAL_BUILD_MODE=osgeo
+            GDAL_VERSION=${{ matrix.gdal_version }}
+            GDAL_RELEASE_TYPE=tagged
+            GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
+            R_VERSION=latest
+            PACKAGE_VERSION=0.2.0
+          tags: |
+            ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64
+            ghcr.io/${{ github.repository }}:deps-gdal-${{ steps.parse.outputs.gdal_short }}-amd64
+          platforms: linux/amd64
+          cache-from: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,scope=deps-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
+          cache-to: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,mode=max,scope=deps-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
+          push: ${{ github.event.inputs.push_images != 'false' }}
+          provenance: false
+          sbom: false
+
+      - name: Run smoke tests on deps image
+        if: steps.build-deps.outcome == 'success'
+        run: |
+          docker run --rm ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64 bash -c '
+            set -e
+            echo "=== GDAL Smoke Test ==="
+            gdal --version
+            gdal --help-general
+            echo "=== R Smoke Test ==="
+            R --version | head -3
+            Rscript -e "cat(\"R works\n\")"
+            echo "=== R Packages Smoke Test ==="
+            Rscript -e "library(processx); library(jsonlite); library(gdalraster); cat(\"All deps present\n\")"
+            echo "=== All smoke tests passed ==="
+          '
+
+      - name: Generate build summary
+        if: always()
+        run: |
+          echo "## Deps Image Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| GDAL Version | ${{ matrix.gdal_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Base Image | ghcr.io/osgeo/gdal:${{ steps.check-image.outputs.selected_gdal_image_tag }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Target Image | ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build Status | ${{ steps.build-deps.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pushed | ${{ github.event.inputs.push_images != 'false' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cache Disabled | ${{ github.event.inputs.disable_cache }} |" >> $GITHUB_STEP_SUMMARY
+
+  build-full:
+    runs-on: ubuntu-latest
+    needs: build-deps
+    if: |
+      always() && 
+      (needs.build-deps.result == 'success' || needs.build-deps.result == 'skipped') &&
+      github.event.inputs.image_stage != 'deps'
+    strategy:
+      fail-fast: false
+      matrix:
+        gdal_version: ['3.11.4', '3.12.0']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: github.event.inputs.push_images != 'false'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract GDAL short version
+        id: parse
+        run: |
+          VERSION="${{ matrix.gdal_version }}"
+          SHORT=$(echo "$VERSION" | cut -d. -f1-2)
+          echo "gdal_short=$SHORT" >> $GITHUB_OUTPUT
+
+      - name: Check OSGeo GDAL image availability
+        id: check-image
+        run: |
+          GDAL_VERSION="${{ matrix.gdal_version }}"
+
+          TAGS_TO_TRY=(
+            "ubuntu-small-amd64-${GDAL_VERSION}"
+            "ubuntu-small-${GDAL_VERSION}"
+            "ubuntu-small-amd64-latest"
+            "ubuntu-small-latest"
+            "ubuntu-small-amd64"
+            "ubuntu-small"
+            "latest"
+          )
+
+          SELECTED_TAG=""
+          for TAG in "${TAGS_TO_TRY[@]}"; do
+            IMAGE_TAG="ghcr.io/osgeo/gdal:${TAG}"
+            echo "Checking: $IMAGE_TAG"
+
+            if docker buildx imagetools inspect "$IMAGE_TAG" >/dev/null 2>&1; then
+              echo "Found OSGeo GDAL image: $IMAGE_TAG"
+              SELECTED_TAG="$TAG"
+              break
+            fi
+          done
+
+          if [ -z "$SELECTED_TAG" ]; then
+            echo "No suitable OSGeo GDAL image found for version ${GDAL_VERSION}"
+            exit 1
+          fi
+
+          echo "selected_gdal_image_tag=$SELECTED_TAG" >> $GITHUB_OUTPUT
+
+      - name: Build and push GDAL full runtime image
+        id: build-full
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .github/dockerfiles/Dockerfile.template
+          target: gdalcli-runtime
+          build-args: |
+            GDAL_BUILD_MODE=osgeo
+            GDAL_VERSION=${{ matrix.gdal_version }}
+            GDAL_RELEASE_TYPE=tagged
+            GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
+            R_VERSION=latest
+            PACKAGE_VERSION=0.2.0
+          tags: |
+            ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest
+            ghcr.io/${{ github.repository }}:gdal-${{ steps.parse.outputs.gdal_short }}-latest
+          platforms: linux/amd64
+          cache-from: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,scope=full-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
+          cache-to: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,mode=max,scope=full-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
+          push: ${{ github.event.inputs.push_images != 'false' }}
+          provenance: false
+          sbom: false
+
+      - name: Run smoke tests on full image
+        if: steps.build-full.outcome == 'success'
+        run: |
+          docker run --rm ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest bash -c '
+            set -e
+            echo "=== GDAL Smoke Test ==="
+            gdal --version
+            echo "=== gdalcli Smoke Test ==="
+            Rscript -e "library(gdalcli); print(gdal_capabilities()); cat(\"gdalcli loaded successfully\n\")"
+            echo "=== Basic Pipeline Test ==="
+            Rscript -e "
+              library(gdalcli)
+              job <- gdal_raster_info(input = \"/vsimem/test.tif\")
+              cat(\"Pipeline created successfully\n\")
+            "
+            echo "=== All smoke tests passed ==="
+          '
+
+      - name: Generate build summary
+        if: always()
+        run: |
+          echo "## Full Runtime Image Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| GDAL Version | ${{ matrix.gdal_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Base Image | ghcr.io/osgeo/gdal:${{ steps.check-image.outputs.selected_gdal_image_tag }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Target Image | ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build Status | ${{ steps.build-full.outcome }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pushed | ${{ github.event.inputs.push_images != 'false' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cache Disabled | ${{ github.event.inputs.disable_cache }} |" >> $GITHUB_STEP_SUMMARY

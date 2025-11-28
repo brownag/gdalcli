@@ -6,96 +6,85 @@
 library(processx)
 
 setup_gdal_repo <- function(gdal_version = NULL, repo_dir = "build/gdal_repo") {
-  
+
   cat("Setting up local GDAL repository for RST file access...\n")
-  
-  # Determine the version tag to checkout
+
+  # Determine the version tag to download
   if (!is.null(gdal_version) && !is.null(gdal_version$full)) {
     version_tag <- sprintf("v%s", gdal_version$full)
+    zip_url <- sprintf("https://github.com/OSGeo/gdal/archive/refs/tags/%s.zip", version_tag)
+    zip_filename <- sprintf("gdal-%s.zip", version_tag)
   } else {
     version_tag <- "master"
+    zip_url <- "https://github.com/OSGeo/gdal/archive/refs/heads/master.zip"
+    zip_filename <- "gdal-master.zip"
   }
-  
+
   cat(sprintf("Target version: %s\n", version_tag))
-  
-  # Check if repo exists
+  cat(sprintf("Download URL: %s\n", zip_url))
+
+  # Check if repo exists and is up to date
   if (!dir.exists(repo_dir)) {
-    cat(sprintf("Cloning GDAL repository to %s...\n", repo_dir))
+    cat(sprintf("Downloading GDAL repository to %s...\n", repo_dir))
     cat("(This may take a few minutes on first run)\n")
-    
+
     tryCatch(
       {
-        result <- processx::run(
-          "git",
-          c("clone", "--depth", "1", "--branch", version_tag,
-            "https://github.com/OSGeo/gdal.git", repo_dir),
+        # Create temp directory for download
+        temp_dir <- tempdir()
+        zip_path <- file.path(temp_dir, zip_filename)
+
+        # Download the zip file
+        cat(sprintf("Downloading %s...\n", zip_url))
+        processx::run(
+          "curl",
+          c("-L", "-o", zip_path, zip_url),
           timeout = 600
         )
-        cat("[OK] Repository cloned successfully\n")
+
+        # Extract the zip file
+        cat("Extracting archive...\n")
+        processx::run(
+          "unzip",
+          c("-q", zip_path, "-d", temp_dir),
+          timeout = 300
+        )
+
+        # Find the extracted directory (GitHub zips have format: gdal-v3.11.4/)
+        extracted_dirs <- list.dirs(temp_dir, full.names = TRUE, recursive = FALSE)
+        extracted_dir <- extracted_dirs[grepl("gdal-", basename(extracted_dirs))][1]
+
+        if (is.na(extracted_dir)) {
+          stop("Could not find extracted GDAL directory")
+        }
+
+        # Move to final location
+        processx::run(
+          "mv",
+          c(extracted_dir, repo_dir),
+          timeout = 60
+        )
+
+        # Clean up temp files
+        unlink(zip_path)
+
+        cat("[OK] Repository downloaded and extracted successfully\n")
         return(repo_dir)
       },
       error = function(e) {
-        # Fallback: clone without specifying branch, then checkout
-        cat(sprintf("[WARN] Failed to clone with specific branch: %s\n", e$message))
-        cat("Trying shallow clone of all branches...\n")
-        
-        tryCatch(
-          {
-            processx::run(
-              "git",
-              c("clone", "--depth", "1",
-                "https://github.com/OSGeo/gdal.git", repo_dir),
-              timeout = 600
-            )
-            
-            # Change to repo and checkout tag
-            old_wd <- getwd()
-            on.exit(setwd(old_wd))
-            setwd(repo_dir)
-            
-            processx::run("git", c("fetch", "--depth=1", "origin", sprintf("refs/tags/%s:refs/tags/%s", version_tag, version_tag)))
-            processx::run("git", c("checkout", version_tag))
-            
-            cat("[OK] Repository cloned and checked out\n")
-            return(repo_dir)
-          },
-          error = function(e2) {
-            cat(sprintf("[ERROR] Failed to setup repository: %s\n", e2$message))
-            return(NULL)
-          }
-        )
+        cat(sprintf("[ERROR] Failed to download repository: %s\n", e$message))
+        return(NULL)
       }
     )
   } else {
     cat(sprintf("Repository already exists at %s\n", repo_dir))
-    
-    # Update to the correct version if needed
-    tryCatch(
-      {
-        old_wd <- getwd()
-        on.exit(setwd(old_wd))
-        setwd(repo_dir)
-        
-        # Check current branch/tag
-        result <- processx::run("git", c("rev-parse", "--abbrev-ref", "HEAD"), stdout = "|")
-        current <- trimws(result$stdout)
-        
-        if (current != version_tag) {
-          cat(sprintf("Checking out version %s (currently on %s)...\n", version_tag, current))
-          processx::run("git", c("fetch", "--depth=1", "origin", sprintf("refs/tags/%s:refs/tags/%s", version_tag, version_tag)))
-          processx::run("git", c("checkout", version_tag))
-          cat("[OK] Checked out version\n")
-        }
-        
-        return(repo_dir)
-      },
-      error = function(e) {
-        cat(sprintf("[WARN] Could not update repository: %s\n", e$message))
-        return(repo_dir)  # Still use it even if update failed
-      }
-    )
+
+    # Check if we need to update (simple check: does the directory exist and have files?)
+    # For now, assume existing repo is correct - could add version checking later
+    cat("[OK] Using existing repository\n")
+    return(repo_dir)
   }
-  
+
   return(repo_dir)
 }
 

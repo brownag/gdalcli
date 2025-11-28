@@ -331,184 +331,48 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
   # e.g., "gdal_raster_clean-collar" -> "gdal_raster_clean_collar.rst"
   rst_filename <- paste0(gsub("-", "_", command_name), ".rst")
 
-  # Try to get RST from local repository first (no rate limiting, faster)
+  # Try to get RST from local repository only (fail-fast approach)
   if (!is.null(repo_dir) && dir.exists(repo_dir)) {
     local_rst_file <- file.path(repo_dir, "doc", "source", "programs", rst_filename)
 
-    # If individual RST file doesn't exist, try parent commands
-    # e.g., if gdal_vsi_sozip_create.rst doesn't exist, try gdal_vsi_sozip.rst
-    parent_candidates <- character(0)
-    if (!file.exists(local_rst_file)) {
-      # Parse command hierarchy and try progressively higher-level commands
-      cmd_parts <- strsplit(command_name, "_")[[1]]
-      if (length(cmd_parts) > 2) {
-        # Try parent commands: remove last part and try again
-        for (i in (length(cmd_parts) - 1):2) {
-          parent_cmd <- paste(cmd_parts[1:i], collapse = "_")
-          parent_candidates <- c(parent_candidates, parent_cmd)
-        }
-      }
-    } else {
-      parent_candidates <- c(local_rst_file)
-    }
-
-    # Try individual file first, then parent candidates
-    for (candidate_file in parent_candidates) {
-      if (!grepl("\\.rst$", candidate_file)) {
-        # If it's a command name, convert to file path
-        candidate_file <- file.path(repo_dir, "doc", "source", "programs",
-                                    paste0(gsub("-", "_", candidate_file), ".rst"))
+    if (file.exists(local_rst_file)) {
+      if (verbose) {
+        cat(sprintf("  [DEBUG] Reading RST examples from local repo: %s\n", local_rst_file))
       }
 
-      if (file.exists(candidate_file)) {
-        if (verbose) {
-          cat(sprintf("  [DEBUG] Reading RST examples from local repo: %s\n", candidate_file))
-        }
+      tryCatch(
+        {
+          lines <- readLines(local_rst_file, warn = FALSE)
+          # Join lines into single string for parsing
+          content <- paste(lines, collapse = "\n")
+          # Parse examples from RST file
+          examples <- .extract_examples_from_rst(content)
 
-        tryCatch(
-          {
-            lines <- readLines(candidate_file, warn = FALSE)
-            # Join lines into single string for parsing
-            content <- paste(lines, collapse = "\n")
-            # Parse examples from RST file
-            examples <- .extract_examples_from_rst(content)
-
-            if (length(examples) > 0) {
-              # Filter examples to those matching the requested command
-              filtered_examples <- character(0)
-              # Normalize the requested command name for comparison
-              # e.g., "gdal_vsi_sozip_create" -> "gdal vsi sozip create"
-              normalized_cmd <- .normalize_command_name(command_name)
-              # Also get the parent command (all but last part)
-              cmd_parts <- strsplit(normalized_cmd, "\\s+")[[1]]
-              if (length(cmd_parts) > 1) {
-                normalized_parent <- paste(
-                  cmd_parts[-length(cmd_parts)], collapse = " ")
-              } else {
-                normalized_parent <- normalized_cmd
-              }
-
-              for (ex in examples) {
-                # Normalize the example command for comparison
-                normalized_ex <- .normalize_command_name(ex)
-
-                # Check if this example belongs to requested command
-                # Match if example starts with full or parent command
-                if (grepl(sprintf("^%s(\\s+|$)",
-                                  gsub("([.*+?^${}()|\\\\\\[\\]])",
-                                       "\\\\\\1", normalized_cmd)),
-                          normalized_ex, ignore.case = TRUE) ||
-                    (normalized_parent != normalized_cmd &&
-                     grepl(sprintf("^%s(\\s+|$)",
-                                   gsub("([.*+?^${}()|\\\\\\[\\]])",
-                                        "\\\\\\1", normalized_parent)),
-                           normalized_ex, ignore.case = TRUE))) {
-                  filtered_examples <- c(filtered_examples, ex)
-                }
-              }
-
-              # If filtering found results, use them; otherwise use all examples if from same parent
-              if (length(filtered_examples) > 0) {
-                examples <- filtered_examples
-              } else if (basename(candidate_file) == rst_filename) {
-                # Use all examples if from the individual file
-                # (don't filter parent file examples)
-              } else if (candidate_file != file.path(repo_dir, "doc", "source", "programs", rst_filename)) {
-                # If we're using a parent file, skip it if no matching examples found
-                # Only use it if we couldn't find the individual file
-                next
-              }
-
-              if (length(examples) > 0) {
-                if (verbose) {
-                  cat(sprintf("  [OK] Found %d examples in local RST\n", length(examples)))
-                }
-                result$status <- 200
-                result$examples <- examples
-                result$source <- "rst_local"
-                return(result)
-              }
-            }
-          },
-          error = function(e) {
+          if (length(examples) > 0) {
             if (verbose) {
-              cat(sprintf("  [WARN] Error reading local RST: %s\n", e$message))
+              cat(sprintf("  [OK] Found %d examples in local RST\n", length(examples)))
             }
+            result$status <- 200
+            result$examples <- examples
+            result$source <- "rst_local"
+            return(result)
           }
-        )
+        },
+        error = function(e) {
+          if (verbose) {
+            cat(sprintf("  [WARN] Error reading local RST: %s\n", e$message))
+          }
+        }
+      )
+    } else {
+      if (verbose) {
+        cat(sprintf("  [DEBUG] RST file not found: %s\n", local_rst_file))
       }
     }
   }
 
-  # Fall back to GitHub if local not available
-  github_ref <- if (!is.null(gdal_version)) {
-    .get_github_ref(gdal_version)
-  } else {
-    "master"
-  }
-
-  rst_url <- sprintf(
-    "https://raw.githubusercontent.com/OSGeo/gdal/%s/doc/source/programs/%s",
-    github_ref,
-    rst_filename
-  )
-
-  if (verbose) {
-    cat(sprintf("  [DEBUG] Attempting to fetch RST examples from GitHub: %s\n", rst_url))
-  }
-  
-  # Attempt to fetch the RST file
-  response <- tryCatch(
-    {
-      httr::GET(rst_url, httr::timeout(timeout))
-    },
-    error = function(e) {
-      if (verbose) cat(sprintf("    [DEBUG] Error fetching RST: %s\n", e$message))
-      return(NULL)
-    }
-  )
-  
-  if (is.null(response)) {
-    result$status <- 0
-    return(result)
-  }
-  
-  status_code <- httr::status_code(response)
-  result$status <- status_code
-  
-  if (status_code != 200) {
-    if (verbose) {
-      cat(sprintf("    [DEBUG] RST fetch returned status %d\n", status_code))
-    }
-    return(result)
-  }
-  
-  # Extract content as text
-  rst_content <- httr::content(response, as = "text", encoding = "UTF-8")
-  
-  # Parse RST file to extract examples section
-  # RST format: 
-  #   Examples
-  #   --------
-  #   
-  #   .. example::
-  #      :title: Some title
-  #      
-  #      $ gdal command here
-  
-  examples <- .extract_examples_from_rst(rst_content)
-  
-  if (length(examples) > 0) {
-    result$examples <- examples
-    if (verbose) {
-      cat(sprintf("    [OK] Found %d examples in RST\n", length(examples)))
-    }
-  } else {
-    if (verbose) {
-      cat("    [DEBUG] No examples found in RST\n")
-    }
-  }
-  
+  # No RST file found - return empty result (fail-fast)
+  result$status <- 404
   return(result)
 }
 
