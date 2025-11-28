@@ -1,12 +1,9 @@
 #!/usr/bin/env Rscript
 
+# Load required packages with error handling for optional dependencies
 library(processx)
 library(jsonlite)
 library(glue)
-library(rvest)
-library(httr)
-library(xml2)
-library(magrittr)
 
 # Source GDAL repo setup utilities
 source("build/setup_gdal_repo.R")
@@ -146,9 +143,7 @@ source("build/setup_gdal_repo.R")
     r_version = paste(R.version$major, R.version$minor, sep = "."),
     packages = list(
       processx = as.character(packageVersion("processx")),
-      jsonlite = as.character(packageVersion("jsonlite")),
-      rvest = as.character(packageVersion("rvest")),
-      httr = as.character(packageVersion("httr"))
+      jsonlite = as.character(packageVersion("jsonlite"))
     )
   )
 
@@ -633,261 +628,6 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
 #'   - examples: Character vector of code examples
 #'   - raw_html: The parsed HTML (or NA if failed)
 #'
-scrape_gdal_docs <- function(url, timeout = 10, verbose = FALSE, command_name = NULL) {
-  # Ensure verbose is a logical
-  if (is.null(verbose)) verbose <- FALSE
-  if (!is.logical(verbose)) verbose <- FALSE
-  
-  result <- list(
-    status = NA_integer_,
-    description = NA_character_,
-    param_details = list(),
-    examples = character(0),
-    raw_html = NA
-  )
-
-  # Attempt to fetch the page with timeout
-  response <- tryCatch(
-    {
-      httr::GET(url, httr::timeout(timeout))
-    },
-    error = function(e) {
-      cat(sprintf("  [WARN] Error fetching %s: %s\n", url, e$message))
-      return(NULL)
-    }
-  )
-
-  # Check if request succeeded
-  if (is.null(response) || httr::status_code(response) != 200) {
-    result$status <- if (is.null(response)) 0 else httr::status_code(response)
-    return(result)
-  }
-
-  result$status <- 200
-
-  # Parse HTML
-  page <- tryCatch(
-    {
-      rvest::read_html(response)
-    },
-    error = function(e) {
-      cat(sprintf("  [WARN] Error parsing HTML from %s\n", url))
-      return(NULL)
-    }
-  )
-
-  if (is.null(page)) {
-    return(result)
-  }
-
-  result$raw_html <- page
-
-  # Extract main description
-  # Looking for the first paragraph after the "Description" heading
-  description_node <- tryCatch(
-    {
-      # Find all h2 elements and get their text
-      h2_elements <- page %>% rvest::html_elements("h2")
-      h2_texts <- h2_elements %>% rvest::html_text()
-
-      # Find the index of the "Description" heading
-      desc_idx <- grep("Description", h2_texts, ignore.case = TRUE)[1]
-
-      if (!is.na(desc_idx) && desc_idx > 0) {
-        # Get the description heading element
-        desc_heading <- h2_elements[desc_idx]
-        # Find the next paragraph after this heading
-        next_p <- xml2::xml_find_first(desc_heading, "./following-sibling::p[1]")
-        if (!is.na(next_p)) {
-          rvest::html_text(next_p)
-        } else {
-          NA_character_
-        }
-      } else {
-        NA_character_
-      }
-    },
-    error = function(e) NA_character_
-  )
-
-  if (is.character(description_node) && length(description_node) > 0 &&
-      !is.na(description_node) && nzchar(description_node)) {
-    result$description <- description_node
-  }
-
-  # Extract parameter descriptions from definition lists
-  # Format: <dt id="cmdoption-X"><code>...</code></dt><dd>Description</dd>
-  param_details <- tryCatch(
-    {
-      dts <- page %>% rvest::html_elements("dt[id^='cmdoption-']")
-
-      params <- list()
-      if (length(dts) > 0) {
-        for (i in seq_along(dts)) {
-          param_id <- rvest::html_attr(dts[i], "id")
-          if (!is.na(param_id) && nzchar(param_id)) {
-            param_name <- sub("cmdoption-", "", param_id)
-            # Find the next dd sibling
-            next_dd <- xml2::xml_find_first(dts[i], "./following-sibling::dd[1]")
-            param_desc <- NA_character_
-            if (!is.na(next_dd)) {
-              param_desc <- rvest::html_text(next_dd)
-            }
-            if (!is.na(param_desc) && nzchar(param_desc)) {
-              params[[param_name]] <- trimws(param_desc)
-            }
-          }
-        }
-      }
-      params
-    },
-    error = function(e) list()
-  )
-
-  result$param_details <- param_details
-
-  # Extract code examples from <pre> tags or <div> blocks within Examples section
-  # Filter to only include executable CLI commands (starting with 'gdal' or '$')
-  examples <- tryCatch(
-    {
-      # Get all headings (h1-h6)
-      all_headings <- page %>% rvest::html_elements("h1, h2, h3, h4, h5, h6")
-      heading_texts <- all_headings %>% rvest::html_text()
-      heading_names <- all_headings %>% lapply(function(x) xml2::xml_name(x)) %>% unlist()
-      heading_texts_clean <- iconv(trimws(heading_texts), "UTF-8", "ASCII", sub="")
-
-      example_texts <- character(0)
-
-      # If command_name is provided, look for a section header matching the subcommand
-      # (e.g., "gdal vsi sozip create" for the create subcommand)
-      target_section_idx <- NA_integer_
-
-      if (!is.null(command_name) && nzchar(command_name)) {
-        # Look for a heading that contains the command_name
-        # Convert to lowercase for matching
-        cmd_lower <- tolower(command_name)
-        for (i in seq_along(heading_texts)) {
-          if (grepl(cmd_lower, tolower(heading_texts[i]))) {
-            target_section_idx <- i
-            break
-          }
-        }
-      }
-
-      # If we found a target section header, look for Examples after it
-      if (!is.na(target_section_idx)) {
-        # Find the next "Examples" heading after the target section
-        remaining_headings <- heading_texts_clean[(target_section_idx + 1):length(heading_texts_clean)]
-        examples_idx_relative <- grep("^\\s*Examples?\\s*$", remaining_headings, ignore.case = TRUE)[1]
-
-        if (!is.na(examples_idx_relative)) {
-          examples_idx <- target_section_idx + examples_idx_relative
-          examples_heading <- all_headings[examples_idx]
-
-          # Look for examples in following siblings or in a section element
-          # Get all div and pre elements that follow
-          following_divs <- xml2::xml_find_all(examples_heading, "following-sibling::div | following-sibling::pre")
-          
-          # Also check inside a following section element
-          following_section <- xml2::xml_find_first(examples_heading, "following-sibling::section[1]")
-          if (!is.na(following_section)) {
-            section_divs <- xml2::xml_find_all(following_section, ".//div")
-            following_divs <- c(following_divs, section_divs)
-          }
-
-          for (elem in following_divs[1:min(5, length(following_divs))]) {
-            elem_text <- trimws(xml2::xml_text(elem))
-            if (!is.na(elem_text) && nzchar(elem_text)) {
-              # Check if this looks like a command (starts with gdal or $)
-              lines <- strsplit(elem_text, "\n")[[1]]
-              command_lines <- character(0)
-
-              for (line in lines) {
-                line <- trimws(line)
-                if (grepl("^\\$\\s*gdal", line) || grepl("^gdal\\s", line) || grepl("^gdal$", line)) {
-                  line <- sub("^\\$\\s*", "", line)
-                  command_lines <- c(command_lines, line)
-                }
-              }
-
-              if (length(command_lines) > 0) {
-                example_texts <- c(example_texts, paste(command_lines, collapse = "\n"))
-              }
-            }
-          }
-        }
-      }
-
-      # Fallback: if no subcommand matching or no examples found, look for generic Examples h2
-      if (length(example_texts) == 0) {
-        # Look for standalone "Examples" h2 heading
-        h2_elements <- page %>% rvest::html_elements("h2")
-        h2_texts <- h2_elements %>% rvest::html_text()
-        h2_texts_clean <- iconv(trimws(h2_texts), "UTF-8", "ASCII", sub="")
-        example_h2_idx <- grep("^\\s*Examples?\\s*$", h2_texts_clean, ignore.case = TRUE)[1]
-
-        if (!is.na(example_h2_idx)) {
-          examples_heading <- h2_elements[example_h2_idx]
-          
-          # The examples may be in several following section elements
-          # Get all following section siblings
-          following_sections <- xml2::xml_find_all(examples_heading, "following-sibling::section")
-          
-          if (length(following_sections) > 0) {
-            # Iterate through up to 5 example sections
-            for (section_idx in seq_len(min(5, length(following_sections)))) {
-              section_elem <- following_sections[section_idx]
-              
-              # Look for pre tags within this section (they may be nested in div.highlight)
-              pres <- xml2::xml_find_all(section_elem, ".//pre")
-              
-              if (length(pres) > 0) {
-                for (pre in pres) {
-                  pre_text <- rvest::html_text(pre)
-                  if (!is.na(pre_text) && nzchar(pre_text)) {
-                    # The text from pre may have extra whitespace/newlines due to HTML formatting
-                    # Clean it up to get actual command lines
-                    lines <- strsplit(pre_text, "\n")[[1]]
-                    command_lines <- character(0)
-                    
-                    for (line in lines) {
-                      line <- trimws(line)
-                      # Skip empty lines and lines that look like HTML artifacts
-                      if (!nzchar(line)) next
-                      
-                      # Check if this looks like a command (starts with gdal or $)
-                      if (grepl("^\\$\\s*gdal", line) || grepl("^gdal\\s", line) || grepl("^gdal$", line)) {
-                        line <- sub("^\\$\\s*", "", line)
-                        command_lines <- c(command_lines, line)
-                      }
-                    }
-                    
-                    if (length(command_lines) > 0) {
-                      example_texts <- c(example_texts, paste(command_lines, collapse = "\n"))
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      example_texts
-    },
-    error = function(e) {
-      # Note: verbose is captured from outer scope
-      if (!is.na(verbose) && verbose) {
-        cat(sprintf("    [WARN] Error extracting examples: %s\n", e$message))
-      }
-      character(0)
-    }
-  )
-
-  result$examples <- examples
-
-  result
-}
 
 
 #' Parse a CLI command string to extract command components.
@@ -1657,8 +1397,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     raw_html = NA
   )
 
-  # STRATEGY: Try RST extraction first (more reliable)
-  # Then fall back to HTML scraping if RST doesn't have examples
+  # STRATEGY: Use RST extraction only (more reliable and doesn't require external dependencies)
   # Build command name for RST lookup (e.g., c("gdal", "raster", "info") -> "gdal_raster_info")
   command_name_for_rst <- paste(full_path, collapse = "_")
 
@@ -1666,7 +1405,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     cat(sprintf("  [*] Fetching RST examples: %s\n", command_name_for_rst))
   }
 
-  # Attempt to fetch examples from RST first
+  # Attempt to fetch examples from RST only
   rst_result <- fetch_examples_from_rst(command_name_for_rst, verbose = verbose, gdal_version = gdal_version, repo_dir = repo_dir)
   
   if (rst_result$status == 200 && length(rst_result$examples) > 0) {
@@ -1683,64 +1422,20 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
       cache$set(primary_url, result)
     }
     return(result)
-  }
-
-  # RST didn't have examples, try HTML scraping
-  if (verbose) {
-    cat(sprintf("  [*] Fetching HTML: %s\n", primary_url))
-  }
-  
-  docs <- scrape_gdal_docs(primary_url, verbose = verbose, command_name = command_name)
-
-  # If primary URL failed with 404 and we have an alternate, try that
-  if (docs$status == 404 && !is.null(alternate_url)) {
-    if (verbose) cat(sprintf("  [404] Trying alternate: %s\n", alternate_url))
-    docs <- scrape_gdal_docs(alternate_url, verbose = verbose, command_name = command_name)
-  }
-
-  # Handle 404: try fallback URLs with parent commands
-  if (docs$status == 404 && length(full_path) > 2) {
-    # Try using parent command URL (e.g., for gdal_vector_geom_buffer, try gdal_vector page)
-    # This handles cases where subcommands don't have individual doc pages
-    parent_path <- full_path[1:(length(full_path)-1)]
-    parent_url <- construct_doc_url(parent_path, gdal_version = gdal_version)
-
-    # Normalize pattern)
-    if (!grepl(version_pattern, parent_url)) {
-      parent_url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), parent_url)
+  } else {
+    # RST didn't have examples or failed - return empty result
+    if (verbose) {
+      cat(sprintf("  [WARN] No RST examples found for %s\n", command_name_for_rst))
     }
-
-    if (verbose) cat(sprintf("  [404] Trying parent: %s\n", parent_url))
-    docs <- scrape_gdal_docs(parent_url, verbose = verbose, command_name = command_name)
-
-    # If parent also fails, try the grandparent (for deeply nested commands)
-    if (docs$status == 404 && length(full_path) > 3) {
-      grandparent_path <- full_path[1:(length(full_path)-2)]
-      grandparent_url <- construct_doc_url(grandparent_path, gdal_version = gdal_version)
-
-      # Normalize pattern)
-      if (!grepl(version_pattern, grandparent_url)) {
-        grandparent_url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), grandparent_url)
-      }
-
-      if (verbose) cat(sprintf("  [404] Trying grandparent: %s\n", grandparent_url))
-      docs <- scrape_gdal_docs(grandparent_url, verbose = verbose, command_name = command_name)
+    result$status <- 404
+    result$source_examples <- "none"
+    
+    # Cache the empty result to avoid repeated attempts
+    if (!is.null(cache)) {
+      cache$set(primary_url, result)
     }
+    return(result)
   }
-
-  # Cache the result using primary URL
-  if (!is.null(cache) && docs$status == 200) {
-    cache$set(primary_url, docs)
-    # Also save description to CSV for persistence
-    if (!is.na(docs$description) && nzchar(docs$description)) {
-      cache$save_description(full_path, docs$description)
-    }
-  } else if (!is.null(cache) && (!is.na(docs$description) && nzchar(docs$description))) {
-    # Even if fetch failed, save the description we got
-    cache$save_description(full_path, docs$description)
-  }
-
-  docs
 }
 
 
@@ -3093,11 +2788,11 @@ main <- function() {
 
   cat(sprintf("[OK] Found %d GDAL command endpoints.\n\n", length(endpoints)))
 
-  # Initialize documentation cache (web enrichment is mandatory)
-  cat("Initializing documentation cache for web enrichment...\n")
-    # Pass gdal_version for version-aware caching
+  # Initialize documentation cache for RST-based enrichment
+  cat("Initializing documentation cache for RST enrichment...\n")
+  # Pass gdal_version for version-aware caching
   doc_cache <- create_doc_cache(".gdal_doc_cache", gdal_version = gdal_version)
-  cat("(Web enrichment is required for examples)\n\n")
+  cat("(RST enrichment enabled for examples)\n\n")
 
   generated_files <- character()
   failed_count <- 0
