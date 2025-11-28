@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}:base-gdal-3.11.4-amd64
-      options: --user=builder
       env:
         R_VERSION: ${{ matrix.r-version }}
 
