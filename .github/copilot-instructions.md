@@ -1,5 +1,7 @@
 # Copilot Instructions for gdalcli
 
+UNDER NO CIRCUMSTANCES SHOULD YOU EVER PUSH TO A REMOTE GIT REPOSITORY
+
 ## Package Overview
 
 `gdalcli` is a generative R frontend for GDAL's unified CLI (≥3.11). It provides auto-generated R wrapper functions for GDAL commands with lazy evaluation and composable pipelines.
