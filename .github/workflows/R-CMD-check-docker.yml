@@ -38,10 +38,6 @@ jobs:
           echo "=== R packages ===" 
           Rscript -e "sessionInfo()"
 
-      - name: Verify gdalcli package
-        run: |
-          Rscript -e "library(gdalcli); cat('gdalcli loaded successfully\n'); gdal_capabilities()"
-
       - name: Cache R packages
         uses: actions/cache@v4
         with:
@@ -65,6 +61,14 @@ jobs:
       - name: Run R CMD check
         run: |
           Rscript -e "devtools::check(args = c('--no-manual', '--compact-vignettes=gs+qpdf'))"
+
+      - name: Install package
+        run: |
+          Rscript -e "devtools::install()"
+
+      - name: Verify package installation
+        run: |
+          Rscript -e "library(gdalcli); cat('gdalcli loaded successfully\n'); print(gdal_capabilities())"
 
       - name: Run package tests
         run: |
