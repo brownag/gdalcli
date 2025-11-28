@@ -203,7 +203,7 @@ jobs:
         with:
           context: .
           file: .github/dockerfiles/Dockerfile.template
-          target: base
+          target: gdal-base
           build-args: |
             GDAL_BUILD_MODE=${{ github.event.inputs.gdal_build_mode }}
             GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
