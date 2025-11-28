@@ -220,7 +220,7 @@ LABEL gdal.version="${GDAL_VERSION}" \
       maintainer="gdalcli contributors" \
       stage="runtime"
 
-# Install minimal R runtime
+# Install minimal R runtime (if not already installed)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
@@ -231,9 +231,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     find /usr/share/doc -type f -delete && \
     find /usr/share/man -type f -delete
-
-# Copy R libraries from base stage (includes gdalcli and all dependencies)
-COPY --from=base /usr/local/lib/R /usr/local/lib/R
 
 # Set environment variables
 ENV GDAL_CONFIG=/usr/bin/gdal-config \
