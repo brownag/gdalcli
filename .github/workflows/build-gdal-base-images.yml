@@ -125,6 +125,7 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:base-gdal-${{ matrix.gdal_version }}-${{ matrix.architecture }}
             ghcr.io/${{ github.repository }}:base-gdal-${{ steps.parse.outputs.gdal_short }}-${{ matrix.architecture }}
+            ${{ matrix.architecture == 'amd64' && format('ghcr.io/{0}:gdal-{1}-latest', github.repository, matrix.gdal_version) || '' }}
           platforms: linux/${{ matrix.architecture }}
           cache-from: |
             type=gha,scope=gdal-base-${{ matrix.gdal_version }}-${{ matrix.architecture }}
