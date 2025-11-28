@@ -294,6 +294,7 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: 'latest'
+          use-public-rspm: true
 
       - name: Cache R packages
         uses: actions/cache@v4
@@ -305,17 +306,31 @@ jobs:
           restore-keys: |
             r-packages-${{ runner.os }}-latest-
 
-      - name: Install R dependencies
-        run: |
-          install.packages(c("devtools", "roxygen2", "testthat", "remotes"))
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
+      - name: Install system dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::devtools
+            any::roxygen2
+            any::testthat
+            any::remotes
+          extra-packages: any::rcmdcheck
+          needs: check
+          cache-version: 1
 
-      - name: Build and check package
+      - name: Generate GDAL API
         run: |
-          devtools::document()
-          devtools::check(error_on = "warning")
-        shell: Rscript {0}
+          Rscript build/generate_gdal_api.R
+
+      - name: Document package
+        run: |
+          Rscript -e "roxygen2::roxygenise()"
+
+      - name: Run R CMD check
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+          upload-snapshots: true
 
       - name: Configure git
         run: |

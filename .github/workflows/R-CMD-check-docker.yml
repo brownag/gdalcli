@@ -13,6 +13,8 @@ jobs:
     container:
       image: ghcr.io/${{ github.repository }}:gdal-3.11.4-latest
       options: --user=builder
+      env:
+        R_VERSION: ${{ matrix.r-version }}
 
     strategy:
       fail-fast: false
@@ -44,8 +46,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /home/builder/.cache/R
-          key: r-${{ matrix.r-version }}-${{ hashFiles('DESCRIPTION') }}
-          restore-keys: r-${{ matrix.r-version }}-
+          key: r-docker-${{ matrix.r-version }}-${{ hashFiles('DESCRIPTION') }}
+          restore-keys: |
+            r-docker-${{ matrix.r-version }}-
 
       - name: Install package development dependencies
         run: |
