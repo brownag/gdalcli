@@ -195,6 +195,7 @@ WORKDIR /tmp/gdalcli
 # Install build-time packages via R (skip if using pre-built base)
 RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
     Rscript -e "install.packages(c('remotes', 'devtools'), repos='https://cran.rstudio.com/')"; \
+    Rscript -e "install.packages(c('processx', 'jsonlite', 'glue', 'httr'), repos='https://cran.rstudio.com/')"; \
     Rscript -e "remotes::install_deps(dependencies = TRUE, repos='https://cran.rstudio.com/')"; \
     fi
 

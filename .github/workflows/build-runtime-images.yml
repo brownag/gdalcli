@@ -44,8 +44,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          platforms: linux/amd64,linux/arm64
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -71,12 +69,13 @@ jobs:
         with:
           context: .
           file: ./.github/dockerfiles/Dockerfile.template
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           build-args: |
+            GDAL_BUILD_MODE=prebuilt
             GDAL_VERSION=${{ matrix.gdal-version }}
             GDAL_RELEASE_TYPE=tagged
-            GDAL_IMAGE_TAG=ubuntu-small-${{ matrix.gdal-version }}
+            USE_PREBUILT_BASE=true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
