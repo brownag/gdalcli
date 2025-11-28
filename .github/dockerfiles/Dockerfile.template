@@ -170,7 +170,13 @@ RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
     echo "deb [signed-by=/usr/share/keyrings/r-project.gpg] https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" > /etc/apt/sources.list.d/r-project.list && \
     apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
+    libfontconfig1-dev \
+    libfreetype6-dev \
+    libfribidi-dev \
+    libharfbuzz-dev \
+    libpng-dev \
     libssl-dev \
+    libtiff-dev \
     libxml2-dev \
     r-base-dev \
     r-recommended && \
