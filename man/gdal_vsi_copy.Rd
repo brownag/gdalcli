@@ -25,9 +25,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_copy.html} for detailed GD
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vsi copy -r /vsis3/bucket/my_dir .
-# For help on available parameters, run: ?gdal_vsi_copy
+# TODO: No examples available for gdal_vsi_copy.
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-copy.html
 job <- gdal_vsi_copy()
 # gdal_job_run(job)
 }

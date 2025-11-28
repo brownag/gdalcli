@@ -69,9 +69,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_select.html} for detail
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vector select in.shp out.gpkg "EAS_ID,_ogr_geometry_" --overwrite
-# For help on available parameters, run: ?gdal_vector_select
+# TODO: No examples available for gdal_vector_select.
+# See GDAL documentation: https://gdal.org/programs/gdal-vector-select.html
 job <- gdal_vector_select()
 # gdal_job_run(job)
 }

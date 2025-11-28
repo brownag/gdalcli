@@ -21,9 +21,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_validate.html} for d
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vsi sozip create my.gpkg my.gpkg.zip
-# For help on available parameters, run: ?gdal_vsi_sozip_validate
+# TODO: No examples available for gdal_vsi_sozip_validate.
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-sozip-validate.html
 job <- gdal_vsi_sozip_validate()
 # gdal_job_run(job)
 }

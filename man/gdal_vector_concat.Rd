@@ -74,7 +74,6 @@ Concatenate vector datasets.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_concat.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal vector concat --stack *.shp out.gpkg
 job <- gdal_vector_concat(input = "out.gpkg")
 \dontrun{
   result <- gdal_job_run(job)

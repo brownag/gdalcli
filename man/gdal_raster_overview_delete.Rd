@@ -22,7 +22,6 @@ Deleting overviews.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal raster overview delete my.tif
 job <- gdal_raster_overview_delete(dataset = "my.tif")
 \dontrun{
   result <- gdal_job_run(job)

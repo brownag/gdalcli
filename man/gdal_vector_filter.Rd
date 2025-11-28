@@ -65,7 +65,6 @@ Filter a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_filter.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal vector filter --bbox=2,49,3,50 in.gpkg out.gpkg --overwrite
 job <- gdal_vector_filter(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
     bbox = c(2, 49, 3, 50))
 \dontrun{

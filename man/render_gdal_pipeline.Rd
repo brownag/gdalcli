@@ -25,6 +25,10 @@ render_gdal_pipeline(pipeline, format = c("shell_chain", "native"), ...)
 or \code{"native"} (native GDAL pipeline syntax with ! delimiters).}
 
 \item{...}{Additional arguments (unused).}
+
+\item{wrapper_config}{A named character vector of config options from the wrapper job. Default empty.}
+
+\item{wrapper_creation_option}{A character vector of creation options from the wrapper job. Default \code{NULL}.}
 }
 \value{
 A character string containing the GDAL pipeline command.

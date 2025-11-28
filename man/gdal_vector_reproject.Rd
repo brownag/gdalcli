@@ -66,9 +66,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_reproject.html} for det
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vector pipeline --progress ! read in.gpkg ! reproject --dst-crs=EPSG:32632 ! write out.gpkg --overwrite
-# For help on available parameters, run: ?gdal_vector_reproject
+# TODO: No examples available for gdal_vector_reproject.
+# See GDAL documentation: https://gdal.org/programs/gdal-vector-reproject.html
 job <- gdal_vector_reproject()
 # gdal_job_run(job)
 }

@@ -44,6 +44,7 @@
 #' @param stream_in An R object for input streaming. Default `NULL`.
 #' @param stream_out_format Character string specifying output format or `NULL`. Default `NULL`.
 #' @param pipeline A `gdal_pipeline` object containing the sequence of jobs that led to this job, or `NULL`. Default `NULL`.
+#' @param arg_mapping A named list mapping argument names to their validation rules (min_count, max_count). Used internally for argument validation. Default `NULL`.
 #'
 #' @return
 #' An S3 object of class `gdal_job`.

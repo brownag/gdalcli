@@ -62,7 +62,6 @@ Swap X and Y coordinates of geometries of a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_swap-xy.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal vector geom swap-xy in.gpkg out.gpkg --overwrite
 job <- gdal_vector_geom_swap_xy(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)

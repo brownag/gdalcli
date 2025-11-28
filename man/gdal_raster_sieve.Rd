@@ -50,7 +50,6 @@ Remove small polygons from a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_sieve.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal raster sieve -b 2 -s 10 input.tif output.tif
 job <- gdal_raster_sieve(input = "input.tif", output = "output.tif")
 \dontrun{
   result <- gdal_job_run(job)

@@ -20,7 +20,6 @@ Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_move.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal vsi move /vsis3/bucket/my.tif /vsis3/bucket/new_name.tif
 job <- gdal_vsi_move(source = "/vsis3/bucket/my.tif", 
     destination = "/vsis3/bucket/new_name.tif")
 \dontrun{

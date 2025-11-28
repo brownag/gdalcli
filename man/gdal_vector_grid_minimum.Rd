@@ -96,9 +96,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_grid_minimum.html} for 
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vector grid invdist --power=2.0 --smoothing=1.0 --extent=85000,894000,89000,890000 \     --size=400,400 -l dem dem.vrt dem.tif
-# For help on available parameters, run: ?gdal_vector_grid_minimum
+# TODO: No examples available for gdal_vector_grid_minimum.
+# See GDAL documentation: https://gdal.org/programs/gdal-vector-grid-minimum.html
 job <- gdal_vector_grid_minimum()
 # gdal_job_run(job)
 }

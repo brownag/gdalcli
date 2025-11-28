@@ -42,9 +42,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_convert.html} for detai
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal raster convert --format=COG --co COMPRESS=JPEG utm.tif utm_cog.tif
-# For help on available parameters, run: ?gdal_raster_convert
+# TODO: No examples available for gdal_raster_convert.
+# See GDAL documentation: https://gdal.org/programs/gdal-raster-convert.html
 job <- gdal_raster_convert()
 # gdal_job_run(job)
 }

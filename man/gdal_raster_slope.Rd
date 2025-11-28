@@ -56,7 +56,6 @@ Generate a slope map
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_slope.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal raster slope n43.dt0 out.tif --overwrite
 job <- gdal_raster_slope(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)

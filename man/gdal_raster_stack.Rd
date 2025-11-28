@@ -53,7 +53,6 @@ Combine together input bands into a multi-band output, either virtual (VRT) or m
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_stack.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal raster stack red.tif green.tif blue.tif rgb.tif
 job <- gdal_raster_stack(input = c("red.tif", "green.tif", "blue.tif"), output = "rgb.tif")
 \dontrun{
   result <- gdal_job_run(job)

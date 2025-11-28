@@ -265,7 +265,6 @@ result <- gdal_vector_from_object(
 }
 \seealso{
 \code{\link[=gdal_job_get_explicit_args]{gdal_job_get_explicit_args()}} for explicit argument retrieval,
-\code{\link[=gdal_vector_from_object]{gdal_vector_from_object()}} for in-memory vector processing,
 \code{\link[=gdal_job_run_with_audit]{gdal_job_run_with_audit()}} for audit logging,
 \code{\link[=gdal_capabilities]{gdal_capabilities()}} for feature detection,
 \link{backends} for backend selection and performance comparison

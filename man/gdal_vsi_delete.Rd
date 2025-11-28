@@ -21,9 +21,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_delete.html} for detailed 
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vsi delete -r /vsis3/bucket/my_dir
-# For help on available parameters, run: ?gdal_vsi_delete
+# TODO: No examples available for gdal_vsi_delete.
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-delete.html
 job <- gdal_vsi_delete()
 # gdal_job_run(job)
 }

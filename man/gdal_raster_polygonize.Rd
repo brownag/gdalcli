@@ -62,7 +62,6 @@ Create a polygon feature dataset from a raster band.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal raster polygonize input.tif polygonize.shp
 job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
 \dontrun{
   result <- gdal_job_run(job)

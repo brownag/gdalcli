@@ -89,7 +89,6 @@ Modify the geometry type of a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_set-type.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal vector geom set-type --geometry-type=MULTIPOLYGON in.shp out.gpkg --overwrite
 job <- gdal_vector_geom_set_type(input = "in.shp", output = "out.gpkg", overwrite = TRUE, 
     geometry_type = "MULTIPOLYGON")
 \dontrun{

@@ -71,8 +71,6 @@ Create a new raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_create.html} for detailed GDAL documentation.
 }
 \examples{
-# $ gdal raster create --size=20,20 --band-count=3 --crs=EPSG:4326 --bbox=2,49,3,50
---burn 10 out.tif
 job <- gdal_raster_create(input = "out.tif", size = c(20, 20), band_count = 3, 
     crs = "EPSG:4326", bbox = c(2, 49, 3, 50), burn = 10)
 \dontrun{

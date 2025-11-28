@@ -1389,15 +1389,13 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
   if (length(args) == 0) {
     code <- sprintf("job <- %s()", r_function_name)
   } else {
-    # Format arguments to avoid lines longer than 100 characters
-    # Start with function name and opening paren
     func_call <- sprintf("job <- %s(", r_function_name)
     current_line_length <- nchar(func_call)
     code_lines <- c(func_call)
     
     for (i in seq_along(args)) {
       arg <- args[i]
-      # Check if adding this arg would exceed 100 chars
+      # Check if adding this arg would exceed 95 chars
       # Account for comma and space, plus closing paren on last arg
       if (i < length(args)) {
         arg_with_sep <- paste0(arg, ", ")
@@ -1405,13 +1403,8 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
         arg_with_sep <- arg
       }
       
-      # If this is the first arg or adding it won't exceed 100 chars, add to current line
-      if (i == 1) {
-        # First argument goes on same line as function name
-        current_line <- paste0(code_lines[length(code_lines)], arg_with_sep)
-        code_lines[length(code_lines)] <- current_line
-        current_line_length <- nchar(current_line)
-      } else if (current_line_length + nchar(arg_with_sep) <= 95) {
+      # Check if we can fit this arg on the current line
+      if (current_line_length + nchar(arg_with_sep) <= 90) {
         # Fits on current line (leave 5 char margin for closing paren)
         current_line <- paste0(code_lines[length(code_lines)], arg_with_sep)
         code_lines[length(code_lines)] <- current_line
@@ -2557,6 +2550,7 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       # Use perl=TRUE for extended regex patterns
       cli_example <- gsub("\\s*\\\\\\s*$", " ", cli_example, perl = TRUE)  # Line-ending backslash
       cli_example <- gsub("\\\\\\s*\n\\s*", " ", cli_example)  # Backslash-newline (any spaces)
+      cli_example <- gsub("\\s*\\\\\\s+", " ", cli_example)  # Backslash followed by spaces (continuation)
       cli_example <- gsub("\n\\s+", " ", cli_example)  # Newlines with leading whitespace
       cli_example <- gsub("\\s+", " ", cli_example)  # Normalize multiple spaces to single space
       cli_example <- trimws(cli_example)
@@ -2586,48 +2580,8 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
 
         # Add a comment describing what the example does
         if (examples_added == 0) {
-          # Include source URL and GDAL command in the comment instead of generic "Example usage"
+          # Include source URL in the comment instead of generic "Example usage"
           example_comment <- ""
-          
-          # Add original GDAL command (already includes "gdal" or subcommand)
-          if (!is.null(cli_example_original) && nzchar(cli_example_original)) {
-            # Check if cli_example_original starts with "gdal" or a subcommand
-            cli_display <- if (grepl("^gdal ", cli_example_original)) {
-              cli_example_original
-            } else {
-              paste0("gdal ", cli_example_original)
-            }
-            
-            # Split long CLI examples into multiple comment lines
-            # Each line breaks on spaces to stay under 100 characters
-            if (nchar(cli_display) > 90) {
-              # Split into parts: "gdal command" + rest of args
-              parts <- strsplit(cli_display, "\\s+")[[1]]
-              cli_lines <- character()
-              current_line <- parts[1]
-              
-              for (j in 2:length(parts)) {
-                test_line <- paste(current_line, parts[j])
-                if (nchar(test_line) <= 85) {
-                  current_line <- test_line
-                } else {
-                  cli_lines <- c(cli_lines, current_line)
-                  current_line <- parts[j]
-                }
-              }
-              if (nzchar(current_line)) {
-                cli_lines <- c(cli_lines, current_line)
-              }
-              
-              # Add as multiple comment lines - use $ shell prompt style
-              example_comment <- paste0(example_comment, "\n#' # $ ", cli_lines[1])
-              for (k in 2:length(cli_lines)) {
-                example_comment <- paste0(example_comment, "\n#' ", cli_lines[k])
-              }
-            } else {
-              example_comment <- paste0(example_comment, "\n#' $ ", cli_display)
-            }
-          }
           
           example_comment <- paste0(example_comment, "\n")
           doc <- paste0(doc, example_comment)
@@ -2652,17 +2606,10 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
   # If we didn't add any examples, add an informative placeholder
   if (examples_added == 0) {
     doc <- paste0(doc, "#' \\dontrun{\n")
-    if (!is.null(cli_example_original) && nzchar(cli_example_original)) {
-      doc <- paste0(doc, sprintf("#' # TODO: Convert this GDAL CLI example to R parameters:\n"))
-      doc <- paste0(doc, sprintf("#' # $ %s\n", cli_example_original))
-      doc <- paste0(doc, sprintf("#' # For help on available parameters, run: ?%s\n", func_name))
-      doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
-    } else {
-      doc <- paste0(doc, sprintf("#' # TODO: No examples available for %s.\n", func_name))
-      doc <- paste0(doc, sprintf("#' # See GDAL documentation: https://gdal.org/programs/%s.html\n",
-                                  tolower(gsub("_", "-", func_name))))
-      doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
-    }
+    doc <- paste0(doc, sprintf("#' # TODO: No examples available for %s.\n", func_name))
+    doc <- paste0(doc, sprintf("#' # See GDAL documentation: https://gdal.org/programs/%s.html\n",
+                                tolower(gsub("_", "-", func_name))))
+    doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
     doc <- paste0(doc, "#' # gdal_job_run(job)\n")
     doc <- paste0(doc, "#' }\n")
   }

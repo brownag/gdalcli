@@ -9,6 +9,7 @@
 # - New GDAL versions are released
 # - R package dependencies change significantly
 # - Base image updates are needed
+# - Dockerfile changes require cache invalidation (increment cache_version)
 #
 name: Build GDAL Base Images
 
@@ -23,6 +24,19 @@ on:
         options:
           - 'true'
           - 'false'
+      disable_cache:
+        description: 'Disable Docker layer caching to force fresh rebuild?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      cache_version:
+        description: 'Cache version (increment to invalidate existing cache)'
+        required: false
+        default: 'v1'
+        type: string
 
 permissions:
   contents: read
@@ -127,10 +141,8 @@ jobs:
             ghcr.io/${{ github.repository }}:base-gdal-${{ steps.parse.outputs.gdal_short }}-${{ matrix.architecture }}
             ${{ matrix.architecture == 'amd64' && format('ghcr.io/{0}:gdal-{1}-latest', github.repository, matrix.gdal_version) || '' }}
           platforms: linux/${{ matrix.architecture }}
-          cache-from: |
-            type=gha,scope=gdal-base-${{ matrix.gdal_version }}-${{ matrix.architecture }}
-          cache-to: |
-            type=gha,mode=max,scope=gdal-base-${{ matrix.gdal_version }}-${{ matrix.architecture }}
+          cache-from: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,scope=gdal-base-{0}-{1}-{2}', matrix.gdal_version, matrix.architecture, github.event.inputs.cache_version) || '' }}
+          cache-to: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,mode=max,scope=gdal-base-{0}-{1}-{2}', matrix.gdal_version, matrix.architecture, github.event.inputs.cache_version) || '' }}
           push: ${{ github.event.inputs.push_images == 'true' }}
           provenance: false
           sbom: false
@@ -148,3 +160,5 @@ jobs:
           echo "| Target Image | ghcr.io/${{ github.repository }}:base-gdal-${{ matrix.gdal_version }}-${{ matrix.architecture }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build Status | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Pushed | ${{ github.event.inputs.push_images }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cache Disabled | ${{ github.event.inputs.disable_cache }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cache Version | ${{ github.event.inputs.cache_version }} |" >> $GITHUB_STEP_SUMMARY

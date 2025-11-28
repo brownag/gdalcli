@@ -186,7 +186,6 @@ RUN gdal --version && \
 ENV GDAL_CONFIG=/usr/bin/gdal-config \
     GDAL_VERSION="${GDAL_VERSION}" \
     GDAL_RELEASE_TYPE="${GDAL_RELEASE_TYPE}" \
-    LD_LIBRARY_PATH="/usr/lib:${LD_LIBRARY_PATH}" \
     PATH="/usr/bin:${PATH}"
 
 # Copy repository for dependency installation
@@ -201,6 +200,9 @@ RUN if [ "${USE_PREBUILT_BASE}" = "false" ]; then \
 
 # Clean up temporary files
 RUN rm -rf /tmp/gdalcli
+
+# Copy full source code for API generation and package building
+COPY . /workspace/gdalcli/
 WORKDIR /workspace/gdalcli
 
 # Generate dynamic API based on installed GDAL
@@ -257,7 +259,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set environment variables
 ENV GDAL_CONFIG=/usr/bin/gdal-config \
     GDAL_VERSION="${GDAL_VERSION}" \
-    LD_LIBRARY_PATH="/usr/lib:${LD_LIBRARY_PATH}" \
     PATH="/usr/bin:${PATH}"
 
 # Create non-root user

@@ -45,9 +45,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_pixel-info.html} for de
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal raster pixel-info byte.tif 5 10
-# For help on available parameters, run: ?gdal_raster_pixel_info
+# TODO: No examples available for gdal_raster_pixel_info.
+# See GDAL documentation: https://gdal.org/programs/gdal-raster-pixel-info.html
 job <- gdal_raster_pixel_info()
 # gdal_job_run(job)
 }

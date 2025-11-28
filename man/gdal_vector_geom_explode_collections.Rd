@@ -68,8 +68,6 @@ Explode geometries of type collection of a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_explode-collections.html} for detailed GDAL documentation.
 }
 \examples{
-# $ gdal vector geom explode-collections --geometry-type=POINT --skip-on-type-mismatch
-in.gpkg points.shp --overwrite
 job <- gdal_vector_geom_explode_collections(input = "in.gpkg", output = "points.shp", 
     skip_on_type_mismatch = TRUE, overwrite = TRUE, geometry_type = "POINT")
 \dontrun{

@@ -85,7 +85,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     cli::cli_inform(
       c(
         "getExplicitlySetArgs requires GDAL 3.12+",
-        "i" = sprintf("Current version: %s", gdalcli:::.gdal_get_version()),
+        "i" = sprintf("Current version: %s", .gdal_get_version()),
         "i" = "Feature unavailable. Returning empty vector."
       )
     )
@@ -188,7 +188,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     explicit_args = explicit_args,
     status = status,
     .error = error_msg,
-    gdal_version = gdalcli:::.gdal_get_version(),
+    gdal_version = .gdal_get_version(),
     r_version = paste0(R.version$major, ".", R.version$minor)
   )
 }

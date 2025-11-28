@@ -21,3 +21,9 @@
 ^doc$
 ^Meta$
 .yamllint
+CONTRIBUTING.md
+README.Rmd
+README.html
+scripts/
+build/gdal_repo/
+Makefile

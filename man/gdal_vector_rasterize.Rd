@@ -105,9 +105,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_rasterize.html} for det
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vector rasterize -b 1,2,3 --burn 255,0,0 -l mask mask.shp work.tif
-# For help on available parameters, run: ?gdal_vector_rasterize
+# TODO: No examples available for gdal_vector_rasterize.
+# See GDAL documentation: https://gdal.org/programs/gdal-vector-rasterize.html
 job <- gdal_vector_rasterize()
 # gdal_job_run(job)
 }

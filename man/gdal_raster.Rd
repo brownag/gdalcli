@@ -19,9 +19,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster.html} for detailed GDAL
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal raster info utm.tif
-# For help on available parameters, run: ?gdal_raster
+# TODO: No examples available for gdal_raster.
+# See GDAL documentation: https://gdal.org/programs/gdal-raster.html
 job <- gdal_raster()
 # gdal_job_run(job)
 }

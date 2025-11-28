@@ -19,9 +19,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vector.html} for detailed GDAL
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vector info poly.gpkg
-# For help on available parameters, run: ?gdal_vector
+# TODO: No examples available for gdal_vector.
+# See GDAL documentation: https://gdal.org/programs/gdal-vector.html
 job <- gdal_vector()
 # gdal_job_run(job)
 }

@@ -1,18 +1,6 @@
 #' Define and Create a GDAL Pipeline Specification
 #'
 #' @description
-#' The `gdal_pipeline` S3 class represents a sequence of GDAL commands that are
-#' executed in order. It extends the lazy evaluation framework to support complex
-#' workflows where the output of one command becomes the input to the next.
-#'
-#' Pipelines can be rendered to different formats:
-#' - GDAL pipeline commands (for direct execution)
-#' - Shell scripts (for batch processing)
-#' - Direct execution (sequential job running)
-#'
-#' @aliases gdal_pipeline
-#'
-#' @section Class Structure:
 #'
 #' A `gdal_pipeline` object is an S3 list with the following slots:
 #'
@@ -508,6 +496,8 @@ gdal_job_run.gdal_pipeline <- function(x,
 #' @param pipeline A `gdal_pipeline` object.
 #' @param format Character string: `"shell_chain"` (default, separate commands with &&)
 #'   or `"native"` (native GDAL pipeline syntax with ! delimiters).
+#' @param wrapper_config A named character vector of config options from the wrapper job. Default empty.
+#' @param wrapper_creation_option A character vector of creation options from the wrapper job. Default `NULL`.
 #' @param ... Additional arguments (unused).
 #'
 #' @return A character string containing the GDAL pipeline command.

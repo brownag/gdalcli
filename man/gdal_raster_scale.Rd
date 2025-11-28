@@ -62,8 +62,6 @@ Scale the values of the bands of a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_scale.html} for detailed GDAL documentation.
 }
 \examples{
-# $ gdal raster scale --datatype Byte --src-min 0 --src-max 4095 uint16.tif byte.tif
---overwrite
 job <- gdal_raster_scale(input = "uint16.tif", output = "byte.tif", overwrite = TRUE, 
     src_min = 0, src_max = 4095)
 \dontrun{

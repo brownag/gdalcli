@@ -74,7 +74,6 @@ Compute the viewshed of a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal raster viewshed --max-distance=500 --pos=-10147017,5108065 source.tif destination.tif
 job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 
     max_distance = 500)
 \dontrun{

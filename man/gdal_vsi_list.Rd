@@ -42,9 +42,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_list.html} for detailed GD
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vsi list -lR --of=text /vsis3/bucket
-# For help on available parameters, run: ?gdal_vsi_list
+# TODO: No examples available for gdal_vsi_list.
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-list.html
 job <- gdal_vsi_list()
 # gdal_job_run(job)
 }

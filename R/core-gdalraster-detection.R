@@ -31,6 +31,7 @@
 #'
 #' @keywords internal
 #' @noRd
+#' @importFrom utils packageVersion
 .check_gdalraster_version <- function(min_version = "2.2.0",
                                       quietly = FALSE,
                                       error_on_unavailable = FALSE) {

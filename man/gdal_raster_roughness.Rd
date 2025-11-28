@@ -44,7 +44,6 @@ Generate a roughness map
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_roughness.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal raster roughness n43.dt0 out.tif --overwrite
 job <- gdal_raster_roughness(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)

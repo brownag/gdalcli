@@ -2,7 +2,6 @@
 % Please edit documentation in R/core-gdal_pipeline.R
 \name{new_gdal_pipeline}
 \alias{new_gdal_pipeline}
-\alias{gdal_pipeline}
 \title{Define and Create a GDAL Pipeline Specification}
 \usage{
 new_gdal_pipeline(jobs, name = NULL, description = NULL)
@@ -18,20 +17,6 @@ new_gdal_pipeline(jobs, name = NULL, description = NULL)
 An S3 object of class \code{gdal_pipeline}.
 }
 \description{
-The \code{gdal_pipeline} S3 class represents a sequence of GDAL commands that are
-executed in order. It extends the lazy evaluation framework to support complex
-workflows where the output of one command becomes the input to the next.
-
-Pipelines can be rendered to different formats:
-\itemize{
-\item GDAL pipeline commands (for direct execution)
-\item Shell scripts (for batch processing)
-\item Direct execution (sequential job running)
-}
-}
-\section{Class Structure}{
-
-
 A \code{gdal_pipeline} object is an S3 list with the following slots:
 \itemize{
 \item \strong{jobs} (\code{list}): A list of \code{gdal_job} objects to be executed in sequence.
@@ -39,7 +24,6 @@ A \code{gdal_pipeline} object is an S3 list with the following slots:
 \item \strong{description} (\code{character(1)}): Optional description of the pipeline.
 }
 }
-
 \section{Constructor}{
 
 

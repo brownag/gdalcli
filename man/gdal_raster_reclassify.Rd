@@ -45,9 +45,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_reclassify.html} for de
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal raster reclassify -m "0=10; [2,4]=20; 1=40" -i wbm.tif -o typ.tif
-# For help on available parameters, run: ?gdal_raster_reclassify
+# TODO: No examples available for gdal_raster_reclassify.
+# See GDAL documentation: https://gdal.org/programs/gdal-raster-reclassify.html
 job <- gdal_raster_reclassify()
 # gdal_job_run(job)
 }

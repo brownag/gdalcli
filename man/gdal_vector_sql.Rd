@@ -60,9 +60,8 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_sql.html} for detailed 
 }
 \examples{
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal vector sql in.gpkg out.gpkg --output-layer country_sorted_by_pop --sql="SELECT * FROM country ORDER BY pop DESC"
-# For help on available parameters, run: ?gdal_vector_sql
+# TODO: No examples available for gdal_vector_sql.
+# See GDAL documentation: https://gdal.org/programs/gdal-vector-sql.html
 job <- gdal_vector_sql()
 # gdal_job_run(job)
 }

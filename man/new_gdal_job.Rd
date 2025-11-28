@@ -32,6 +32,8 @@ Example: \code{c("vector", "convert")} for the \verb{gdal vector convert} comman
 \item{stream_out_format}{Character string specifying output format or \code{NULL}. Default \code{NULL}.}
 
 \item{pipeline}{A \code{gdal_pipeline} object containing the sequence of jobs that led to this job, or \code{NULL}. Default \code{NULL}.}
+
+\item{arg_mapping}{A named list mapping argument names to their validation rules (min_count, max_count). Used internally for argument validation. Default \code{NULL}.}
 }
 \value{
 An S3 object of class \code{gdal_job}.

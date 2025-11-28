@@ -50,12 +50,10 @@ Fill nodata raster regions by interpolation from edges.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
 }
 \examples{
+job <- gdal_raster_fill_nodata(input = "input.tif", output = "output.tif", 
+    max_distance = 50, smoothing_iterations = 3, strategy = "nearest", mask = "mask.tif")
 \dontrun{
-# TODO: Convert this GDAL CLI example to R parameters:
-# $ gdal raster fill-nodata -b 2 --max-distance 50 --smoothing-iterations 3 \  --strategy nearest --mask mask.tif \  input.tif output.tif
-# For help on available parameters, run: ?gdal_raster_fill_nodata
-job <- gdal_raster_fill_nodata()
-# gdal_job_run(job)
+  result <- gdal_job_run(job)
 }
 }
 \seealso{

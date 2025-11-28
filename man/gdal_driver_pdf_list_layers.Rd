@@ -20,8 +20,8 @@ List layers of a PDF dataset
 See \url{https://gdal.org/en/3.11.4/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
 }
 \examples{
-$ gdal driver pdf list-layers autotest/gdrivers/data/pdf/adobe_style_geospatial.pdf
-job <- gdal_driver_pdf_list_layers(input = "autotest/gdrivers/data/pdf/adobe_style_geospatial.pdf")
+job <- gdal_driver_pdf_list_layers(
+    input = "autotest/gdrivers/data/pdf/adobe_style_geospatial.pdf")
 \dontrun{
   result <- gdal_job_run(job)
 }
