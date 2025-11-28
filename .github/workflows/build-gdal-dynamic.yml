@@ -179,7 +179,7 @@ jobs:
 
   build:
     needs: validate
-    runs-on: ubuntu-24.04-8core
+    runs-on: ubuntu-latest
     timeout-minutes: ${{ github.event.inputs.gdal_build_mode == 'osgeo' && 30 || 60 }}
     permissions:
       contents: write
