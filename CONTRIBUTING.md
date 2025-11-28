@@ -70,6 +70,19 @@ The project maintains Docker images for consistent testing:
 
 These provide controlled GDAL environments for testing. If you encounter GDAL-related issues, check if the Docker workflow reveals different behavior than the Ubuntu workflow.
 
+#### Docker Image Architecture
+
+**Base Images** contain GDAL, R, and all package dependencies but not the gdalcli package itself. They're used for CI testing where the package is built and tested during the workflow run.
+
+**Runtime Images** extend base images with the fully compiled and tested gdalcli package installed. These are production-ready images that users can pull for immediate use.
+
+**Why two types?**
+
+- Base images are smaller and faster for CI (don't include the package)
+- Runtime images provide complete environments for users
+- Base images rebuild less frequently (only when GDAL/dependencies change)
+- Runtime images update when the package changes
+
 ## Questions?
 
 If you have questions about contributing, open a discussion in the repository or file an issue.

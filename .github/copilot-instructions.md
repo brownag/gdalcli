@@ -87,6 +87,28 @@ Some workflows require manual triggering via GitHub Actions:
 - **build-runtime-images.yml**: Specify `gdal_version` (default: 3.11.4)  
 - **build-releases.yml**: Configure `gdal_version`, `package_version`, `create_release`, etc.
 
+### Docker Image Architecture
+
+The project uses a multi-stage Docker architecture for consistent GDAL environments:
+
+**Base Images** (`ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64`)
+- Built by: `build-base-images.yml`
+- Contains: GDAL X.Y.Z, R, and all package dependencies
+- Purpose: Reusable foundation for CI and development
+- When updated: When GDAL versions change or dependencies update
+
+**Runtime Images** (`ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`)  
+- Built by: `build-runtime-images.yml`
+- Contains: Complete gdalcli package installed and tested
+- Purpose: Production-ready images for users and deployment
+- When updated: Weekly or when package changes significantly
+
+**Relationship:**
+- Base images provide the GDAL + R foundation
+- Runtime images extend base images with the compiled gdalcli package
+- CI workflows use base images for testing (faster, no package pre-install needed)
+- Users can pull runtime images for ready-to-use gdalcli environments
+
 ## Development Workflow
 
 ### Building the Package
