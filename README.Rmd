@@ -693,3 +693,5 @@ MIT License - see LICENSE file for details
 ## Acknowledgments
 
 This package is built on GDAL's unified CLI (>=3.11) and the GDAL development team's work.
+
+Also, the development of this package has been heavily influenced by Michael Sumner (@mdsumner), Chris Toney (@ctoney), and the [gdalraster](https://CRAN.R-project.org/package=gdalraster) package.

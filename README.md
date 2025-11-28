@@ -175,7 +175,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/Rtmputfe5f/filea4ab77fe4e679.gdalg.json'
+#> '/tmp/RtmpDj4KyJ/file4d2f2907aef6.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -306,7 +306,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/Rtmputfe5f/filea4ab716c615a8.gdalg.json'
+#> '/tmp/RtmpDj4KyJ/file4d2f27fdb50f8.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -825,3 +825,7 @@ MIT License - see LICENSE file for details
 
 This package is built on GDAL’s unified CLI (\>=3.11) and the GDAL
 development team’s work.
+
+Also, the development of this package has been heavily influenced by
+Michael Sumner (@mdsumner), Chris Toney (@ctoney), and the
+[gdalraster](https://CRAN.R-project.org/package=gdalraster) package.
