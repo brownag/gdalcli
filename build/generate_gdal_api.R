@@ -2212,7 +2212,7 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     body_lines <- c(body_lines, "        rlang::abort(sprintf('jobs[[%d]] must be a gdal_job object', i))")
     body_lines <- c(body_lines, "      }")
     body_lines <- c(body_lines, "    }")
-    body_lines <- c(body_lines, "    pipeline <- build_pipeline_from_jobs(jobs)")
+    body_lines <- c(body_lines, "    pipeline <- .build_pipeline_from_jobs(jobs)")
     body_lines <- c(body_lines, "  }")
     body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  # Collect arguments")
@@ -2233,7 +2233,7 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     body_lines <- c(body_lines, "    # Check if x is a piped gdal_job")
     body_lines <- c(body_lines, "    if (inherits(x, 'gdal_job')) {")
     body_lines <- c(body_lines, "      # Merge arguments from piped job")
-    body_lines <- c(body_lines, "      merged_args <- merge_gdal_job_arguments(x$arguments, list(")
+    body_lines <- c(body_lines, "      merged_args <- .merge_gdal_job_arguments(x$arguments, list(")
 
     # Build the list of current function arguments, only including provided ones
     if (length(arg_names) > 0) {

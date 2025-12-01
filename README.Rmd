@@ -399,8 +399,8 @@ reticulate::use_virtualenv("venv")
 
 3. Test with gdalcli:
 
-```{r, eval=reticulate::py_module_available("osgeo.gdal")}
-library(gdalcli)
+```{r, eval=FALSE}
+library(gdalcli) # TODO: run if reticulate::py_module_available("osgeo.gdal")
 
 # Ensure reticulate is using the correct virtualenv
 reticulate::use_virtualenv("venv")

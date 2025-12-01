@@ -175,7 +175,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/Rtmp6tKSS1/file53f6668f62fb9.gdalg.json'
+#> '/tmp/RtmpvxegPd/file5e6483bd72647.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -306,7 +306,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/Rtmp6tKSS1/file53f665d85ebdf.gdalg.json'
+#> '/tmp/RtmpvxegPd/file5e64871631ae3.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -360,13 +360,14 @@ pipe_obj <- config_pipeline$pipeline
 # Config options by job:
 for (i in seq_along(pipe_obj$jobs)) {
   job <- pipe_obj$jobs[[i]]
-  # sprintf("Job %d (%s): ", i, paste(job$command_path, collapse=" "))
+  cat(sprintf("Job %d (%s): ", i, paste(job$command_path, collapse=" ")))
   if (length(job$config_options) > 0) {
     for (config_name in names(job$config_options)) {
-      # sprintf("%s=%s ", config_name, job$config_options[[config_name]])
+      cat(sprintf("%s=%s ", config_name, job$config_options[[config_name]]))
     }
   }
 }
+#> Job 1 (raster reproject): Job 2 (raster scale): Job 3 (raster convert):
 
 # Render with config options
 render_gdal_pipeline(config_pipeline, format = "native")
@@ -460,43 +461,31 @@ if (!requireNamespace("reticulate", quietly = TRUE)) {
   install.packages("reticulate")
 }
 
-library(reticulate)
+# Create a virtual environment for Python packages
+reticulate::virtualenv_create("venv")
 
-# Create a virtual environment for GDAL
-virtualenv_create("gdalenv")
-
-# Activate and install GDAL
-virtualenv_install("gdalenv", "osgeo-gdal")
+# Activate and install osgeo + GDAL
+reticulate::virtualenv_install("venv", "gdal==3.11.4")
 
 # Verify installation
-reticulate::use_virtualenv("gdalenv")
+reticulate::use_virtualenv("venv")
 reticulate::py_run_string("from osgeo import gdal; print(gdal.VersionInfo())")
 ```
 
 2.  Verify reticulate can find the virtualenv:
 
 ``` r
-library(reticulate)
-
 # Use the virtualenv
-reticulate::use_virtualenv("gdalenv")
-
-# Confirm Python GDAL is available
-if (reticulate::py_module_available("osgeo.gdal")) {
-  cat("Python GDAL is available!\n")
-} else {
-  cat("Python GDAL not found\n")
-}
+reticulate::use_virtualenv("venv")
 ```
 
 3.  Test with gdalcli:
 
 ``` r
-library(gdalcli)
-library(reticulate)
+library(gdalcli) # TODO: run if reticulate::py_module_available("osgeo.gdal")
 
 # Ensure reticulate is using the correct virtualenv
-reticulate::use_virtualenv("gdalenv")
+reticulate::use_virtualenv("venv")
 
 # Execute a simple operation
 job <- gdal_raster_info(input = "sample.tif")
@@ -509,7 +498,7 @@ If you prefer conda environments, you can use those as well:
 
 ``` r
 # Create conda environment with GDAL
-conda_create("gdalenv", packages = "osgeo-gdal")
+reticulate::conda_create("gdalenv", packages = "gdal")
 
 # Use it with reticulate
 reticulate::use_condaenv("gdalenv")
