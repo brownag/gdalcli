@@ -1,13 +1,13 @@
 Package: gdalcli
-Title: Frontend for the GDAL (>= 3.11) Unified CLI
-Version: 0.2.0
+Title: Frontend for the GDAL (>= 3.11) CLI
+Version: 0.2.1
 Authors@R:
     person("Andrew", "Brown", role = c("aut", "cre"), 
            email = "brown.andrewg@gmail.com",
            comment=c(ORCID="0000-0002-4565-533X"))
 Author: Andrew Brown
 Maintainer: Andrew Brown <brown.andrewg@gmail.com>
-Description: An auto-generated R wrapper for the modern GDAL unified CLI 
+Description: An auto-generated R wrapper for the modern GDAL CLI 
     (RFC 104; <https://github.com/OSGeo/gdal/blob/v3.11.0/doc/source/development/rfc/rfc104_gdal_cli.rst>).
     Combines lazy evaluation with process-isolated state management to deliver a composable,
     pipe-aware interface for raster and vector processing. Supports file-less I/O streaming 

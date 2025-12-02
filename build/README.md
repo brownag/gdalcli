@@ -4,7 +4,7 @@ This directory contains scripts and tools for maintaining the `gdalcli` package.
 
 ## Files
 
-- **`generate_gdal_api.R`** - Master script that auto-generates all 83+ R wrapper functions from GDAL's JSON API specification
+- **`generate_gdal_api.R`** - Master script that auto-generates 80+ R wrapper functions from GDAL's JSON API specification
 
 ## How It Works
 
@@ -53,9 +53,7 @@ Rscript build/generate_gdal_api.R
 
 ## Documentation Enrichment
 
-### How It Works
-
-The script uses web scraping to enrich auto-generated documentation with real content from official GDAL documentation:
+The script uses scrapes the official GDAL documentation to enrich auto-generated function documentation:
 
 1. **URL Construction**: Maps command paths like `c("gdal", "raster", "info")` to documentation URLs
 2. **HTML Parsing**: Extracts descriptions, parameter docs, and examples from HTML
@@ -80,7 +78,7 @@ rm -rf .gdal_doc_cache/
 
 ## Generated Files
 
-The script generates 83+ auto-generated R files:
+The script generates 80+ auto-generated R files from GDAL's JSON API:
 
 - **Raster operations**: `gdal_raster_*.R`
 - **Vector operations**: `gdal_vector_*.R`
@@ -89,6 +87,7 @@ The script generates 83+ auto-generated R files:
 - **Driver-specific**: `gdal_driver_*.R`
 
 Each file:
+
 - Contains a single exported function
 - Includes roxygen2 documentation with enriched parameter descriptions
 - References `build/generate_gdal_api.R` in the header
@@ -108,25 +107,58 @@ The `R/` directory has two types of files:
    - Never edit directly
    - Regenerate after updating GDAL version
 
+## GDAL Version Requirements
+
+### Minimum GDAL Version
+
+- **GDAL >= 3.11**: All core functionality and 80+ CLI operations
+- **GDAL >= 3.12**: Additional algorithms and GDALG format write support
+
+### GDALG Format Feature Support
+
+The GDALG format (JSON-based pipeline files) has different capabilities depending on GDAL version:
+
+- **GDAL 3.11+**: Read GDALG files, write using custom JSON implementation, read-only GDALG format driver
+- **GDAL 3.12+**: Full GDALG format driver support, native driver for writing GDALG files, enhanced pipeline save/load functions
+
+### Checking Your GDAL Version
+
+To verify your installed GDAL version:
+
+```bash
+gdal --version
+```
+
+In R:
+
+```r
+library(gdalcli)
+gdal_check_version("3.12")  # Check if GDAL >= 3.12
+gdal_capabilities()         # List GDAL capabilities
+```
+
 ## Next Steps
 
 After regeneration:
 
 1. **Update documentation**:
-   ```bash
-   make docs        # Generates man/ .Rd files
-   ```
 
-2. **Validate**:
-   ```bash
-   make check-man   # Check man page validation
-   make check       # Full R CMD check
-   ```
+```bash
+make docs        # Generates man/ .Rd files
+```
 
-3. **Install locally**:
-   ```bash
-   make install     # Install package locally
-   ```
+1. **Validate**:
+
+```bash
+make check-man   # Check man page validation
+make check       # Full R CMD check
+```
+
+1. **Install locally**:
+
+```bash
+make install     # Install package locally
+```
 
 ## Troubleshooting
 

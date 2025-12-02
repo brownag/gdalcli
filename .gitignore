@@ -9,3 +9,4 @@ README.html
 .github/development/
 .github/GHA_LOGS/
 vignettes/*.html
+venv/

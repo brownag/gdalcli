@@ -4,7 +4,7 @@ UNDER NO CIRCUMSTANCES SHOULD YOU EVER PUSH TO A REMOTE GIT REPOSITORY
 
 ## Package Overview
 
-`gdalcli` is a generative R frontend for GDAL's unified CLI (≥3.11). It provides auto-generated R wrapper functions for GDAL commands with lazy evaluation and composable pipelines.
+`gdalcli` is a generative R frontend for GDAL's CLI (>=3.11). It provides auto-generated R wrapper functions for GDAL commands with lazy evaluation and composable pipelines.
 
 ## Architecture
 
@@ -283,7 +283,7 @@ job |> gdal_with_dry_run() |> gdal_run()
 
 - **Parameter errors**: Check if function was regenerated after build script changes
 - **Auth failures**: Verify environment variables are set correctly
-- **GDAL version**: Ensure GDAL ≥3.11 for unified CLI
+- **GDAL version**: Ensure GDAL >=3.11 for CLI
 - **Memory issues**: Use streaming for large files
 
 ## Dependencies
@@ -331,6 +331,6 @@ gdalcli/
 ## References
 
 - [GDAL Documentation](https://gdal.org/)
-- [GDAL RFC 104 - Unified CLI](https://gdal.org/development/rfc/rfc104.html)
+- [GDAL RFC 104 - CLI](https://gdal.org/development/rfc/rfc104.html)
 - [processx Package](https://processx.r-lib.org/)
 - [R Packages Book](https://r-pkgs.org/)

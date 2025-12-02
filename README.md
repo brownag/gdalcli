@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# gdalcli: A Generative R Frontend for the GDAL (\>=3.11) Unified CLI
+# gdalcli: An R Frontend for the GDAL (\>=3.11) Unified CLI
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
@@ -14,7 +14,7 @@ advanced pipeline composition.
 
 ## Overview
 
-`gdalcli` implements a frontend for GDAL’s unified CLI with:
+`gdalcli` implements a frontend for GDAL’s CLI with:
 
 - **Auto-Generated Functions**: 80+ R wrapper functions automatically
   generated from GDAL’s JSON API specification
@@ -30,8 +30,8 @@ advanced pipeline composition.
   scripts (native or sequential modes)
 - **VSI Streaming**: Support for `/vsistdin/` and `/vsistdout/` for
   file-less, memory-efficient workflows
-- **Multiple Backends**: Use processx, gdalraster, or reticulate
-  (Python) for backend processing
+- **Multiple Backends**: Execute with processx (default), gdalraster
+  (C++ bindings), or reticulate (Python)
 
 ## Installation
 
@@ -138,11 +138,11 @@ pipeline
 ### Example 5: Rendering Pipeline to Native GDAL Format
 
 ``` r
-# Render as native GDAL pipeline (single efficient command)
+# Render as native GDAL pipeline (single command)
 native_cmd <- render_gdal_pipeline(pipeline, format = "native")
 # Native GDAL pipeline command:
 native_cmd
-#> [1] "gdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif"
+#> [1] "gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif"
 ```
 
 ### Example 6: Rendering Pipeline as Shell Script
@@ -152,7 +152,7 @@ native_cmd
 native_script <- render_shell_script(pipeline, format = "native", shell = "bash")
 # Bash script (native pipeline mode):
 native_script
-#> [1] "#!/bin/bash\n\nset -e\n\n# Native GDAL pipeline execution\ngdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif\n"
+#> [1] "#!/bin/bash\n\nset -e\n\n# Native GDAL pipeline execution\ngdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif\n"
 ```
 
 ### Example 7: Rendering Pipeline as Sequential Commands
@@ -175,7 +175,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/RtmpDj4KyJ/file4d2f2907aef6.gdalg.json'
+#> '/tmp/Rtmp6tKSS1/file53f6668f62fb9.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -214,11 +214,11 @@ loaded_cmd <- render_gdal_pipeline(loaded_pipeline, format = "native")
 # Verify they're identical
 # Original command:
 original_cmd
-#> [1] "gdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif"
+#> [1] "gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif"
 
 # Loaded command:
 loaded_cmd
-#> [1] "gdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif"
+#> [1] "gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write output.tif"
 
 # Commands identical:
 identical(original_cmd, loaded_cmd)
@@ -247,7 +247,7 @@ complex_pipeline <- gdal_raster_reproject(
 # Render with config options included
 native_with_config <- render_gdal_pipeline(complex_pipeline, format = "native")
 native_with_config
-#> [1] "gdal raster pipeline --config AWS_REGION=us-west-2 --config AWS_REQUEST_PAYER=requester --co COMPRESS=LZW --co BLOCKXSIZE=256 ! reproject --dst-crs EPSG:3857 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write /vsis3/my-bucket/output.tif"
+#> [1] "gdal raster pipeline --config AWS_REGION=us-west-2 --config AWS_REQUEST_PAYER=requester --co COMPRESS=LZW --co BLOCKXSIZE=256 ! read /vsis3/sentinel-pds/input.tif ! reproject --dst-crs EPSG:3857 ! scale --src-min 0 --src-max 10000 --dst-min 0 --dst-max 255 ! write /vsis3/my-bucket/output.tif"
 ```
 
 ### Example 11: Inspecting Pipeline Structure
@@ -306,7 +306,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/RtmpDj4KyJ/file4d2f27fdb50f8.gdalg.json'
+#> '/tmp/Rtmp6tKSS1/file53f665d85ebdf.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -370,7 +370,7 @@ for (i in seq_along(pipe_obj$jobs)) {
 
 # Render with config options
 render_gdal_pipeline(config_pipeline, format = "native")
-#> [1] "gdal raster pipeline --config GDAL_CACHEMAX=512 --config OGR_SQL_DIALECT=SQLITE ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif"
+#> [1] "gdal raster pipeline --config GDAL_CACHEMAX=512 --config OGR_SQL_DIALECT=SQLITE ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif"
 ```
 
 ### Example 14: Sequential vs Native Rendering Comparison
@@ -404,12 +404,273 @@ render_shell_script(comparison_pipeline, format = "native")
 #> [1] "#!/bin/bash\n\nset -e\n\n# Native GDAL pipeline execution\ngdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif\n"
 ```
 
+## Backend Setup
+
+`gdalcli` supports three execution backends, each with different
+performance characteristics and requirements.
+
+### processx Backend (Default)
+
+The processx backend is the default and requires only that GDAL \>=3.11
+is installed:
+
+``` r
+# This uses processx backend automatically (no setup needed)
+job <- gdal_raster_info(input = "sample.tif")
+gdal_job_run(job)
+```
+
+The processx backend: - Executes each GDAL command as a subprocess -
+Always available if GDAL CLI is installed - Works reliably across all
+platforms - No additional dependencies beyond gdalcli
+
+### gdalraster Backend (Optional)
+
+The gdalraster backend uses C++ GDAL bindings through the
+[gdalraster](https://CRAN.R-project.org/package/gdalraster) package:
+
+``` r
+# Install gdalraster if not already installed
+if (!requireNamespace("gdalraster", quietly = TRUE)) {
+  install.packages("gdalraster")
+}
+
+# Use gdalraster backend for execution
+job <- gdal_raster_info(input = "sample.tif")
+gdal_job_run(job, backend = "gdalraster")
+```
+
+The gdalraster backend: - Bypasses subprocess overhead with direct C++
+bindings - Requires gdalraster package (\>= 2.2.0) - Auto-selected as
+default if available and functional
+
+### reticulate Backend (Optional)
+
+The reticulate backend uses Python’s GDAL bindings via
+[reticulate](https://rstudio.github.io/reticulate/) for seamless
+Python/R integration:
+
+#### Setup
+
+1.  Create a Python virtual environment with GDAL:
+
+``` r
+# Install reticulate if needed
+if (!requireNamespace("reticulate", quietly = TRUE)) {
+  install.packages("reticulate")
+}
+
+library(reticulate)
+
+# Create a virtual environment for GDAL
+virtualenv_create("gdalenv")
+
+# Activate and install GDAL
+virtualenv_install("gdalenv", "osgeo-gdal")
+
+# Verify installation
+reticulate::use_virtualenv("gdalenv")
+reticulate::py_run_string("from osgeo import gdal; print(gdal.VersionInfo())")
+```
+
+2.  Verify reticulate can find the virtualenv:
+
+``` r
+library(reticulate)
+
+# Use the virtualenv
+reticulate::use_virtualenv("gdalenv")
+
+# Confirm Python GDAL is available
+if (reticulate::py_module_available("osgeo.gdal")) {
+  cat("Python GDAL is available!\n")
+} else {
+  cat("Python GDAL not found\n")
+}
+```
+
+3.  Test with gdalcli:
+
+``` r
+library(gdalcli)
+library(reticulate)
+
+# Ensure reticulate is using the correct virtualenv
+reticulate::use_virtualenv("gdalenv")
+
+# Execute a simple operation
+job <- gdal_raster_info(input = "sample.tif")
+result <- gdal_job_run(job, backend = "reticulate")
+```
+
+#### Alternative: Using conda environments
+
+If you prefer conda environments, you can use those as well:
+
+``` r
+# Create conda environment with GDAL
+conda_create("gdalenv", packages = "osgeo-gdal")
+
+# Use it with reticulate
+reticulate::use_condaenv("gdalenv")
+
+# Rest of verification is the same as above
+```
+
+### Backend Selection
+
+You can specify which backend to use for each operation:
+
+``` r
+library(gdalcli)
+
+job <- gdal_raster_info(input = "sample.tif")
+
+# Explicit backend selection (processx)
+gdal_job_run(job, backend = "processx")
+
+# Explicit backend selection (gdalraster, if installed)
+gdal_job_run(job, backend = "gdalraster")
+
+# Explicit backend selection (reticulate, if configured)
+gdal_job_run(job, backend = "reticulate")
+```
+
+### Setting a Default Backend
+
+You can set a preferred backend globally without passing `backend` to
+every call:
+
+``` r
+# Set gdalraster as your default backend
+options(gdalcli.prefer_backend = "gdalraster")
+
+# Now all gdal_job_run() calls use gdalraster by default
+job <- gdal_raster_info(input = "sample.tif")
+gdal_job_run(job)  # Uses gdalraster
+
+# You can still override with explicit backend parameter
+gdal_job_run(job, backend = "processx")  # Uses processx for this call
+```
+
+Supported values for `gdalcli.prefer_backend`: - `"auto"` (default) -
+Automatically selects best available backend - `"processx"` - Always use
+processx - `"gdalraster"` - Always use gdalraster (if installed) -
+`"reticulate"` - Always use reticulate (if configured)
+
+## Usage Examples by Backend
+
+### Example: Raster Information Query
+
+Query a raster file to get metadata:
+
+``` r
+library(gdalcli)
+
+# Build the job
+job <- gdal_raster_info(input = "sample.tif")
+
+# Execute with processx (default)
+gdal_job_run(job)
+
+# Or with gdalraster (if installed and preferred)
+gdal_job_run(job, backend = "gdalraster")
+
+# Or with reticulate (if configured)
+library(reticulate)
+reticulate::use_virtualenv("gdalenv")
+gdal_job_run(job, backend = "reticulate")
+```
+
+### Example: Raster Reprojection with Options
+
+Reproject a raster to a different coordinate system with creation
+options:
+
+``` r
+library(gdalcli)
+
+job <- gdal_raster_reproject(
+  input = "sample.tif",
+  output = "sample_reprojected.tif",
+  dst_crs = "EPSG:3857"
+) |>
+  gdal_with_co("COMPRESS=DEFLATE", "BLOCKXSIZE=256") |>
+  gdal_with_config("GDAL_CACHEMAX=1024")
+
+# Execute with your preferred backend
+gdal_job_run(job)
+```
+
+### Example: Vector Format Conversion
+
+Convert a vector dataset between formats:
+
+``` r
+library(gdalcli)
+
+job <- gdal_vector_convert(
+  input = "data.shp",
+  output = "data.gpkg",
+  output_format = "GPKG"
+)
+
+# Execute
+gdal_job_run(job)
+```
+
+### Example: Multi-Step Pipeline
+
+Chain multiple operations:
+
+``` r
+library(gdalcli)
+
+pipeline <- gdal_raster_reproject(
+  input = "sample.tif",
+  dst_crs = "EPSG:3857"
+) |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 10000,
+    dst_min = 0, dst_max = 255
+  ) |>
+  gdal_raster_convert(
+    output = "sample_processed.tif",
+    output_format = "COG"
+  ) |>
+  gdal_with_co("COMPRESS=LZW")
+
+# Execute the entire pipeline
+gdal_job_run(pipeline)
+```
+
+### Example: Cloud-Based Processing
+
+Work with remote datasets using virtual file systems:
+
+``` r
+library(gdalcli)
+
+# Set AWS credentials (from environment variables or .Renviron)
+auth <- gdal_auth_s3()
+
+job <- gdal_raster_convert(
+  input = "/vsis3/bucket/input.tif",
+  output = "/vsis3/bucket/output.tif",
+  output_format = "COG"
+) |>
+  gdal_with_env(auth) |>
+  gdal_with_co("COMPRESS=DEFLATE")
+
+# Execute with cloud storage
+gdal_job_run(job)
+```
+
 ## Pipeline Features
 
 ### Native GDAL Pipeline Execution
 
-Execute multi-step workflows as a single GDAL pipeline for maximum
-efficiency (avoiding intermediate disk I/O for large datasets):
+Execute multi-step workflows as a single GDAL pipeline:
 
 ``` r
 pipeline <- gdal_raster_info(input = "input.tif") |>
@@ -470,19 +731,15 @@ gdal_save_pipeline(pipeline, "workflow.gdalg.json", method = "auto")
 
 **Comparison of serialization methods:**
 
-| Feature       | Custom JSON          | Native GDALG Driver              |
-|---------------|----------------------|----------------------------------|
-| GDAL Version  | Any                  | 3.11+                            |
-| Speed         | Fast                 | Moderate                         |
-| Compatibility | gdalcli-specific     | Universal GDAL tools             |
-| Metadata      | Basic                | Full GDAL metadata               |
-| Use Case      | Development, testing | Production, cross-tool workflows |
+- **Custom JSON**: Backward compatible, works with any GDAL version,
+  gdalcli-specific format
+- **Native GDALG Driver**: Requires GDAL 3.11+, universal compatibility
+  with other GDAL tools, full metadata support
 
 **Method parameter:** - `method = "json"` - Uses custom JSON
-serialization (fast, backward compatible) - `method = "native"` - Uses
-GDAL’s native GDALG format driver (requires GDAL 3.11+) -
-`method = "auto"` - Automatically selects best method based on GDAL
-version
+serialization (backward compatible) - `method = "native"` - Uses GDAL’s
+native GDALG format driver (requires GDAL 3.11+) - `method = "auto"` -
+Automatically selects best method based on GDAL version
 
 Both methods produce valid, portable GDALG files that can be loaded with
 `gdal_load_pipeline()`.
@@ -505,7 +762,7 @@ pipeline_with_config <- gdal_raster_reproject(
 
 # Config options are included in native pipeline rendering
 render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
-#> [1] "gdal raster pipeline ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255"
+#> [1] "gdal raster pipeline ! read in.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write out.tif"
 ```
 
 ## Version Compatibility
@@ -515,18 +772,19 @@ in GDAL 3.12+.
 
 ### Minimum Requirements
 
-- **GDAL**: \>= 3.11.3 (Unified CLI framework minimum)
+- **GDAL**: \>= 3.11.3 (CLI framework minimum)
 - **R**: \>= 4.0.0
 - **gdalraster**: \>= 2.2.0 (recommended for advanced features)
 
 ### GDAL 3.11 Features
 
-Core GDAL unified CLI functionality available in GDAL 3.11+:
+Core GDAL CLI functionality available in GDAL 3.11+:
 
 - **80+ Algorithm Functions**: All raster, vector, and multidimensional
   operations
 - **Pipeline Execution**: Native and sequential pipeline modes
-- **GDALG Format**: Save/load pipelines as JSON
+- **GDALG Format**: Read-only access to GDALG format (JSON-based
+  pipeline files)
 - **Configuration Options**: Full GDAL config option support
 - **VSI Support**: Virtual file system integration
 - **Shell Script Generation**: Export pipelines to executable bash/zsh
@@ -535,6 +793,8 @@ Core GDAL unified CLI functionality available in GDAL 3.11+:
 
 New algorithms and capabilities available in GDAL 3.12+:
 
+- **GDALG Format Write Support**: Write pipelines to GDALG format for
+  persistence and sharing
 - **New Raster Algorithms**: blend, compare, neighbors, nodata-to-alpha,
   pansharpen, proximity, rgb-to-palette, update, zonal-stats,
   as-features
@@ -542,6 +802,7 @@ New algorithms and capabilities available in GDAL 3.12+:
   clean-coverage, index, layer-algebra, make-point, partition,
   set-field-type, simplify-coverage
 - **GDALG Format Driver**: Native support for GDALG as a format driver
+  with enhanced metadata
 - **Advanced Features**: Enhanced pipeline capabilities and algorithm
   metadata
 
@@ -614,7 +875,7 @@ GDAL installation.
 ## System Requirements
 
 - **R** \>= 4.1
-- **GDAL** \>= 3.11 (required for unified CLI)
+- **GDAL** \>= 3.11 (required for CLI)
 - **Dependencies**:
   - `processx` (\>=3.8.0) - Robust subprocess management
   - `yyjsonr` (\>=0.1.0) - Fast, memory-efficient JSON handling
@@ -728,7 +989,7 @@ seq_render <- render_gdal_pipeline(pipeline$pipeline, format = "shell_chain")
 seq_render
 #> [1] "gdal raster info input.tif && gdal raster reproject --dst-crs EPSG:32632 && gdal raster convert output.tif"
 
-# Render as native GDAL pipeline (single efficient command)
+# Render as native GDAL pipeline (single command)
 native_render <- render_gdal_pipeline(pipeline$pipeline, format = "native")
 # Native output:
 native_render
@@ -814,7 +1075,7 @@ MIT License - see LICENSE file for details
 
 ## References
 
-- **GDAL Unified CLI (\>=3.11)**: <https://gdal.org/programs/index.html>
+- **GDAL CLI (\>=3.11)**: <https://gdal.org/programs/index.html>
 - **GDAL RFCs**: <https://gdal.org/development/rfc/>
 - **GDAL Virtual File Systems**:
   <https://gdal.org/user/virtual_file_systems.html>
@@ -823,8 +1084,8 @@ MIT License - see LICENSE file for details
 
 ## Acknowledgments
 
-This package is built on GDAL’s unified CLI (\>=3.11) and the GDAL
-development team’s work.
+This package is built on GDAL’s CLI (\>=3.11) and the GDAL development
+team’s work.
 
 Also, the development of this package has been heavily influenced by
 Michael Sumner (@mdsumner), Chris Toney (@ctoney), and the
