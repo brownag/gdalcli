@@ -173,25 +173,38 @@ temp_file <- tempfile(fileext = ".gdalg.json")
 gdal_save_pipeline(pipeline, temp_file, method = "json")
 
 # Display the saved GDALG JSON structure
-readLines(temp_file)
-#> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/RtmppctWc1/file7c44e6916f5fa.gdalg.json'
-#>  [1] "{"                                   "  \"gdalVersion\": null,"           
-#>  [3] "  \"steps\": ["                      "    {"                              
-#>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
-#>  [7] "      \"operation\": \"reproject\"," "      \"input\": \"input.tif\","    
-#>  [9] "      \"options\": {"                "        \"dst_crs\": \"EPSG:32632\""
-#> [11] "      }"                             "    },"                             
-#> [13] "    {"                               "      \"type\": \"scale\","         
-#> [15] "      \"name\": \"scale_2\","        "      \"operation\": \"scale\","    
-#> [17] "      \"options\": {"                "        \"src_min\": 0.0,"          
-#> [19] "        \"src_max\": 10000.0,"       "        \"dst_min\": 0.0,"          
-#> [21] "        \"dst_max\": 255.0"          "      }"                            
-#> [23] "    },"                              "    {"                              
-#> [25] "      \"type\": \"write\","          "      \"name\": \"write_3\","       
-#> [27] "      \"operation\": \"convert\","   "      \"output\": \"output.tif\""   
-#> [29] "    }"                               "  ]"                                
-#> [31] "}"
+cat(readLines(temp_file, warn = FALSE), sep = "\n")
+#> {
+#>   "gdalVersion": null,
+#>   "steps": [
+#>     {
+#>       "type": "reproject",
+#>       "name": "reproject_1",
+#>       "operation": "reproject",
+#>       "input": "input.tif",
+#>       "options": {
+#>         "dst_crs": "EPSG:32632"
+#>       }
+#>     },
+#>     {
+#>       "type": "scale",
+#>       "name": "scale_2",
+#>       "operation": "scale",
+#>       "options": {
+#>         "src_min": 0.0,
+#>         "src_max": 10000.0,
+#>         "dst_min": 0.0,
+#>         "dst_max": 255.0
+#>       }
+#>     },
+#>     {
+#>       "type": "write",
+#>       "name": "write_3",
+#>       "operation": "convert",
+#>       "output": "output.tif"
+#>     }
+#>   ]
+#> }
 
 # Clean up
 unlink(temp_file)
@@ -310,40 +323,38 @@ temp_gdalg <- tempfile(fileext = ".gdalg.json")
 gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 
 # Display the full JSON
-readLines(temp_gdalg)
-#> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/RtmppctWc1/file7c44e2de98e31.gdalg.json'
-#>  [1] "{"                                                                                                           
-#>  [2] "  \"gdalVersion\": null,"                                                                                    
-#>  [3] "  \"steps\": ["                                                                                              
-#>  [4] "    {"                                                                                                       
-#>  [5] "      \"type\": \"reproject\","                                                                              
-#>  [6] "      \"name\": \"reproject_1\","                                                                            
-#>  [7] "      \"operation\": \"reproject\","                                                                         
-#>  [8] "      \"input\": \"/home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif\","
-#>  [9] "      \"options\": {"                                                                                        
-#> [10] "        \"dst_crs\": \"EPSG:32632\""                                                                         
-#> [11] "      }"                                                                                                     
-#> [12] "    },"                                                                                                      
-#> [13] "    {"                                                                                                       
-#> [14] "      \"type\": \"scale\","                                                                                  
-#> [15] "      \"name\": \"scale_2\","                                                                                
-#> [16] "      \"operation\": \"scale\","                                                                             
-#> [17] "      \"options\": {"                                                                                        
-#> [18] "        \"src_min\": 0.0,"                                                                                   
-#> [19] "        \"src_max\": 100.0,"                                                                                 
-#> [20] "        \"dst_min\": 0.0,"                                                                                   
-#> [21] "        \"dst_max\": 255.0"                                                                                  
-#> [22] "      }"                                                                                                     
-#> [23] "    },"                                                                                                      
-#> [24] "    {"                                                                                                       
-#> [25] "      \"type\": \"write\","                                                                                  
-#> [26] "      \"name\": \"write_3\","                                                                                
-#> [27] "      \"operation\": \"convert\","                                                                           
-#> [28] "      \"output\": \"/tmp/RtmppctWc1/file7c44e68d8eb38.tif\""                                                 
-#> [29] "    }"                                                                                                       
-#> [30] "  ]"                                                                                                         
-#> [31] "}"
+cat(readLines(temp_gdalg, warn = FALSE), sep = "\n")
+#> {
+#>   "gdalVersion": null,
+#>   "steps": [
+#>     {
+#>       "type": "reproject",
+#>       "name": "reproject_1",
+#>       "operation": "reproject",
+#>       "input": "/home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif",
+#>       "options": {
+#>         "dst_crs": "EPSG:32632"
+#>       }
+#>     },
+#>     {
+#>       "type": "scale",
+#>       "name": "scale_2",
+#>       "operation": "scale",
+#>       "options": {
+#>         "src_min": 0.0,
+#>         "src_max": 100.0,
+#>         "dst_min": 0.0,
+#>         "dst_max": 255.0
+#>       }
+#>     },
+#>     {
+#>       "type": "write",
+#>       "name": "write_3",
+#>       "operation": "convert",
+#>       "output": "/tmp/RtmpGQ4Ndx/filea09b55bd13b50.tif"
+#>     }
+#>   ]
+#> }
 
 # Parse and inspect GDALG structure
 loaded <- gdal_load_pipeline(temp_gdalg)
@@ -395,7 +406,7 @@ for (i in seq_along(pipe_obj$jobs)) {
 
 # Render with config options
 render_gdal_pipeline(config_pipeline, format = "native")
-#> [1] "gdal raster pipeline --config GDAL_CACHEMAX=512 --config OGR_SQL_DIALECT=SQLITE ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e21ceccf5.tif"
+#> [1] "gdal raster pipeline --config GDAL_CACHEMAX=512 --config OGR_SQL_DIALECT=SQLITE ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpGQ4Ndx/filea09b569c411ca.tif"
 ```
 
 ### Example 14: Sequential vs Native Rendering Comparison
@@ -414,13 +425,13 @@ comparison_pipeline <- gdal_raster_info(input = clay_file) |>
 seq_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "shell_chain")
 # Sequential command (separate GDAL commands chained with &&):
 seq_cmd
-#> [1] "gdal raster info /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif && gdal raster reproject --dst-crs EPSG:32632 && gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 && gdal raster convert /tmp/RtmppctWc1/file7c44e781f2e18.tif"
+#> [1] "gdal raster info /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif && gdal raster reproject --dst-crs EPSG:32632 && gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 && gdal raster convert /tmp/RtmpGQ4Ndx/filea09b530e198c2.tif"
 
 # Get native command rendering
 native_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "native")
 # Native command (single GDAL pipeline):
 native_cmd
-#> [1] "gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e781f2e18.tif"
+#> [1] "gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpGQ4Ndx/filea09b530e198c2.tif"
 
 # Compare as shell scripts
 # Sequential Shell Script
@@ -439,7 +450,7 @@ cat(render_shell_script(comparison_pipeline, format = "commands"))
 #> gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255
 #> 
 #> # Job 4
-#> gdal raster convert /tmp/RtmppctWc1/file7c44e781f2e18.tif
+#> gdal raster convert /tmp/RtmpGQ4Ndx/filea09b530e198c2.tif
 
 # Native Shell Script
 cat(render_shell_script(comparison_pipeline, format = "native"))
@@ -448,7 +459,7 @@ cat(render_shell_script(comparison_pipeline, format = "native"))
 #> set -e
 #> 
 #> # Native GDAL pipeline execution
-#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e781f2e18.tif
+#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpGQ4Ndx/filea09b530e198c2.tif
 ```
 
 ## Backend Setup
@@ -715,7 +726,7 @@ pipeline
 #> Pipeline: 3 step(s)
 #>   [1] raster info (input: /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif)
 #>   [2] raster reproject
-#>   [3] raster convert (output: /tmp/RtmppctWc1/file7c44e22b3cce7.tif)
+#>   [3] raster convert (output: /tmp/RtmpGQ4Ndx/filea09b5470e2d93.tif)
 ```
 
 ### GDALG Format: Save and Load Pipelines
@@ -804,7 +815,7 @@ pipeline_with_config <- gdal_raster_reproject(
 
 # Config options are included in native pipeline rendering
 render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
-#> [1] "gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e400da3c.tif"
+#> [1] "gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpGQ4Ndx/filea09b5169e1471.tif"
 ```
 
 ## Version Compatibility

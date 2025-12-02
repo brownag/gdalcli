@@ -143,7 +143,7 @@ temp_file <- tempfile(fileext = ".gdalg.json")
 gdal_save_pipeline(pipeline, temp_file, method = "json")
 
 # Display the saved GDALG JSON structure
-readLines(temp_file)
+cat(readLines(temp_file, warn = FALSE), sep = "\n")
 
 # Clean up
 unlink(temp_file)
@@ -255,7 +255,7 @@ temp_gdalg <- tempfile(fileext = ".gdalg.json")
 gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 
 # Display the full JSON
-readLines(temp_gdalg)
+cat(readLines(temp_gdalg, warn = FALSE), sep = "\n")
 
 # Parse and inspect GDALG structure
 loaded <- gdal_load_pipeline(temp_gdalg)

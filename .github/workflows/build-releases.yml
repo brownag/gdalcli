@@ -34,9 +34,9 @@ on:
           - 'source'
           - 'prebuilt'
       package_version:
-        description: 'Base package version (e.g., 0.2.0)'
+        description: 'Base package version (e.g., 0.2.1)'
         required: true
-        default: '0.2.0'
+        default: '0.2.1'
       create_release:
         description: 'Create GitHub release and tag? (only effective on main branch)'
         required: true
@@ -45,17 +45,22 @@ on:
         options:
           - 'true'
           - 'false'
+      dry_run:
+        description: 'Dry run mode: skip creating branches, releases, and pushing images'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
       architecture:
         description: |
-          Target architecture: amd64 (x86_64) or arm64. For OSGeo builds,
-          arm64 should work as drop-in replacement. For source builds,
-          arm64 compilation will be slower and less tested.
+          Target architecture: amd64 (x86_64) only. arm64 is not supported.
         required: true
         default: 'amd64'
         type: choice
         options:
           - 'amd64'
-          - 'arm64'
 
 jobs:
   validate:
@@ -103,7 +108,7 @@ jobs:
           fi
 
           BRANCH="release/gdal-${SHORT}"
-          TAG="v0.2.0-gdal-${VERSION}"
+          TAG="v${{ github.event.inputs.package_version }}-${VERSION}"
 
           echo "gdal_version=$VERSION" >> $GITHUB_OUTPUT
           echo "gdal_short=$SHORT" >> $GITHUB_OUTPUT
@@ -122,27 +127,15 @@ jobs:
           ARCH="${{ github.event.inputs.architecture }}"
 
           # Try different tag formats in order of preference
-          if [ "$ARCH" = "arm64" ]; then
-            TAGS_TO_TRY=(
-              "ubuntu-small-arm64-${GDAL_VERSION}"
-              "ubuntu-small-${GDAL_VERSION}"
-              "ubuntu-small-arm64-latest"
-              "ubuntu-small-latest"
-              "ubuntu-small-arm64"
-              "ubuntu-small"
-              "latest"
-            )
-          else
-            TAGS_TO_TRY=(
-              "ubuntu-small-amd64-${GDAL_VERSION}"
-              "ubuntu-small-${GDAL_VERSION}"
-              "ubuntu-small-amd64-latest"
-              "ubuntu-small-latest"
-              "ubuntu-small-amd64"
-              "ubuntu-small"
-              "latest"
-            )
-          fi
+          TAGS_TO_TRY=(
+            "ubuntu-small-amd64-${GDAL_VERSION}"
+            "ubuntu-small-${GDAL_VERSION}"
+            "ubuntu-small-amd64-latest"
+            "ubuntu-small-latest"
+            "ubuntu-small-amd64"
+            "ubuntu-small"
+            "latest"
+          )
 
           SELECTED_TAG=""
           for TAG in "${TAGS_TO_TRY[@]}"; do
@@ -167,12 +160,7 @@ jobs:
         id: set-default-tag
         if: github.event.inputs.gdal_build_mode == 'source'
         run: |
-          ARCH="${{ github.event.inputs.architecture }}"
-          if [ "$ARCH" = "arm64" ]; then
-            echo "selected_gdal_image_tag=ubuntu-small-arm64-${{ steps.parse.outputs.gdal_version }}" >> $GITHUB_OUTPUT
-          else
-            echo "selected_gdal_image_tag=ubuntu-small-amd64-${{ steps.parse.outputs.gdal_version }}" >> $GITHUB_OUTPUT
-          fi
+          echo "selected_gdal_image_tag=ubuntu-small-amd64-${{ steps.parse.outputs.gdal_version }}" >> $GITHUB_OUTPUT
 
       - name: Check pre-built base image availability
         id: check-prebuilt
@@ -181,7 +169,7 @@ jobs:
           VERSION="${{ steps.parse.outputs.gdal_version }}"
           ARCH="${{ github.event.inputs.architecture }}"
           
-          IMAGE_TAG="ghcr.io/brownag/gdalcli:base-gdal-${VERSION}-${ARCH}"
+          IMAGE_TAG="ghcr.io/brownag/gdalcli:base-gdal-${VERSION}-amd64"
           echo "Checking pre-built base image: $IMAGE_TAG"
           
           if docker buildx imagetools inspect "$IMAGE_TAG" >/dev/null 2>&1; then
@@ -199,6 +187,7 @@ jobs:
     timeout-minutes: ${{ github.event.inputs.gdal_build_mode == 'osgeo' && 30 || 60 }}
     permissions:
       contents: write
+      packages: write
 
     steps:
       - name: Checkout feedstock
@@ -229,13 +218,13 @@ jobs:
             R_VERSION=latest
             PACKAGE_VERSION=${{ github.event.inputs.package_version }}
           tags: |
-            gdalcli:gdal-${{ needs.validate.outputs.gdal_short }}-dev
-          platforms: linux/${{ github.event.inputs.architecture }}
+            ghcr.io/brownag/gdalcli:gdal-${{ needs.validate.outputs.gdal_version }}-latest
+          platforms: linux/amd64
           cache-from: |
             type=gha,scope=gdal-${{ github.event.inputs.gdal_build_mode }}-${{ needs.validate.outputs.gdal_version }}
           cache-to: |
             type=gha,mode=max,scope=gdal-${{ github.event.inputs.gdal_build_mode }}-${{ needs.validate.outputs.gdal_version }}
-          load: true
+          push: ${{ github.event.inputs.dry_run == 'false' }}
           build-contexts: |
             context=.github/dockerfiles
 
@@ -277,13 +266,25 @@ jobs:
           echo "Generated API files:"
           ls -la R/gdal_*.R | head -20
 
+      - name: Create GDAL_VERSION_INFO.json
+        run: |
+          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          BUILD_DATE="$(date -I)"
+          cat > inst/GDAL_VERSION_INFO.json <<EOF
+          {
+            "gdal_version": "$GDAL_VERSION",
+            "build_date": "$BUILD_DATE"
+          }
+          EOF
+          cat inst/GDAL_VERSION_INFO.json
+
       - name: Update DESCRIPTION
         run: |
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
           GDAL_SHORT="${{ needs.validate.outputs.gdal_short }}"
 
           # Update Version field
-          sed -i "s/^Version:.*/Version: 0.2.0+gdal-${GDAL_SHORT}/" DESCRIPTION
+          sed -i "s/^Version:.*/Version: ${{ github.event.inputs.package_version }}-${{ needs.validate.outputs.gdal_version }}/" DESCRIPTION
 
           # Update SystemRequirements field
           sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
@@ -341,7 +342,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Create release branch
-        if: success()
+        if: success() && github.event.inputs.dry_run == 'false'
         run: |
           BRANCH="${{ needs.validate.outputs.branch_name }}"
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
@@ -365,7 +366,7 @@ jobs:
           echo "Created/updated branch: $BRANCH"
 
       - name: Create GitHub release
-        if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main'
+        if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main' && github.event.inputs.dry_run == 'false'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.validate.outputs.tag_name }}
@@ -382,7 +383,7 @@ jobs:
             - Architecture: ${{ github.event.inputs.architecture }}
             - Package Version: ${{ github.event.inputs.package_version }}
             - Release Branch: ${{ needs.validate.outputs.branch_name }}
-            - R Package Version: ${{ github.event.inputs.package_version }}+gdal-${{ needs.validate.outputs.gdal_short }}
+            - R Package Version: ${{ github.event.inputs.package_version }}-${{ needs.validate.outputs.gdal_version }}
 
             ## Installation
             From release branch:
@@ -415,4 +416,5 @@ jobs:
           | Release Branch | `${{ needs.validate.outputs.branch_name }}` |
           | Build Status | ${{ job.status }} |
           | GitHub Release | ${RELEASE_INFO} |
+          | Dry Run | ${{ github.event.inputs.dry_run }} |
           EOF
