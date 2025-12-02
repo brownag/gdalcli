@@ -51,7 +51,8 @@ jobs:
 
       - name: Run R CMD check
         run: |
-          Rscript -e "devtools::check(args = c('--no-manual', '--compact-vignettes=gs+qpdf'))"
+          export LANG=en_US.UTF-8
+          Rscript -e "devtools::check(args = c('--no-manual'))"
 
       - name: Install package
         run: |

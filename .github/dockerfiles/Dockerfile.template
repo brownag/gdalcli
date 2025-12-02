@@ -181,8 +181,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     libtiff-dev \
     libxml2-dev \
-    pandoc && \
+    locales \
+    pandoc \
+    qpdf && \
     rm -rf /var/lib/apt/lists/*
+
+# Generate en_US.UTF-8 locale to prevent Sys.setlocale() warnings
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 && \
+    locale -a | grep en_US
+
+# Set locale environment variables
+ENV LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    LC_CTYPE=en_US.UTF-8
 
 # Verify GDAL is accessible
 RUN gdal --version && \
