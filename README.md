@@ -175,7 +175,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/Rtmptvx7jK/file640843485d775.gdalg.json'
+#> '/tmp/RtmppctWc1/file7c44e6916f5fa.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -254,9 +254,12 @@ native_with_config
 
 ``` r
 # Build a simple pipeline to inspect
-simple_pipeline <- gdal_raster_info(input = "input.tif") |>
+clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
+reprojected_file <- tempfile(fileext = ".tif")
+
+simple_pipeline <- gdal_raster_info(input = clay_file) |>
   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
-  gdal_raster_convert(output = "output.tif")
+  gdal_raster_convert(output = reprojected_file)
 
 # Inspect the pipeline object
 # Pipeline object class:
@@ -285,16 +288,19 @@ for (i in seq_along(pipe_obj$jobs)) {
 
 ``` r
 # Build a pipeline with multiple steps
+clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
+processed_file <- tempfile(fileext = ".tif")
+
 pipeline_for_gdalg <- gdal_raster_reproject(
-  input = "input.tif",
+  input = clay_file,
   dst_crs = "EPSG:32632"
 ) |>
   gdal_raster_scale(
-    src_min = 0, src_max = 10000,
+    src_min = 0, src_max = 100,
     dst_min = 0, dst_max = 255
   ) |>
   gdal_raster_convert(
-    output = "output.tif",
+    output = processed_file,
     output_format = "COG"
   ) |>
   gdal_with_co("COMPRESS=LZW", "BLOCKXSIZE=512")
@@ -306,22 +312,37 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/Rtmptvx7jK/file6408427b2b8b1.gdalg.json'
-#>  [1] "{"                                   "  \"gdalVersion\": null,"           
-#>  [3] "  \"steps\": ["                      "    {"                              
-#>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
-#>  [7] "      \"operation\": \"reproject\"," "      \"input\": \"input.tif\","    
-#>  [9] "      \"options\": {"                "        \"dst_crs\": \"EPSG:32632\""
-#> [11] "      }"                             "    },"                             
-#> [13] "    {"                               "      \"type\": \"scale\","         
-#> [15] "      \"name\": \"scale_2\","        "      \"operation\": \"scale\","    
-#> [17] "      \"options\": {"                "        \"src_min\": 0.0,"          
-#> [19] "        \"src_max\": 10000.0,"       "        \"dst_min\": 0.0,"          
-#> [21] "        \"dst_max\": 255.0"          "      }"                            
-#> [23] "    },"                              "    {"                              
-#> [25] "      \"type\": \"write\","          "      \"name\": \"write_3\","       
-#> [27] "      \"operation\": \"convert\","   "      \"output\": \"output.tif\""   
-#> [29] "    }"                               "  ]"                                
+#> '/tmp/RtmppctWc1/file7c44e2de98e31.gdalg.json'
+#>  [1] "{"                                                                                                           
+#>  [2] "  \"gdalVersion\": null,"                                                                                    
+#>  [3] "  \"steps\": ["                                                                                              
+#>  [4] "    {"                                                                                                       
+#>  [5] "      \"type\": \"reproject\","                                                                              
+#>  [6] "      \"name\": \"reproject_1\","                                                                            
+#>  [7] "      \"operation\": \"reproject\","                                                                         
+#>  [8] "      \"input\": \"/home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif\","
+#>  [9] "      \"options\": {"                                                                                        
+#> [10] "        \"dst_crs\": \"EPSG:32632\""                                                                         
+#> [11] "      }"                                                                                                     
+#> [12] "    },"                                                                                                      
+#> [13] "    {"                                                                                                       
+#> [14] "      \"type\": \"scale\","                                                                                  
+#> [15] "      \"name\": \"scale_2\","                                                                                
+#> [16] "      \"operation\": \"scale\","                                                                             
+#> [17] "      \"options\": {"                                                                                        
+#> [18] "        \"src_min\": 0.0,"                                                                                   
+#> [19] "        \"src_max\": 100.0,"                                                                                 
+#> [20] "        \"dst_min\": 0.0,"                                                                                   
+#> [21] "        \"dst_max\": 255.0"                                                                                  
+#> [22] "      }"                                                                                                     
+#> [23] "    },"                                                                                                      
+#> [24] "    {"                                                                                                       
+#> [25] "      \"type\": \"write\","                                                                                  
+#> [26] "      \"name\": \"write_3\","                                                                                
+#> [27] "      \"operation\": \"convert\","                                                                           
+#> [28] "      \"output\": \"/tmp/RtmppctWc1/file7c44e68d8eb38.tif\""                                                 
+#> [29] "    }"                                                                                                       
+#> [30] "  ]"                                                                                                         
 #> [31] "}"
 
 # Parse and inspect GDALG structure
@@ -343,8 +364,11 @@ unlink(temp_gdalg)
 
 ``` r
 # Build a pipeline with config options at different points
+clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
+processed_file <- tempfile(fileext = ".tif")
+
 config_pipeline <- gdal_raster_reproject(
-  input = "input.tif",
+  input = clay_file,
   dst_crs = "EPSG:32632"
 ) |>
   gdal_with_config("GDAL_CACHEMAX=512") |>
@@ -352,7 +376,7 @@ config_pipeline <- gdal_raster_reproject(
     src_min = 0, src_max = 100,
     dst_min = 0, dst_max = 255
   ) |>
-  gdal_raster_convert(output = "output.tif") |>
+  gdal_raster_convert(output = processed_file) |>
   gdal_with_config("OGR_SQL_DIALECT=SQLITE")
 
 # Inspect config options
@@ -371,38 +395,60 @@ for (i in seq_along(pipe_obj$jobs)) {
 
 # Render with config options
 render_gdal_pipeline(config_pipeline, format = "native")
-#> [1] "gdal raster pipeline --config GDAL_CACHEMAX=512 --config OGR_SQL_DIALECT=SQLITE ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif"
+#> [1] "gdal raster pipeline --config GDAL_CACHEMAX=512 --config OGR_SQL_DIALECT=SQLITE ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e21ceccf5.tif"
 ```
 
 ### Example 14: Sequential vs Native Rendering Comparison
 
 ``` r
 # Create a pipeline
-comparison_pipeline <- gdal_raster_info(input = "input.tif") |>
+clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
+processed_file <- tempfile(fileext = ".tif")
+
+comparison_pipeline <- gdal_raster_info(input = clay_file) |>
   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
   gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
-  gdal_raster_convert(output = "output.tif")
+  gdal_raster_convert(output = processed_file)
 
 # Get sequential command rendering
 seq_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "shell_chain")
 # Sequential command (separate GDAL commands chained with &&):
 seq_cmd
-#> [1] "gdal raster info input.tif && gdal raster reproject --dst-crs EPSG:32632 && gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 && gdal raster convert output.tif"
+#> [1] "gdal raster info /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif && gdal raster reproject --dst-crs EPSG:32632 && gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 && gdal raster convert /tmp/RtmppctWc1/file7c44e781f2e18.tif"
 
 # Get native command rendering
 native_cmd <- render_gdal_pipeline(comparison_pipeline$pipeline, format = "native")
 # Native command (single GDAL pipeline):
 native_cmd
-#> [1] "gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif"
+#> [1] "gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e781f2e18.tif"
 
 # Compare as shell scripts
 # Sequential Shell Script
-render_shell_script(comparison_pipeline, format = "commands")
-#> [1] "#!/bin/bash\n\nset -e\n\n# Job 1\ngdal raster info input.tif\n\n# Job 2\ngdal raster reproject --dst-crs EPSG:32632\n\n# Job 3\ngdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255\n\n# Job 4\ngdal raster convert output.tif\n"
+cat(render_shell_script(comparison_pipeline, format = "commands"))
+#> #!/bin/bash
+#> 
+#> set -e
+#> 
+#> # Job 1
+#> gdal raster info /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif
+#> 
+#> # Job 2
+#> gdal raster reproject --dst-crs EPSG:32632
+#> 
+#> # Job 3
+#> gdal raster scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255
+#> 
+#> # Job 4
+#> gdal raster convert /tmp/RtmppctWc1/file7c44e781f2e18.tif
 
 # Native Shell Script
-render_shell_script(comparison_pipeline, format = "native")
-#> [1] "#!/bin/bash\n\nset -e\n\n# Native GDAL pipeline execution\ngdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write output.tif\n"
+cat(render_shell_script(comparison_pipeline, format = "native"))
+#> #!/bin/bash
+#> 
+#> set -e
+#> 
+#> # Native GDAL pipeline execution
+#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e781f2e18.tif
 ```
 
 ## Backend Setup
@@ -417,7 +463,7 @@ is installed:
 
 ``` r
 # This uses processx backend automatically (no setup needed)
-job <- gdal_raster_info(input = "sample.tif")
+job <- gdal_raster_info(input = "inst/extdata/sample_clay_content.tif")
 gdal_job_run(job)
 ```
 
@@ -437,7 +483,7 @@ if (!requireNamespace("gdalraster", quietly = TRUE)) {
 }
 
 # Use gdalraster backend for execution
-job <- gdal_raster_info(input = "sample.tif")
+job <- gdal_raster_info(input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"))
 gdal_job_run(job, backend = "gdalraster")
 ```
 
@@ -482,29 +528,24 @@ reticulate::use_virtualenv("venv")
 3.  Test with gdalcli:
 
 ``` r
-library(gdalcli) # TODO: run if reticulate::py_module_available("osgeo.gdal")
+library(gdalcli)
 
-# Ensure reticulate is using the correct virtualenv
+# Use the virtualenv (assumes "venv" exists in project directory)
 reticulate::use_virtualenv("venv")
 
-# Execute a simple operation
-job <- gdal_raster_info(input = "sample.tif")
-result <- gdal_job_run(job, backend = "reticulate")
+# Only evaluate if osgeo.gdal is available in the active reticulate environment
+if (reticulate::py_module_available("osgeo.gdal")) {
+  # Execute a simple operation
+  job <- gdal_raster_info(input = "inst/extdata/sample_clay_content.tif")
+  result <- gdal_job_run(job, backend = "reticulate")
+}
 ```
 
-#### Alternative: Using conda environments
+#### Note on Conda Environments
 
-If you prefer conda environments, you can use those as well:
-
-``` r
-# Create conda environment with GDAL
-reticulate::conda_create("gdalenv", packages = "gdal")
-
-# Use it with reticulate
-reticulate::use_condaenv("gdalenv")
-
-# Rest of verification is the same as above
-```
+While conda environments can be used as an alternative to virtual
+environments, the venv approach is recommended for this package. The
+reticulate integration assumes a local `venv` directory in the project.
 
 ### Backend Selection
 
@@ -513,7 +554,7 @@ You can specify which backend to use for each operation:
 ``` r
 library(gdalcli)
 
-job <- gdal_raster_info(input = "sample.tif")
+job <- gdal_raster_info(input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"))
 
 # Explicit backend selection (processx)
 gdal_job_run(job, backend = "processx")
@@ -522,7 +563,9 @@ gdal_job_run(job, backend = "processx")
 gdal_job_run(job, backend = "gdalraster")
 
 # Explicit backend selection (reticulate, if configured)
-gdal_job_run(job, backend = "reticulate")
+if (reticulate::py_module_available("osgeo.gdal")) {
+  gdal_job_run(job, backend = "reticulate")
+}
 ```
 
 ### Setting a Default Backend
@@ -535,7 +578,7 @@ every call:
 options(gdalcli.prefer_backend = "gdalraster")
 
 # Now all gdal_job_run() calls use gdalraster by default
-job <- gdal_raster_info(input = "sample.tif")
+job <- gdal_raster_info(input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"))
 gdal_job_run(job)  # Uses gdalraster
 
 # You can still override with explicit backend parameter
@@ -557,7 +600,7 @@ Query a raster file to get metadata:
 library(gdalcli)
 
 # Build the job
-job <- gdal_raster_info(input = "sample.tif")
+job <- gdal_raster_info(input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"))
 
 # Execute with processx (default)
 gdal_job_run(job)
@@ -567,7 +610,9 @@ gdal_job_run(job, backend = "gdalraster")
 
 # Or with reticulate (must set up venv)
 reticulate::use_virtualenv("venv")
-gdal_job_run(job, backend = "reticulate")
+if (reticulate::py_module_available("osgeo.gdal")) {
+  gdal_job_run(job, backend = "reticulate")
+}
 ```
 
 ### Example: Raster Reprojection with Options
@@ -579,8 +624,8 @@ options:
 library(gdalcli)
 
 job <- gdal_raster_reproject(
-  input = "sample.tif",
-  output = "sample_reprojected.tif",
+  input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
+  output = tempfile(fileext = ".tif"),
   dst_crs = "EPSG:3857"
 ) |>
   gdal_with_co("COMPRESS=DEFLATE", "BLOCKXSIZE=256") |>
@@ -598,9 +643,9 @@ Convert a vector dataset between formats:
 library(gdalcli)
 
 job <- gdal_vector_convert(
-  input = "data.shp",
-  output = "data.gpkg",
-  output_format = "GPKG"
+  input = system.file("extdata/sample_mapunit_polygons.gpkg", package = "gdalcli"),
+  output = tempfile(fileext = ".geojson"),
+  output_format = "GeoJSON"
 )
 
 # Execute
@@ -615,15 +660,15 @@ Chain multiple operations:
 library(gdalcli)
 
 pipeline <- gdal_raster_reproject(
-  input = "sample.tif",
+  input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
   dst_crs = "EPSG:3857"
 ) |>
   gdal_raster_scale(
-    src_min = 0, src_max = 10000,
+    src_min = 0, src_max = 100,
     dst_min = 0, dst_max = 255
   ) |>
   gdal_raster_convert(
-    output = "sample_processed.tif",
+    output = tempfile(fileext = ".tif"),
     output_format = "COG"
   ) |>
   gdal_with_co("COMPRESS=LZW")
@@ -643,8 +688,8 @@ library(gdalcli)
 auth <- gdal_auth_s3()
 
 job <- gdal_raster_convert(
-  input = "/vsis3/bucket/input.tif",
-  output = "/vsis3/bucket/output.tif",
+  input = "/vsis3/bucket/sample_clay_content.tif",
+  output = "/vsis3/bucket/sample_clay_processed.tif",
   output_format = "COG"
 ) |>
   gdal_with_env(auth) |>
@@ -661,16 +706,16 @@ gdal_job_run(job)
 Execute multi-step workflows as a single GDAL pipeline:
 
 ``` r
-pipeline <- gdal_raster_info(input = "input.tif") |>
+pipeline <- gdal_raster_info(input = system.file("extdata/sample_clay_content.tif", package = "gdalcli")) |>
   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
-  gdal_raster_convert(output = "output.tif")
+  gdal_raster_convert(output = tempfile(fileext = ".tif"))
 
 pipeline
 #> <gdal_job>
 #> Pipeline: 3 step(s)
-#>   [1] raster info (input: input.tif)
+#>   [1] raster info (input: /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif)
 #>   [2] raster reproject
-#>   [3] raster convert (output: output.tif)
+#>   [3] raster convert (output: /tmp/RtmppctWc1/file7c44e22b3cce7.tif)
 ```
 
 ### GDALG Format: Save and Load Pipelines
@@ -679,10 +724,11 @@ Persist pipelines as JSON for sharing and version control:
 
 ``` r
 # Save pipeline to GDALG format
-gdal_save_pipeline(pipeline, "workflow.gdalg.json")
+workflow_file <- tempfile(fileext = ".gdalg.json")
+gdal_save_pipeline(pipeline, workflow_file)
 
 # Load and execute later
-loaded <- gdal_load_pipeline("workflow.gdalg.json")
+loaded <- gdal_load_pipeline(workflow_file)
 gdal_job_run(loaded)
 ```
 
@@ -696,10 +742,11 @@ Generate executable shell scripts from pipelines:
 ``` r
 # Render as native GDAL pipeline script
 script <- render_shell_script(pipeline, format = "native", shell = "bash")
-writeLines(script, "process.sh")
+cat(script)
 
 # Or as separate sequential commands
 script_seq <- render_shell_script(pipeline, format = "commands", shell = "bash")
+cat(script_seq)
 ```
 
 ### GDALG Format: Native Format Driver Support (GDAL 3.11+)
@@ -709,17 +756,19 @@ use the native GDALG format driver:
 
 ``` r
 # Check if native GDALG driver is available
+workflow_file <- tempfile(fileext = ".gdalg.json")
+
 if (gdal_has_gdalg_driver()) {
   # Save using GDAL's native GDALG format driver
   # This ensures compatibility with other GDAL tools
-  gdal_save_pipeline(pipeline, "workflow.gdalg.json", method = "native")
+  gdal_save_pipeline(pipeline, workflow_file, method = "native")
 
   # Or explicitly use the native function
-  gdal_save_pipeline_native(pipeline, "workflow.gdalg.json")
+  gdal_save_pipeline_native(pipeline, workflow_file)
 }
 
 # Auto-detection: automatically uses native driver if available, else custom JSON
-gdal_save_pipeline(pipeline, "workflow.gdalg.json", method = "auto")
+gdal_save_pipeline(pipeline, workflow_file, method = "auto")
 ```
 
 **Comparison of serialization methods:**
@@ -743,19 +792,19 @@ Add GDAL configuration options to pipeline steps:
 
 ``` r
 pipeline_with_config <- gdal_raster_reproject(
-  input = "in.tif",
+  input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
   dst_crs = "EPSG:32632"
 ) |>
   gdal_with_config("OGR_SQL_DIALECT=SQLITE") |>
   gdal_raster_scale(
     src_min = 0, src_max = 100,
     dst_min = 0, dst_max = 255,
-    output = "out.tif"
+    output = tempfile(fileext = ".tif")
   )
 
 # Config options are included in native pipeline rendering
 render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
-#> [1] "gdal raster pipeline ! read in.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write out.tif"
+#> [1] "gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmppctWc1/file7c44e400da3c.tif"
 ```
 
 ## Version Compatibility

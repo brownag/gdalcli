@@ -28,3 +28,4 @@ scripts/
 build/gdal_repo/
 Makefile
 venv/
+^data-raw$
