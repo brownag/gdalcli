@@ -27,3 +27,4 @@ README.html
 scripts/
 build/gdal_repo/
 Makefile
+venv/
