@@ -175,7 +175,7 @@ gdal_save_pipeline(pipeline, temp_file, method = "json")
 # Display the saved GDALG JSON structure
 readLines(temp_file)
 #> Warning in readLines(temp_file): incomplete final line found on
-#> '/tmp/RtmpvxegPd/file5e6483bd72647.gdalg.json'
+#> '/tmp/Rtmp0BN3Qr/file630557cae300b.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -306,7 +306,7 @@ gdal_save_pipeline(pipeline_for_gdalg, temp_gdalg, method = "json")
 # Display the full JSON
 readLines(temp_gdalg)
 #> Warning in readLines(temp_gdalg): incomplete final line found on
-#> '/tmp/RtmpvxegPd/file5e64871631ae3.gdalg.json'
+#> '/tmp/Rtmp0BN3Qr/file630554307748d.gdalg.json'
 #>  [1] "{"                                   "  \"gdalVersion\": null,"           
 #>  [3] "  \"steps\": ["                      "    {"                              
 #>  [5] "      \"type\": \"reproject\","      "      \"name\": \"reproject_1\","   
@@ -562,12 +562,11 @@ job <- gdal_raster_info(input = "sample.tif")
 # Execute with processx (default)
 gdal_job_run(job)
 
-# Or with gdalraster (if installed and preferred)
+# Or with gdalraster (if installed)
 gdal_job_run(job, backend = "gdalraster")
 
-# Or with reticulate (if configured)
-library(reticulate)
-reticulate::use_virtualenv("gdalenv")
+# Or with reticulate (must set up venv)
+reticulate::use_virtualenv("venv")
 gdal_job_run(job, backend = "reticulate")
 ```
 
@@ -666,7 +665,12 @@ pipeline <- gdal_raster_info(input = "input.tif") |>
   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "output.tif")
 
-# Executes as native GDAL command via gdal_job_run(pipeline)
+pipeline
+#> <gdal_job>
+#> Pipeline: 3 step(s)
+#>   [1] raster info (input: input.tif)
+#>   [2] raster reproject
+#>   [3] raster convert (output: output.tif)
 ```
 
 ### GDALG Format: Save and Load Pipelines
@@ -761,8 +765,8 @@ in GDAL 3.12+.
 
 ### Minimum Requirements
 
-- **GDAL**: \>= 3.11.3 (CLI framework minimum)
-- **R**: \>= 4.0.0
+- **GDAL**: \>= 3.11 (CLI framework minimum)
+- **R**: \>= 4.1
 - **gdalraster**: \>= 2.2.0 (recommended for advanced features)
 
 ### GDAL 3.11 Features
