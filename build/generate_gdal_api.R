@@ -203,7 +203,6 @@ source("build/setup_gdal_repo.R")
 
 #' Merge arguments from a piped gdal_job with new function arguments.
 #'
-#' This function implements the argument merging logic for piping support.
 #' Explicit arguments override piped job arguments, and input propagation
 #' is handled automatically.
 #'
@@ -253,9 +252,6 @@ merge_gdal_job_arguments <- function(job_args, new_args) {
 
 
 #' Handle job input for pipeline extension in automated GDAL functions.
-#'
-#' This function processes the job parameter to determine if pipeline extension
-#' should occur or if arguments should be merged for job modification.
 #'
 #' @param job A gdal_job object or NULL.
 #' @param new_args List of new arguments passed to the function.
@@ -2422,12 +2418,7 @@ write_function_file <- function(func_name, function_code) {
 }
 
 
-# ============================================================================
 #' Analyze and detect parameter ordering issues across all generated functions
-#'
-#' This function scans all generated R functions to identify cases where optional
-#' parameters appear before required positional parameters. Required positional
-#' arguments should always come first (after the 'job' parameter).
 #'
 #' @return Data frame with function names and parameter ordering analysis
 #'

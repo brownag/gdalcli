@@ -201,16 +201,7 @@ gdal_job_run.gdal_job <- function(x,
 
 #' Serialize a gdal_job to GDAL CLI Arguments
 #'
-#' @description
-#' Internal function that converts a [gdal_job] specification into a final argument
-#' vector suitable for passing to the `gdal` command-line executable.
-#'
-#' This function handles:
-#' - Serializing the command path (e.g., `["vector", "convert"]` -> `"vector", "convert"`)
-#' - Converting argument names from snake_case to kebab-case (e.g., `dst_crs` -> `dst-crs`)
-#' - Flattening vector arguments (e.g., `c("COL1=val1", "COL2=val2")` for a repeatable arg)
-#' - Converting logical arguments to their flag equivalents
-#' - Converting composite arguments (e.g., `c(2, 49, 3, 50)` for bbox -> `--bbox=2,49,3,50`)
+#' Converts a gdal_job to GDAL CLI arguments.
 #'
 #' @param job A [gdal_job] object.
 #'
@@ -313,12 +304,7 @@ gdal_job_run.gdal_job <- function(x,
 
 #' Merge Environment Variables with Config Options
 #'
-#' @description
-#' Internal function that combines environment variables from multiple sources:
-#' 1. Base environment variables from the job
-#' 2. Explicit environment variables passed to gdal_job_run
-#' 3. GDAL config options (converted to GDAL_CONFIG_* format if needed)
-#' 4. Legacy global environment variables (for backward compatibility)
+#' Combines environment variables from multiple sources.
 #'
 #' @param job_env Named character vector of env vars from the job.
 #' @param explicit_env Named character vector of explicit env vars passed to gdal_job_run.

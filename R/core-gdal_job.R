@@ -664,7 +664,6 @@ names.gdal_job <- function(x) {
 
 #' Merge arguments from a piped gdal_job with new function arguments.
 #'
-#' This function implements the argument merging logic for piping support.
 #' Explicit arguments override piped job arguments, and input propagation
 #' is handled automatically.
 #'
