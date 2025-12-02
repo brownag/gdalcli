@@ -168,7 +168,7 @@ gdal_command_help <- function(command) {
   tryCatch({
     # Call gdalraster::gdal_usage() to get help for this command
     help_text <- gdalraster::gdal_usage(cmd_parts)
-    return(help_text)
+    invisible(help_text)
   }, .error = function(e) {
     cli::cli_abort(
       c(
