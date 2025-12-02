@@ -534,7 +534,7 @@ gdal_job_run.default <- function(x, ...) {
 #' Execute GDAL Job via Reticulate (Python)
 #'
 #' Backend that uses Python's osgeo.gdal module via reticulate.
-#' This allows use of gdal.alg Python API alongside gdalcli.
+#' This allows use of gdal.Run() Python API alongside gdalcli.
 #'
 #' @param job A [gdal_job] object
 #' @param ... Additional arguments (ignored)
@@ -557,62 +557,116 @@ gdal_job_run.default <- function(x, ...) {
     )
   }
 
-  # Build command string from path and arguments
-  cmd_parts <- job$command_path
-  
-  # Serialize arguments
+  # Serialize the job to GDAL CLI arguments
   args <- .serialize_gdal_job(job)
-  
+
+  # For gdal.Run(), we need the full command line including "gdal" as argv[0]
+  full_args <- c("gdal", args)
+
   # Print command if verbose
   if (verbose) {
-    cli::cli_alert_info(sprintf("Executing (reticulate): gdal %s", paste(args, collapse = " ")))
+    cli::cli_alert_info(sprintf("Executing (reticulate): %s", paste(full_args, collapse = " ")))
   }
-  
+
   # Prepare environment variables
   env_final <- .merge_env_vars(job$env_vars, env, job$config_options)
-  
+
   # Set environment variables
   if (length(env_final) > 0) {
     old_env <- Sys.getenv(names(env_final))
     on.exit(do.call(Sys.setenv, as.list(old_env)), add = TRUE)
     do.call(Sys.setenv, as.list(env_final))
   }
-  
+
   tryCatch(
     {
       # Import GDAL Python module
       gdal_py <- reticulate::import("osgeo.gdal")
-      
-      # Build command string
-      full_cmd <- paste(c(cmd_parts, args[-seq_along(cmd_parts)]), collapse = " ")
 
-      # Execute via Python GDAL
-      # Note: gdal.alg.compute() expects command as string
-      result <- gdal_py$alg$compute(full_cmd, quiet = !verbose)
+      # Parse arguments for gdal.Run() call
+      # gdal.Run() expects: gdal.Run(command, subcommand, **kwargs)
+      
+      if (length(args) < 2) {
+        cli::cli_abort("Invalid command: need at least command and subcommand")
+      }
+      
+      # Extract command parts
+      command <- args[1]
+      subcommand <- args[2]
+      remaining_args <- if (length(args) > 2) args[-(1:2)] else character()
+      
+      # Parse remaining arguments into keyword arguments for gdal.Run()
+      kwargs <- list()
+      positional_idx <- 1
+      
+      i <- 1
+      while (i <= length(remaining_args)) {
+        arg <- remaining_args[i]
+        
+        if (startsWith(arg, "--")) {
+          # This is an option flag
+          flag_name <- substring(arg, 3)  # Remove "--"
+          # Convert kebab-case to snake_case for Python
+          param_name <- gsub("-", "_", flag_name)
+          
+          # Check if next element is a value
+          if (i + 1 <= length(remaining_args) && !startsWith(remaining_args[i + 1], "--")) {
+            # Next element is the value
+            kwargs[[param_name]] <- remaining_args[i + 1]
+            i <- i + 2
+          } else {
+            # Flag without value (boolean flag)
+            kwargs[[param_name]] <- TRUE
+            i <- i + 1
+          }
+        } else {
+          # This is a positional argument
+          # Map positional arguments to standard parameter names
+          if (positional_idx == 1) {
+            kwargs[["input"]] <- arg
+          } else if (positional_idx == 2) {
+            kwargs[["output"]] <- arg
+          } else if (positional_idx == 3) {
+            kwargs[["src_dataset"]] <- arg
+          } else if (positional_idx == 4) {
+            kwargs[["dest_dataset"]] <- arg
+          }
+          # Add more positional mappings as needed
+          
+          positional_idx <- positional_idx + 1
+          i <- i + 1
+        }
+      }
+
+      # Execute via Python GDAL Run() function
+      # gdal.Run() returns an algorithm object
+      alg <- do.call(gdal_py$Run, c(list(command, subcommand), kwargs))
+
+      # Run the algorithm (note: capital R in Python API)
+      alg$Run()
 
       # Handle output based on streaming format
       if (!is.null(stream_out_format)) {
-        # Note: result from gdal.alg.compute() may be a string or other type
-        if (is.character(result)) {
-          if (stream_out_format == "text") {
-            return(result)
-          } else if (stream_out_format == "raw") {
-            return(charToRaw(result))
-          } else if (stream_out_format == "json") {
-            # Try to parse as JSON
-            tryCatch({
-              return(yyjsonr::read_json_str(result))
-            }, .error = function(e) {
-              cli::cli_warn(
-                c(
-                  "Failed to parse output as JSON",
-                  "x" = conditionMessage(e),
-                  "i" = "Returning raw result instead"
-                )
+        # Get output from the algorithm object
+        output_text <- alg$output()
+        if (stream_out_format == "text") {
+          return(output_text)
+        } else if (stream_out_format == "raw") {
+          return(charToRaw(output_text))
+        } else if (stream_out_format == "json") {
+          # Try to parse as JSON
+          tryCatch({
+            return(yyjsonr::read_json_str(output_text))
+          }, .error = function(e) {
+            cli::cli_warn(
+              c(
+                "Failed to parse output as JSON",
+                "x" = conditionMessage(e),
+                "i" = "Returning raw output instead"
               )
-              return(result)
-            })
-          }
+            )
+            return(output_text)
+          })
         }
       }
 
