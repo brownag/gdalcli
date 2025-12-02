@@ -106,9 +106,9 @@ jobs:
           GDAL_VERSION="${{ matrix.gdal_version }}"
 
           TAGS_TO_TRY=(
-            "ubuntu-small-amd64-${GDAL_VERSION}"
+            "ubuntu-small-${GDAL_VERSION}-amd64"
             "ubuntu-small-${GDAL_VERSION}"
-            "ubuntu-small-amd64-latest"
+            "ubuntu-small-latest-amd64"
             "ubuntu-small-latest"
             "ubuntu-small-amd64"
             "ubuntu-small"
@@ -228,9 +228,9 @@ jobs:
           GDAL_VERSION="${{ matrix.gdal_version }}"
 
           TAGS_TO_TRY=(
-            "ubuntu-small-amd64-${GDAL_VERSION}"
+            "ubuntu-small-${GDAL_VERSION}-amd64"
             "ubuntu-small-${GDAL_VERSION}"
-            "ubuntu-small-amd64-latest"
+            "ubuntu-small-latest-amd64"
             "ubuntu-small-latest"
             "ubuntu-small-amd64"
             "ubuntu-small"
