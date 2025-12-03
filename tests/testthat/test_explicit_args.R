@@ -13,15 +13,15 @@ test_that("gdal_job_get_explicit_args validates input", {
 })
 
 test_that("gdal_job_get_explicit_args returns character vector", {
-  if (gdal_check_version("3.12", op = ">=")) {
-    job <- new_gdal_job(
-      command_path = c("raster", "info"),
-      arguments = list(input = "test.tif")
-    )
+  skip_if_not(gdal_check_version("3.12", op = ">="))
 
-    result <- gdal_job_get_explicit_args(job)
-    expect_type(result, "character")
-  }
+  job <- new_gdal_job(
+    command_path = c("raster", "info"),
+    arguments = list(input = "test.tif")
+  )
+
+  result <- gdal_job_get_explicit_args(job)
+  expect_type(result, "character")
 })
 
 test_that("gdal_job_get_explicit_args returns empty on GDAL < 3.12", {
@@ -39,24 +39,24 @@ test_that("gdal_job_get_explicit_args returns empty on GDAL < 3.12", {
 })
 
 test_that("gdal_job_get_explicit_args respects system_only parameter", {
-  if (gdal_check_version("3.12", op = ">=") &&
-      gdalcli:::.gdal_has_feature("explicit_args")) {
-    job <- new_gdal_job(
-      command_path = c("raster", "convert"),
-      arguments = list(
-        input = "input.tif",
-        output = "output.tif",
-        output_format = "COG"
-      )
+  skip_if_not(gdal_check_version("3.12", op = ">=") &&
+              .gdal_has_feature("explicit_args"))
+
+  job <- new_gdal_job(
+    command_path = c("raster", "convert"),
+    arguments = list(
+      input = "input.tif",
+      output = "output.tif",
+      output_format = "COG"
     )
+  )
 
-    all_args <- gdal_job_get_explicit_args(job, system_only = FALSE)
-    system_args <- gdal_job_get_explicit_args(job, system_only = TRUE)
+  all_args <- gdal_job_get_explicit_args(job, system_only = FALSE)
+  system_args <- gdal_job_get_explicit_args(job, system_only = TRUE)
 
-    # System args should be subset of all args
-    if (length(system_args) > 0) {
-      expect_true(all(system_args %in% all_args))
-    }
+  # System args should be subset of all args
+  if (length(system_args) > 0) {
+    expect_true(all(system_args %in% all_args))
   }
 })
 
@@ -66,7 +66,7 @@ test_that(".create_audit_entry produces valid audit structure", {
     arguments = list(input = "test.tif")
   )
 
-  audit <- gdalcli:::.create_audit_entry(job, status = "success")
+  audit <- .create_audit_entry(job, status = "success")
 
   expect_named(
     audit,
@@ -89,7 +89,7 @@ test_that(".create_audit_entry captures error status", {
   )
 
   error_msg <- "Test error message"
-  audit <- gdalcli:::.create_audit_entry(job, status = "error", error_msg = error_msg)
+  audit <- .create_audit_entry(job, status = "error", error_msg = error_msg)
 
   expect_equal(audit$status, "error")
   expect_equal(audit$error, error_msg)
@@ -157,6 +157,6 @@ test_that(".call_gdalraster_explicit_args handles unavailable binding", {
   dummy_xptr <- new.env()
 
   # Should return empty vector when binding unavailable
-  result <- gdalcli:::.call_gdalraster_explicit_args(dummy_xptr)
+  result <- .call_gdalraster_explicit_args(dummy_xptr)
   expect_type(result, "character")
 })

@@ -53,7 +53,7 @@ gdal_list_commands <- function(command = NULL, output = "data.frame") {
   }
 
   # Verify gdal_commands function exists
-  if (!.gdal_has_feature("gdal_commands", quietly = TRUE)) {
+  if (!.gdal_has_feature("gdal_commands")) {
     cli::cli_abort(
       c(
         "GDAL command discovery not available",
@@ -140,7 +140,7 @@ gdal_command_help <- function(command) {
   }
 
   # Verify gdal_usage function exists
-  if (!.gdal_has_feature("gdal_usage", quietly = TRUE)) {
+  if (!.gdal_has_feature("gdal_usage")) {
     cli::cli_abort(
       c(
         "GDAL command help not available",

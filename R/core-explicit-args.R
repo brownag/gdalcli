@@ -93,7 +93,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
   }
 
   # Check if gdalraster is available with feature support
-  if (!.gdal_has_feature("getExplicitlySetArgs", quietly = TRUE)) {
+  if (!.gdal_has_feature("explicit_args")) {
     cli::cli_inform(
       c(
         "Explicit argument support not available",
@@ -264,8 +264,7 @@ gdal_job_run_with_audit <- function(job, ..., audit_log = getOption("gdalcli.aud
 }
 
 # Re-export necessary utilities
-#' @export
-gdal_capabilities
+# gdal_capabilities is exported from core-optional-features.R
 
 #' Call GDALRaster Explicit Args Function
 #'

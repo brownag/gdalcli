@@ -143,7 +143,7 @@
 #' - `gdal_alg`: gdal_alg() function for algorithm execution (2.2.0+)
 #' - `getExplicitlySetArgs`: GDALAlg$getExplicitlySetArgs() method (2.2.0+)
 #' - `setVectorArgsFromObject`: gdalraster setVectorArgsFromObject() (2.3.0+)
-#' - `advanced_features`: Advanced features like vector processing (2.3.0+)
+#' - `optional_features`: Optional features like vector processing (2.3.0+)
 #'
 #' @details
 #' The list includes all features available in the installed version.
@@ -166,7 +166,7 @@
   # Add features available in 2.3.0+
   if (!is.null(version) && .check_gdalraster_version("2.3.0", quietly = TRUE)) {
     features$setVectorArgsFromObject <- "2.3.0"
-    features$advanced_features <- "2.3.0"
+    features$optional_features <- "2.3.0"
   }
 
   features
@@ -181,7 +181,7 @@
 #'
 #' @param feature_name Character string: name of the feature to check.
 #'   Valid names: "gdal_commands", "gdal_usage", "gdal_alg",
-#'   "getExplicitlySetArgs", "setVectorArgsFromObject", "advanced_features"
+#'   "getExplicitlySetArgs", "setVectorArgsFromObject", "optional_features"
 #' @param quietly Logical. If FALSE (default), warns if feature is unavailable.
 #'   If TRUE, returns silently.
 #'

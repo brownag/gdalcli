@@ -251,7 +251,7 @@ gdalcli::gdal_job_run(info_verbose)
 gdalcli::gdal_job_run(info_quiet)
 ```
 
-# Advanced Features
+# Optional Features
 
 ## Execution Backends in Detail
 

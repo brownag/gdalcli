@@ -1,107 +1,37 @@
-#' Advanced Features Framework
-#'
-#' @description
-#' Internal infrastructure for managing GDAL 3.12+ advanced features including
-#' capability detection, version checking, and performance-optimized caching.
-#'
-#' This module provides:
-#' - Feature capability detection with runtime checks
-#' - Environment-based capability caching to avoid repeated version checks
-#' - Version-conditional feature availability reporting
-#'
-#' @keywords internal
-#' @name advanced_features_framework
-
-# Environment for caching feature capabilities
-# Cache for feature availability - use global environment to avoid namespace locking issues
-if (!exists(".gdal_features_cache", envir = .GlobalEnv)) {
-  assign(".gdal_features_cache", list(), envir = .GlobalEnv)
-}
-
-#' Get Current GDAL Version String
-#'
-#' Retrieves the installed GDAL version string using gdalraster if available.
-#'
-#' @return Character string with GDAL version (e.g., "3.12.1") or "unknown"
-#'
-#' @keywords internal
-#' @examples
-#' \dontrun{
-#'   .gdal_get_version()
-#' }
-#' @noRd
-.gdal_get_version <- function() {
-  cache <- get(".gdal_features_cache", envir = .GlobalEnv)
-  if (!is.null(cache[["__gdal_version__"]])) {
-    return(cache[["__gdal_version__"]])
-  }
-
-  version <- tryCatch({
-    if (requireNamespace("gdalraster", quietly = TRUE)) {
-      version_info <- gdalraster::gdal_version()
-      # gdal_version() returns [1] = description, [2] = numeric version,
-      # [3] = date, [4] = simple version (e.g., "3.12.1")
-      if (is.character(version_info) && length(version_info) >= 4) {
-        version_info[4]
-      } else if (is.character(version_info) && length(version_info) > 0) {
-        matches <- regmatches(
-          version_info[1],
-          regexpr("[0-9]+\\.[0-9]+\\.[0-9]+", version_info[1])
-        )
-        if (length(matches) > 0) trimws(matches[1]) else "unknown"
-      } else {
-        "unknown"
-      }
-    } else {
-      "unknown"
-    }
-  }, .error = function(e) "unknown")
-
-  cache[["__gdal_version__"]] <- version
-  assign(".gdal_features_cache", cache, envir = .GlobalEnv)
-  version
-}
+# ===================================================================
+# Optional Features Framework
+#
+# Simplified feature detection without global caching
+# ===================================================================
 
 #' Check if Feature is Available
 #'
-#' Checks if a specific GDAL advanced feature is available in the current
-#' environment, with caching to avoid repeated runtime checks.
+#' Checks if a specific GDAL optional feature is available in the current
+#' environment.
 #'
 #' @param feature Character name of feature to check. Valid values:
 #'   - "explicit_args": getExplicitlySetArgs() support (GDAL 3.12+)
 #'   - "arrow_vectors": setVectorArgsFromObject() with Arrow (GDAL 3.12+)
 #'   - "gdalg_native": Native GDALG format driver (GDAL 3.11+)
+#'   - "gdal_commands": gdal_commands() function availability
+#'   - "gdal_usage": gdal_usage() function availability
 #'
 #' @return Logical TRUE if feature is available, FALSE otherwise
 #'
 #' @keywords internal
-#' @examples
-#' \dontrun{
-#'   .gdal_has_feature("explicit_args")
-#'   .gdal_has_feature("arrow_vectors")
-#' }
 #' @noRd
-.gdal_has_feature <- function(feature = c("explicit_args", "arrow_vectors", "gdalg_native")) {
+.gdal_has_feature <- function(feature = c("explicit_args", "arrow_vectors", "gdalg_native", "gdal_commands", "gdal_usage")) {
   feature <- match.arg(feature)
-  cache <- get(".gdal_features_cache", envir = .GlobalEnv)
-
-  # Check cache first
-  if (!is.null(cache[[feature]])) {
-    return(cache[[feature]])
-  }
 
   # Determine availability based on feature type
-  available <- switch(feature,
+  switch(feature,
     "explicit_args" = .check_explicit_args_available(),
     "arrow_vectors" = .check_arrow_vectors_available(),
     "gdalg_native" = .check_gdalg_native_available(),
+    "gdal_commands" = .check_gdal_commands_available(),
+    "gdal_usage" = .check_gdal_usage_available(),
     FALSE
   )
-
-  # Cache result
-  cache[[feature]] <- available
-  assign(".gdal_features_cache", cache, envir = .GlobalEnv)
-  available
 }
 
 #' Check Explicit Args Capability
@@ -182,16 +112,79 @@ if (!exists(".gdal_features_cache", envir = .GlobalEnv)) {
   gdal_has_gdalg_driver()
 }
 
+#' Check GDAL Commands Availability
+#'
+#' Internal check: gdal_commands() function in gdalraster
+#'
+#' @keywords internal
+#' @noRd
+.check_gdal_commands_available <- function() {
+  # Requires gdalraster package
+  if (!requireNamespace("gdalraster", quietly = TRUE)) {
+    return(FALSE)
+  }
+
+  # Check if gdal_commands function exists
+  exists("gdal_commands", where = asNamespace("gdalraster"))
+}
+
+#' Check GDAL Usage Availability
+#'
+#' Internal check: gdal_usage() function in gdalraster
+#'
+#' @keywords internal
+#' @noRd
+.check_gdal_usage_available <- function() {
+  # Requires gdalraster package
+  if (!requireNamespace("gdalraster", quietly = TRUE)) {
+    return(FALSE)
+  }
+
+  # Check if gdal_usage function exists
+  exists("gdal_usage", where = asNamespace("gdalraster"))
+}
+
+#' Get Current GDAL Version String
+#'
+#' Retrieves the installed GDAL version string using gdalraster if available.
+#'
+#' @return Character string with GDAL version (e.g., "3.12.1") or "unknown"
+#'
+#' @keywords internal
+#' @noRd
+.gdal_get_version <- function() {
+  tryCatch({
+    if (requireNamespace("gdalraster", quietly = TRUE)) {
+      version_info <- gdalraster::gdal_version()
+      # gdal_version() returns [1] = description, [2] = numeric version,
+      # [3] = date, [4] = simple version (e.g., "3.12.1")
+      if (is.character(version_info) && length(version_info) >= 4) {
+        version_info[4]
+      } else if (is.character(version_info) && length(version_info) > 0) {
+        matches <- regmatches(
+          version_info[1],
+          regexpr("[0-9]+\\.[0-9]+\\.[0-9]+", version_info[1])
+        )
+        if (length(matches) > 0) trimws(matches[1]) else "unknown"
+      } else {
+        "unknown"
+      }
+    } else {
+      "unknown"
+    }
+  }, .error = function(e) "unknown")
+}
+
 #' Get Detailed Capabilities Report
 #'
-#' Returns a structured report of GDAL capabilities and advanced features
+#' Returns a structured report of GDAL capabilities and optional features
 #' available in the current environment.
 #'
 #' @return A list with class "gdal_capabilities" containing:
 #'   \itemize{
 #'     \item `version`: Current GDAL version string
 #'     \item `version_matrix`: List of version compatibility info
-#'     \item `features`: List of available advanced features
+#'     \item `features`: List of available optional features
 #'     \item `packages`: List of dependent package versions
 #'   }
 #'
@@ -243,15 +236,15 @@ gdal_capabilities <- function() {
 #' @keywords internal
 #' @export
 print.gdal_capabilities <- function(x, ...) {
-  cat("GDAL Advanced Features Report\n")
-  cat("==============================\n\n")
+  cat("GDAL Capabilities Report\n")
+  cat("========================\n\n")
 
   cat("Version Information:\n")
   cat(sprintf("  Current GDAL:     %s\n", x$version))
   cat(sprintf("  Minimum Required: %s\n", x$version_matrix$minimum_required))
   cat("\n")
 
-  cat("Feature Availability:\n")
+  cat("Optional Features:\n")
   features_info <- sprintf(
     "  %-20s %s\n",
     names(x$features),
@@ -266,28 +259,4 @@ print.gdal_capabilities <- function(x, ...) {
   }
 
   invisible(x)
-}
-
-#' Clear Feature Cache
-#'
-#' Clears the cached feature availability information. Useful for testing
-#' or after environment changes.
-#'
-#' @keywords internal
-#' @noRd
-.clear_feature_cache <- function() {
-  assign(".gdal_features_cache", list(), envir = .GlobalEnv)
-  invisible(NULL)
-}
-
-#' Get Cached Feature Status
-#'
-#' Returns current cached feature status for debugging
-#'
-#' @return List of cached feature entries
-#'
-#' @keywords internal
-#' @noRd
-.get_feature_cache <- function() {
-  get(".gdal_features_cache", envir = .GlobalEnv)
 }
