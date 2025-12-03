@@ -942,53 +942,42 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
     arguments = arguments
   )
 
+  # Assign virtual output to new_job if it lacks output
+  if (!("output" %in% names(new_job$arguments))) {
+    new_job$arguments$output <- paste0("/vsimem/", basename(tempfile(pattern = "gdalcli_", fileext = ".tif")))
+  }
+
   # Check if the job already has a pipeline
   if (!is.null(job$pipeline)) {
     # Extend existing pipeline
-    # Get the last job in the current pipeline to potentially modify its output
     current_jobs <- job$pipeline$jobs
     last_job <- current_jobs[[length(current_jobs)]]
 
-    # Check if we need to connect output to input automatically
-    needs_connection <- FALSE
+    # Assign virtual output to last_job if it lacks output
+    if (!("output" %in% names(last_job$arguments))) {
+      last_job$arguments$output <- paste0("/vsimem/", basename(tempfile(pattern = "gdalcli_")), ".tif")
+    }
 
-    # Check if the new job has an input argument
+    # Connection logic: always connect outputs to inputs when available, including virtual to virtual
     if ("input" %in% names(new_job$arguments)) {
-      new_input <- new_job$arguments$input
-      if (!.is_virtual_path(new_input)) {
-        # User specified explicit input, don't connect
-        needs_connection <- FALSE
-      } else {
-        needs_connection <- TRUE
+      if (.is_virtual_path(new_job$arguments$input)) {
+        # Replace virtual input with previous job's output
+        new_job$arguments$input <- last_job$arguments$output
       }
+      # If input is not virtual, leave it (user specified explicit input)
     } else {
-      # No input specified for new job, we should connect
-      needs_connection <- TRUE
+      # No input specified, connect to previous job's output
+      new_job$arguments$input <- last_job$arguments$output
     }
 
-    if (needs_connection) {
-      # Get the output from the last job to use as input for the new job
-      connection_path <- NULL
-      if ("output" %in% names(last_job$arguments)) {
-        last_output <- last_job$arguments$output
-        if (!.is_virtual_path(last_output)) {
-          connection_path <- last_output
-        }
-      }
-
-      # If we have a connection path, set it as input for the new job
-      if (!is.null(connection_path)) {
-        if ("input" %in% names(new_job$arguments)) {
-          if (.is_virtual_path(new_job$arguments$input)) {
-            new_job$arguments$input <- connection_path
-          }
-        } else {
-          new_job$arguments$input <- connection_path
-        }
-      }
-    }
-
-    extended_pipeline <- add_job(job$pipeline, new_job)
+    # Update the pipeline with the modified last_job
+    current_jobs[[length(current_jobs)]] <- last_job
+    modified_pipeline <- new_gdal_pipeline(
+      current_jobs,
+      name = job$pipeline$name,
+      description = job$pipeline$description
+    )
+    extended_pipeline <- add_job(modified_pipeline, new_job)
 
     # Return a new job that represents the extended pipeline
     new_gdal_job(
@@ -1002,45 +991,6 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
     )
   } else {
     # No existing pipeline - create a new one starting with the current job
-    # Check if we need to connect the first job to the new job
-    needs_connection <- FALSE
-
-    # Check if the new job has an input argument
-    if ("input" %in% names(new_job$arguments)) {
-      new_input <- new_job$arguments$input
-      if (!.is_virtual_path(new_input)) {
-        # User specified explicit input, don't connect
-        needs_connection <- FALSE
-      } else {
-        needs_connection <- TRUE
-      }
-    } else {
-      # No input specified for new job, we should connect
-      needs_connection <- TRUE
-    }
-
-    if (needs_connection) {
-      # Get the output from the current job to use as input for the new job
-      connection_path <- NULL
-      if ("output" %in% names(job$arguments)) {
-        job_output <- job$arguments$output
-        if (!.is_virtual_path(job_output)) {
-          connection_path <- job_output
-        }
-      }
-
-      # If we have a connection path, set it as input for the new job
-      if (!is.null(connection_path)) {
-        if ("input" %in% names(new_job$arguments)) {
-          if (.is_virtual_path(new_job$arguments$input)) {
-            new_job$arguments$input <- connection_path
-          }
-        } else {
-          new_job$arguments$input <- connection_path
-        }
-      }
-    }
-
     # Create a clean first job (without creation options and config options - those stay on wrapper)
     first_job_clean <- new_gdal_job(
       command_path = job$command_path,
@@ -1051,12 +1001,29 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
       stream_out_format = job$stream_out_format,
       pipeline = NULL
     )
-    
+
     # Manually clear creation options from the first job's arguments
     first_job_clean$arguments[["creation-option"]] <- NULL
     first_job_clean$arguments[["layer-creation-option"]] <- NULL
     first_job_clean$arguments[["creation_option"]] <- NULL
     first_job_clean$arguments[["layer_creation_option"]] <- NULL
+
+    # Assign virtual output to first_job_clean if it lacks output
+    if (!("output" %in% names(first_job_clean$arguments))) {
+      first_job_clean$arguments$output <- paste0("/vsimem/", basename(tempfile(pattern = "gdalcli_")), ".tif")
+    }
+
+    # Connection logic: always connect outputs to inputs when available, including virtual to virtual
+    if ("input" %in% names(new_job$arguments)) {
+      if (.is_virtual_path(new_job$arguments$input)) {
+        # Replace virtual input with previous job's output
+        new_job$arguments$input <- first_job_clean$arguments$output
+      }
+      # If input is not virtual, leave it (user specified explicit input)
+    } else {
+      # No input specified, connect to previous job's output
+      new_job$arguments$input <- first_job_clean$arguments$output
+    }
 
     new_pipeline <- new_gdal_pipeline(list(first_job_clean, new_job))
 
