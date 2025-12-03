@@ -266,7 +266,7 @@
 
     # Check if GDALG is in the format list
     grepl("GDALG", result$stdout, ignore.case = TRUE)
-  }, .error = function(e) {
+  }, error = function(e) {
     FALSE
   })
 }

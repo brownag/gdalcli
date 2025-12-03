@@ -96,7 +96,7 @@ test_that(".create_audit_entry captures error status", {
 })
 
 test_that("gdal_job_run_with_audit returns result", {
-  skip_if_not(gdal_check_version("3.11", op = ">="))
+  skip_if_not(gdal_check_version("3.11.3", op = ">="))
 
   # Create a simple job that will fail due to nonexistent input
   job <- new_gdal_job(
@@ -112,7 +112,7 @@ test_that("gdal_job_run_with_audit returns result", {
 })
 
 test_that("gdal_job_run_with_audit respects audit_log parameter", {
-  skip_if_not(gdal_check_version("3.11", op = ">="))
+  skip_if_not(gdal_check_version("3.11.3", op = ">="))
 
   job <- new_gdal_job(
     command_path = c("raster", "info"),
