@@ -133,11 +133,17 @@ test_that("pipeline execution fails gracefully on errors", {
   ) |>
     gdal_raster_convert(output = "output.jpg")
 
-  # Should fail at first job due to missing input file
-  expect_error(
-    gdal_job_run(job),
-    "failed to parse arguments and set their values"
-  )
+  if (gdal_check_version("3.11.3", op = ">=")) {
+    expect_error(
+      gdal_job_run(job),
+      "failed to parse arguments and set their values"
+    )
+  } else {
+    expect_error(
+      gdal_job_run(job),
+      "gdal_alg\\(\\) requires GDAL >= 3.11.3"
+    )
+  }
 })
 
 test_that("pipeline with virtual paths doesn't override user outputs", {

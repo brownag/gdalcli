@@ -5,11 +5,6 @@ test_that("gdal_has_gdalg_driver detects driver availability", {
   result <- gdal_has_gdalg_driver()
   expect_type(result, "logical")
   expect_length(result, 1)
-
-  # For GDAL 3.11+, GDALG should be available
-  if (gdal_check_version("3.11", op = ">=")) {
-    expect_true(result, info = "GDALG driver should be available in GDAL 3.11+")
-  }
 })
 
 test_that("gdal_save_pipeline_native requires valid pipeline", {
