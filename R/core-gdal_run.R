@@ -18,7 +18,7 @@
 #'   always available if GDAL installed), `"gdalraster"` (C++ bindings, if gdalraster installed),
 #'   or `"reticulate"` (Python osgeo.gdal via reticulate, if available).
 #'   If `NULL` (default), auto-selects the best available backend:
-#'   gdalraster if available (faster, no subprocess), otherwise processx.
+#'   gdalraster if available, otherwise processx.
 #'   Control auto-selection with `options(gdalcli.prefer_backend = 'gdalraster')` or
 #'   `options(gdalcli.prefer_backend = 'processx')`.
 #' @param stream_in An R object to be streamed to `/vsistdin/`. Can be `NULL`,
@@ -66,6 +66,16 @@
 #'
 #' @export
 gdal_job_run <- function(x, ..., backend = NULL) {
+  # If this is a pipeline object, delegate to pipeline method
+  if (inherits(x, "gdal_pipeline")) {
+    return(gdal_job_run.gdal_pipeline(x, ...))
+  }
+
+  # If this job has a pipeline history, run the pipeline instead
+  if (inherits(x, "gdal_job") && !is.null(x$pipeline)) {
+    return(gdal_job_run(x$pipeline, ...))
+  }
+
   # Handle backend selection
   if (is.null(backend)) {
     # Auto-select backend based on availability and user preference
@@ -280,8 +290,11 @@ gdal_job_run.gdal_job <- function(x,
     }
   }
 
+  # Add option arguments first (GDAL expects [options] then positional args)
+  args <- c(args, option_args)
+
   # Add positional arguments in correct order: inputs first, then outputs
-  # Most GDAL commands follow: [options] input [input2 ...] output
+  # GDAL commands follow: [options] input [input2 ...] output
   positional_order <- c("input", "src_dataset", "dataset", "output", "dest_dataset")
   for (arg_name in positional_order) {
     if (arg_name %in% names(positional_args_list)) {
@@ -294,9 +307,6 @@ gdal_job_run.gdal_job <- function(x,
       }
     }
   }
-
-  # Add option arguments
-  args <- c(args, option_args)
 
   args
 }
@@ -401,6 +411,11 @@ gdal_job_run.default <- function(x, ...) {
                                env = NULL,
                                verbose = FALSE,
                                ...) {
+  # If this job has a pipeline history, run the pipeline instead
+  if (inherits(job, "gdal_job") && !is.null(job$pipeline)) {
+    return(gdal_job_run(job$pipeline, backend = "gdalraster", ...))
+  }
+
   # Check gdalraster is available
   if (!requireNamespace("gdalraster", quietly = TRUE)) {
     cli::cli_abort(
@@ -475,10 +490,38 @@ gdal_job_run.default <- function(x, ...) {
     # Instantiate the algorithm with command and all arguments
     # We pass all args to gdal_alg since gdalraster needs positional args
     # to be specified together with the command
-    alg <- gdalraster::gdal_alg(cmd = cmd, args = final_args)
+    alg <- tryCatch({
+      gdalraster::gdal_alg(cmd = cmd, args = final_args)
+    }, .error = function(alg_e) {
+      # Check if this is a GDAL error from the constructor
+      alg_msg <- conditionMessage(alg_e)
+      if (grepl("GDAL FAILURE", alg_msg)) {
+        matches <- regmatches(alg_msg, regexec("GDAL FAILURE [0-9]+: ([^\\n]+)", alg_msg))
+        if (length(matches[[1]]) > 1) {
+          gdal_error <- matches[[1]][2]
+          stop(gdal_error)
+        }
+      }
+      # Re-throw if not a GDAL error
+      stop(alg_e)
+    })
 
     # Run the algorithm
-    alg$run()
+    tryCatch({
+      alg$run()
+    }, .error = function(run_e) {
+      # Check if this is a GDAL error
+      run_msg <- conditionMessage(run_e)
+      if (grepl("GDAL FAILURE", run_msg)) {
+        matches <- regmatches(run_msg, regexec("GDAL FAILURE [0-9]+: ([^\\n]+)", run_msg))
+        if (length(matches[[1]]) > 1) {
+          gdal_error <- matches[[1]][2]
+          stop(gdal_error)
+        }
+      }
+      # Re-throw if not a GDAL error
+      stop(run_e)
+    })
 
     # Handle output based on streaming format
     if (!is.null(stream_out_format)) {
@@ -507,10 +550,24 @@ gdal_job_run.default <- function(x, ...) {
 
     invisible(TRUE)
   }, .error = function(e) {
+    # Try to extract GDAL error from the error message
+    error_msg <- conditionMessage(e)
+    
+    # If the error message contains GDAL FAILURE, extract it
+    if (grepl("GDAL FAILURE", error_msg)) {
+      # Look for the GDAL error pattern
+      matches <- regmatches(error_msg, regexec("GDAL FAILURE [0-9]+: ([^\\n]+)", error_msg))
+      if (length(matches[[1]]) > 1) {
+        gdal_error <- matches[[1]][2]
+        cli::cli_abort(gdal_error)
+      }
+    }
+    
+    # Fallback: re-throw the original error
     cli::cli_abort(
       c(
         "GDAL command failed via gdalraster",
-        "x" = conditionMessage(e)
+        "x" = error_msg
       )
     )
   })

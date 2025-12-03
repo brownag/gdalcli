@@ -209,8 +209,14 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #' @examples
 #' \dontrun{
 #' # Sequential execution (default, each job runs separately)
-#' pipeline <- gdal_raster_info("in.tif") |>
-#'   gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+#' pipeline <- gdal_raster_reproject(
+#'   input = "in.tif",
+#'   dst_crs = "EPSG:32632"
+#' ) |>
+#'   gdal_raster_scale(
+#'     src_min = 0, src_max = 100,
+#'     dst_min = 0, dst_max = 255
+#'   ) |>
 #'   gdal_raster_convert(output = "out.tif")
 #' gdal_job_run(pipeline)
 #'
@@ -250,6 +256,18 @@ gdal_job_run.gdal_pipeline <- function(x,
     cli::cli_alert_info(sprintf("Executing pipeline with %d jobs (sequential mode)", length(x$jobs)))
   }
 
+  # Determine backend for individual jobs
+  backend <- if (length(list(...)) > 0 && "backend" %in% names(list(...))) {
+    list(...)$backend
+  } else {
+    # Auto-select backend
+    if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
+      "gdalraster"
+    } else {
+      "processx"
+    }
+  }
+
   # Collect temporary files for cleanup
   temp_files <- character()
 
@@ -277,7 +295,7 @@ gdal_job_run.gdal_pipeline <- function(x,
 
     # Execute the job
     tryCatch({
-      gdal_job_run(job, ..., verbose = verbose)
+      gdal_job_run(job, ..., backend = backend, verbose = verbose)
     }, .error = function(e) {
       cli::cli_abort(
         c(

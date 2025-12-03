@@ -143,6 +143,8 @@ test_that("print.gdal_capabilities produces output", {
 })
 
 test_that(".clear_feature_cache removes all entries", {
+  gdalcli:::.clear_feature_cache()
+  
   # Populate cache
   gdalcli:::.gdal_has_feature("explicit_args")
   gdalcli:::.gdal_has_feature("arrow_vectors")

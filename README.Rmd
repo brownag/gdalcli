@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
-A modern R interface to GDAL's unified command-line interface (GDAL >=3.11). Provides a **lazy evaluation framework** for building and executing GDAL commands with composable, pipe-aware functions. Full support for native GDAL pipelines, GDALG format persistence, and advanced pipeline composition.
+An R interface to GDAL's unified command-line interface (GDAL >=3.11). Provides a lazy evaluation framework for building and executing GDAL commands with composable, pipe-aware functions. Supports native GDAL pipelines, GDALG format persistence, and pipeline composition.
 
 ## Overview
 
@@ -26,10 +26,10 @@ A modern R interface to GDAL's unified command-line interface (GDAL >=3.11). Pro
 - **Auto-Generated Functions**: 80+ R wrapper functions automatically generated from GDAL's JSON API specification
 - **Lazy Evaluation**: Build command specifications as objects (`gdal_job`), execute only when needed via `gdal_job_run()`
 - **Pipe Composition**: Native R pipe (`|>`) support with S3 methods for adding options and environment variables
-- **Native Pipeline Execution**: Direct execution via `gdal raster/vector pipeline` for efficient multi-step workflows
+- **Native Pipeline Execution**: Direct execution via `gdal raster/vector pipeline` for multi-step workflows
 - **GDALG Format Support**: Save and load pipelines as JSON for persistence, sharing, and version control
 - **Shell Script Generation**: Render pipelines as executable bash/zsh scripts (native or sequential modes)
-- **VSI Streaming**: Support for `/vsistdin/` and `/vsistdout/` for file-less, memory-efficient workflows
+- **VSI Streaming**: Support for `/vsistdin/` and `/vsistdout/` for file-less workflows
 - **Multiple Backends**: Execute with processx (default), gdalraster (C++ bindings), or reticulate (Python)
 
 ## Installation
@@ -152,7 +152,7 @@ unlink(temp_file)
 ### Example 9: GDALG Format - Round-Trip Testing
 
 ```{r}
-# Demonstrate perfect round-trip fidelity
+# Demonstrate round-trip fidelity
 original_cmd <- render_gdal_pipeline(pipeline, format = "native")
 
 # Save to GDALG and load back
@@ -177,11 +177,11 @@ identical(original_cmd, loaded_cmd)
 unlink(temp_file)
 ```
 
-### Example 10: Complex Pipeline with Configuration Options
+### Example 10: Pipeline with Configuration Options
 
 ```{r}
-# Build a complex pipeline with cloud storage and config options
-complex_pipeline <- gdal_raster_reproject(
+# Build a pipeline with cloud storage and config options
+pipeline <- gdal_raster_reproject(
   input = "/vsis3/sentinel-pds/input.tif",
   dst_crs = "EPSG:3857"
 ) |>
@@ -194,7 +194,7 @@ complex_pipeline <- gdal_raster_reproject(
   gdal_with_config("AWS_REGION=us-west-2", "AWS_REQUEST_PAYER=requester")
 
 # Render with config options included
-native_with_config <- render_gdal_pipeline(complex_pipeline, format = "native")
+native_with_config <- render_gdal_pipeline(pipeline, format = "native")
 native_with_config
 ```
 
@@ -205,8 +205,10 @@ native_with_config
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 reprojected_file <- tempfile(fileext = ".tif")
 
-simple_pipeline <- gdal_raster_info(input = clay_file) |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+simple_pipeline <- gdal_raster_reproject(
+  input = clay_file,
+  dst_crs = "EPSG:32632"
+) |>
   gdal_raster_convert(output = reprojected_file)
 
 # Inspect the pipeline object
@@ -314,8 +316,10 @@ render_gdal_pipeline(config_pipeline, format = "native")
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 processed_file <- tempfile(fileext = ".tif")
 
-comparison_pipeline <- gdal_raster_info(input = clay_file) |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+comparison_pipeline <- gdal_raster_reproject(
+  input = clay_file,
+  dst_crs = "EPSG:32632"
+) |>
   gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
   gdal_raster_convert(output = processed_file)
 
@@ -352,9 +356,10 @@ gdal_job_run(job)
 ```
 
 The processx backend:
+
 - Executes each GDAL command as a subprocess
 - Always available if GDAL CLI is installed
-- Works reliably across all platforms
+- Works across all platforms
 - No additional dependencies beyond gdalcli
 
 ### gdalraster Backend (Optional)
@@ -373,7 +378,8 @@ gdal_job_run(job, backend = "gdalraster")
 ```
 
 The gdalraster backend:
-- Bypasses subprocess overhead with direct C++ bindings
+
+- Uses C++ GDAL bindings through the gdalraster package
 - Requires gdalraster package (>= 2.2.0)
 - Auto-selected as default if available and functional
 
@@ -467,10 +473,14 @@ gdal_job_run(job, backend = "processx")  # Uses processx for this call
 ```
 
 Supported values for `gdalcli.prefer_backend`:
+
 - `"auto"` (default) - Automatically selects best available backend
+
 - `"processx"` - Always use processx
+
 - `"gdalraster"` - Always use gdalraster (if installed)
-- `"reticulate"` - Always use reticulate (if configured)
+
+- `"reticulate"` - Always use reticulate (if installed and configured)
 
 ## Usage Examples by Backend
 
@@ -520,7 +530,7 @@ gdal_job_run(job)
 
 Convert a vector dataset between formats:
 
-```{r, eval=FALSE}
+```{r}
 library(gdalcli)
 
 job <- gdal_vector_convert(
@@ -537,7 +547,7 @@ gdal_job_run(job)
 
 Chain multiple operations:
 
-```{r, eval=FALSE}
+```{r}
 library(gdalcli)
 
 pipeline <- gdal_raster_reproject(
@@ -587,8 +597,10 @@ gdal_job_run(job)
 Execute multi-step workflows as a single GDAL pipeline:
 
 ```{r}
-pipeline <- gdal_raster_info(input = system.file("extdata/sample_clay_content.tif", package = "gdalcli")) |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+pipeline <- gdal_raster_reproject(
+  input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
+  dst_crs = "EPSG:32632"
+) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"))
 
 pipeline
@@ -608,7 +620,7 @@ loaded <- gdal_load_pipeline(workflow_file)
 gdal_job_run(loaded)
 ```
 
-GDALG provides perfect round-trip fidelity - all pipeline structure and arguments are preserved.
+GDALG provides round-trip fidelity - all pipeline structure and arguments are preserved.
 
 ### Shell Script Generation
 
@@ -626,7 +638,7 @@ cat(script_seq)
 
 ### GDALG Format: Native Format Driver Support (GDAL 3.11+)
 
-For maximum compatibility with GDAL tools across Python, C++, and CLI, use the native GDALG format driver:
+For compatibility with GDAL tools across Python, C++, and CLI, use the native GDALG format driver:
 
 ```{r, eval=FALSE}
 # Check if native GDALG driver is available
@@ -647,15 +659,15 @@ gdal_save_pipeline(pipeline, workflow_file, method = "auto")
 
 **Comparison of serialization methods:**
 
-- **Custom JSON**: Backward compatible, works with any GDAL version, gdalcli-specific format
-- **Native GDALG Driver**: Requires GDAL 3.11+, universal compatibility with other GDAL tools, full metadata support
+- **Custom JSON**: Works with any GDAL version, gdalcli-specific format
+- **Native GDALG Driver**: Requires GDAL 3.11+, compatible with other GDAL tools, includes metadata
 
 **Method parameter:**
-- `method = "json"` - Uses custom JSON serialization (backward compatible)
+- `method = "json"` - Uses custom JSON serialization (works with any GDAL version)
 - `method = "native"` - Uses GDAL's native GDALG format driver (requires GDAL 3.11+)
-- `method = "auto"` - Automatically selects best method based on GDAL version
+- `method = "auto"` - Automatically selects method based on GDAL version
 
-Both methods produce valid, portable GDALG files that can be loaded with `gdal_load_pipeline()`.
+Both methods produce valid GDALG files that can be loaded with `gdal_load_pipeline()`.
 
 ### Configuration Options in Pipelines
 
@@ -679,13 +691,13 @@ render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
 
 ## Version Compatibility
 
-`gdalcli` supports GDAL 3.11 and later, with enhanced features available in GDAL 3.12+.
+`gdalcli` supports GDAL 3.11 and later, with additional features available in GDAL 3.12+.
 
 ### Minimum Requirements
 
 - **GDAL**: >= 3.11 (CLI framework minimum)
 - **R**: >= 4.1
-- **gdalraster**: >= 2.2.0 (recommended for advanced features)
+- **gdalraster**: >= 2.2.0 (recommended for some features)
 
 ### GDAL 3.11 Features
 
@@ -694,19 +706,19 @@ Core GDAL CLI functionality available in GDAL 3.11+:
 - **80+ Algorithm Functions**: All raster, vector, and multidimensional operations
 - **Pipeline Execution**: Native and sequential pipeline modes
 - **GDALG Format**: Read-only access to GDALG format (JSON-based pipeline files)
-- **Configuration Options**: Full GDAL config option support
+- **Configuration Options**: GDAL config option support
 - **VSI Support**: Virtual file system integration
 - **Shell Script Generation**: Export pipelines to executable bash/zsh
 
-### GDAL 3.12 Enhancements
+### GDAL 3.12 Features
 
-New algorithms and capabilities available in GDAL 3.12+:
+Additional algorithms and capabilities available in GDAL 3.12+:
 
 - **GDALG Format Write Support**: Write pipelines to GDALG format for persistence and sharing
-- **New Raster Algorithms**: blend, compare, neighbors, nodata-to-alpha, pansharpen, proximity, rgb-to-palette, update, zonal-stats, as-features
-- **New Vector Algorithms**: check-coverage, check-geometry, clean-coverage, index, layer-algebra, make-point, partition, set-field-type, simplify-coverage
-- **GDALG Format Driver**: Native support for GDALG as a format driver with enhanced metadata
-- **Advanced Features**: Enhanced pipeline capabilities and algorithm metadata
+- **Additional Raster Algorithms**: blend, compare, neighbors, nodata-to-alpha, pansharpen, proximity, rgb-to-palette, update, zonal-stats, as-features
+- **Additional Vector Algorithms**: check-coverage, check-geometry, clean-coverage, index, layer-algebra, make-point, partition, set-field-type, simplify-coverage
+- **GDALG Format Driver**: Native support for GDALG as a format driver with metadata
+- **Pipeline Features**: Additional pipeline capabilities and algorithm metadata
 
 ### Checking Version Support
 
@@ -776,10 +788,10 @@ Use `gdal_gdal(drivers = TRUE)` to list all available drivers in your GDAL insta
 - **R** >= 4.1
 - **GDAL** >= 3.11 (required for CLI)
 - **Dependencies**:
-  - `processx` (>=3.8.0) - Robust subprocess management
-  - `yyjsonr` (>=0.1.0) - Fast, memory-efficient JSON handling
+  - `processx` (>=3.8.0) - Subprocess management
+  - `yyjsonr` (>=0.1.0) - JSON handling
   - `rlang` (>=1.0.0) - Error handling and programming utilities
-  - `cli` (>=3.0.0) - User-friendly terminal messages
+  - `cli` (>=3.0.0) - Terminal messages
   - `digest` (>=0.6.0) - Cryptographic hashing
 
 ## Documentation
@@ -801,9 +813,9 @@ Use `gdal_gdal(drivers = TRUE)` to list all available drivers in your GDAL insta
    - Composable modifiers: `gdal_with_co()`, `gdal_with_env()`, `gdal_with_config()`, etc.
    - S3 methods for extensibility
    - Lazy `gdal_job` specification objects
-   - Native pipe (`|>`) support for fluent composition
+   - Native pipe (`|>`) support for composition
 
-2. **Pipeline Layer** (Advanced Workflows)
+2. **Pipeline Layer** (Workflows)
    - Automatic pipeline building through chained piping
    - Native GDAL pipeline execution (`gdal raster/vector pipeline`)
    - GDALG format serialization with `gdal_save_pipeline()` and `gdal_load_pipeline()`
@@ -856,8 +868,10 @@ Pipelines are automatically created when chaining GDAL operations with the nativ
 
 ```{r}
 # Build a multi-step pipeline by chaining operations
-pipeline <- gdal_raster_info(input = "input.tif") |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
   gdal_raster_convert(output = "output.tif")
 
 # Render as sequential commands (jobs run separately)
@@ -894,7 +908,7 @@ gdal_save_pipeline(pipeline, "workflow.gdalg.json")
 # Load pipeline later
 loaded <- gdal_load_pipeline("workflow.gdalg.json")
 
-# Pipelines maintain perfect round-trip fidelity
+# Pipelines maintain round-trip fidelity
 # All structure, arguments, and metadata are preserved
 ```
 
@@ -903,7 +917,7 @@ GDALG files can be:
 - Version controlled in git repositories
 - Shared with team members
 - Executed by other GDAL-compatible tools
-- Edited manually for advanced workflows
+- Edited manually for complex workflows
 
 ## Security Considerations
 

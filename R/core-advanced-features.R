@@ -13,8 +13,10 @@
 #' @name advanced_features_framework
 
 # Environment for caching feature capabilities
-# Cache for feature availability - uses base environment to avoid package namespace locks
-.gdal_features_cache <- new.env(parent = baseenv())
+# Cache for feature availability - use global environment to avoid namespace locking issues
+if (!exists(".gdal_features_cache", envir = .GlobalEnv)) {
+  assign(".gdal_features_cache", list(), envir = .GlobalEnv)
+}
 
 #' Get Current GDAL Version String
 #'
@@ -29,8 +31,9 @@
 #' }
 #' @noRd
 .gdal_get_version <- function() {
-  if (exists("__gdal_version__", envir = .gdal_features_cache)) {
-    return(get("__gdal_version__", envir = .gdal_features_cache))
+  cache <- get(".gdal_features_cache", envir = .GlobalEnv)
+  if (!is.null(cache[["__gdal_version__"]])) {
+    return(cache[["__gdal_version__"]])
   }
 
   version <- tryCatch({
@@ -54,7 +57,8 @@
     }
   }, .error = function(e) "unknown")
 
-  assign("__gdal_version__", version, envir = .gdal_features_cache)
+  cache[["__gdal_version__"]] <- version
+  assign(".gdal_features_cache", cache, envir = .GlobalEnv)
   version
 }
 
@@ -79,10 +83,11 @@
 #' @noRd
 .gdal_has_feature <- function(feature = c("explicit_args", "arrow_vectors", "gdalg_native")) {
   feature <- match.arg(feature)
+  cache <- get(".gdal_features_cache", envir = .GlobalEnv)
 
   # Check cache first
-  if (exists(feature, envir = .gdal_features_cache)) {
-    return(get(feature, envir = .gdal_features_cache))
+  if (!is.null(cache[[feature]])) {
+    return(cache[[feature]])
   }
 
   # Determine availability based on feature type
@@ -93,11 +98,9 @@
     FALSE
   )
 
-  # Cache result - use tryCatch to handle locked environments gracefully
-  tryCatch(
-    assign(feature, available, envir = .gdal_features_cache),
-    error = function(e) NULL  # Silently fail if environment is locked
-  )
+  # Cache result
+  cache[[feature]] <- available
+  assign(".gdal_features_cache", cache, envir = .GlobalEnv)
   available
 }
 
@@ -118,13 +121,13 @@
     return(FALSE)
   }
 
-  # Check if gdalraster version supports explicit args (1.2.0+)
+  # Check if gdalraster version supports explicit args (2.2.0+)
   pkg_version <- tryCatch(
     utils::packageVersion("gdalraster"),
     .error = function(e) "0.0.0"
   )
 
-  as.numeric_version(pkg_version) >= as.numeric_version("1.2.0")
+  as.numeric_version(pkg_version) >= as.numeric_version("2.2.0")
 }
 
 #' Check Arrow Vectors Capability
@@ -273,8 +276,7 @@ print.gdal_capabilities <- function(x, ...) {
 #' @keywords internal
 #' @noRd
 .clear_feature_cache <- function() {
-  rm(list = ls(envir = .gdal_features_cache, all.names = TRUE),
-     envir = .gdal_features_cache)
+  assign(".gdal_features_cache", list(), envir = .GlobalEnv)
   invisible(NULL)
 }
 
@@ -287,5 +289,5 @@ print.gdal_capabilities <- function(x, ...) {
 #' @keywords internal
 #' @noRd
 .get_feature_cache <- function() {
-  as.list(.gdal_features_cache)
+  get(".gdal_features_cache", envir = .GlobalEnv)
 }

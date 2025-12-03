@@ -154,15 +154,15 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 #' were explicitly set during GDAL job execution.
 #'
 #' @param job A `gdal_job` object
-#' @param status Status of execution ("pending", "success", ".error")
-#' @param error_msg Optional .error message if status is ".error"
+#' @param status Status of execution ("pending", "success", "error")
+#' @param error_msg Optional error message if status is "error"
 #'
 #' @return List with audit entry containing:
 #'   - timestamp: When audit entry was created
 #'   - job_command: The job's command path
 #'   - explicit_args: Arguments explicitly set by user
 #'   - status: Execution status
-#'   - .error: Error message (if applicable)
+#'   - error: Error message (if applicable)
 #'   - gdal_version: GDAL version at execution time
 #'   - r_version: R version at execution time
 #'
@@ -187,7 +187,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     job_command = paste(job$command_path, collapse = " "),
     explicit_args = explicit_args,
     status = status,
-    .error = error_msg,
+    error = error_msg,
     gdal_version = .gdal_get_version(),
     r_version = paste0(R.version$major, ".", R.version$minor)
   )
@@ -246,9 +246,9 @@ gdal_job_run_with_audit <- function(job, ..., audit_log = getOption("gdalcli.aud
   result <- tryCatch({
     gdal_job_run(job, ...)
   }, .error = function(e) {
-    # Update audit entry with .error
-    audit_entry$status <<- ".error"
-    audit_entry$.error <<- conditionMessage(e)
+    # Update audit entry with error
+    audit_entry$status <<- "error"
+    audit_entry$error <<- conditionMessage(e)
     rlang::cnd_signal(e)
   })
 
@@ -266,3 +266,19 @@ gdal_job_run_with_audit <- function(job, ..., audit_log = getOption("gdalcli.aud
 # Re-export necessary utilities
 #' @export
 gdal_capabilities
+
+#' Call GDALRaster Explicit Args Function
+#'
+#' Internal function to call gdalraster's explicit args functionality.
+#' Returns empty vector if binding is unavailable.
+#'
+#' @param xptr External pointer to GDALAlg object
+#' @return Character vector of explicit args
+#' @keywords internal
+#' @noRd
+.call_gdalraster_explicit_args <- function(xptr) {
+  # This function is a stub - in practice, this would call
+  # gdalraster's GDALAlg$getExplicitlySetArgs() method
+  # For now, return empty vector as fallback
+  character(0)
+}

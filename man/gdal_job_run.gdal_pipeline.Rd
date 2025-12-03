@@ -46,8 +46,14 @@ potentially becoming input to the next through virtual file systems.
 \examples{
 \dontrun{
 # Sequential execution (default, each job runs separately)
-pipeline <- gdal_raster_info("in.tif") |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+pipeline <- gdal_raster_reproject(
+  input = "in.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 100,
+    dst_min = 0, dst_max = 255
+  ) |>
   gdal_raster_convert(output = "out.tif")
 gdal_job_run(pipeline)
 

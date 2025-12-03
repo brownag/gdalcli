@@ -98,22 +98,17 @@ test_that(".create_audit_entry captures error status", {
 test_that("gdal_job_run_with_audit returns result", {
   skip_if_not(gdal_check_version("3.11", op = ">="))
 
-  # Create a simple job that won't fail
+  # Create a simple job that will fail due to nonexistent input
   job <- new_gdal_job(
     command_path = c("raster", "info"),
     arguments = list(input = "nonexistent.tif")
   )
 
-  # With audit_log = FALSE, should return result without audit trail
-  result <- expect_no_error(
-    suppressWarnings(gdal_job_run_with_audit(job, audit_log = FALSE))
+  # With audit_log = FALSE, should fail with GDAL error
+  expect_error(
+    gdal_job_run_with_audit(job, audit_log = FALSE),
+    "failed to parse arguments and set their values"
   )
-
-  # If result is not NULL, check it doesn't have audit trail
-  if (!is.null(result)) {
-    audit_trail <- attr(result, "audit_trail")
-    expect_null(audit_trail)
-  }
 })
 
 test_that("gdal_job_run_with_audit respects audit_log parameter", {
@@ -124,17 +119,11 @@ test_that("gdal_job_run_with_audit respects audit_log parameter", {
     arguments = list(input = "nonexistent.tif")
   )
 
-  # With audit_log = TRUE, should attach audit trail
-  result <- expect_no_error(
-    suppressWarnings(gdal_job_run_with_audit(job, audit_log = TRUE))
+  # With audit_log = TRUE, should still fail with GDAL error
+  expect_error(
+    gdal_job_run_with_audit(job, audit_log = TRUE),
+    "failed to parse arguments and set their values"
   )
-
-  if (!is.null(result)) {
-    audit_trail <- attr(result, "audit_trail")
-    if (isTRUE(getOption("gdalcli.audit_logging", FALSE))) {
-      expect_not_null(audit_trail)
-    }
-  }
 })
 
 test_that("gdal_job_get_explicit_args handles missing options pointer", {

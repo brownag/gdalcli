@@ -19,18 +19,13 @@ gdal_save_pipeline_native(pipeline, path, overwrite = FALSE, verbose = FALSE)
 Invisibly returns the path where pipeline was saved
 }
 \description{
-Saves a gdal_pipeline using GDAL's native GDALG format driver (GDAL 3.11+).
-This method generates the GDALG file using GDAL's native serialization,
-ensuring maximum compatibility with other GDAL tools and future versions.
+Saves a gdal_pipeline using GDAL's native GDALG format. This method produces
+GDALG JSON that is compatible with GDAL's native pipeline format, ensuring
+maximum compatibility with other GDAL tools and future versions.
 }
 \details{
-This function requires GDAL 3.11 or later with the GDALG format driver
-installed. It works by:
-\enumerate{
-\item Rendering the pipeline to native GDAL pipeline syntax
-\item Executing the pipeline with --output-format GDALG
-\item The GDAL driver serializes the pipeline natively
-}
+This function requires GDAL 3.11 or later with the GDALG format driver.
+It produces GDALG JSON format that can be loaded by GDAL's native tools.
 
 The native GDALG format provides:
 \itemize{

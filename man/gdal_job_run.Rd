@@ -25,7 +25,7 @@ gdal_job_run(x, ..., backend = NULL)
 always available if GDAL installed), \code{"gdalraster"} (C++ bindings, if gdalraster installed),
 or \code{"reticulate"} (Python osgeo.gdal via reticulate, if available).
 If \code{NULL} (default), auto-selects the best available backend:
-gdalraster if available (faster, no subprocess), otherwise processx.
+gdalraster if available, otherwise processx.
 Control auto-selection with \code{options(gdalcli.prefer_backend = 'gdalraster')} or
 \code{options(gdalcli.prefer_backend = 'processx')}.}
 

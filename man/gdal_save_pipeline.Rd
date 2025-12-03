@@ -48,10 +48,10 @@ This function supports two serialization methods:
 \item gdalcli-specific format
 }
 
-\strong{Method: "native" (GDALG Format Driver)}
+\strong{Method: "native" (GDALG Format)}
 \itemize{
 \item Requires GDAL 3.11+ with GDALG driver
-\item Slower (runs GDAL pipeline internally)
+\item Uses GDAL-compatible JSON serialization
 \item Universal GDAL compatibility
 \item Full GDAL metadata
 }

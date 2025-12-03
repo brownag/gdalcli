@@ -345,9 +345,9 @@ gdal_has_gdalg_driver <- function() {
 #' Save GDAL Pipeline Using Native GDALG Format Driver
 #'
 #' @description
-#' Saves a gdal_pipeline using GDAL's native GDALG format driver (GDAL 3.11+).
-#' This method generates the GDALG file using GDAL's native serialization,
-#' ensuring maximum compatibility with other GDAL tools and future versions.
+#' Saves a gdal_pipeline using GDAL's native GDALG format. This method produces
+#' GDALG JSON that is compatible with GDAL's native pipeline format, ensuring
+#' maximum compatibility with other GDAL tools and future versions.
 #'
 #' @param pipeline A gdal_pipeline or gdal_job object with pipeline
 #' @param path Character string specifying output path (typically .gdalg.json)
@@ -357,11 +357,8 @@ gdal_has_gdalg_driver <- function() {
 #' @return Invisibly returns the path where pipeline was saved
 #'
 #' @details
-#' This function requires GDAL 3.11 or later with the GDALG format driver
-#' installed. It works by:
-#' 1. Rendering the pipeline to native GDAL pipeline syntax
-#' 2. Executing the pipeline with --output-format GDALG
-#' 3. The GDAL driver serializes the pipeline natively
+#' This function requires GDAL 3.11 or later with the GDALG format driver.
+#' It produces GDALG JSON format that can be loaded by GDAL's native tools.
 #'
 #' The native GDALG format provides:
 #' - Compatibility with GDAL Python/C++ APIs
@@ -427,65 +424,23 @@ gdal_save_pipeline_native <- function(pipeline,
     )
   }
 
-  # Build native pipeline string (without final write step)
-  pipeline_str <- .build_pipeline_for_gdalg_export(pipeline)
+  # For native GDALG, we use GDAL-compatible JSON serialization
+  # (GDALG driver doesn't support writing, so we use JSON format)
+  gdalg <- .pipeline_to_gdalg(pipeline)
 
-  # Determine pipeline type (raster/vector) from first job
-  first_job <- pipeline$jobs[[1]]
-  cmd_path <- first_job$command_path
-  if (length(cmd_path) > 0 && cmd_path[1] == "gdal") {
-    cmd_path <- cmd_path[-1]
-  }
-  pipeline_type <- if (length(cmd_path) > 0) cmd_path[1] else "raster"
+  # Serialize to JSON using yyjsonr with auto_unbox to avoid wrapping scalars in arrays
+  opts <- yyjsonr::opts_write_json(pretty = TRUE, auto_unbox = TRUE)
+  yyjsonr::write_json_file(gdalg, path, opts = opts)
 
-  # Construct GDAL command to generate GDALG
-  # gdal raster pipeline ! read ... ! reproject ... ! write output.gdalg.json --output-format GDALG
-  args <- c(
-    pipeline_type,
-    "pipeline",
-    pipeline_str,
-    "!",
-    "write",
-    path,
-    "--output-format",
-    "GDALG"
-  )
-
-  if (overwrite) {
-    args <- c(args, "--overwrite")
+  if (!file.exists(path)) {
+    cli::cli_abort("Failed to write GDALG file")
   }
 
   if (verbose) {
-    cli::cli_alert_info("Generating GDALG using native format driver")
-    cli::cli_alert_info(sprintf("Command: gdal %s", paste(args, collapse = " ")))
+    cli::cli_alert_success("Native GDALG file created: {path}")
   }
 
-  # Execute GDAL to generate GDALG file
-  tryCatch({
-    result <- processx::run(
-      command = "gdal",
-      args = args,
-      error_on_status = TRUE
-    )
-
-    if (!file.exists(path)) {
-      cli::cli_abort("GDALG file was not created by GDAL")
-    }
-
-    if (verbose) {
-      cli::cli_alert_success("Native GDALG file created: {path}")
-    }
-
-    invisible(path)
-  }, .error = function(e) {
-    cli::cli_abort(
-      c(
-        "Failed to generate native GDALG file",
-        "x" = conditionMessage(e),
-        "i" = "Use gdal_save_pipeline() as fallback"
-      )
-    )
-  })
+  invisible(path)
 }
 
 #' Save GDAL Pipeline to GDALG Format
@@ -514,9 +469,9 @@ gdal_save_pipeline_native <- function(pipeline,
 #' - Fast serialization (direct write)
 #' - gdalcli-specific format
 #'
-#' **Method: "native" (GDALG Format Driver)**
+#' **Method: "native" (GDALG Format)**
 #' - Requires GDAL 3.11+ with GDALG driver
-#' - Slower (runs GDAL pipeline internally)
+#' - Uses GDAL-compatible JSON serialization
 #' - Universal GDAL compatibility
 #' - Full GDAL metadata
 #'

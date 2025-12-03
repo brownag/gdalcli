@@ -7,7 +7,7 @@ Authors@R:
            comment=c(ORCID="0000-0002-4565-533X"))
 Author: Andrew Brown
 Maintainer: Andrew Brown <brown.andrewg@gmail.com>
-Description: An auto-generated R wrapper for the modern GDAL CLI 
+Description: An auto-generated R wrapper for the GDAL CLI 
     (RFC 104; <https://github.com/OSGeo/gdal/blob/v3.11.0/doc/source/development/rfc/rfc104_gdal_cli.rst>).
     Combines lazy evaluation with process-isolated state management to deliver a composable,
     pipe-aware interface for raster and vector processing. Supports file-less I/O streaming 

@@ -194,7 +194,7 @@
 #'
 #' @keywords internal
 #' @noRd
-.gdal_has_feature <- function(feature_name, quietly = FALSE) {
+.gdalraster_has_feature <- function(feature_name, quietly = FALSE) {
   # Use package-level cache to avoid repeated checks
   pkg_env <- parent.env(environment())
 

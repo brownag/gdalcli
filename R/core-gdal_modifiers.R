@@ -142,8 +142,12 @@ gdal_with_lco.default <- function(x, ...) {
 #'
 #' @examples
 #' \dontrun{
-#' job <- gdal_vector_info("file.gpkg") |>
-#'   gdal_with_oo("VERIFY_BUFFERS=NO")
+#' job <- gdal_raster_scale(
+#'   input = "input.tif",
+#'   output = "output.tif",
+#'   scaleParams = c(0, 255, 0, 65535)
+#' ) |>
+#'   gdal_with_oo("NUM_THREADS=ALL_CPUS")
 #'
 #' gdal_job_run(job)
 #' }

@@ -213,7 +213,7 @@ unlink(temp_file)
 ### Example 9: GDALG Format - Round-Trip Testing
 
 ``` r
-# Demonstrate perfect round-trip fidelity
+# Demonstrate round-trip fidelity
 original_cmd <- render_gdal_pipeline(pipeline, format = "native")
 
 # Save to GDALG and load back
@@ -270,8 +270,14 @@ native_with_config
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 reprojected_file <- tempfile(fileext = ".tif")
 
-simple_pipeline <- gdal_raster_info(input = clay_file) |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+simple_pipeline <- gdal_raster_reproject(
+  input = clay_file,
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 100,
+    dst_min = 0, dst_max = 255
+  ) |>
   gdal_raster_convert(output = reprojected_file)
 
 # Inspect the pipeline object
@@ -416,8 +422,10 @@ render_gdal_pipeline(config_pipeline, format = "native")
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 processed_file <- tempfile(fileext = ".tif")
 
-comparison_pipeline <- gdal_raster_info(input = clay_file) |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+comparison_pipeline <- gdal_raster_reproject(
+  input = clay_file,
+  dst_crs = "EPSG:32632"
+) |>
   gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
   gdal_raster_convert(output = processed_file)
 
@@ -743,7 +751,7 @@ loaded <- gdal_load_pipeline(workflow_file)
 gdal_job_run(loaded)
 ```
 
-GDALG provides perfect round-trip fidelity - all pipeline structure and
+GDALG provides round-trip fidelity - all pipeline structure and
 arguments are preserved.
 
 ### Shell Script Generation
@@ -820,7 +828,7 @@ render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
 
 ## Version Compatibility
 
-`gdalcli` supports GDAL 3.11 and later, with enhanced features available
+`gdalcli` supports GDAL 3.11 and later, with additional features available
 in GDAL 3.12+.
 
 ### Minimum Requirements
@@ -855,8 +863,8 @@ New algorithms and capabilities available in GDAL 3.12+:
   clean-coverage, index, layer-algebra, make-point, partition,
   set-field-type, simplify-coverage
 - **GDALG Format Driver**: Native support for GDALG as a format driver
-  with enhanced metadata
-- **Advanced Features**: Enhanced pipeline capabilities and algorithm
+  with additional metadata
+- **Advanced Features**: Additional pipeline capabilities and algorithm
   metadata
 
 ### Checking Version Support
@@ -931,7 +939,7 @@ GDAL installation.
 - **GDAL** \>= 3.11 (required for CLI)
 - **Dependencies**:
   - `processx` (\>=3.8.0) - Robust subprocess management
-  - `yyjsonr` (\>=0.1.0) - Fast, memory-efficient JSON handling
+  - `yyjsonr` (\>=0.1.0) - JSON handling
   - `rlang` (\>=1.0.0) - Error handling and programming utilities
   - `cli` (\>=3.0.0) - User-friendly terminal messages
   - `digest` (\>=0.6.0) - Cryptographic hashing
@@ -1032,8 +1040,14 @@ the native R pipe:
 
 ``` r
 # Build a multi-step pipeline by chaining operations
-pipeline <- gdal_raster_info(input = "input.tif") |>
-  gdal_raster_reproject(dst_crs = "EPSG:32632") |>
+pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(
+    src_min = 0, src_max = 100,
+    dst_min = 0, dst_max = 255
+  ) |>
   gdal_raster_convert(output = "output.tif")
 
 # Render as sequential commands (jobs run separately)
@@ -1072,7 +1086,7 @@ gdal_save_pipeline(pipeline, "workflow.gdalg.json")
 # Load pipeline later
 loaded <- gdal_load_pipeline("workflow.gdalg.json")
 
-# Pipelines maintain perfect round-trip fidelity
+# Pipelines maintain round-trip fidelity
 # All structure, arguments, and metadata are preserved
 ```
 
