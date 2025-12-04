@@ -2,7 +2,7 @@
 % Please edit documentation in R/core-gdalg.R
 \name{gdal_save_pipeline}
 \alias{gdal_save_pipeline}
-\title{Save GDAL Pipeline to GDALG Format}
+\title{Save GDAL Pipeline to gdalcli Pipeline Format}
 \usage{
 gdal_save_pipeline(
   pipeline,
@@ -16,7 +16,7 @@ gdal_save_pipeline(
 \arguments{
 \item{pipeline}{A gdal_pipeline or gdal_job object with pipeline}
 
-\item{path}{Character string specifying the path to save to (typically .gdalg.json)}
+\item{path}{Character string specifying the path to save to (typically .gdalcli.json)}
 
 \item{pretty}{Logical. If TRUE (default), formats JSON with indentation for readability}
 
@@ -35,8 +35,9 @@ gdal_save_pipeline(
 Invisibly returns the path where the pipeline was saved
 }
 \description{
-Saves a gdal_pipeline object to a GDALG JSON file. GDALG is GDAL's abstract
-pipeline format, which can be saved to disk and loaded later for execution.
+Saves a gdal_pipeline object to a gdalcli pipeline JSON file. The gdalcli pipeline
+format is a JSON-based pipeline definition that can be saved to disk and loaded later
+for execution.
 }
 \details{
 This function supports two serialization methods:
@@ -62,12 +63,12 @@ This function supports two serialization methods:
 \item Uses native if available, falls back to JSON
 }
 
-The saved GDALG file can be:
+The saved gdalcli pipeline file can be:
 \itemize{
-\item Executed with GDAL command-line tools
+\item Executed with gdal_job_run()
 \item Loaded back into R with gdal_load_pipeline()
 \item Shared with colleagues or version controlled
-\item Used in other GDAL-compatible tools
+\item Used in other gdalcli-compatible tools
 }
 }
 \examples{
@@ -76,16 +77,16 @@ pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "out.tif")
 
 # Save to file (auto-detects best method)
-gdal_save_pipeline(pipeline, "workflow.gdalg.json")
+gdal_save_pipeline(pipeline, "workflow.gdalcli.json")
 
 # Force native GDALG driver
-gdal_save_pipeline(pipeline, "workflow_native.gdalg.json", method = "native")
+gdal_save_pipeline(pipeline, "workflow_native.gdalcli.json", method = "native")
 
 # Force custom JSON
-gdal_save_pipeline(pipeline, "workflow_json.gdalg.json", method = "json")
+gdal_save_pipeline(pipeline, "workflow_json.gdalcli.json", method = "json")
 
 # Load and execute later
-loaded <- gdal_load_pipeline("workflow.gdalg.json")
+loaded <- gdal_load_pipeline("workflow.gdalcli.json")
 gdal_job_run(loaded)
 }
 

@@ -9,7 +9,7 @@ gdal_save_pipeline_native(pipeline, path, overwrite = FALSE, verbose = FALSE)
 \arguments{
 \item{pipeline}{A gdal_pipeline or gdal_job object with pipeline}
 
-\item{path}{Character string specifying output path (typically .gdalg.json)}
+\item{path}{Character string specifying output path (typically .gdalcli.json)}
 
 \item{overwrite}{Logical. If TRUE, overwrites existing file}
 
@@ -40,7 +40,7 @@ pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "out.tif")
 
 if (gdal_has_gdalg_driver()) {
-  gdal_save_pipeline_native(pipeline, "workflow.gdalg.json")
+  gdal_save_pipeline_native(pipeline, "workflow.gdalcli.json")
 }
 }
 

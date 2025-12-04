@@ -9,7 +9,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 An R interface to GDAL’s unified command-line interface (GDAL \>=3.11).
 Provides a lazy evaluation framework for building and executing GDAL
 commands with composable, pipe-aware functions. Supports native GDAL
-pipelines, GDALG format persistence, and pipeline composition.
+pipelines, gdalcli pipeline format persistence, and pipeline
+composition.
 
 ## Installation
 
@@ -78,6 +79,7 @@ job <- gdal_raster_convert(
 
 # Execute the job
 gdal_job_run(job)
+#> 0...10...20...30...40...50...60...70...80...90...100 - done.
 ```
 
 ### Adding Options
@@ -112,13 +114,12 @@ gdal_job_run(pipeline)
 ### Pipeline Persistence
 
 ``` r
-# Save pipeline to GDALG format
-workflow_file <- tempfile(fileext = ".gdalg.json")
+# Save pipeline to gdalcli pipeline format
+workflow_file <- tempfile(fileext = ".gdalcli.json")
 gdal_save_pipeline(pipeline, workflow_file)
 
 # Load pipeline for later use
 loaded <- gdal_load_pipeline(workflow_file)
-# Note: Loaded pipelines may require command type corrections for full compatibility
 ```
 
 ### Cloud Storage
@@ -203,18 +204,17 @@ pipeline <- gdal_raster_reproject(
 gdal_job_run(pipeline, backend = "processx")
 ```
 
-### GDALG Format: Save and Load Pipelines
+### gdalcli Pipeline Format: Save and Load Pipelines
 
 Persist pipelines as JSON for sharing and version control:
 
 ``` r
-# Save pipeline to GDALG format
-workflow_file <- tempfile(fileext = ".gdalg.json")
+# Save pipeline to gdalcli pipeline format
+workflow_file <- tempfile(fileext = ".gdalcli.json")
 gdal_save_pipeline(pipeline, workflow_file)
 
 # Load pipeline for later use
 loaded <- gdal_load_pipeline(workflow_file)
-# Note: Loaded pipelines may require command type corrections for full compatibility
 ```
 
 ### Shell Script Generation
@@ -230,7 +230,7 @@ cat(script)
 #> set -e
 #> 
 #> # Native GDAL pipeline execution
-#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_205eb51a8c581f.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpmfnkAb/file205eb5358b2626.tif --input /vsimem/gdalcli_205eb576c41b1f.tif
+#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_219d8135044bf9.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpTRllud/file219d81197727bb.tif --input /vsimem/gdalcli_219d814c156e4b.tif
 ```
 
 ## Architecture
@@ -239,8 +239,8 @@ cat(script)
 
 1.  **Frontend Layer**: Auto-generated R functions with composable
     modifiers
-2.  **Pipeline Layer**: Automatic pipeline building and GDALG
-    serialization  
+2.  **Pipeline Layer**: Automatic pipeline building and gdalcli pipeline
+    format serialization  
 3.  **Engine Layer**: Command execution with multiple backend options
 
 ## Contributing

@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
-An R interface to GDAL's unified command-line interface (GDAL >=3.11). Provides a lazy evaluation framework for building and executing GDAL commands with composable, pipe-aware functions. Supports native GDAL pipelines, GDALG format persistence, and pipeline composition.
+An R interface to GDAL's unified command-line interface (GDAL >=3.11). Provides a lazy evaluation framework for building and executing GDAL commands with composable, pipe-aware functions. Supports native GDAL pipelines, gdalcli pipeline format persistence, and pipeline composition.
 
 ## Installation
 
@@ -109,13 +109,12 @@ gdal_job_run(pipeline)
 ### Pipeline Persistence
 
 ```{r}
-# Save pipeline to GDALG format
-workflow_file <- tempfile(fileext = ".gdalg.json")
+# Save pipeline to gdalcli pipeline format
+workflow_file <- tempfile(fileext = ".gdalcli.json")
 gdal_save_pipeline(pipeline, workflow_file)
 
 # Load pipeline for later use
 loaded <- gdal_load_pipeline(workflow_file)
-# Note: Loaded pipelines may require command type corrections for full compatibility
 ```
 
 ### Cloud Storage
@@ -199,18 +198,17 @@ pipeline <- gdal_raster_reproject(
 gdal_job_run(pipeline, backend = "processx")
 ```
 
-### GDALG Format: Save and Load Pipelines
+### gdalcli Pipeline Format: Save and Load Pipelines
 
 Persist pipelines as JSON for sharing and version control:
 
 ```{r}
-# Save pipeline to GDALG format
-workflow_file <- tempfile(fileext = ".gdalg.json")
+# Save pipeline to gdalcli pipeline format
+workflow_file <- tempfile(fileext = ".gdalcli.json")
 gdal_save_pipeline(pipeline, workflow_file)
 
 # Load pipeline for later use
 loaded <- gdal_load_pipeline(workflow_file)
-# Note: Loaded pipelines may require command type corrections for full compatibility
 ```
 
 ### Shell Script Generation
@@ -228,7 +226,7 @@ cat(script)
 `gdalcli` uses a three-layer architecture:
 
 1. **Frontend Layer**: Auto-generated R functions with composable modifiers
-2. **Pipeline Layer**: Automatic pipeline building and GDALG serialization  
+2. **Pipeline Layer**: Automatic pipeline building and gdalcli pipeline format serialization  
 3. **Engine Layer**: Command execution with multiple backend options
 
 ## Contributing

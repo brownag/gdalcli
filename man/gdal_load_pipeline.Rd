@@ -2,19 +2,20 @@
 % Please edit documentation in R/core-gdalg.R
 \name{gdal_load_pipeline}
 \alias{gdal_load_pipeline}
-\title{Load GDAL Pipeline from GDALG Format}
+\title{Load GDAL Pipeline from gdalcli Pipeline Format}
 \usage{
 gdal_load_pipeline(path)
 }
 \arguments{
-\item{path}{Character string specifying the path to the GDALG file}
+\item{path}{Character string specifying the path to the gdalcli pipeline file}
 }
 \value{
 A gdal_pipeline object that can be executed or further modified
 }
 \description{
-Loads a gdal_pipeline from a GDALG JSON file. GDALG files can be created by
-gdal_save_pipeline(), GDAL command-line tools, or manually.
+Loads a gdal_pipeline from a gdalcli pipeline JSON file. gdalcli pipeline files
+can be created by gdal_save_pipeline() and contain pipeline definitions that
+can be executed.
 }
 \details{
 Loaded pipelines can be:
@@ -28,7 +29,7 @@ Loaded pipelines can be:
 \examples{
 \dontrun{
 # Load a previously saved pipeline
-pipeline <- gdal_load_pipeline("workflow.gdalg.json")
+pipeline <- gdal_load_pipeline("workflow.gdalcli.json")
 
 # Execute it
 gdal_job_run(pipeline)

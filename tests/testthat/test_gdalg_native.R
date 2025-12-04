@@ -19,7 +19,7 @@ test_that("gdal_save_pipeline_native requires valid pipeline", {
 
 test_that("gdal_save_pipeline method parameter is functional", {
   # Test that method parameter exists and can be set
-  temp_json <- tempfile(fileext = ".gdalg.json")
+  temp_json <- tempfile(fileext = ".gdalcli.json")
   on.exit(unlink(temp_json), add = TRUE)
 
   # Create a minimal pipeline for testing
@@ -44,7 +44,7 @@ test_that("gdal_save_pipeline method parameter is functional", {
 })
 
 test_that("gdal_save_pipeline auto-detection works", {
-  temp_auto <- tempfile(fileext = ".gdalg.json")
+  temp_auto <- tempfile(fileext = ".gdalcli.json")
   on.exit(unlink(temp_auto), add = TRUE)
 
   pipeline <- new_gdal_pipeline(
@@ -64,7 +64,7 @@ test_that("gdal_save_pipeline auto-detection works", {
 })
 
 test_that("gdal_save_pipeline preserves backward compatibility", {
-  temp_old <- tempfile(fileext = ".gdalg.json")
+  temp_old <- tempfile(fileext = ".gdalcli.json")
   on.exit(unlink(temp_old), add = TRUE)
 
   pipeline <- new_gdal_pipeline(
