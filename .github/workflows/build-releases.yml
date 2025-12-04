@@ -195,8 +195,7 @@ jobs:
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
           
-          # Extract generated files from the Docker image
-          # The image was built with API generation and roxygen2 already run
+          # Generate API and documentation inside Docker where GDAL is available
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
@@ -204,22 +203,10 @@ jobs:
             bash -c "
               set -e
               
-              # Copy generated R files
-              echo 'Extracting generated files from Docker image...'
-              cp -r /usr/local/lib/R/site-library/gdalcli/R/* /workspace/R/ 2>/dev/null || {
-                echo 'Trying alternative path...'
-                find / -name 'gdal_*.R' -path '*/gdalcli/R/*' -exec cp {} /workspace/R/ \; 2>/dev/null || true
-              }
+              echo 'Generating GDAL API in workspace...'
+              Rscript /workspace/build/generate_gdal_api.R
               
-              # If R files don't exist in library, regenerate them
-              if [ \$(ls -1 /workspace/R/*.R 2>/dev/null | wc -l) -lt 5 ]; then
-                echo 'Regenerating GDAL API in workspace...'
-                Rscript /workspace/build/generate_gdal_api.R
-              fi
-              
-              # Regenerate documentation from the workspace files
               echo 'Generating documentation...'
-              cd /workspace
               Rscript -e 'roxygen2::roxygenise()'
               
               # Run checks on the generated package
@@ -236,12 +223,19 @@ jobs:
               test -f /workspace/NAMESPACE && echo 'NAMESPACE: OK' || echo 'NAMESPACE: MISSING'
             "
           
-          # Verify files exist in workspace
+          # Verify files exist in workspace (should be source .R files, not binaries)
           echo ""
           echo "Verifying generated files in workspace..."
-          test -d R && echo "✓ R/ directory exists ($(ls -1 R/*.R 2>/dev/null | wc -l) files)" || echo "✗ R/ directory missing!"
+          test -d R && ls -lh R/*.R 2>/dev/null | head -3 || echo "✗ R/ missing source files!"
           test -d man && echo "✓ man/ directory exists ($(ls -1 man/*.Rd 2>/dev/null | wc -l) files)" || echo "✗ man/ directory missing!"
           test -f NAMESPACE && echo "✓ NAMESPACE exists" || echo "✗ NAMESPACE missing!"
+          
+          # Sanity check: no binary files should be staged
+          if [ -f R/gdalcli ] || [ -f R/gdalcli.rdb ]; then
+            echo "ERROR: Binary package files detected in R/ - these should not be staged!"
+            ls -la R/
+            exit 1
+          fi
 
       - name: Configure git and prepare release branch
         if: github.event.inputs.dry_run == 'false'
