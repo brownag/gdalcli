@@ -1,0 +1,52 @@
+{
+  "generated_at": "2025-12-04 03:30:14",
+  "gdal_version": "3.11.4",
+  "gdal_version_parsed": {
+    "full": "3.11.4",
+    "major": 3,
+    "minor": 11,
+    "patch": 4
+  },
+  "generation_date": "2025-12-04",
+  "r_version": "4.5.2",
+  "packages": {
+    "processx": "
+R version 4.5.2 (2025-10-31) -- "[Not] Part in a Rumble"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> cat(as.character(packageVersion('processx')))
+3.8.6> ",
+    "jsonlite": "
+R version 4.5.2 (2025-10-31) -- "[Not] Part in a Rumble"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> cat(as.character(packageVersion('jsonlite')))
+2.0.0> "
+  }
+}
