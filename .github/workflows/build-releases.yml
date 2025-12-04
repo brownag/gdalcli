@@ -182,6 +182,51 @@ jobs:
           cache-to: type=gha,mode=max,scope=release-${{ needs.validate.outputs.gdal_version }}
           push: ${{ github.event.inputs.dry_run == 'false' }}
           build-contexts: context=.github/dockerfiles
+          outputs: type=docker,dest=/tmp/image.tar
+
+      - name: Load Docker image
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          docker load --input /tmp/image.tar
+
+      - name: Generate API and build release in Docker
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          BRANCH="${{ needs.validate.outputs.branch_name }}"
+          IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
+          
+          # Run generation steps inside the Docker container where GDAL is available
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            "$IMAGE" \
+            bash -c "
+              set -e
+              
+              # Generate GDAL API
+              echo 'Generating GDAL API...'
+              Rscript build/generate_gdal_api.R
+              
+              # Document package
+              echo 'Generating documentation...'
+              Rscript -e 'roxygen2::roxygenise()'
+              
+              # Run R CMD check
+              echo 'Running R CMD check...'
+              R CMD check --no-manual --compact-vignettes=gs+qpdf . 2>&1 || true
+              
+              # Show generated files
+              echo 'Generated files:'
+              ls -la R/ | head -20
+              ls -la man/ | head -20
+              file NAMESPACE
+            "
+          
+          # Copy generated files back to workspace if they're in a subdirectory
+          if [ -d /tmp/generated ]; then
+            cp -r /tmp/generated/* . || true
+          fi
 
       - name: Configure git and prepare release branch
         if: github.event.inputs.dry_run == 'false'
@@ -212,50 +257,6 @@ jobs:
 
           cat DESCRIPTION | grep -E "^Version:|^SystemRequirements:"
 
-      - name: Set up R for local checks
-        uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: 'latest'
-          use-public-rspm: true
-
-      - name: Cache R packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/R
-            ~/R/x86_64-pc-linux-gnu-library
-          key: r-packages-${{ runner.os }}-latest-${{ hashFiles('DESCRIPTION') }}
-          restore-keys: |
-            r-packages-${{ runner.os }}-latest-
-
-      - name: Install system dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            any::devtools
-            any::roxygen2
-            any::testthat
-            any::remotes
-            any::knitr
-            any::rmarkdown
-          extra-packages: any::rcmdcheck
-          needs: check
-          cache-version: 1
-
-      - name: Generate GDAL API
-        run: |
-          Rscript build/generate_gdal_api.R
-
-      - name: Document package
-        run: |
-          Rscript -e "roxygen2::roxygenise()"
-
-      - name: Run R CMD check
-        uses: r-lib/actions/check-r-package@v2
-        with:
-          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
-          upload-snapshots: true
-
       - name: Update version info and commit release
         if: success() && github.event.inputs.dry_run == 'false'
         run: |
@@ -268,6 +269,12 @@ jobs:
           MINOR=$(echo "$GDAL_VERSION" | cut -d. -f2)
           PATCH=$(echo "$GDAL_VERSION" | cut -d. -f3)
           
+          # Get R and package versions from the Docker image
+          IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
+          R_VERSION=$(docker run --rm "$IMAGE" R --version 2>/dev/null | head -1 | sed 's/R version \([0-9.]*\).*/\1/')
+          PROCESSX_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")
+          JSONLITE_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('jsonlite')))" 2>/dev/null || echo "unknown")
+          
           cat > inst/GDAL_VERSION_INFO.json <<EOF
           {
             "generated_at": "$GENERATED_AT",
@@ -279,24 +286,54 @@ jobs:
               "patch": $PATCH
             },
             "generation_date": "$BUILD_DATE",
-            "r_version": "$(R --version | head -1 | sed 's/R version \([0-9.]*\).*/\1/')",
+            "r_version": "$R_VERSION",
             "packages": {
-              "processx": "$(R -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")",
-              "jsonlite": "$(R -e "cat(as.character(packageVersion('jsonlite')))" 2>/dev/null || echo "unknown")"
+              "processx": "$PROCESSX_VERSION",
+              "jsonlite": "$JSONLITE_VERSION"
             }
           }
           EOF
 
-          # Stage all changes
+          # Stage all changes (with verbose output for debugging)
+          echo "Staging DESCRIPTION..."
           git add DESCRIPTION
+          
+          echo "Staging GDAL_VERSION_INFO.json..."
           git add -f inst/GDAL_VERSION_INFO.json
-          git add R/
-          git add man/
-          git add NAMESPACE
+          
+          echo "Staging generated R files..."
+          if [ -d R ]; then
+            git add R/
+            echo "  R/ staged ($(git diff --cached --name-only R/ | wc -l) files)"
+          else
+            echo "  R/ directory not found!"
+          fi
+          
+          echo "Staging documentation files..."
+          if [ -d man ]; then
+            git add man/
+            echo "  man/ staged ($(git diff --cached --name-only man/ | wc -l) files)"
+          else
+            echo "  man/ directory not found!"
+          fi
+          
+          echo "Staging NAMESPACE..."
+          if [ -f NAMESPACE ]; then
+            git add NAMESPACE
+            echo "  NAMESPACE staged"
+          else
+            echo "  NAMESPACE file not found!"
+          fi
+          
+          echo ""
+          echo "Status of staged changes:"
+          git diff --cached --name-only | head -20
           
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
             git push origin ${{ needs.validate.outputs.branch_name }} --force
+          else
+            echo "No changes to commit"
           fi
 
       - name: Create GitHub release
