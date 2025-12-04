@@ -34,41 +34,151 @@ An R interface to GDAL's unified command-line interface (GDAL >=3.11). Provides 
 
 ## Installation
 
+### Version-Specific Releases
+
+`gdalcli` is released as version-specific builds tied to particular GDAL releases. Using a package version matching your GDAL version is recommended. Newer package versions introduce features that require newer GDAL versions. Existing functionality should generally remain compatible with older GDAL installations, though this cannot be guaranteed until the GDAL CLI is stabilized.
+
+**See [GitHub Releases](https://github.com/brownag/gdalcli/releases) for the latest version-specific builds.**
+
+Each release is tagged with both the package version and the GDAL version it targets:
+
+- `v0.2.1-3.11.0` - Compatible with GDAL 3.11.0
+- `v0.2.1-3.12.0` - Compatible with GDAL 3.12.0
+- etc.
+
+#### Finding Your GDAL Version
+
+Check which GDAL version you have installed:
+
 ```r
-# Install from GitHub (when available)
-# devtools::install_github("brownag/gdalcli")
-library(gdalcli)
+# Using gdalraster (if installed)
+if (requireNamespace("gdalraster", quietly = TRUE)) {
+  gdalraster::gdal_version()
+}
+
+# Or check your system GDAL installation
+system2("gdalinfo", "--version")
+
+# Or use the GDAL command directly
+system2("gdal", "info --version")
 ```
+
+#### Installation from Release Branch
+
+Install the version compatible with your GDAL installation:
+
+```r
+# For GDAL 3.12.x
+remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.12")
+
+# For GDAL 3.11.x
+remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.11")
+
+# For a specific tagged release
+remotes::install_github("brownag/gdalcli", ref = "v0.2.1-3.12.0")
+```
+
+#### GDAL Installation Sources
+
+Choose your GDAL installation method based on your platform:
+
+**Linux (Ubuntu/Debian)**:
+
+```bash
+# From ubuntugis PPA - use unstable for GDAL >= 3.11 (currently 3.11.4)
+sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+sudo apt update
+sudo apt install gdal-bin libgdal-dev
+
+# Verify installation
+gdalinfo --version
+```
+
+**macOS**:
+
+```bash
+# Using Homebrew
+brew install gdal
+
+# Verify installation
+gdalinfo --version
+```
+
+**Windows**:
+
+```r
+# Option 1: Install gdalraster package (provides GDAL C++ bindings)
+if (!requireNamespace("gdalraster", quietly = TRUE)) {
+  install.packages("gdalraster")
+}
+
+# Use gdalraster backend for execution (does not require system GDAL)
+job <- gdal_raster_info(input = "your_file.tif")
+gdal_job_run(job, backend = "gdalraster")
+
+# Option 2: Install GDAL via Rtools or OSGeo4W for CLI access
+# Then use processx backend (default) 
+```
+
+**Docker**:
+
+```bash
+# Pre-built images with gdalcli for specific GDAL versions
+docker pull ghcr.io/brownag/gdalcli:gdal-3.12.0-latest
+docker run -it ghcr.io/brownag/gdalcli:gdal-3.12.0-latest R
+```
+
+Inside the container:
+
+```r
+library(gdalcli)
+
+#  GDAL and gdalcli already installed
+job <- gdal_raster_info(input = "your_file.tif")
+gdal_job_run(job)
+```
+
+### Development Installation
+
+To install the current development version that is used as the feedstock for release branches and images:
+
+```r
+remotes::install_github("brownag/gdalcli", ref = "main")
+```
+
+### Requirements
+
+- **R** >= 4.1
+- **GDAL** >= 3.11 (CLI must be available in system PATH for processx backend)
+- **gdalraster** (optional; enables gdalraster backend)
+- **reticulate** (optional; enables reticulate backend)
 
 ## Quick Examples
 
-### Example 1: Building and Inspecting a Job
+### Basic Usage
 
-```{r}
+Build and execute a GDAL command:
+
+```{r, eval=FALSE}
 library(gdalcli)
 
-# Build a raster conversion job (lazy evaluation - nothing executes yet)
+# Create a job (lazy evaluation - nothing executes yet)
 job <- gdal_raster_convert(
   input = "input.tif",
   output = "output.tif",
   output_format = "COG"
 )
 
-# Inspect the job object
-job
-
-# Access internal structure
-# Command path
-job$command_path
-# Arguments
-str(job$arguments)
+# Execute the job
+gdal_job_run(job)
 ```
 
-### Example 2: Adding Options to Jobs
+### Adding Options
 
-```{r}
-# Build a job with creation options and config options
-job_with_options <- gdal_raster_convert(
+Use modifiers to add creation options and configuration:
+
+```{r, eval=FALSE}
+job <- gdal_raster_convert(
   input = "input.tif",
   output = "output.tif",
   output_format = "COG"
@@ -76,68 +186,68 @@ job_with_options <- gdal_raster_convert(
   gdal_with_co("COMPRESS=LZW", "BLOCKXSIZE=256") |>
   gdal_with_config("GDAL_CACHEMAX=512")
 
-job_with_options
+gdal_job_run(job)
 ```
 
-### Example 3: Rendering a Job as a Shell Command
+### Multi-Step Pipelines
 
-```{r}
-# Render the job as a shell command (executable but not run)
-cmd <- render_gdal_pipeline(job)
-# Command to execute:
-cmd
-```
+Chain operations with the native R pipe:
 
-### Example 4: Building a Multi-Step Pipeline
-
-```{r}
-# Build a 3-step pipeline using native R piping
+```{r, eval=FALSE}
 pipeline <- gdal_raster_reproject(
   input = "input.tif",
   dst_crs = "EPSG:32632"
 ) |>
-  gdal_raster_scale(
-    src_min = 0, src_max = 10000,
-    dst_min = 0, dst_max = 255
-  ) |>
-  gdal_raster_convert(
-    output = "output.tif",
-    output_format = "COG"
-  )
+  gdal_raster_scale(src_min = 0, src_max = 10000, dst_min = 0, dst_max = 255) |>
+  gdal_raster_convert(output = "output.tif", output_format = "COG")
 
-pipeline
+gdal_job_run(pipeline)
 ```
 
-### Example 5: Rendering Pipeline to Native GDAL Format
+### Pipeline Persistence
 
-```{r}
-# Render as native GDAL pipeline (single command)
-native_cmd <- render_gdal_pipeline(pipeline, format = "native")
-# Native GDAL pipeline command:
-native_cmd
+Save and load pipelines as JSON:
+
+```{r, eval=FALSE}
+# Save pipeline to GDALG format
+gdal_save_pipeline(pipeline, "workflow.gdalg.json")
+
+# Load and execute later
+loaded <- gdal_load_pipeline("workflow.gdalg.json")
+gdal_job_run(loaded)
 ```
 
-### Example 6: Rendering Pipeline as Shell Script
+### Shell Script Generation
 
-```{r}
-# Render as executable bash script (native mode)
-native_script <- render_shell_script(pipeline, format = "native", shell = "bash")
-# Bash script (native pipeline mode):
-native_script
+Export pipelines as executable scripts:
+
+```{r, eval=FALSE}
+# Generate bash script
+script <- render_shell_script(pipeline, format = "native", shell = "bash")
+cat(script)
 ```
 
-### Example 7: Rendering Pipeline as Sequential Commands
+### Cloud Storage
 
-```{r}
-# Render as separate commands (safer for hybrid workflows)
-seq_script <- render_shell_script(pipeline, format = "commands", shell = "bash")
-# Bash script (sequential commands mode):
-seq_script
+Work with remote datasets using virtual file systems:
+
+```{r, eval=FALSE}
+# Set AWS credentials from environment variables
+auth <- gdal_auth_s3()
+
+job <- gdal_raster_convert(
+  input = "/vsis3/my-bucket/input.tif",
+  output = "/vsis3/my-bucket/output.tif",
+  output_format = "COG"
+) |>
+  gdal_with_env(auth)
+
+gdal_job_run(job)
 ```
 
-### Example 8: GDALG Format - Save Pipeline
+## Backend Setup
 
-```{r}
+```{r, eval=FALSE}
 # Save pipeline to GDALG format (using custom JSON method for examples)
 temp_file <- tempfile(fileext = ".gdalg.json")
 gdal_save_pipeline(pipeline, temp_file, method = "json")
@@ -149,9 +259,9 @@ cat(readLines(temp_file, warn = FALSE), sep = "\n")
 unlink(temp_file)
 ```
 
-### Example 9: GDALG Format - Round-Trip Testing
+### GDALG Format - Round-Trip Testing
 
-```{r}
+```{r, eval=FALSE}
 # Demonstrate round-trip fidelity
 original_cmd <- render_gdal_pipeline(pipeline, format = "native")
 
@@ -177,9 +287,9 @@ identical(original_cmd, loaded_cmd)
 unlink(temp_file)
 ```
 
-### Example 10: Pipeline with Configuration Options
+### Pipeline with Configuration Options
 
-```{r}
+```{r, eval=FALSE}
 # Build a pipeline with cloud storage and config options
 pipeline <- gdal_raster_reproject(
   input = "/vsis3/sentinel-pds/input.tif",
@@ -198,9 +308,9 @@ native_with_config <- render_gdal_pipeline(pipeline, format = "native")
 native_with_config
 ```
 
-### Example 11: Inspecting Pipeline Structure
+### Inspecting Pipeline Structure
 
-```{r}
+```{r, eval=FALSE}
 # Build a simple pipeline to inspect
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 reprojected_file <- tempfile(fileext = ".tif")
@@ -231,9 +341,9 @@ for (i in seq_along(pipe_obj$jobs)) {
 }
 ```
 
-### Example 12: Detailed GDALG JSON Structure
+### Detailed GDALG JSON Structure
 
-```{r}
+```{r, eval=FALSE}
 # Build a pipeline with multiple steps
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 processed_file <- tempfile(fileext = ".tif")
@@ -273,9 +383,9 @@ for (i in seq_along(loaded$jobs)) {
 unlink(temp_gdalg)
 ```
 
-### Example 13: Config Options Propagation
+### Config Options Propagation
 
-```{r}
+```{r, eval=FALSE}
 # Build a pipeline with config options at different points
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 processed_file <- tempfile(fileext = ".tif")
@@ -309,9 +419,9 @@ for (i in seq_along(pipe_obj$jobs)) {
 render_gdal_pipeline(config_pipeline, format = "native")
 ```
 
-### Example 14: Sequential vs Native Rendering Comparison
+### Sequential vs Native Rendering Comparison
 
-```{r}
+```{r, eval=FALSE}
 # Create a pipeline
 clay_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
 processed_file <- tempfile(fileext = ".tif")
@@ -417,7 +527,7 @@ reticulate::use_virtualenv("venv")
 
 3. Test with gdalcli:
 
-```{r}
+```{r, eval=FALSE}
 library(gdalcli)
 
 # Use the virtualenv (assumes "venv" exists in project directory)
@@ -530,7 +640,7 @@ gdal_job_run(job)
 
 Convert a vector dataset between formats:
 
-```{r}
+```{r, eval=FALSE}
 library(gdalcli)
 
 job <- gdal_vector_convert(
@@ -547,7 +657,7 @@ gdal_job_run(job)
 
 Chain multiple operations:
 
-```{r}
+```{r, eval=FALSE}
 library(gdalcli)
 
 pipeline <- gdal_raster_reproject(
@@ -596,7 +706,7 @@ gdal_job_run(job)
 
 Execute multi-step workflows as a single GDAL pipeline:
 
-```{r}
+```{r, eval=FALSE}
 pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
   dst_crs = "EPSG:32632"
@@ -673,7 +783,7 @@ Both methods produce valid GDALG files that can be loaded with `gdal_load_pipeli
 
 Add GDAL configuration options to pipeline steps:
 
-```{r}
+```{r, eval=FALSE}
 pipeline_with_config <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
   dst_crs = "EPSG:32632"
@@ -689,119 +799,6 @@ pipeline_with_config <- gdal_raster_reproject(
 render_gdal_pipeline(pipeline_with_config$pipeline, format = "native")
 ```
 
-## Version Compatibility
-
-`gdalcli` supports GDAL 3.11 and later, with additional features available in GDAL 3.12+.
-
-### Minimum Requirements
-
-- **GDAL**: >= 3.11 (CLI framework minimum)
-- **R**: >= 4.1
-- **gdalraster**: >= 2.2.0 (recommended for some features)
-
-### GDAL 3.11 Features
-
-Core GDAL CLI functionality available in GDAL 3.11+:
-
-- **80+ Algorithm Functions**: All raster, vector, and multidimensional operations
-- **Pipeline Execution**: Native and sequential pipeline modes
-- **GDALG Format**: Read-only access to GDALG format (JSON-based pipeline files)
-- **Configuration Options**: GDAL config option support
-- **VSI Support**: Virtual file system integration
-- **Shell Script Generation**: Export pipelines to executable bash/zsh
-
-### GDAL 3.12 Features
-
-Additional algorithms and capabilities available in GDAL 3.12+:
-
-- **GDALG Format Write Support**: Write pipelines to GDALG format for persistence and sharing
-- **Additional Raster Algorithms**: blend, compare, neighbors, nodata-to-alpha, pansharpen, proximity, rgb-to-palette, update, zonal-stats, as-features
-- **Additional Vector Algorithms**: check-coverage, check-geometry, clean-coverage, index, layer-algebra, make-point, partition, set-field-type, simplify-coverage
-- **GDALG Format Driver**: Native support for GDALG as a format driver with metadata
-- **Pipeline Features**: Additional pipeline capabilities and algorithm metadata
-
-### Checking Version Support
-
-Use the discovery utilities to check version requirements:
-
-```{r, eval=FALSE}
-# Check if GDAL meets minimum version
-if (gdal_check_version("3.11")) {
-  # Use gdalcli features
-}
-
-# Check for GDAL 3.12+ features
-if (gdal_check_version("3.12")) {
-  # Use new GDAL 3.12 algorithms
-}
-
-# List all available commands for current GDAL version
-all_commands <- gdal_list_commands()
-head(all_commands)
-
-# Get help for a specific command
-gdal_command_help("raster.info")
-```
-
-When regenerating the package with GDAL 3.12+ installed, all new algorithms are automatically discovered and wrapped as R functions.
-
-## GDAL Function Categories
-
-The 80+ auto-generated functions are organized into logical categories:
-
-### Raster Operations
-
-Functions for working with raster datasets: `gdal_raster_*`
-
-- **gdal_raster_convert** - Format conversion
-- **gdal_raster_clip** - Spatial subsetting
-- **gdal_raster_reproject** - Reprojection
-- **gdal_raster_scale** - Value scaling
-- And many more...
-
-### Vector Operations
-
-Functions for working with vector datasets: `gdal_vector_*`
-
-- **gdal_vector_convert** - Format conversion
-- **gdal_vector_info** - Dataset information
-- **gdal_vector_reproject** - Reprojection
-- And more...
-
-### Multidimensional (MDim)
-
-Functions for multidimensional data: `gdal_mdim_*`
-
-- **gdal_mdim_convert** - Dimension conversion
-- **gdal_mdim_info** - Dimension information
-
-### VSI (Virtual File System)
-
-Functions for cloud storage and remote access: `gdal_vsi_*`
-
-- Support for S3, Azure, GCS, OSS, Swift with automatic credential handling
-
-Use `gdal_gdal(drivers = TRUE)` to list all available drivers in your GDAL installation.
-
-## System Requirements
-
-- **R** >= 4.1
-- **GDAL** >= 3.11 (required for CLI)
-- **Dependencies**:
-  - `processx` (>=3.8.0) - Subprocess management
-  - `yyjsonr` (>=0.1.0) - JSON handling
-  - `rlang` (>=1.0.0) - Error handling and programming utilities
-  - `cli` (>=3.0.0) - Terminal messages
-  - `digest` (>=0.6.0) - Cryptographic hashing
-
-## Documentation
-
-- **Getting Started**: `?gdal_vector_convert` - Example auto-generated function
-- **Authentication**: `?gdal_auth_s3`, `?gdal_auth_azure`, etc. - Set up credentials
-- **Lazy Evaluation**: `?gdal_job` - Understand the job specification system
-- **Execution**: `?gdal_job_run` - Run GDAL commands
-- **Composition**: `?gdal_with_co`, `?gdal_with_env` - Modify jobs with modifiers
-
 ## Architecture & Design
 
 ### Three-Layer Architecture
@@ -811,138 +808,15 @@ Use `gdal_gdal(drivers = TRUE)` to list all available drivers in your GDAL insta
 1. **Frontend Layer** (User-facing R API)
    - Auto-generated functions like `gdal_vector_convert()`, `gdal_raster_reproject()`, etc.
    - Composable modifiers: `gdal_with_co()`, `gdal_with_env()`, `gdal_with_config()`, etc.
-   - S3 methods for extensibility
-   - Lazy `gdal_job` specification objects
-   - Native pipe (`|>`) support for composition
 
 2. **Pipeline Layer** (Workflows)
    - Automatic pipeline building through chained piping
    - Native GDAL pipeline execution (`gdal raster/vector pipeline`)
    - GDALG format serialization with `gdal_save_pipeline()` and `gdal_load_pipeline()`
-   - Shell script rendering for persistence and sharing
-   - Configuration option aggregation and propagation
-   - Sequential vs. native execution modes
 
 3. **Engine Layer** (Command Execution)
    - `gdal_job_run()` executes individual jobs or entire pipelines
-   - Uses processx for robust subprocess management
-   - Handles environment variable injection
-   - Supports input/output streaming (`/vsistdin/`, `/vsistdout/`)
    - Multiple backend options (processx, gdalraster, reticulate)
-
-### Lazy Evaluation
-
-Commands are built as specifications (`gdal_job` objects) and only executed when passed to `gdal_job_run()`:
-
-```{r}
-# This doesn't execute anything - just builds a specification
-job <- gdal_vector_convert(
-  input = "data.shp",
-  output = "data.gpkg"
-)
-
-# Inspect the job before running
-job
-
-# Render to see the command that would be executed
-render_gdal_pipeline(job)
-```
-
-### S3-Based Composition
-
-All modifiers are S3 generics that accept and return `gdal_job` objects, enabling composable workflows:
-
-```{r}
-# Each step returns a modified gdal_job
-pipeline <- gdal_raster_convert(input = "in.tif", output = "out.tif") |>
-  gdal_with_co("COMPRESS=DEFLATE") |>
-  gdal_with_config("GDAL_CACHEMAX=512")
-
-# Inspect at any point
-pipeline
-```
-
-### Pipeline Composition and Execution Modes
-
-Pipelines are automatically created when chaining GDAL operations with the native R pipe:
-
-```{r}
-# Build a multi-step pipeline by chaining operations
-pipeline <- gdal_raster_reproject(
-  input = "input.tif",
-  dst_crs = "EPSG:32632"
-) |>
-  gdal_raster_convert(output = "output.tif")
-
-# Render as sequential commands (jobs run separately)
-seq_render <- render_gdal_pipeline(pipeline$pipeline, format = "shell_chain")
-# Sequential output:
-seq_render
-
-# Render as native GDAL pipeline (single command)
-native_render <- render_gdal_pipeline(pipeline$pipeline, format = "native")
-# Native output:
-native_render
-```
-
-**Sequential Execution** (default):
-
-- Each job runs as a separate GDAL command
-- Safer for hybrid workflows mixing pipeline and non-pipeline operations
-- Intermediate results written to disk
-
-**Native Execution**:
-
-- Entire pipeline runs as single `gdal raster/vector pipeline` command
-- More efficient for large datasets (avoids intermediate I/O)
-- Direct data flow between pipeline steps
-
-### GDALG Format: Pipeline Persistence
-
-Pipelines can be saved and loaded for persistence and sharing:
-
-```{r, eval=FALSE}
-# Save pipeline as GDALG (JSON format)
-gdal_save_pipeline(pipeline, "workflow.gdalg.json")
-
-# Load pipeline later
-loaded <- gdal_load_pipeline("workflow.gdalg.json")
-
-# Pipelines maintain round-trip fidelity
-# All structure, arguments, and metadata are preserved
-```
-
-GDALG files can be:
-
-- Version controlled in git repositories
-- Shared with team members
-- Executed by other GDAL-compatible tools
-- Edited manually for complex workflows
-
-## Security Considerations
-
-1. **Credentials in .Renviron, not in code** - Never pass secrets as function arguments. Use `.Renviron` or external secret managers:
-
-   ```env
-   # ~/.Renviron or project .Renviron
-   AWS_ACCESS_KEY_ID=your_access_key
-   AWS_SECRET_ACCESS_KEY=your_secret
-   ```
-
-2. **Environment-variable-only design** - Auth helpers read from environment, never from function arguments. This prevents accidental commits of credentials.
-
-3. **Don't save R sessions** - Avoid saving `.RData` files or R session history containing credentials.
-
-4. **Use temporary/rotatable credentials** - When possible, use temporary credentials (AWS STS, Azure Managed Identity, GCS service accounts) instead of long-lived secrets.
-
-5. **Rotate credentials regularly** - Follow your organization's credential rotation policies.
-
-6. **Use external secret managers** - For production, consider:
-   - HashiCorp Vault
-   - AWS Secrets Manager
-   - Azure Key Vault
-   - Google Cloud Secret Manager
-   - 1Password, Bitwarden, or other password managers with environment variable integration
 
 ## Contributing
 
