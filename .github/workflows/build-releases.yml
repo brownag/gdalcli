@@ -183,51 +183,15 @@ jobs:
           push: ${{ github.event.inputs.dry_run == 'false' }}
           build-contexts: context=.github/dockerfiles
 
-      - name: Create GDAL_VERSION_INFO.json
-        run: |
-          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
-          BUILD_DATE="$(date -I)"
-          GENERATED_AT="$(date '+%Y-%m-%d %H:%M:%S')"
-          
-          # Parse version components
-          MAJOR=$(echo "$GDAL_VERSION" | cut -d. -f1)
-          MINOR=$(echo "$GDAL_VERSION" | cut -d. -f2)
-          PATCH=$(echo "$GDAL_VERSION" | cut -d. -f3)
-          
-          cat > inst/GDAL_VERSION_INFO.json <<EOF
-          {
-            "generated_at": "$GENERATED_AT",
-            "gdal_version": "$GDAL_VERSION",
-            "gdal_version_parsed": {
-              "full": "$GDAL_VERSION",
-              "major": $MAJOR,
-              "minor": $MINOR,
-              "patch": $PATCH
-            },
-            "generation_date": "$BUILD_DATE",
-            "r_version": "$(R --version | head -1 | sed 's/R version \([0-9.]*\).*/\1/')",
-            "packages": {
-              "processx": "$(R -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")",
-              "jsonlite": "$(R -e "cat(as.character(packageVersion('jsonlite')))" 2>/dev/null || echo "unknown")"
-            }
-          }
-          EOF
-          cat inst/GDAL_VERSION_INFO.json
-
-      - name: Configure git
+      - name: Configure git and prepare release branch
+        if: github.event.inputs.dry_run == 'false'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-      - name: Create and reset release branch
-        if: github.event.inputs.dry_run == 'false'
-        run: |
           BRANCH="${{ needs.validate.outputs.branch_name }}"
-
-          # Fetch latest main
           git fetch origin main
 
-          # Create or reset branch to main
           if git rev-parse --verify origin/$BRANCH 2>/dev/null; then
             git checkout -b $BRANCH origin/$BRANCH
             git reset --hard origin/main
@@ -292,33 +256,48 @@ jobs:
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
           upload-snapshots: true
 
-      - name: Configure git
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-
-      - name: Create release branch
+      - name: Update version info and commit release
         if: success() && github.event.inputs.dry_run == 'false'
         run: |
-          BRANCH="${{ needs.validate.outputs.branch_name }}"
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          BUILD_DATE="$(date -I)"
+          GENERATED_AT="$(date '+%Y-%m-%d %H:%M:%S')"
+          
+          # Parse version components
+          MAJOR=$(echo "$GDAL_VERSION" | cut -d. -f1)
+          MINOR=$(echo "$GDAL_VERSION" | cut -d. -f2)
+          PATCH=$(echo "$GDAL_VERSION" | cut -d. -f3)
+          
+          cat > inst/GDAL_VERSION_INFO.json <<EOF
+          {
+            "generated_at": "$GENERATED_AT",
+            "gdal_version": "$GDAL_VERSION",
+            "gdal_version_parsed": {
+              "full": "$GDAL_VERSION",
+              "major": $MAJOR,
+              "minor": $MINOR,
+              "patch": $PATCH
+            },
+            "generation_date": "$BUILD_DATE",
+            "r_version": "$(R --version | head -1 | sed 's/R version \([0-9.]*\).*/\1/')",
+            "packages": {
+              "processx": "$(R -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")",
+              "jsonlite": "$(R -e "cat(as.character(packageVersion('jsonlite')))" 2>/dev/null || echo "unknown")"
+            }
+          }
+          EOF
 
-          # Stage and commit changes if any
+          # Stage all changes
           git add DESCRIPTION
           git add -f inst/GDAL_VERSION_INFO.json
-          
-          # Add auto-generated files from API generation and documentation
           git add R/
           git add man/
           git add NAMESPACE
           
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
+            git push origin ${{ needs.validate.outputs.branch_name }} --force
           fi
-
-          # Push branch
-          git push origin $BRANCH --force
-          echo "Created/updated branch: $BRANCH"
 
       - name: Create GitHub release
         if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main' && github.event.inputs.dry_run == 'false'
