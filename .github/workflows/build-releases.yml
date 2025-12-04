@@ -193,10 +193,10 @@ jobs:
         if: github.event.inputs.dry_run == 'false'
         run: |
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
-          BRANCH="${{ needs.validate.outputs.branch_name }}"
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
           
-          # Run generation steps inside the Docker container where GDAL is available
+          # Extract generated files from the Docker image
+          # The image was built with API generation and roxygen2 already run
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
@@ -204,29 +204,44 @@ jobs:
             bash -c "
               set -e
               
-              # Generate GDAL API
-              echo 'Generating GDAL API...'
-              Rscript build/generate_gdal_api.R
+              # Copy generated R files
+              echo 'Extracting generated files from Docker image...'
+              cp -r /usr/local/lib/R/site-library/gdalcli/R/* /workspace/R/ 2>/dev/null || {
+                echo 'Trying alternative path...'
+                find / -name 'gdal_*.R' -path '*/gdalcli/R/*' -exec cp {} /workspace/R/ \; 2>/dev/null || true
+              }
               
-              # Document package
+              # If R files don't exist in library, regenerate them
+              if [ \$(ls -1 /workspace/R/*.R 2>/dev/null | wc -l) -lt 5 ]; then
+                echo 'Regenerating GDAL API in workspace...'
+                Rscript /workspace/build/generate_gdal_api.R
+              fi
+              
+              # Regenerate documentation from the workspace files
               echo 'Generating documentation...'
+              cd /workspace
               Rscript -e 'roxygen2::roxygenise()'
               
-              # Run R CMD check
+              # Run checks on the generated package
               echo 'Running R CMD check...'
-              R CMD check --no-manual --compact-vignettes=gs+qpdf . 2>&1 || true
+              R CMD check --no-manual --compact-vignettes=gs+qpdf /workspace 2>&1 | tail -50 || {
+                echo 'WARNING: R CMD check had issues, but continuing...'
+              }
               
               # Show generated files
-              echo 'Generated files:'
-              ls -la R/ | head -20
-              ls -la man/ | head -20
-              file NAMESPACE
+              echo ''
+              echo 'Generated files summary:'
+              echo \"R files: \$(ls -1 /workspace/R/*.R 2>/dev/null | wc -l)\"
+              echo \"Rd files: \$(ls -1 /workspace/man/*.Rd 2>/dev/null | wc -l)\"
+              test -f /workspace/NAMESPACE && echo 'NAMESPACE: OK' || echo 'NAMESPACE: MISSING'
             "
           
-          # Copy generated files back to workspace if they're in a subdirectory
-          if [ -d /tmp/generated ]; then
-            cp -r /tmp/generated/* . || true
-          fi
+          # Verify files exist in workspace
+          echo ""
+          echo "Verifying generated files in workspace..."
+          test -d R && echo "✓ R/ directory exists ($(ls -1 R/*.R 2>/dev/null | wc -l) files)" || echo "✗ R/ directory missing!"
+          test -d man && echo "✓ man/ directory exists ($(ls -1 man/*.Rd 2>/dev/null | wc -l) files)" || echo "✗ man/ directory missing!"
+          test -f NAMESPACE && echo "✓ NAMESPACE exists" || echo "✗ NAMESPACE missing!"
 
       - name: Configure git and prepare release branch
         if: github.event.inputs.dry_run == 'false'
