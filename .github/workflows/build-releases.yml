@@ -121,6 +121,40 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Check OSGeo GDAL image availability
+        id: check-image
+        run: |
+          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+
+          TAGS_TO_TRY=(
+            "ubuntu-small-${GDAL_VERSION}-amd64"
+            "ubuntu-small-${GDAL_VERSION}"
+            "ubuntu-small-latest-amd64"
+            "ubuntu-small-latest"
+            "ubuntu-small-amd64"
+            "ubuntu-small"
+            "latest"
+          )
+
+          SELECTED_TAG=""
+          for TAG in "${TAGS_TO_TRY[@]}"; do
+            IMAGE_TAG="ghcr.io/osgeo/gdal:${TAG}"
+            echo "Checking: $IMAGE_TAG"
+
+            if docker buildx imagetools inspect "$IMAGE_TAG" >/dev/null 2>&1; then
+              echo "Found OSGeo GDAL image: $IMAGE_TAG"
+              SELECTED_TAG="$TAG"
+              break
+            fi
+          done
+
+          if [ -z "$SELECTED_TAG" ]; then
+            echo "No suitable OSGeo GDAL image found for version ${GDAL_VERSION}"
+            exit 1
+          fi
+
+          echo "selected_gdal_image_tag=$SELECTED_TAG" >> $GITHUB_OUTPUT
+
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
@@ -138,6 +172,7 @@ jobs:
             GDAL_BUILD_MODE=osgeo
             GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
             GDAL_RELEASE_TYPE=tagged
+            GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
             R_VERSION=latest
             PACKAGE_VERSION=${{ needs.validate.outputs.package_version }}
           tags: |
