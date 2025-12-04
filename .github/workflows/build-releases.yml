@@ -214,6 +214,27 @@ jobs:
           EOF
           cat inst/GDAL_VERSION_INFO.json
 
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Create and reset release branch
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          BRANCH="${{ needs.validate.outputs.branch_name }}"
+
+          # Fetch latest main
+          git fetch origin main
+
+          # Create or reset branch to main
+          if git rev-parse --verify origin/$BRANCH 2>/dev/null; then
+            git checkout -b $BRANCH origin/$BRANCH
+            git reset --hard origin/main
+          else
+            git checkout -b $BRANCH origin/main
+          fi
+
       - name: Update DESCRIPTION
         run: |
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
@@ -281,17 +302,6 @@ jobs:
         run: |
           BRANCH="${{ needs.validate.outputs.branch_name }}"
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
-
-          # Fetch and reset to latest main
-          git fetch origin main
-
-          # Create or reset branch to main
-          if git rev-parse --verify origin/$BRANCH 2>/dev/null; then
-            git checkout -b $BRANCH origin/$BRANCH
-            git reset --hard origin/main
-          else
-            git checkout -b $BRANCH origin/main
-          fi
 
           # Stage and commit changes if any
           git add DESCRIPTION
