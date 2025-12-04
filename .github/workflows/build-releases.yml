@@ -152,10 +152,29 @@ jobs:
         run: |
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
           BUILD_DATE="$(date -I)"
+          GENERATED_AT="$(date '+%Y-%m-%d %H:%M:%S')"
+          
+          # Parse version components
+          MAJOR=$(echo "$GDAL_VERSION" | cut -d. -f1)
+          MINOR=$(echo "$GDAL_VERSION" | cut -d. -f2)
+          PATCH=$(echo "$GDAL_VERSION" | cut -d. -f3)
+          
           cat > inst/GDAL_VERSION_INFO.json <<EOF
           {
+            "generated_at": "$GENERATED_AT",
             "gdal_version": "$GDAL_VERSION",
-            "build_date": "$BUILD_DATE"
+            "gdal_version_parsed": {
+              "full": "$GDAL_VERSION",
+              "major": $MAJOR,
+              "minor": $MINOR,
+              "patch": $PATCH
+            },
+            "generation_date": "$BUILD_DATE",
+            "r_version": "$(R --version | head -1 | sed 's/R version \([0-9.]*\).*/\1/')",
+            "packages": {
+              "processx": "$(R -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")",
+              "jsonlite": "$(R -e "cat(as.character(packageVersion('jsonlite')))" 2>/dev/null || echo "unknown")"
+            }
           }
           EOF
           cat inst/GDAL_VERSION_INFO.json
@@ -240,7 +259,8 @@ jobs:
           fi
 
           # Stage and commit changes if any
-          git add DESCRIPTION inst/GDAL_VERSION_INFO.json
+          git add DESCRIPTION
+          git add -f inst/GDAL_VERSION_INFO.json
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
           fi
