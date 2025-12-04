@@ -19,8 +19,8 @@
 #'   or `"reticulate"` (Python osgeo.gdal via reticulate, if available).
 #'   If `NULL` (default), auto-selects the best available backend:
 #'   gdalraster if available, otherwise processx.
-#'   Control auto-selection with `options(gdalcli.prefer_backend = 'gdalraster')` or
-#'   `options(gdalcli.prefer_backend = 'processx')`.
+#'   Control auto-selection with `options(gdalcli.backend = 'gdalraster')` or
+#'   `options(gdalcli.backend = 'processx')`.
 #' @param stream_in An R object to be streamed to `/vsistdin/`. Can be `NULL`,
 #'   a character string, or raw vector. If provided, overrides `x$stream_in`.
 #' @param stream_out_format Character string: `NULL` (default, no streaming),
@@ -79,7 +79,7 @@ gdal_job_run <- function(x, ..., backend = NULL) {
   # Handle backend selection
   if (is.null(backend)) {
     # Auto-select backend based on availability and user preference
-    backend <- getOption("gdalcli.prefer_backend", "auto")
+    backend <- getOption("gdalcli.backend", "auto")
 
     if (backend == "auto") {
       # Auto-select: prefer gdalraster if available and functional
@@ -121,7 +121,7 @@ gdal_job_run <- function(x, ..., backend = NULL) {
       c(
         "Unknown backend: {backend}",
         "i" = "Supported backends: 'processx', 'gdalraster', 'reticulate'",
-        "i" = "Set option: options(gdalcli.prefer_backend = 'gdalraster')"
+        "i" = "Set option: options(gdalcli.backend = 'gdalraster')"
       )
     )
   }

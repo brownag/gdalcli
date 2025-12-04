@@ -26,8 +26,8 @@ always available if GDAL installed), \code{"gdalraster"} (C++ bindings, if gdalr
 or \code{"reticulate"} (Python osgeo.gdal via reticulate, if available).
 If \code{NULL} (default), auto-selects the best available backend:
 gdalraster if available, otherwise processx.
-Control auto-selection with \code{options(gdalcli.prefer_backend = 'gdalraster')} or
-\code{options(gdalcli.prefer_backend = 'processx')}.}
+Control auto-selection with \code{options(gdalcli.backend = 'gdalraster')} or
+\code{options(gdalcli.backend = 'processx')}.}
 
 \item{stream_in}{An R object to be streamed to \verb{/vsistdin/}. Can be \code{NULL},
 a character string, or raw vector. If provided, overrides \code{x$stream_in}.}

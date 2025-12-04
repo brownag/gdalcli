@@ -185,7 +185,7 @@ gdal_job_run(processing_pipeline, backend = "processx")
 Set your preferred backend globally:
 
 ``` r
-options(gdalcli.prefer_backend = "gdalraster")  # or "processx", "reticulate"
+options(gdalcli.backend = "gdalraster")  # or "processx", "reticulate"
 ```
 
 ## Pipeline Features
