@@ -296,6 +296,12 @@ jobs:
           # Stage and commit changes if any
           git add DESCRIPTION
           git add -f inst/GDAL_VERSION_INFO.json
+          
+          # Add auto-generated files from API generation and documentation
+          git add R/
+          git add man/
+          git add NAMESPACE
+          
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
           fi
