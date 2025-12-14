@@ -245,6 +245,10 @@ jobs:
 
           BRANCH="${{ needs.validate.outputs.branch_name }}"
           
+          # Clean up R check directory with restricted permissions before stashing
+          echo "Cleaning up build artifacts..."
+          sudo rm -rf workspace.Rcheck 2>/dev/null || rm -rf workspace.Rcheck
+          
           # Stash any uncommitted changes (including untracked generated files)
           echo "Stashing generated files and changes..."
           git stash push -u -m "temp: generated files for $BRANCH"
