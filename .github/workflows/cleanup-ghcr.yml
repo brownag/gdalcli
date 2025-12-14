@@ -1,0 +1,69 @@
+---
+name: Cleanup GHCR Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run mode (show what would be removed without actually removing)'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      keep_versions:
+        description: 'Number of recent GDAL versions to keep (all images per version preserved)'
+        required: false
+        default: '3'
+        type: string
+      force:
+        description: 'Force removal without confirmation prompts'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup-ghcr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate with GitHub CLI
+        run: |
+          # Use GITHUB_TOKEN for authentication
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Run GHCR cleanup script
+        run: |
+          ARGS="--owner brownag --repo gdalcli"
+          
+          # Add optional arguments
+          [ "${{ github.event.inputs.dry_run }}" != "false" ] && ARGS="$ARGS --dry-run"
+          [ -n "${{ github.event.inputs.keep_versions }}" ] && ARGS="$ARGS --keep ${{ github.event.inputs.keep_versions }}"
+          [ "${{ github.event.inputs.force }}" = "true" ] && ARGS="$ARGS --force"
+          
+          # Run the cleanup script
+          chmod +x ./scripts/cleanup-ghcr-images.sh
+          ./scripts/cleanup-ghcr-images.sh $ARGS
+
+      - name: Cleanup summary
+        if: always()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY <<'SUMMARY'
+          ## GHCR Cleanup Summary
+          
+          | Setting | Value |
+          |---------|-------|
+          | Dry Run | ${{ github.event.inputs.dry_run || 'true' }} |
+          | Keep Versions | ${{ github.event.inputs.keep_versions || '3' }} |
+          | Force Mode | ${{ github.event.inputs.force || 'false' }} |
+          | Status | ${{ job.status }} |
+          SUMMARY
