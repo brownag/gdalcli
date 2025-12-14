@@ -15,7 +15,7 @@ A \link{gdal_job} object.
 \description{
 List content of a ZIP file, with SOZIP related information.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

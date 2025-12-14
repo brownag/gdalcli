@@ -12,8 +12,7 @@ gdal_mdim_info(
   array = NULL,
   limit = NULL,
   array_option = NULL,
-  stats = FALSE,
-  stdout = FALSE
+  stats = FALSE
 )
 }
 \arguments{
@@ -32,8 +31,6 @@ gdal_mdim_info(
 \item{array_option}{Option passed to GDALGroup::GetMDArrayNames() to filter reported arrays. (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{stats}{Read and display image statistics. (Logical)}
-
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -41,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Return information on a multidimensional dataset.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_info(input = "netcdf-4d.nc")
@@ -52,6 +49,7 @@ job <- gdal_mdim_info(input = "netcdf-4d.nc")
 \seealso{
 Other gdal_mdim_utilities: 
 \code{\link{gdal_mdim}()},
-\code{\link{gdal_mdim_convert}()}
+\code{\link{gdal_mdim_convert}()},
+\code{\link{gdal_mdim_mosaic}()}
 }
 \concept{gdal_mdim_utilities}

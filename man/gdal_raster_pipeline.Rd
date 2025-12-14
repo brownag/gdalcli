@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdal_raster_pipeline.R
 \name{gdal_raster_pipeline}
 \alias{gdal_raster_pipeline}
-\title{Process a raster dataset}
+\title{Process a raster dataset applying several steps}
 \usage{
 gdal_raster_pipeline(
   jobs = NULL,
@@ -13,13 +13,14 @@ gdal_raster_pipeline(
   open_option = NULL,
   pipeline = NULL,
   creation_option = NULL,
-  overwrite = FALSE
+  overwrite = FALSE,
+  append = FALSE
 )
 }
 \arguments{
 \item{jobs}{A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string}
 
-\item{input}{Input raster dataset (Dataset path)}
+\item{input}{Input raster datasets. \code{1} to \code{2147483647} value(s)}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -34,31 +35,36 @@ gdal_raster_pipeline(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
+\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Process a raster dataset.
+Process a raster dataset applying several steps.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
+job <- gdal_raster_pipeline(
+    input = c("in.tif", "!", "reproject", "!", "edit", "!", "write"), output = "out.tif", 
+    overwrite = TRUE)
 \dontrun{
-# TODO: No examples available for gdal_raster_pipeline.
-# See GDAL documentation: https://gdal.org/programs/gdal-raster-pipeline.html
-job <- gdal_raster_pipeline()
-# gdal_job_run(job)
+  result <- gdal_job_run(job)
 }
 }
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
+\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
+\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
+\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -69,13 +75,19 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
+\code{\link{gdal_raster_neighbors}()},
+\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
+\code{\link{gdal_raster_overview_refresh}()},
+\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
+\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
+\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -87,6 +99,8 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_viewshed}()}
+\code{\link{gdal_raster_update}()},
+\code{\link{gdal_raster_viewshed}()},
+\code{\link{gdal_raster_zonal_stats}()}
 }
 \concept{gdal_raster_utilities}

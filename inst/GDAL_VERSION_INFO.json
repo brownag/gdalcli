@@ -1,0 +1,16 @@
+{
+  "generated_at": "2025-12-14 23:14:34",
+  "gdal_version": "3.12.0",
+  "gdal_version_parsed": {
+    "full": "3.12.0",
+    "major": 3,
+    "minor": 12,
+    "patch": 0
+  },
+  "generation_date": "2025-12-14",
+  "r_version": "4.5.2",
+  "packages": {
+    "processx": "3.8.6",
+    "jsonlite": "2.0.0"
+  }
+}

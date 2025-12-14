@@ -15,7 +15,7 @@ A \link{gdal_job} object.
 \description{
 Repack a FileGeoDatabase dataset
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")

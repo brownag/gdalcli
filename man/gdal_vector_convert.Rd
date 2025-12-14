@@ -10,6 +10,7 @@ gdal_vector_convert(
   input_layer = NULL,
   output,
   output_format = NULL,
+  output_open_option = NULL,
   output_layer = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -17,11 +18,13 @@ gdal_vector_convert(
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
-  append = FALSE
+  append = FALSE,
+  upsert = FALSE,
+  skip_errors = FALSE
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -29,7 +32,9 @@ gdal_vector_convert(
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format ("GDALG" allowed)}
+
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output_layer}{Output layer name}
 
@@ -43,9 +48,13 @@ gdal_vector_convert(
 
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+
+\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
+
+\item{skip_errors}{Skip errors when writing features (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -53,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Convert a vector dataset.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_convert.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_convert.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_convert(input = "poly.shp", output = "output.gpkg")
@@ -64,9 +73,14 @@ job <- gdal_vector_convert(input = "poly.shp", output = "output.gpkg")
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
+\code{\link{gdal_vector_buffer}()},
+\code{\link{gdal_vector_check_coverage}()},
+\code{\link{gdal_vector_check_geometry}()},
+\code{\link{gdal_vector_clean_coverage}()},
 \code{\link{gdal_vector_clip}()},
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_edit}()},
+\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -86,11 +100,22 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_grid_minimum}()},
 \code{\link{gdal_vector_grid_nearest}()},
 \code{\link{gdal_vector_grid_range}()},
+\code{\link{gdal_vector_index}()},
 \code{\link{gdal_vector_info}()},
+\code{\link{gdal_vector_layer_algebra}()},
+\code{\link{gdal_vector_make_point}()},
+\code{\link{gdal_vector_make_valid}()},
+\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
+\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_sql}()}
+\code{\link{gdal_vector_set_field_type}()},
+\code{\link{gdal_vector_set_geom_type}()},
+\code{\link{gdal_vector_simplify}()},
+\code{\link{gdal_vector_simplify_coverage}()},
+\code{\link{gdal_vector_sql}()},
+\code{\link{gdal_vector_swap_xy}()}
 }
 \concept{gdal_vector_utilities}

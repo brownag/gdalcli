@@ -5,13 +5,17 @@
 \title{stack: Combine together input bands into a multi-band output, either virtual (VRT) or...}
 \usage{
 gdal_raster_stack(
-  input = NULL,
+  input,
+  input_format = NULL,
   output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
+  open_option = NULL,
   creation_option = NULL,
-  band = NULL,
   overwrite = FALSE,
+  append = FALSE,
+  band = NULL,
+  absolute_path = FALSE,
   resolution = NULL,
   bbox = NULL,
   src_nodata = NULL,
@@ -20,7 +24,9 @@ gdal_raster_stack(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames) (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
@@ -28,11 +34,17 @@ gdal_raster_stack(
 
 \item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
 
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
+\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>|same|average|common|highest|lowest} (Default: \code{same})}
 
@@ -50,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Combine together input bands into a multi-band output, either virtual (VRT) or materialized.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_stack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_stack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_stack(input = c("red.tif", "green.tif", "blue.tif"), output = "rgb.tif")
@@ -61,11 +73,14 @@ job <- gdal_raster_stack(input = c("red.tif", "green.tif", "blue.tif"), output =
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
+\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
+\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
+\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -76,14 +91,20 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
+\code{\link{gdal_raster_neighbors}()},
+\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
+\code{\link{gdal_raster_overview_refresh}()},
+\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
+\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
+\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -94,6 +115,8 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_viewshed}()}
+\code{\link{gdal_raster_update}()},
+\code{\link{gdal_raster_viewshed}()},
+\code{\link{gdal_raster_zonal_stats}()}
 }
 \concept{gdal_raster_utilities}

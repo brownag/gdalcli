@@ -29,7 +29,7 @@ A \link{gdal_job} object.
 \description{
 Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

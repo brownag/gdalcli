@@ -7,20 +7,20 @@
 gdal_vector_rasterize(
   input,
   input_format = NULL,
+  input_layer = NULL,
   output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
+  overwrite = FALSE,
   band = NULL,
   invert = FALSE,
   all_touched = FALSE,
   burn = NULL,
   attribute_name = NULL,
   X3d = FALSE,
-  add = FALSE,
-  layer_name = NULL,
   where = NULL,
   sql = NULL,
   dialect = NULL,
@@ -32,14 +32,16 @@ gdal_vector_rasterize(
   resolution = NULL,
   size = NULL,
   optimization = NULL,
-  update = FALSE,
-  overwrite = FALSE
+  add = FALSE,
+  update = FALSE
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{input_layer}{Input layer name}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
@@ -53,6 +55,8 @@ gdal_vector_rasterize(
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
 \item{band}{The band(s) to burn values into (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
 \item{invert}{Invert the rasterization (Logical) (Default: \code{false})}
@@ -64,10 +68,6 @@ gdal_vector_rasterize(
 \item{attribute_name}{Attribute name}
 
 \item{X3d}{Indicates that a burn value should be extracted from the Z values of the feature (Logical)}
-
-\item{add}{Add to existing raster (Logical) (Default: \code{false})}
-
-\item{layer_name}{Layer name}
 
 \item{where}{SQL where clause}
 
@@ -91,9 +91,9 @@ gdal_vector_rasterize(
 
 \item{optimization}{Force the algorithm used (results are identical). Choices: AUTO, RASTER, VECTOR (Default: \code{AUTO})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{add}{Add to existing raster (Logical) (Default: \code{false})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.
@@ -101,7 +101,7 @@ A \link{gdal_job} object.
 \description{
 Burns vector geometries into a raster.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -114,10 +114,15 @@ job <- gdal_vector_rasterize()
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
+\code{\link{gdal_vector_buffer}()},
+\code{\link{gdal_vector_check_coverage}()},
+\code{\link{gdal_vector_check_geometry}()},
+\code{\link{gdal_vector_clean_coverage}()},
 \code{\link{gdal_vector_clip}()},
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
+\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -137,10 +142,21 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_grid_minimum}()},
 \code{\link{gdal_vector_grid_nearest}()},
 \code{\link{gdal_vector_grid_range}()},
+\code{\link{gdal_vector_index}()},
 \code{\link{gdal_vector_info}()},
+\code{\link{gdal_vector_layer_algebra}()},
+\code{\link{gdal_vector_make_point}()},
+\code{\link{gdal_vector_make_valid}()},
+\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_reproject}()},
+\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_sql}()}
+\code{\link{gdal_vector_set_field_type}()},
+\code{\link{gdal_vector_set_geom_type}()},
+\code{\link{gdal_vector_simplify}()},
+\code{\link{gdal_vector_simplify_coverage}()},
+\code{\link{gdal_vector_sql}()},
+\code{\link{gdal_vector_swap_xy}()}
 }
 \concept{gdal_vector_utilities}

@@ -7,6 +7,7 @@
 gdal_vector_grid_invdistnn(
   input,
   input_format = NULL,
+  input_layer = NULL,
   output,
   output_format = NULL,
   output_data_type = NULL,
@@ -17,7 +18,6 @@ gdal_vector_grid_invdistnn(
   size = NULL,
   crs = NULL,
   overwrite = FALSE,
-  layer = NULL,
   sql = NULL,
   bbox = NULL,
   zfield = NULL,
@@ -34,9 +34,11 @@ gdal_vector_grid_invdistnn(
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+
+\item{input_layer}{Input layer name (Character vector). \code{0} to \code{2147483647} value(s)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
@@ -57,8 +59,6 @@ gdal_vector_grid_invdistnn(
 \item{crs}{Override the projection for the output file}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{layer}{Layer name (Character vector). \code{0} to \code{2147483647} value(s)}
 
 \item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
 
@@ -92,7 +92,7 @@ A \link{gdal_job} object.
 \description{
 Create a regular grid from scattered points using weighted inverse distance interpolation nearest neighbour.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_grid_invdistnn.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_grid_invdistnn.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -105,10 +105,15 @@ job <- gdal_vector_grid_invdistnn()
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
+\code{\link{gdal_vector_buffer}()},
+\code{\link{gdal_vector_check_coverage}()},
+\code{\link{gdal_vector_check_geometry}()},
+\code{\link{gdal_vector_clean_coverage}()},
 \code{\link{gdal_vector_clip}()},
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
+\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -127,11 +132,22 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_grid_minimum}()},
 \code{\link{gdal_vector_grid_nearest}()},
 \code{\link{gdal_vector_grid_range}()},
+\code{\link{gdal_vector_index}()},
 \code{\link{gdal_vector_info}()},
+\code{\link{gdal_vector_layer_algebra}()},
+\code{\link{gdal_vector_make_point}()},
+\code{\link{gdal_vector_make_valid}()},
+\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
+\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_sql}()}
+\code{\link{gdal_vector_set_field_type}()},
+\code{\link{gdal_vector_set_geom_type}()},
+\code{\link{gdal_vector_simplify}()},
+\code{\link{gdal_vector_simplify_coverage}()},
+\code{\link{gdal_vector_sql}()},
+\code{\link{gdal_vector_swap_xy}()}
 }
 \concept{gdal_vector_utilities}

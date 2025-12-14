@@ -11,14 +11,13 @@ gdal_vsi_list(
   recursive = FALSE,
   depth = NULL,
   absolute_path = FALSE,
-  tree = FALSE,
-  stdout = FALSE
+  tree = FALSE
 )
 }
 \arguments{
 \item{filename}{File or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
+\item{output_format}{Output format. Choices: json, text}
 
 \item{long_listing}{Use a long listing format (Logical)}
 
@@ -29,8 +28,6 @@ gdal_vsi_list(
 \item{absolute_path}{Display absolute path (Logical)}
 
 \item{tree}{Use a hierarchical presentation for JSON output (Logical)}
-
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,7 +35,7 @@ A \link{gdal_job} object.
 \description{
 List files of one of the GDAL Virtual System Interface (VSI).
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_list.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_vsi_list.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

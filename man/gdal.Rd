@@ -17,7 +17,7 @@ A \link{gdal_job} object.
 \description{
 Main gdal entry point.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

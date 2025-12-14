@@ -15,7 +15,7 @@ A \link{gdal_job} object.
 \description{
 Multidimensional commands.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_mdim.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_mdim.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -28,6 +28,7 @@ job <- gdal_mdim()
 \seealso{
 Other gdal_mdim_utilities: 
 \code{\link{gdal_mdim_convert}()},
-\code{\link{gdal_mdim_info}()}
+\code{\link{gdal_mdim_info}()},
+\code{\link{gdal_mdim_mosaic}()}
 }
 \concept{gdal_mdim_utilities}
