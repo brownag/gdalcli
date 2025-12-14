@@ -51,20 +51,16 @@ The project uses GitHub Actions for automated testing, building, and deployment.
 
 ### Build Workflows
 
-**build-base-images.yml**
-- **Purpose**: Build reusable GDAL base images for CI
-- **Trigger**: Manual dispatch
-- **Output**: `ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64` images
-- **When to run**: When GDAL versions change or base image updates needed
-
-**build-runtime-images.yml**
-- **Purpose**: Build full runtime Docker images with gdalcli installed
-- **Trigger**: Weekly schedule, main branch pushes, manual dispatch
-- **Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest` images
-- **When to run**: Automated weekly builds or when runtime images need updates
+**build-docker-images.yml**
+- **Purpose**: Build reusable GDAL base images and full runtime Docker images with gdalcli
+- **Trigger**: Weekly schedule (Saturdays), main branch pushes, manual dispatch
+- **Base Image Output**: `ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`
+- **Runtime Image Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
+- **Manual parameters**: `gdal_version`, `image_stage` (both/deps/full), `push_images`
+- **When to run**: Automated weekly builds or when GDAL versions/dependencies need updates
 
 **build-releases.yml**
-- **Purpose**: Dynamic package builds and GitHub releases
+- **Purpose**: Dynamic package builds and GitHub releases for specific GDAL versions
 - **Trigger**: Manual dispatch with parameters
 - **Output**: Release branches, GitHub releases, package binaries
 - **When to run**: When creating new package releases for specific GDAL versions
@@ -74,7 +70,7 @@ The project uses GitHub Actions for automated testing, building, and deployment.
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
 | Code changes | R-CMD-check-ubuntu.yml + R-CMD-check-docker.yml | Both run automatically on PRs |
-| GDAL version updates | build-base-images.yml → build-runtime-images.yml | Update base images first |
+| GDAL version updates | build-docker-images.yml | Builds both base and runtime images |
 | Package releases | build-releases.yml | Manual workflow with version parameters |
 | Docker issues | R-CMD-check-docker.yml | Isolated testing environment |
 | Performance testing | R-CMD-check-docker.yml | Consistent environment |
@@ -83,22 +79,21 @@ The project uses GitHub Actions for automated testing, building, and deployment.
 
 Some workflows require manual triggering via GitHub Actions:
 
-- **build-base-images.yml**: Set `push_images=true` to publish to GHCR
-- **build-runtime-images.yml**: Specify `gdal_version` (default: 3.11.4)  
+- **build-docker-images.yml**: Set `push_images=true` and choose `image_stage` (both/deps/full) to control what's built and published
 - **build-releases.yml**: Configure `gdal_version`, `package_version`, `create_release`, etc.
 
 ### Docker Image Architecture
 
 The project uses a multi-stage Docker architecture for consistent GDAL environments:
 
-**Base Images** (`ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64`)
-- Built by: `build-base-images.yml`
-- Contains: GDAL X.Y.Z, R, and all package dependencies
+**Base Images** (`ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`)
+- Built by: `build-docker-images.yml` with `image_stage=deps` or `image_stage=both`
+- Contains: GDAL X.Y.Z, R, and all package dependencies (no gdalcli package)
 - Purpose: Reusable foundation for CI and development
 - When updated: When GDAL versions change or dependencies update
 
 **Runtime Images** (`ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`)  
-- Built by: `build-runtime-images.yml`
+- Built by: `build-docker-images.yml` with `image_stage=full` or `image_stage=both`
 - Contains: Complete gdalcli package installed and tested
 - Purpose: Production-ready images for users and deployment
 - When updated: Weekly or when package changes significantly

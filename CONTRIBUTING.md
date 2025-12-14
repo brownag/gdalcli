@@ -72,20 +72,14 @@ If tests fail:
 
 These workflows are triggered manually via GitHub Actions when infrastructure updates are needed:
 
-#### build-base-images.yml
+#### build-docker-images.yml
 
-- **Purpose**: Build reusable GDAL base images for CI
-- **Output**: `ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64` images
-- **Manual parameters**: `gdal_version`, `push_images` (set to `true` to publish)
-- **When to use**: After GDAL version changes or base image dependency updates
-
-#### build-runtime-images.yml
-
-- **Purpose**: Build full runtime Docker images with gdalcli installed
-- **Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest` images
-- **Manual parameters**: `gdal_version` (default: 3.11.4)
-- **Trigger**: Weekly schedule, main branch pushes, or manual dispatch
-- **When to use**: Weekly automated builds or when runtime images need updates
+- **Purpose**: Build GDAL base images and gdalcli runtime images (consolidated workflow)
+- **Base Image Output**: `ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`
+- **Runtime Image Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
+- **Manual parameters**: `gdal_version`, `image_stage` (both/deps/full), `push_images`
+- **Trigger**: Weekly schedule (Saturdays), main branch pushes, or manual dispatch
+- **When to use**: Automated weekly builds or when GDAL dependencies need updates
 
 #### build-releases.yml
 
@@ -98,9 +92,9 @@ These workflows are triggered manually via GitHub Actions when infrastructure up
 
 The project uses a two-layer Docker architecture for consistent GDAL environments:
 
-**Base Images** (`ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64`)
+**Base Images** (`ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`)
 
-- Contains: GDAL X.Y.Z, R, and all package dependencies
+- Contains: GDAL X.Y.Z, R, and all package dependencies (no gdalcli package)
 - Purpose: Reusable foundation for CI and development
 - Usage in CI: R-CMD-check-docker workflow tests against these images
 - When updated: When GDAL versions change or dependencies update
@@ -123,10 +117,66 @@ The project uses a two-layer Docker architecture for consistent GDAL environment
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
 | Code changes | R-CMD-check-ubuntu + R-CMD-check-docker | Both run automatically on PRs |
-| GDAL version updates | build-base-images -> build-runtime-images | Update base images first |
+| GDAL version updates | build-docker-images | Builds both base and runtime images |
 | Package releases | build-releases | Manual workflow with version parameters |
 | Docker issues | R-CMD-check-docker | Isolated testing environment |
 | Performance testing | R-CMD-check-docker | Consistent environment |
+
+### Docker Image Maintenance
+
+The project maintains Docker images for CI/CD and user deployment. To prevent accumulation of old images, automated cleanup is available:
+
+#### Local Docker Cleanup
+
+Use this script to remove old local Docker images you've pulled locally:
+
+```bash
+# Dry run (recommended first)
+./scripts/cleanup-local-docker-images.sh --dry-run
+
+# Remove old images (keeps latest base and runtime images)
+./scripts/cleanup-local-docker-images.sh --force
+```
+
+**Options:**
+
+- `--dry-run`: Show what would be removed without actually removing
+- `--force`: Skip confirmation prompts
+- `--repo REPO`: Specify different repository (default: `ghcr.io/brownag/gdalcli`)
+
+#### Remote GHCR Cleanup
+
+Use the GitHub CLI script to clean up old images from GitHub Container Registry remotely:
+
+```bash
+# Dry run (recommended first)
+./scripts/cleanup-ghcr-images.sh --dry-run
+
+# Remove old GDAL versions (keeps 3 most recent)
+./scripts/cleanup-ghcr-images.sh --force
+```
+
+Alternatively, the `cleanup-ghcr.yml` GitHub Actions workflow can run the cleanup manually:
+
+- **Manual Trigger**: Actions → "Cleanup GHCR Images" → Run workflow
+- **Retention**: Keeps the 3 most recent GDAL versions (all images per version are preserved)
+- **Safety**: Supports dry-run mode for testing (enabled by default)
+
+**Manual workflow options:**
+
+- `dry_run`: `true` (default) or `false`
+- `keep_versions`: Number of recent GDAL versions to keep (default: 3)
+- `force`: Skip confirmation prompts (default: false)
+
+#### Image Types
+
+- **Base Images**: `ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`
+  - Used for CI testing and as foundation for runtime images
+  - Cleanup keeps all images for the most recent GDAL versions
+
+- **Runtime Images**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
+  - Complete images with gdalcli package installed
+  - Cleanup keeps all images for the most recent GDAL versions
 
 ## Questions?
 
