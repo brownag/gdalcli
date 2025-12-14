@@ -244,14 +244,25 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
           BRANCH="${{ needs.validate.outputs.branch_name }}"
+          
+          # Stash any uncommitted changes (including untracked generated files)
+          echo "Stashing generated files and changes..."
+          git stash push -u -m "temp: generated files for $BRANCH"
+          
+          # Fetch latest main and prepare branch
           git fetch origin main
-
+          
           if git rev-parse --verify origin/$BRANCH 2>/dev/null; then
             git checkout -b $BRANCH origin/$BRANCH
             git reset --hard origin/main
           else
             git checkout -b $BRANCH origin/main
           fi
+          
+          # Restore the stashed changes (generated files)
+          # This must succeed or the workflow should fail
+          echo "Restoring generated files..."
+          git stash pop
 
       - name: Update DESCRIPTION
         run: |
