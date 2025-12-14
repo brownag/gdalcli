@@ -362,7 +362,7 @@ jobs:
         with:
           tag_name: ${{ needs.validate.outputs.tag_name }}
           target_commitish: ${{ needs.validate.outputs.branch_name }}
-          name: gdalcli for GDAL ${{ needs.validate.outputs.gdal_version }}
+          name: gdalcli v${{ needs.validate.outputs.package_version }} for GDAL ${{ needs.validate.outputs.gdal_version }}
           draft: false
           prerelease: false
           body: |
