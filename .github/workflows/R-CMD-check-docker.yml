@@ -10,6 +10,8 @@ permissions: read-all
 jobs:
   determine-gdal-version:
     runs-on: ubuntu-latest
+    permissions:
+      packages: read
     outputs:
       latest-gdal: ${{ steps.version.outputs.latest }}
     steps:
@@ -19,6 +21,7 @@ jobs:
           # Query available deps-gdal images from GHCR
           LATEST=$(curl -s \
             -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://ghcr.io/v2/${{ github.repository }}/tags/list" | \
             jq -r '.tags[] | select(startswith("deps-gdal-")) | gsub("deps-gdal-|-amd64"; "") | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' | \
             sort -V | tail -1)
