@@ -74,19 +74,69 @@ These workflows are triggered manually via GitHub Actions when infrastructure up
 
 #### build-docker-images.yml
 
-- **Purpose**: Build GDAL base images and gdalcli runtime images (consolidated workflow)
+- **Purpose**: Build GDAL Docker images (base and runtime) for specific GDAL versions
 - **Base Image Output**: `ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`
 - **Runtime Image Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
-- **Manual parameters**: `gdal_version`, `image_stage` (both/deps/full), `push_images`
+- **Flexibility**: Accepts any GDAL version via `gdal_version` input in workflow_dispatch
+  - When `gdal_version` is provided: builds only that specific version
+  - When triggered by schedule/push: builds default matrix (currently 3.11.4, 3.12.0)
+- **Manual parameters**: `gdal_version` (optional), `image_stage` (both/deps/full), `push_images`
 - **Trigger**: Weekly schedule (Saturdays), main branch pushes, or manual dispatch
-- **When to use**: Automated weekly builds or when GDAL dependencies need updates
+- **When to use**: 
+  - Automated weekly builds for default versions
+  - Manual dispatch to build new patch versions (e.g., 3.12.1 after 3.12.0)
+  - When GDAL dependencies need updates
 
 #### build-releases.yml
 
-- **Purpose**: Dynamic package builds and GitHub releases
-- **Manual parameters**: `gdal_version`, `package_version`, `create_release`, etc.
-- **Output**: Release branches, GitHub releases, package binaries
+- **Purpose**: Generate gdalcli source code for a specific GDAL version and create release
+- **Versioning Strategy**:
+  - **New minor version** (e.g., first 3.12.x): Creates `release/gdal-3.12` branch from main
+  - **Patch version** (e.g., 3.12.1 on existing 3.12): Continues on `release/gdal-3.12` without reset to main
+- **Release artifacts**:
+  - Release branch: `release/gdal-X.Y` (shared across all patches in minor version)
+  - Git tags: `v{package_version}-{gdal_version}` (e.g., `v0.3.0-3.12.0`, `v0.3.0-3.12.1`)
+  - GitHub release with generated API and documentation
+- **Manual parameters**: `gdal_version`, `create_release`, `dry_run`
+- **Output**: Release branches, GitHub releases with source code
 - **When to use**: Creating new package releases for specific GDAL versions
+
+#### Patch Version Workflow
+
+When a new GDAL patch version is released (e.g., 3.12.0 -> 3.12.1):
+
+1. **Build Docker image** for new patch version:
+   ```
+   Actions → Build GDAL Docker Images → Run workflow
+   - gdal_version: 3.12.1
+   - image_stage: both
+   - push_images: true
+   ```
+
+2. **Generate release** for new patch version:
+   ```
+   Actions → Build Release for GDAL Version → Run workflow
+   - gdal_version: 3.12.1
+   - create_release: true
+   ```
+
+3. **Workflow behavior**:
+   - Detects that `release/gdal-3.12` already exists (from 3.12.0)
+   - Checks out existing branch (preserves 3.12.0 work)
+   - Generates API for 3.12.1 (may differ from 3.12.0)
+   - Creates new commit on `release/gdal-3.12` with 3.12.1 generated code
+   - Tags release as `v0.3.0-3.12.1`
+
+4. **User installation options**:
+   - Latest patch: Install from release branch for latest patch
+     ```r
+     remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.12")
+     ```
+   - Specific patch: Install from tag for a specific version
+     ```r
+     remotes::install_github("brownag/gdalcli", ref = "v0.3.0-3.12.0")
+     remotes::install_github("brownag/gdalcli", ref = "v0.3.0-3.12.1")
+     ```
 
 ### Docker Image Architecture
 
@@ -98,27 +148,30 @@ The project uses a two-layer Docker architecture for consistent GDAL environment
 - Purpose: Reusable foundation for CI and development
 - Usage in CI: R-CMD-check-docker workflow tests against these images
 - When updated: When GDAL versions change or dependencies update
+- Built for: All patch versions (3.11.4, 3.12.0, 3.12.1, etc.)
 
 **Runtime Images** (`ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`)
 
 - Contains: Complete gdalcli package installed and tested
 - Purpose: Production-ready images for users and deployment
-- When updated: Weekly or when package changes significantly
+- Built from: Corresponding base images
+- When updated: When GDAL patch or minor versions change
+- Multiple versions: One per GDAL patch version (3.11.4, 3.12.0, 3.12.1, etc.)
 
 **Relationship:**
 
 - Base images provide the GDAL + R foundation
 - Runtime images extend base images with the compiled gdalcli package
 - CI workflows use base images for testing (faster, no package pre-install needed)
-- Users can pull runtime images for ready-to-use gdalcli environments
+- Users can pull runtime images for ready-to-use gdalcli environments for specific GDAL versions
 
 ### Workflow Selection Guide
 
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
 | Code changes | R-CMD-check-ubuntu + R-CMD-check-docker | Both run automatically on PRs |
-| GDAL version updates | build-docker-images | Builds both base and runtime images |
-| Package releases | build-releases | Manual workflow with version parameters |
+| New GDAL version | build-docker-images → build-releases | Build image first, then release |
+| GDAL patch update | build-docker-images → build-releases | Same workflow, new patch version |
 | Docker issues | R-CMD-check-docker | Isolated testing environment |
 | Performance testing | R-CMD-check-docker | Consistent environment |
 
