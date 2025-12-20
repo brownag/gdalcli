@@ -72,24 +72,51 @@ If tests fail:
 
 These workflows are triggered manually via GitHub Actions when infrastructure updates are needed:
 
+#### Managing Supported Versions
+
+Supported GDAL versions are defined in `.github/versions.json`:
+
+```json
+{
+  "supported": ["3.11.4", "3.12.0"]
+}
+```
+
+**To add a new GDAL version:**
+1. Update `.github/versions.json` with new version in the `supported` array
+2. Commit and push to main
+3. Workflows auto-detect the change and build Docker images
+4. This pins the version for long-term support and CI testing
+
 #### build-docker-images.yml
 
 - **Purpose**: Build GDAL Docker images (base and runtime) for specific GDAL versions
 - **Base Image Output**: `ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`
 - **Runtime Image Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
-- **Flexibility**: Accepts any GDAL version via `gdal_version` input in workflow_dispatch
-  - When `gdal_version` is provided: builds only that specific version
-  - When triggered by schedule/push: builds default matrix (currently 3.11.4, 3.12.0)
-- **Manual parameters**: `gdal_version` (optional), `image_stage` (both/deps/full), `push_images`
-- **Trigger**: Weekly schedule (Saturdays), main branch pushes, or manual dispatch
+- **Version Source**: Reads from `.github/versions.json` supported array
+- **Smart Build**: 
+  - Checks if image already exists in GHCR
+  - Skips build if image exists (unless `force_rebuild=true`)
+  - Always builds on weekly schedule
+- **Manual parameters**: 
+  - `gdal_version` (optional): Build specific version
+  - `image_stage` (both/deps/full)
+  - `push_images`: Push to GHCR?
+  - `force_rebuild`: Force rebuild even if image exists?
+- **Trigger**: 
+  - Weekly schedule (Saturdays at 00:00 UTC)
+  - Changes to `.github/versions.json`
+  - Changes to `.github/dockerfiles/Dockerfile.template`
+  - Manual dispatch
 - **When to use**: 
-  - Automated weekly builds for default versions
-  - Manual dispatch to build new patch versions (e.g., 3.12.1 after 3.12.0)
-  - When GDAL dependencies need updates
+  - Adding new GDAL version to `versions.json`
+  - Fixing container issues with `force_rebuild=true`
+  - Manual builds of specific versions
 
 #### build-releases.yml
 
 - **Purpose**: Generate gdalcli source code for a specific GDAL version and create release
+- **Version Validation**: Checks version against `.github/versions.json` (optional, warns if not in list)
 - **Versioning Strategy**:
   - **New minor version** (e.g., first 3.12.x): Creates `release/gdal-3.12` branch from main
   - **Patch version** (e.g., 3.12.1 on existing 3.12): Continues on `release/gdal-3.12` without reset to main
@@ -105,13 +132,47 @@ These workflows are triggered manually via GitHub Actions when infrastructure up
 
 When a new GDAL patch version is released (e.g., 3.12.0 -> 3.12.1):
 
-1. **Build Docker image** for new patch version:
+1. **Update versions.json** (recommended):
+   ```json
+   "supported": ["3.11.4", "3.12.0", "3.12.1"]
+   ```
+   Commit to main → workflow auto-builds 3.12.1 image
+
+   OR **Manual build**:
    ```
    Actions → Build GDAL Docker Images → Run workflow
    - gdal_version: 3.12.1
    - image_stage: both
    - push_images: true
+   - force_rebuild: false (skip if already built)
    ```
+
+2. **Generate release**:
+   ```
+   Actions → Build Release for GDAL Version → Run workflow
+   - gdal_version: 3.12.1
+   - create_release: true
+   ```
+
+3. **Workflow behavior**:
+   - Detects that `release/gdal-3.12` already exists (from 3.12.0)
+   - Checks out existing branch (preserves 3.12.0 work)
+   - Generates API for 3.12.1
+   - Creates new commit on `release/gdal-3.12` with 3.12.1 generated code
+   - Tags release as `v0.3.0-3.12.1`
+
+#### Fixing Container Issues
+
+If a container issue is discovered (e.g., missing system dependency):
+
+```
+Actions → Build GDAL Docker Images → Run workflow
+- gdal_version: 3.12.0
+- image_stage: both
+- force_rebuild: true
+```
+
+This rebuilds the image even though it already exists, allowing you to fix the Dockerfile and re-push.
 
 2. **Generate release** for new patch version:
    ```

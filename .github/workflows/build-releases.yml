@@ -75,6 +75,16 @@ jobs:
             exit 1
           fi
 
+          # Validate version exists in versions.json (if file exists)
+          if [ -f .github/versions.json ]; then
+            SUPPORTED=$(jq -r '.supported[]' .github/versions.json)
+            if ! echo "$SUPPORTED" | grep -q "^${VERSION}$"; then
+              echo "WARNING: Version $VERSION not in supported list from .github/versions.json"
+              echo "Supported versions: $(echo $SUPPORTED | tr '\n' ', ')"
+              echo "Proceeding anyway (you can add it to versions.json if this is new)"
+            fi
+          fi
+
           # Extract package version from DESCRIPTION
           PKG_VERSION=$(grep "^Version:" DESCRIPTION | sed 's/Version: //')
           
