@@ -17,3 +17,21 @@ for (var in test_env_vars) {
     Sys.unsetenv(var)
   }
 }
+# Initialize reticulate with local venv if available
+if (requireNamespace("reticulate", quietly = TRUE)) {
+  # Try portable venv paths relative to project root
+  venv_paths <- c(
+    file.path(getwd(), "venv"),                    # if running from /tests/testthat
+    file.path(dirname(getwd()), "venv"),           # if running from /tests
+    file.path(dirname(dirname(getwd())), "venv"),  # if running from project root
+    "~/.venv"                                      # user home venv
+  )
+  
+  for (venv_path in venv_paths) {
+    expanded_path <- path.expand(venv_path)
+    if (dir.exists(expanded_path)) {
+      reticulate::use_virtualenv(expanded_path, required = FALSE)
+      break
+    }
+  }
+}

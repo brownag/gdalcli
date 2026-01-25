@@ -240,6 +240,34 @@ gdal_job_run.gdal_pipeline <- function(x,
     return(invisible(TRUE))
   }
 
+  # Get backend from args if provided
+  backend_arg <- if (length(list(...)) > 0 && "backend" %in% names(list(...))) {
+    list(...)$backend
+  } else {
+    NULL
+  }
+
+  # Determine if we should try gdalraster native pipeline
+  use_gdalraster_native <- FALSE
+  if (execution_mode == "native" || is.null(execution_mode)) {
+    # Try native execution if available
+    if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
+      use_gdalraster_native <- TRUE
+      if (verbose) {
+        cli::cli_alert_info("Using gdalraster native pipeline support")
+      }
+    }
+  }
+
+  if (use_gdalraster_native && .gdal_has_feature("native_pipeline")) {
+    return(.gdal_job_run_native_pipeline_gdalraster(
+      x,
+      stream_out_format = stream_out_format,
+      env = env,
+      verbose = verbose
+    ))
+  }
+
   if (execution_mode == "native") {
     # Native pipeline execution: run as single GDAL pipeline command
     return(.gdal_job_run_native_pipeline(
@@ -311,10 +339,6 @@ gdal_job_run.gdal_pipeline <- function(x,
     if (file.exists(temp_file)) {
       try(unlink(temp_file), silent = TRUE)
     }
-  }
-
-  if (verbose) {
-    cli::cli_alert_success("Pipeline completed successfully")
   }
 
   invisible(TRUE)
@@ -405,7 +429,9 @@ gdal_job_run.gdal_pipeline <- function(x,
 
   # Prepare stdin/stdout for streaming
   stdin_arg <- if (!is.null(stream_in)) stream_in else NULL
-  stdout_arg <- if (!is.null(stream_out_format)) "|" else NULL
+  # For "stdout" format, use TRUE to pipe directly to parent stdout
+  # For other formats, use "|" to capture output
+  stdout_arg <- if (stream_out_format == "stdout") TRUE else if (!is.null(stream_out_format)) "|" else NULL
 
   # Merge environment variables from all pipeline jobs
   env_final <- character()
@@ -438,21 +464,28 @@ gdal_job_run.gdal_pipeline <- function(x,
 
     # Handle output based on streaming format
     if (!is.null(stream_out_format)) {
-      if (stream_out_format == "text") {
-        if (verbose) {
-          cli::cli_alert_success("Native pipeline completed successfully")
-        }
+      if (stream_out_format == "stdout") {
+        # Output already printed to stdout during execution
+        invisible(TRUE)
+      } else if (stream_out_format == "text") {
         return(result$stdout)
       } else if (stream_out_format == "raw") {
-        if (verbose) {
-          cli::cli_alert_success("Native pipeline completed successfully")
-        }
         return(charToRaw(result$stdout))
+      } else if (stream_out_format == "json") {
+        # Try to parse as JSON
+        tryCatch({
+          return(yyjsonr::read_json_str(result$stdout))
+        }, .error = function(e) {
+          cli::cli_warn(
+            c(
+              "Failed to parse output as JSON",
+              "x" = conditionMessage(e),
+              "i" = "Returning raw stdout instead"
+            )
+          )
+          return(result$stdout)
+        })
       }
-    }
-
-    if (verbose) {
-      cli::cli_alert_success("Native pipeline completed successfully")
     }
 
     invisible(TRUE)

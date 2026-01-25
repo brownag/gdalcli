@@ -27,20 +27,26 @@ or \code{"reticulate"} (Python osgeo.gdal via reticulate, if available).
 If \code{NULL} (default), auto-selects the best available backend:
 gdalraster if available, otherwise processx.
 Control auto-selection with \code{options(gdalcli.backend = 'gdalraster')} or
-\code{options(gdalcli.backend = 'processx')}.}
+\code{options(gdalcli.backend = 'processx')}.
+You can also set default output format and verbosity globally:
+\code{options(gdalcli.stream_out_format = 'text')} and
+\code{options(gdalcli.verbose = TRUE)}.}
 
 \item{stream_in}{An R object to be streamed to \verb{/vsistdin/}. Can be \code{NULL},
 a character string, or raw vector. If provided, overrides \code{x$stream_in}.}
 
 \item{stream_out_format}{Character string: \code{NULL} (default, no streaming),
-\code{"text"} (return stdout as character), \code{"raw"} (return as raw bytes), or
-\code{"json"} (capture output, parse as JSON, return as R list/vector).
-If provided, overrides \code{x$stream_out_format}.}
+\code{"text"} (return stdout as character), \code{"raw"} (return as raw bytes),
+\code{"json"} (capture output, parse as JSON, return as R list/vector), or
+\code{"stdout"} (print to stdout in real-time).
+If provided, overrides \code{x$stream_out_format}.
+If not provided, uses \code{options(gdalcli.stream_out_format)} if set.}
 
 \item{env}{A named character vector of environment variables for the subprocess.
 These are merged with \code{x$env_vars}, with explicit \code{env} values taking precedence.}
 
-\item{verbose}{Logical. If \code{TRUE}, prints the command being executed. Default \code{FALSE}.}
+\item{verbose}{Logical. If \code{TRUE}, prints the command being executed.
+If not provided, uses \code{options(gdalcli.verbose)} if set, otherwise defaults to \code{FALSE}.}
 }
 \value{
 Depends on the streaming configuration:
@@ -49,6 +55,8 @@ Depends on the streaming configuration:
 Raises an R .error if the GDAL process fails.
 \item If \code{stream_out_format = "text"}: Returns the stdout as a character string.
 \item If \code{stream_out_format = "raw"}: Returns the stdout as a raw vector.
+\item If \code{stream_out_format = "json"}: Parses stdout as JSON and returns the result.
+\item If \code{stream_out_format = "stdout"}: Prints output to stdout in real-time, invisibly returns \code{TRUE}.
 }
 }
 \description{
