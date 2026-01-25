@@ -8,19 +8,50 @@ on:
 permissions: read-all
 
 jobs:
-  check:
+  determine-gdal-version:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}:deps-gdal-3.11.4-amd64
-      env:
-        R_VERSION: ${{ matrix.r-version }}
+    permissions:
+      packages: read
+    outputs:
+      latest-gdal: ${{ steps.version.outputs.latest }}
+    steps:
+      - name: Query GHCR for latest deps image
+        id: version
+        run: |
+          # Query available deps-gdal images from GHCR
+          LATEST=$(curl -s \
+            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://ghcr.io/v2/${{ github.repository }}/tags/list" | \
+            jq -r '.tags[] | select(startswith("deps-gdal-")) | gsub("deps-gdal-|-amd64"; "") | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' | \
+            sort -V | tail -1)
+          
+          if [ -z "$LATEST" ]; then
+            echo "ERROR: Could not find any deps-gdal images in GHCR"
+            exit 1
+          fi
+          
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "Found latest GDAL version in GHCR: $LATEST"
 
+  check:
+    needs: determine-gdal-version
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        r-version: ['release', 'devel']
+        include:
+          - r-version: 'release'
+            gdal-version: '3.11.4'
+          - r-version: 'devel'
+            gdal-version: ${{ needs.determine-gdal-version.outputs.latest-gdal }}
 
-    name: R ${{ matrix.r-version }} / GDAL 3.11.4
+    container:
+      image: ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal-version }}-amd64
+      env:
+        R_VERSION: ${{ matrix.r-version }}
+
+    name: R ${{ matrix.r-version }} / GDAL ${{ matrix.gdal-version }}
 
     steps:
       - uses: actions/checkout@v4

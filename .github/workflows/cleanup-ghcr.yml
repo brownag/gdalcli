@@ -4,6 +4,14 @@ name: Cleanup GHCR Images
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: 'Cleanup mode'
+        required: true
+        default: 'unsupported'
+        type: choice
+        options:
+          - 'unsupported'
+          - 'keep-n'
       dry_run:
         description: 'Dry run mode (show what would be removed without actually removing)'
         required: false
@@ -13,7 +21,7 @@ on:
           - 'true'
           - 'false'
       keep_versions:
-        description: 'Number of recent GDAL versions to keep (all images per version preserved)'
+        description: 'When using keep-n mode: number of recent GDAL versions to keep (all images per version preserved)'
         required: false
         default: '3'
         type: string
@@ -45,9 +53,13 @@ jobs:
         run: |
           ARGS="--owner brownag --repo gdalcli"
           
+          # Add mode (default: unsupported)
+          MODE="${{ github.event.inputs.mode || 'unsupported' }}"
+          ARGS="$ARGS --mode $MODE"
+          
           # Add optional arguments
           [ "${{ github.event.inputs.dry_run }}" != "false" ] && ARGS="$ARGS --dry-run"
-          [ -n "${{ github.event.inputs.keep_versions }}" ] && ARGS="$ARGS --keep ${{ github.event.inputs.keep_versions }}"
+          [ -n "${{ github.event.inputs.keep_versions }}" ] && [ "$MODE" = "keep-n" ] && ARGS="$ARGS --keep ${{ github.event.inputs.keep_versions }}"
           [ "${{ github.event.inputs.force }}" = "true" ] && ARGS="$ARGS --force"
           
           # Run the cleanup script
@@ -62,6 +74,7 @@ jobs:
           
           | Setting | Value |
           |---------|-------|
+          | Mode | ${{ github.event.inputs.mode || 'unsupported' }} |
           | Dry Run | ${{ github.event.inputs.dry_run || 'true' }} |
           | Keep Versions | ${{ github.event.inputs.keep_versions || '3' }} |
           | Force Mode | ${{ github.event.inputs.force || 'false' }} |

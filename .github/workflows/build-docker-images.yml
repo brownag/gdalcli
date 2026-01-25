@@ -26,13 +26,14 @@ on:
     paths:
       - '.github/dockerfiles/Dockerfile.template'
       - '.github/workflows/build-docker-images.yml'
+      - '.github/versions.json'
       - 'DESCRIPTION'
   workflow_dispatch:
     inputs:
       gdal_version:
         description: 'GDAL version to build'
         required: false
-        default: '3.11.4'
+        default: ''
         type: string
       image_stage:
         description: 'Image stage to build'
@@ -47,6 +48,14 @@ on:
         description: 'Push images to GitHub Container Registry?'
         required: true
         default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      force_rebuild:
+        description: 'Force rebuild even if images exist?'
+        required: false
+        default: 'false'
         type: choice
         options:
           - 'true'
@@ -70,13 +79,46 @@ permissions:
   packages: write
 
 jobs:
+  determine-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.versions.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine versions to build
+        id: versions
+        run: |
+          # Read from .github/versions.json
+          if [ -f .github/versions.json ]; then
+            if [ -n "${{ github.event.inputs.gdal_version }}" ]; then
+              # If gdal_version provided in workflow_dispatch, use just that version
+              VERSIONS='["${{ github.event.inputs.gdal_version }}"]'
+            else
+              # Use supported versions from versions.json for scheduled/push-triggered runs
+              VERSIONS=$(jq -c '.supported' .github/versions.json)
+            fi
+          else
+            # Fallback if versions.json doesn't exist
+            if [ -n "${{ github.event.inputs.gdal_version }}" ]; then
+              VERSIONS='["${{ github.event.inputs.gdal_version }}"]'
+            else
+              VERSIONS='["3.11.4", "3.12.0"]'
+            fi
+          fi
+          
+          echo "matrix=$VERSIONS" >> $GITHUB_OUTPUT
+          echo "Building for versions: $VERSIONS"
+
   build-deps:
+    needs: determine-versions
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.image_stage != 'full' }}
     strategy:
       fail-fast: false
       matrix:
-        gdal_version: ['3.11.4', '3.12.0']
+        gdal_version: ${{ fromJson(needs.determine-versions.outputs.matrix) }}
 
     steps:
       - name: Checkout repository
@@ -134,8 +176,24 @@ jobs:
 
           echo "selected_gdal_image_tag=$SELECTED_TAG" >> $GITHUB_OUTPUT
 
+      - name: Check if deps image already exists
+        id: check-deps-exists
+        if: github.event.inputs.force_rebuild != 'true'
+        run: |
+          DEPS_IMAGE="ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64"
+          echo "Checking if deps image exists: $DEPS_IMAGE"
+          
+          if docker buildx imagetools inspect "$DEPS_IMAGE" >/dev/null 2>&1; then
+            echo "[INFO] Deps image already exists: $DEPS_IMAGE"
+            echo "image_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "[INFO] Deps image does not exist, will build: $DEPS_IMAGE"
+            echo "image_exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push GDAL deps image
         id: build-deps
+        if: github.event.inputs.force_rebuild == 'true' || steps.check-deps-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -190,7 +248,7 @@ jobs:
 
   build-full:
     runs-on: ubuntu-latest
-    needs: build-deps
+    needs: [build-deps, determine-versions]
     if: |
       always() && 
       (needs.build-deps.result == 'success' || needs.build-deps.result == 'skipped') &&
@@ -198,7 +256,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gdal_version: ['3.11.4', '3.12.0']
+        gdal_version: ${{ fromJson(needs.determine-versions.outputs.matrix) }}
 
     steps:
       - name: Checkout repository
@@ -256,8 +314,24 @@ jobs:
 
           echo "selected_gdal_image_tag=$SELECTED_TAG" >> $GITHUB_OUTPUT
 
+      - name: Check if runtime image already exists
+        id: check-full-exists
+        if: github.event.inputs.force_rebuild != 'true'
+        run: |
+          FULL_IMAGE="ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest"
+          echo "Checking if runtime image exists: $FULL_IMAGE"
+          
+          if docker buildx imagetools inspect "$FULL_IMAGE" >/dev/null 2>&1; then
+            echo "[INFO] Runtime image already exists: $FULL_IMAGE"
+            echo "image_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "[INFO] Runtime image does not exist, will build: $FULL_IMAGE"
+            echo "image_exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push GDAL full runtime image
         id: build-full
+        if: github.event.inputs.force_rebuild == 'true' || steps.check-full-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
         uses: docker/build-push-action@v5
         with:
           context: .
