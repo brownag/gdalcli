@@ -18,12 +18,12 @@ jobs:
       - name: Query GHCR for latest deps image
         id: version
         run: |
-          # Query available deps-gdal images from GHCR
           LATEST=$(curl -s \
-            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://ghcr.io/v2/${{ github.repository }}/tags/list" | \
-            jq -r '.tags[] | select(startswith("deps-gdal-")) | gsub("deps-gdal-|-amd64"; "") | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' | \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/users/${{ github.repository_owner }}/packages/container/gdalcli/versions" | \
+            jq -r '.[].metadata.container.tags[] | select(startswith("deps-gdal-")) | gsub("deps-gdal-|-amd64"; "") | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' | \
             sort -V | tail -1)
           
           if [ -z "$LATEST" ]; then
@@ -33,7 +33,7 @@ jobs:
           
           echo "latest=$LATEST" >> $GITHUB_OUTPUT
           echo "Found latest GDAL version in GHCR: $LATEST"
-
+          
   check:
     needs: determine-gdal-version
     runs-on: ubuntu-latest
