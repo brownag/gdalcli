@@ -108,7 +108,9 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
   # Try to extract explicit args using gdalraster's GDALAlg class
   explicit_args <- tryCatch({
     # Check if job has underlying GDALAlg object
-    if (is.null(job$alg) || !inherits(job$alg, "GDALAlg")) {
+    # Use [[ ]] to avoid triggering the custom $ method for missing fields
+    alg <- job[["alg"]]
+    if (is.null(alg) || !inherits(alg, "GDALAlg")) {
       cli::cli_warn(
         c(
           "gdal_job missing GDALAlg reference",
@@ -120,7 +122,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 
     # Get explicit args from GDALAlg object
     # GDALAlg$getExplicitlySetArgs() returns a named list
-    job$alg$getExplicitlySetArgs()
+    alg$getExplicitlySetArgs()
   }, .error = function(e) {
     cli::cli_warn(
       c(
