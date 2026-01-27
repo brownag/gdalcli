@@ -1103,6 +1103,12 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' This function is useful when you want a single unified interface to compose and process
 #' jobs without needing to explicitly choose the raster or vector variant.
 #'
+#' **Note**: This function was previously named `gdal_pipeline()`. It was renamed to
+#' `gdal_compose()` to avoid conflict with GDAL 3.12+'s native `gdal pipeline` command,
+#' which is available as an auto-generated function. Use `gdal_compose()` for gdalcli's
+#' convenient job composition, and the auto-generated `gdal_pipeline()` function for
+#' direct access to GDAL's native pipeline command (GDAL 3.12+ only).
+#'
 #' @param jobs A list or vector of `gdal_job` objects to execute in sequence,
 #'   or NULL to use pipeline string
 #' @param pipeline A pipeline string (ignored if jobs is provided)

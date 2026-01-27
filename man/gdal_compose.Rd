@@ -28,6 +28,12 @@ or \code{gdal_vector_pipeline()} function.
 
 This function is useful when you want a single unified interface to compose and process
 jobs without needing to explicitly choose the raster or vector variant.
+
+\strong{Note}: This function was previously named \code{gdal_pipeline()}. It was renamed to
+\code{gdal_compose()} to avoid conflict with GDAL 3.12+'s native \verb{gdal pipeline} command,
+which is available as an auto-generated function. Use \code{gdal_compose()} for gdalcli's
+convenient job composition, and the auto-generated \code{gdal_pipeline()} function for
+direct access to GDAL's native pipeline command (GDAL 3.12+ only).
 }
 \details{
 The pipeline type is determined by examining the first job's command_path:
