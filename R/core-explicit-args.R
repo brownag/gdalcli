@@ -111,12 +111,8 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     # Use [[ ]] to avoid triggering the custom $ method for missing fields
     alg <- job[["alg"]]
     if (is.null(alg) || !inherits(alg, "GDALAlg")) {
-      cli::cli_warn(
-        c(
-          "gdal_job missing GDALAlg reference",
-          "i" = "Cannot extract explicit arguments"
-        )
-      )
+      # Job doesn't have GDALAlg reference - this is normal for jobs
+      # created outside of gdalraster backend. Return empty args.
       return(character(0))
     }
 
@@ -124,12 +120,8 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     # GDALAlg$getExplicitlySetArgs() returns a named list
     alg$getExplicitlySetArgs()
   }, .error = function(e) {
-    cli::cli_warn(
-      c(
-        "Failed to extract explicit arguments from GDAL job",
-        "x" = conditionMessage(e)
-      )
-    )
+    # Silently return empty args on error rather than warn
+    # This is consistent with graceful degradation for unavailable features
     character(0)
   })
 
