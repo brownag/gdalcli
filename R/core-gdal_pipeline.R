@@ -1093,15 +1093,15 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 }
 
 
-#' Process GDAL Pipeline (Convenience Wrapper)
+#' Compose GDAL Jobs into a Pipeline (Auto-Detecting Raster/Vector)
 #'
 #' @description
-#' Convenience function that automatically detects whether a pipeline contains
+#' Convenience function that automatically detects whether a composition of jobs contains
 #' raster or vector operations and delegates to the appropriate `gdal_raster_pipeline()`
 #' or `gdal_vector_pipeline()` function.
 #'
-#' This function is useful when you want a single unified interface to process
-#' pipelines without needing to explicitly choose the raster or vector variant.
+#' This function is useful when you want a single unified interface to compose and process
+#' jobs without needing to explicitly choose the raster or vector variant.
 #'
 #' @param jobs A list or vector of `gdal_job` objects to execute in sequence,
 #'   or NULL to use pipeline string
@@ -1111,6 +1111,8 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' @param ... Additional arguments passed to `gdal_raster_pipeline()` or `gdal_vector_pipeline()`
 #'
 #' @return A `gdal_job` object representing the pipeline.
+#'
+#' @usage gdal_compose(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...)
 #'
 #' @details
 #' The pipeline type is determined by examining the first job's command_path:
@@ -1125,11 +1127,11 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' job2 <- gdal_raster_convert(output = "output.tif")
 #'
 #' # This will automatically use gdal_raster_pipeline
-#' pipeline <- gdal_pipeline(jobs = list(job1, job2))
+#' pipeline <- gdal_compose(jobs = list(job1, job2))
 #' }
 #'
 #' @export
-gdal_pipeline <- function(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...) {
+gdal_compose <- function(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...) {
   # If pipeline string is provided directly, determine type and delegate
   if (!is.null(pipeline) && is.null(jobs)) {
     # Default to raster if type not determinable from pipeline string

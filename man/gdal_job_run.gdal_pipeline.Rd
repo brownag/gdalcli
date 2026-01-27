@@ -27,8 +27,7 @@ large datasets as it avoids intermediate disk I/O.}
 Only used in native execution mode. Default \code{NULL}.}
 
 \item{stream_out_format}{Character string: output format for the last pipeline step.
-Options: \code{NULL} (no streaming), \code{"text"}, \code{"raw"}, \code{"json"}, or \code{"stdout"} (print to stdout in real-time).
-Only used in native execution mode.}
+Options: \code{NULL} (no streaming), \code{"text"}, or \code{"raw"}. Only used in native execution mode.}
 
 \item{env}{Environment variables to pass to the GDAL process. Only used in native execution mode.}
 
