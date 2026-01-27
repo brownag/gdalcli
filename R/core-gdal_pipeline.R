@@ -1096,6 +1096,8 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' Compose GDAL Jobs into a Pipeline (Auto-Detecting Raster/Vector)
 #'
 #' @description
+#' **DEPRECATED** - This function is deprecated as of gdalcli 0.4.x and will be removed in 0.5.x.
+#'
 #' Convenience function that automatically detects whether a composition of jobs contains
 #' raster or vector operations and delegates to the appropriate `gdal_raster_pipeline()`
 #' or `gdal_vector_pipeline()` function.
@@ -1103,11 +1105,20 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' This function is useful when you want a single unified interface to compose and process
 #' jobs without needing to explicitly choose the raster or vector variant.
 #'
+#' **Migration**: Use the pipe operator (`|>`) to compose jobs instead. This approach is
+#' more idiomatic R and handles composition naturally:
+#'
+#' ```r
+#' # Old (deprecated)
+#' gdal_compose(jobs = list(job1, job2, job3))
+#'
+#' # New (recommended)
+#' job1 |> job2 |> job3 |> gdal_job_run()
+#' ```
+#'
 #' **Note**: This function was previously named `gdal_pipeline()`. It was renamed to
 #' `gdal_compose()` to avoid conflict with GDAL 3.12+'s native `gdal pipeline` command,
-#' which is available as an auto-generated function. Use `gdal_compose()` for gdalcli's
-#' convenient job composition, and the auto-generated `gdal_pipeline()` function for
-#' direct access to GDAL's native pipeline command (GDAL 3.12+ only).
+#' which is available as an auto-generated function.
 #'
 #' @param jobs A list or vector of `gdal_job` objects to execute in sequence,
 #'   or NULL to use pipeline string
@@ -1138,6 +1149,10 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #'
 #' @export
 gdal_compose <- function(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...) {
+  .Deprecated(
+    msg = "gdal_compose() is deprecated and will be removed in gdalcli 0.5.x. Use the pipe operator (|>) to compose jobs instead:\n  job1 |> job2 |> job3 |> gdal_job_run()"
+  )
+
   # If pipeline string is provided directly, determine type and delegate
   if (!is.null(pipeline) && is.null(jobs)) {
     # Default to raster if type not determinable from pipeline string

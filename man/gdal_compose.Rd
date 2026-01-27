@@ -22,6 +22,8 @@ or NULL to use pipeline string}
 A \code{gdal_job} object representing the pipeline.
 }
 \description{
+\strong{DEPRECATED} - This function is deprecated as of gdalcli 0.4.x and will be removed in 0.5.x.
+
 Convenience function that automatically detects whether a composition of jobs contains
 raster or vector operations and delegates to the appropriate \code{gdal_raster_pipeline()}
 or \code{gdal_vector_pipeline()} function.
@@ -29,11 +31,19 @@ or \code{gdal_vector_pipeline()} function.
 This function is useful when you want a single unified interface to compose and process
 jobs without needing to explicitly choose the raster or vector variant.
 
+\strong{Migration}: Use the pipe operator (\verb{|>}) to compose jobs instead. This approach is
+more idiomatic R and handles composition naturally:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# Old (deprecated)
+gdal_compose(jobs = list(job1, job2, job3))
+
+# New (recommended)
+job1 |> job2 |> job3 |> gdal_job_run()
+}\if{html}{\out{</div>}}
+
 \strong{Note}: This function was previously named \code{gdal_pipeline()}. It was renamed to
 \code{gdal_compose()} to avoid conflict with GDAL 3.12+'s native \verb{gdal pipeline} command,
-which is available as an auto-generated function. Use \code{gdal_compose()} for gdalcli's
-convenient job composition, and the auto-generated \code{gdal_pipeline()} function for
-direct access to GDAL's native pipeline command (GDAL 3.12+ only).
+which is available as an auto-generated function.
 }
 \details{
 The pipeline type is determined by examining the first job's command_path:
