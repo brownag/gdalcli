@@ -117,7 +117,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
           "i" = "Cannot extract explicit arguments"
         )
       )
-      return(list())
+      return(character(0))
     }
 
     # Get explicit args from GDALAlg object
@@ -130,23 +130,28 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
         "x" = conditionMessage(e)
       )
     )
-    list()
+    character(0)
   })
+
+  # Convert list of explicit args to character vector of names
+  if (is.list(explicit_args) && length(explicit_args) > 0) {
+    arg_names <- names(explicit_args)
+  } else {
+    arg_names <- character(0)
+  }
 
   # Apply system_only filter if requested
   # Filter to keep only system-level argument names
-  if (system_only && length(explicit_args) > 0) {
+  if (system_only && length(arg_names) > 0) {
     system_markers <- c(
       "quiet", "q",
       "vsicurl_use_head",
       "vsicurl_chunk_size"
     )
-    explicit_args <- explicit_args[
-      names(explicit_args) %in% system_markers
-    ]
+    arg_names <- arg_names[arg_names %in% system_markers]
   }
 
-  explicit_args
+  arg_names
 }
 
 
