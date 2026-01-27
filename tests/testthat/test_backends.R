@@ -13,7 +13,7 @@
 test_that("error handling for missing backends works correctly", {
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
-    arguments = list(input = "test.tif")
+    arguments = list(input = "nonexistent.tif")
   )
   
   # Test unknown backend error
@@ -41,7 +41,7 @@ test_that("error handling for missing backends works correctly", {
 })
 
 test_that("backends can be specified for execution", {
-  job <- gdal_raster_info(input = "test.tif")
+  job <- gdal_raster_info(input = "nonexistent.tif")
   
   # Test that backend parameter is accepted
   expect_error(
@@ -57,7 +57,7 @@ test_that("processx backend handles job execution", {
   # Create a simple info job (doesn't modify filesystem)
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
-    arguments = list(input = "test.tif")
+    arguments = list(input = "nonexistent.tif")
   )
   
   # Should attempt to run (may fail if file doesn't exist, but that's OK)
@@ -126,7 +126,7 @@ test_that("environment variables are merged consistently", {
 test_that("backend dispatch respects explicit backend parameter", {
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
-    arguments = list(input = "test.tif")
+    arguments = list(input = "nonexistent.tif")
   )
   
   # Test that backend="processx" uses processx backend
@@ -149,7 +149,7 @@ test_that("gdalraster backend uses gdal_alg correctly", {
   # Create a simple info job
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
-    arguments = list(input = "test.tif")
+    arguments = list(input = "nonexistent.tif")
   )
   
   # Backend should attempt to use gdal_alg
@@ -270,7 +270,7 @@ test_that("backend fallback works gracefully", {
   
   job <- new_gdal_job(
     command_path = c("gdal", "unknown", "operation"),
-    arguments = list(input = "test.tif")
+    arguments = list(input = "nonexistent.tif")
   )
   
   # Backend should attempt gdalraster then fall back (or error appropriately)
@@ -308,7 +308,7 @@ test_that("job serialization consistency check", {
 test_that("streaming parameters are preserved across backends", {
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
-    arguments = list(input = "test.tif"),
+    arguments = list(input = "nonexistent.tif"),
     stream_out_format = "text"
   )
   
@@ -420,7 +420,7 @@ test_that("reticulate backend can execute simple commands", {
   # Create a simple info job
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
-    arguments = list(input = "test.tif")
+    arguments = list(input = "nonexistent.tif")
   )
   
   # Should attempt to run (may fail if file doesn't exist, but that's OK)
@@ -463,7 +463,7 @@ test_that("reticulate backend handles config options correctly", {
   # Create job with config options
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
-    arguments = list(input = "test.tif")
+    arguments = list(input = "nonexistent.tif")
   ) |>
     gdal_with_config("CPL_DEBUG=ON") |>
     gdal_with_config("GDAL_CACHEMAX=256")
@@ -948,7 +948,7 @@ test_that("backends correctly serialize job arguments for execution", {
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
     arguments = list(
-      input = "test.tif",
+      input = "nonexistent.tif",
       format = "json"
     )
   ) |>
@@ -962,7 +962,7 @@ test_that("backends correctly serialize job arguments for execution", {
   expect_true("info" %in% args)
   
   # Check that important arguments are present
-  expect_true("test.tif" %in% args || any(grepl("test\\.tif", args)))
+  expect_true("nonexistent.tif" %in% args || any(grepl("nonexistent\\.tif", args)))
   
   # Check that flags are likely present (format/json handling varies)
   expect_true(length(args) > 2)
