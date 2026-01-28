@@ -179,7 +179,32 @@ gdal_job_run(processing_pipeline, backend = "processx")
 Set your preferred backend globally:
 
 ```r
+# Using gdalcli_options()
+gdalcli_options(backend = "gdalraster")
+
+# Or using base R options() directly
 options(gdalcli.backend = "gdalraster")  # or "processx", "reticulate"
+```
+
+## Package Options
+
+Manage package behavior with `gdalcli_options()`:
+
+```r
+# View current options
+gdalcli_options()
+
+# Set options
+gdalcli_options(
+  backend = "auto",              # "auto", "gdalraster", or "processx"
+  verbose = TRUE,                # Enable verbose output
+  stream_out_format = "text",    # NULL, "text", or "binary"
+  audit_logging = FALSE          # Enable audit logging
+)
+
+# Set individual options
+gdalcli_options(verbose = TRUE)
+gdalcli_options(backend = "processx")
 ```
 
 ## Pipeline Features
