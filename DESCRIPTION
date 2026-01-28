@@ -1,6 +1,6 @@
 Package: gdalcli
 Title: Frontend for the GDAL (>= 3.11) CLI
-Version: 0.4.0
+Version: 0.4.1
 Authors@R:
     person("Andrew", "Brown", role = c("aut", "cre"), 
            email = "brown.andrewg@gmail.com",
