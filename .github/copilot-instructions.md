@@ -28,6 +28,25 @@ UNDER NO CIRCUMSTANCES SHOULD YOU EVER PUSH TO A REMOTE GIT REPOSITORY
 - **S3 Composition**: All modifiers are S3 generics that return modified `gdal_job` objects
 - **Environment-Based Auth**: Credentials read from environment variables, never passed as arguments
 - **Process Isolation**: Each command runs in isolated subprocess with injected environment
+- **Pipe Composition**: Use native R pipe (`|>`) to compose jobs into pipelines naturally
+
+### GDAL Version Conflicts and API Evolution
+
+**GDAL 3.12+ Native Commands:**
+- GDAL 3.12.0+ introduced native `gdal pipeline` command
+- This conflicts with gdalcli's original `gdal_pipeline()` convenience wrapper function
+- **Resolution**: Renamed function to `gdal_compose()`, marked deprecated for 0.5.x removal
+- **Rationale**: 
+  - Piping with `|>` is more idiomatic R for composition
+  - Explicit type specification (`gdal_raster_pipeline()` vs `gdal_vector_pipeline()`) is clearer than type auto-detection
+  - Function added minimal value over direct function calls
+  - Users can still pass lists directly: `gdal_raster_pipeline(jobs = list(j1, j2, j3))`
+
+**Deprecated Functions:**
+- `gdal_compose()` - Deprecated as of 0.4.x, removal planned for 0.5.x
+  - Issues warning via `.Deprecated()` on use
+  - Docs recommend pipe approach instead
+  - Will remove unless real-world use cases emerge
 
 ## CI/CD Workflows
 
@@ -197,6 +216,28 @@ gdal_raster_convert(...) |>
   gdal_run()
 ```
 
+### Pipeline Composition
+
+**Preferred approach: Use the pipe operator**
+```r
+# Compose multiple operations naturally with piping
+result <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(src_min = 0, src_max = 100) |>
+  gdal_raster_convert(output = "output.tif") |>
+  gdal_job_run()
+```
+
+**For programmatic job lists: Use explicit pipeline functions**
+```r
+# When you have a list of jobs and know the type
+jobs <- build_job_list(config)
+pipeline <- gdal_raster_pipeline(jobs = jobs)
+gdal_job_run(pipeline)
+```
+
 ### Authentication
 
 ```r
@@ -209,6 +250,45 @@ auth <- gdal_auth_gcs()  # GOOGLE_APPLICATION_CREDENTIALS
 job |> gdal_with_env(auth) |> gdal_run()
 ```
 
+### Package Options
+
+The package provides a comprehensive options system via `gdalcli_options()` for controlling default behaviors.
+
+```r
+# View current options
+gdalcli_options()
+
+# Set options
+gdalcli_options(backend = "processx", verbose = TRUE)
+
+# Common options:
+gdalcli_options(
+  backend = "auto",              # "auto" (default), "gdalraster", or "processx"
+  verbose = FALSE,               # Enable verbose output
+  stream_out_format = NULL,      # NULL, "text", or "binary" for streaming
+  audit_logging = FALSE          # Enable audit logging of executed commands
+)
+```
+
+**Backend Selection:**
+- `"auto"` (default): Automatically select the best available backend
+- `"gdalraster"`: Use gdalraster backend (faster, direct API calls when available)
+- `"processx"`: Use processx backend (universal, subprocess-based)
+- `"reticulate"`: Use reticulate backend (Python GDAL bindings)
+
+**Verbose Output:**
+- `FALSE` (default): No verbose output
+- `TRUE`: Print detailed execution information during command execution
+
+**Streaming Output Format:**
+- `NULL` (default): No streaming format preference
+- `"text"`: Use text format for streaming output
+- `"binary"`: Use binary format for streaming output
+
+**Audit Logging:**
+- `FALSE` (default): No audit logging
+- `TRUE`: Log all executed commands (requires setting up audit handler via `gdal_job_run_with_audit()`)
+
 ## Testing
 
 ### Test Structure
@@ -217,6 +297,7 @@ job |> gdal_with_env(auth) |> gdal_run()
 - **Pipeline Tests**: `tests/testthat/test_pipeline.R` - Core functionality
 - **Mocking**: Use `mockery` for external dependencies
 - **File System**: Avoid real file operations in tests
+- **Expected Failures**: Use "nonexistent.tif" for tests where GDAL should fail (file not found) - makes GDAL error messages consistent and clearly intentional
 
 ### Running Tests
 

@@ -185,7 +185,32 @@ gdal_job_run(processing_pipeline, backend = "processx")
 Set your preferred backend globally:
 
 ``` r
+# Using gdalcli_options()
+gdalcli_options(backend = "gdalraster")
+
+# Or using base R options() directly
 options(gdalcli.backend = "gdalraster")  # or "processx", "reticulate"
+```
+
+## Package Options
+
+Manage package behavior with `gdalcli_options()`:
+
+``` r
+# View current options
+gdalcli_options()
+
+# Set options
+gdalcli_options(
+  backend = "auto",              # "auto", "gdalraster", or "processx"
+  verbose = TRUE,                # Enable verbose output
+  stream_out_format = "text",    # NULL, "text", or "binary"
+  audit_logging = FALSE          # Enable audit logging
+)
+
+# Set individual options
+gdalcli_options(verbose = TRUE)
+gdalcli_options(backend = "processx")
 ```
 
 ## Pipeline Features
@@ -230,7 +255,7 @@ cat(script)
 #> set -e
 #> 
 #> # Native GDAL pipeline execution
-#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_219d8135044bf9.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpTRllud/file219d81197727bb.tif --input /vsimem/gdalcli_219d814c156e4b.tif
+#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_a076b690b9b3e.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpPRKY4D/filea076b4b8c7be7.tif --input /vsimem/gdalcli_a076b17cb9337.tif
 ```
 
 ## Architecture
