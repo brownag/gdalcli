@@ -35,3 +35,8 @@ if (requireNamespace("reticulate", quietly = TRUE)) {
     }
   }
 }
+
+# Ensure step mappings are loaded for tests
+if (is.null(.gdalcli_env$step_mappings)) {
+  .load_step_mappings()
+}

@@ -1,0 +1,15 @@
+{
+  "_comment": "User-editable RFC 104 step mapping overrides for gdalcli",
+  "_usage": "Add custom mappings here to override auto-generated values. Only include entries you want to override.",
+  "_example": {
+    "raster": {
+      "custom_operation": "custom_step"
+    },
+    "vector": {
+      "another_op": "another_step"
+    }
+  },
+  "raster": {},
+  "vector": {},
+  "mdim": {}
+}

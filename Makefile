@@ -106,7 +106,7 @@ test:
 
 check:
 	@echo "Running full R CMD check..."
-	@$(R) --quiet --slave -e "devtools::check()" || true
+	@$(R) --quiet --slave -e "devtools::check()"
 	@echo "[OK] Check complete"
 
 # ============================================================================
@@ -143,4 +143,3 @@ dev: regen docs check-man
 	@echo "[OK] Quick dev build complete!"
 	@echo "============================================"
 	@echo ""
-	

@@ -7,8 +7,10 @@
 gdal_save_pipeline(
   pipeline,
   path,
+  name = NULL,
+  description = NULL,
+  custom_tags = list(),
   pretty = TRUE,
-  method = c("auto", "native", "json"),
   overwrite = FALSE,
   verbose = FALSE
 )
@@ -18,16 +20,15 @@ gdal_save_pipeline(
 
 \item{path}{Character string specifying the path to save to (typically .gdalcli.json)}
 
+\item{name}{Character string. Optional name for the pipeline}
+
+\item{description}{Character string. Optional description of the pipeline}
+
+\item{custom_tags}{List. Optional user-defined metadata to include}
+
 \item{pretty}{Logical. If TRUE (default), formats JSON with indentation for readability}
 
-\item{method}{Character string: "auto" (default), "native", or "json"
-\itemize{
-\item "auto": Uses native GDALG driver if GDAL 3.11+ with driver available, else custom JSON
-\item "native": Forces native GDALG driver (requires GDAL 3.11+)
-\item "json": Forces custom JSON serialization
-}}
-
-\item{overwrite}{Logical. If TRUE, overwrites existing file (used with method="native")}
+\item{overwrite}{Logical. If TRUE, overwrites existing file}
 
 \item{verbose}{Logical. If TRUE, prints diagnostic information}
 }
@@ -76,17 +77,11 @@ The saved gdalcli pipeline file can be:
 pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "out.tif")
 
-# Save to file (auto-detects best method)
-gdal_save_pipeline(pipeline, "workflow.gdalcli.json")
-
-# Force native GDALG driver
-gdal_save_pipeline(pipeline, "workflow_native.gdalcli.json", method = "native")
-
-# Force custom JSON
-gdal_save_pipeline(pipeline, "workflow_json.gdalcli.json", method = "json")
+# Save to GDALG format (.gdalg.json)
+gdal_save_pipeline(pipeline, "workflow.gdalg.json")
 
 # Load and execute later
-loaded <- gdal_load_pipeline("workflow.gdalcli.json")
+loaded <- gdal_load_pipeline("workflow.gdalg.json")
 gdal_job_run(loaded)
 }
 

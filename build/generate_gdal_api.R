@@ -8,6 +8,9 @@ library(glue)
 # Source GDAL repo setup utilities
 source("build/setup_gdal_repo.R")
 
+# Source step mapping extraction utilities
+source("build/extract_step_mappings.R")
+
 # Global variable for local GDAL repo path
 .gdal_repo_path <- NULL
 
@@ -2642,6 +2645,23 @@ main <- function() {
   }
 
   cat(sprintf("[OK] Found %d GDAL command endpoints.\n\n", length(endpoints)))
+
+  # Extract and validate RFC 104 step mappings
+  cat("Extracting RFC 104 step name mappings from endpoints...\n")
+  step_mappings <- extract_step_mappings(endpoints)
+  cat(sprintf("[OK] Extracted %d step mappings\n", length(unlist(step_mappings))))
+
+  cat("Validating step mappings against expected defaults...\n")
+  .validate_step_mappings(step_mappings)
+
+  # Write step mappings to inst/
+  dir.create("inst", showWarnings = FALSE)
+  mappings_file <- "inst/GDAL_STEP_MAPPINGS.json"
+  writeLines(
+    jsonlite::toJSON(step_mappings, pretty = TRUE, auto_unbox = TRUE),
+    mappings_file
+  )
+  cat(sprintf("[OK] Saved step mappings to %s\n\n", mappings_file))
 
   # Initialize documentation cache for RST-based enrichment
   cat("Initializing documentation cache for RST enrichment...\n")
