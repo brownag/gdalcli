@@ -343,7 +343,6 @@ gdal_job_run.gdal_pipeline <- function(x,
       } else if (checkpoint_enabled) {
         checkpoint_dir <- getwd()  # Default to current working directory
       } else {
-        checkpoint_dir <- NULL
         # At this point, checkpointing is disabled but resume = TRUE (because
         # we are inside `if (checkpoint_enabled || resume)` and
         # `checkpoint_enabled` is FALSE). Resuming without a known checkpoint
