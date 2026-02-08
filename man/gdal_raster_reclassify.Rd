@@ -17,23 +17,23 @@ gdal_raster_reclassify(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NA})}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
+\item{output_data_type}{Output data type. Format: \code{NA}. Choices: c("Byte", "Int8", "UInt16", "Int16", "UInt32", "Int32", "UInt64", "Int64", "CInt16", "CInt32", "Float16", "Float32", "Float64", "CFloat32", "CFloat64") (Default: \code{NA})}
 
-\item{mapping}{Reclassification mappings (or specify a @\if{html}{\out{<filename>}} to point to a file containing mappings (required)}
+\item{mapping}{Reclassification mappings (or specify a @\if{html}{\out{<filename>}} to point to a file containing mappings. Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.

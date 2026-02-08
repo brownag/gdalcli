@@ -7,11 +7,11 @@
 gdal_raster_overview_delete(dataset, open_option = NULL, external = FALSE)
 }
 \arguments{
-\item{dataset}{Dataset (to be updated in-place, unless --read-only) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{dataset}{Dataset (to be updated in-place, unless --read-only) (Dataset path). Format: \code{NA} (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{external}{Delete external overviews (Logical)}
+\item{external}{Delete external overviews (Logical). Format: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.

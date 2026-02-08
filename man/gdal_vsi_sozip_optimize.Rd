@@ -15,19 +15,19 @@ gdal_vsi_sozip_optimize(
 )
 }
 \arguments{
-\item{input}{Input ZIP filename (Character vector) (required). \code{0} to \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input ZIP filename (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). \code{0} to \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{output}{Output ZIP filename (required)}
+\item{output}{Output ZIP filename. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP optimization. Choices: auto, yes, no (Default: \code{auto})}
+\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP optimization. Format: \code{NA}. Choices: c("auto", "yes", "no") (Default: \code{auto})}
 
-\item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix} (Default: \code{32768})}
+\item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix}. Choices: NULL (Default: \code{32768})}
 
-\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
+\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix}. Choices: NULL (Default: \verb{1 MB})}
 
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.

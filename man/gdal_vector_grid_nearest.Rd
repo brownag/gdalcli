@@ -31,51 +31,51 @@ gdal_vector_grid_nearest(
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Float64})}
+\item{output_data_type}{Output data type. Format: \code{NA}. Choices: c("Byte", "Int8", "UInt16", "Int16", "UInt32", "Int32", "UInt64", "Int64", "CInt16", "CInt32", "Float16", "Float32", "Float64", "CFloat32", "CFloat64") (Default: \code{Float64})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Choices: NULL (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{crs}{Override the projection for the output file}
+\item{crs}{Override the projection for the output file. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{layer}{Layer name (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{layer}{Layer name (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
+\item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}. Choices: NULL (Default: \code{NULL})}
 
-\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
+\item{bbox}{Select only points contained within the specified bounding box. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{zfield}{Field name from which to get Z values.}
+\item{zfield}{Field name from which to get Z values.. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply). Format: \code{NA}. Choices: NULL (Default: \code{0})}
 
-\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset). Format: \code{NA}. Choices: NULL (Default: \code{1})}
 
-\item{radius}{Radius of the search circle}
+\item{radius}{Radius of the search circle. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{radius1}{First axis of the search ellipse}
+\item{radius1}{First axis of the search ellipse. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{radius2}{Second axis of the search ellipse}
+\item{radius2}{Second axis of the search ellipse. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise) (Default: \code{0})}
+\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise). Format: \code{NA}. Choices: NULL (Default: \code{0})}
 
-\item{nodata}{Target nodata value (Default: \code{0})}
+\item{nodata}{Target nodata value. Format: \code{NA}. Choices: NULL (Default: \code{0})}
 }
 \value{
 A \link{gdal_job} object.

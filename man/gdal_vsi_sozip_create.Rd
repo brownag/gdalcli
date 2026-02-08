@@ -18,25 +18,25 @@ gdal_vsi_sozip_create(
 )
 }
 \arguments{
-\item{input}{Input filenames (Character vector) (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input filenames (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{output}{Output ZIP filename (required)}
+\item{output}{Output ZIP filename. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{recursive}{Travels the directory structure of the specified directories recursively (Logical)}
+\item{recursive}{Travels the directory structure of the specified directories recursively (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{no_paths}{Store just the name of a saved file, and do not store directory names (Logical)}
+\item{no_paths}{Store just the name of a saved file, and do not store directory names (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP optimization. Choices: auto, yes, no (Default: \code{auto})}
+\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP optimization. Format: \code{NA}. Choices: c("auto", "yes", "no") (Default: \code{auto})}
 
-\item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix} (Default: \code{32768})}
+\item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix}. Choices: NULL (Default: \code{32768})}
 
-\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
+\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix}. Choices: NULL (Default: \verb{1 MB})}
 
-\item{content_type}{Store the Content-Type of the file being added.}
+\item{content_type}{Store the Content-Type of the file being added.. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.

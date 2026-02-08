@@ -17,23 +17,23 @@ gdal_raster_pixel_info(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required). Minimum: \code{NA}. Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{Output format. Choices: geojson, csv (Default: \code{geojson})}
+\item{output_format}{Output format. Format: \code{NA}. Choices: c("geojson", "csv") (Default: \code{geojson}). Minimum: \code{NA}}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+\item{band}{Input band(s) (1-based index) (Integer vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{overview}{Which overview level of source file must be used (Integer). Minimum: \code{0}}
+\item{overview}{Which overview level of source file must be used (Integer). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{0}}
 
-\item{position}{Pixel position. Format: \verb{<column,line> or <X,Y>}. \code{0} to \code{2147483647} value(s)}
+\item{position}{Pixel position. Format: \verb{<column,line> or <X,Y>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{position_crs}{CRS of position (Default: \code{pixel})}
+\item{position_crs}{CRS of position. Format: \code{NA}. Choices: NULL (Default: \code{pixel}). Minimum: \code{NA}}
 
-\item{resampling}{Resampling algorithm for interpolation. Choices: nearest, bilinear, cubic, cubicspline (Default: \code{nearest})}
+\item{resampling}{Resampling algorithm for interpolation. Format: \code{NA}. Choices: c("nearest", "bilinear", "cubic", "cubicspline") (Default: \code{nearest}). Minimum: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
