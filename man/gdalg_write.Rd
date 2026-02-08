@@ -27,5 +27,5 @@ compliance. Falls back to pure R JSON serialization for older GDAL versions.
 When GDAL 3.12+ is available, GDALG JSON is written using GDAL's native
 \verb{gdal raster pipeline ... ! write -f GDALG} command for maximum RFC 104
 compliance and forward compatibility. For older GDAL versions (3.11 and below),
-this function falls back to direct R JSON serialization using jsonlite.
+this function falls back to direct R JSON serialization using yyjsonr.
 }

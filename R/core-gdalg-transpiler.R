@@ -256,7 +256,7 @@
 #'
 #' @param pipeline A gdal_pipeline object
 #'
-#' @return List suitable for JSON encoding via jsonlite::toJSON():
+#' @return List suitable for JSON encoding via yyjsonr::write_json_str():
 #'   list(type = "gdal_streamed_alg", command_line = "...", relative_paths_relative_to_this_file = TRUE)
 #'
 #' @keywords internal

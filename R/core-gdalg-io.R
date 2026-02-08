@@ -30,8 +30,7 @@ gdalg_read <- function(path) {
   # Read and parse JSON
   spec <- tryCatch({
     json_text <- readLines(path, warn = FALSE)
-    jsonlite::fromJSON(paste(json_text, collapse = ""),
-                       simplifyVector = FALSE)
+    yyjsonr::read_json_str(paste(json_text, collapse = ""))
   }, error = function(e) {
     stop("Failed to parse GDALG JSON file: ", path, "\n",
          "  Error: ", conditionMessage(e), call. = FALSE)
@@ -65,7 +64,7 @@ gdalg_read <- function(path) {
 #' When GDAL 3.12+ is available, GDALG JSON is written using GDAL's native
 #' `gdal raster pipeline ... ! write -f GDALG` command for maximum RFC 104
 #' compliance and forward compatibility. For older GDAL versions (3.11 and below),
-#' this function falls back to direct R JSON serialization using jsonlite.
+#' this function falls back to direct R JSON serialization using yyjsonr.
 #'
 #' @export
 gdalg_write <- function(gdalg, path, pretty = TRUE, overwrite = FALSE) {
@@ -161,7 +160,7 @@ gdalg_write <- function(gdalg, path, pretty = TRUE, overwrite = FALSE) {
 #' Write GDALG via Pure R (Internal)
 #'
 #' @description
-#' Fallback method using R's jsonlite library to serialize GDALG JSON.
+#' Fallback method using R's yyjsonr library to serialize GDALG JSON.
 #'
 #' @param gdalg A gdalg object
 #' @param path Output file path
@@ -175,7 +174,7 @@ gdalg_write <- function(gdalg, path, pretty = TRUE, overwrite = FALSE) {
 
   # Serialize to JSON
   json_str <- tryCatch({
-    jsonlite::toJSON(gdalg_list, pretty = pretty, auto_unbox = TRUE)
+    yyjsonr::write_json_str(gdalg_list, pretty = pretty)
   }, error = function(e) {
     stop("Failed to serialize GDALG to JSON: ", conditionMessage(e),
          call. = FALSE)

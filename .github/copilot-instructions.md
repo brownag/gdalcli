@@ -396,7 +396,7 @@ job |> gdal_with_dry_run() |> gdal_run()
 - `rlang` - Tidyverse infrastructure
 - `cli` - Command-line interface tools
 - `processx` - Process management
-- `jsonlite` - JSON parsing
+- `yyjsonr` - Fast JSON parsing and serialization (YYJSON bindings)
 - `gdalraster` - GDAL R bindings
 - `digest` - Hashing utilities
 

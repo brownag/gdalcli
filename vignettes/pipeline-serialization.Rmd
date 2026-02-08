@@ -139,7 +139,7 @@ The pure GDALG format is the minimal, RFC 104-compliant specification. Use this 
 - Ensuring maximum GDAL compatibility
 - You don't need R-specific metadata
 
-**Note**: GDALG JSON files are generated using GDAL's native writing capability when GDAL 3.12+ is available, ensuring full RFC 104 compliance. For older GDAL versions (3.11 and below), gdalcli falls back to direct JSON serialization using the jsonlite library. The GDALG driver in GDAL is read-only and loads GDALG JSON files; the write operations are performed via `gdal raster/vector pipeline ... ! write -f GDALG` commands.
+**Note**: GDALG JSON files are generated using GDAL's native writing capability when GDAL 3.12+ is available, ensuring full RFC 104 compliance. For older GDAL versions (3.11 and below), gdalcli falls back to direct JSON serialization using the yyjsonr library. The GDALG driver in GDAL is read-only and loads GDALG JSON files; the write operations are performed via `gdal raster/vector pipeline ... ! write -f GDALG` commands.
 
 ### Creating a Pure GDALG Object
 

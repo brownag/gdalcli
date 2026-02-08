@@ -67,7 +67,7 @@ gdalcli auto-generates approximately 90 R wrapper functions from GDAL's JSON API
 | Function | Purpose |
 |----------|---------|
 | `.convert_infinity_strings()` | Replace `"__R_INF__"` with `Inf` |
-| (jsonlite::fromJSON) | Parse JSON with `simplifyVector = FALSE` |
+| (yyjsonr::read_json_str) | Parse JSON with native types |
 
 ### Documentation Enrichment
 
@@ -296,7 +296,7 @@ Rscript build/generate_gdal_api.R
 ### Prerequisites
 
 1. GDAL 3.11+ installed and on PATH
-2. R packages: `processx`, `jsonlite`, `glue`
+2. R packages: `processx`, `yyjsonr`, `glue`
 3. Local GDAL repo (for RST examples): `build/gdal_repo/`
 
 ### Setup GDAL Repo
@@ -373,7 +373,7 @@ To improve example quality:
 ### R Packages
 
 - `processx` - Run GDAL CLI commands
-- `jsonlite` - Parse GDAL JSON API
+- `yyjsonr` - Fast JSON parsing (YYJSON bindings)
 - `glue` - String interpolation
 - `digest` - Cache key generation
 

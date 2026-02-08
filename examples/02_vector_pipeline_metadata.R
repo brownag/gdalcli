@@ -111,7 +111,7 @@ tryCatch({
   cat("   Jobs:", length(loaded_pipeline$jobs), "\n\n")
   
   # Parse and display the saved content
-  saved_json <- jsonlite::fromJSON(readLines(output_file), simplifyVector = FALSE)
+  saved_json <- yyjsonr::read_json_file(output_file)
   
   cat("5. Metadata Preservation Verification:\n")
   cat(paste(rep("-", 70), collapse = ""), "\n\n")

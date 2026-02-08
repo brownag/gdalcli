@@ -381,7 +381,7 @@ test_that("RFC 104 command string is valid", {
 
 ### External
 
-- `jsonlite` - JSON parsing/serialization
+- `yyjsonr` - Fast JSON parsing and serialization
 - `processx` - For GDAL-native GDALG writing (optional)
 
 ---

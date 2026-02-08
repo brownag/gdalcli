@@ -113,7 +113,7 @@
 
   # Serialize to JSON
   json_str <- tryCatch({
-    jsonlite::toJSON(spec_list, pretty = pretty, auto_unbox = TRUE)
+    yyjsonr::write_json_str(spec_list, pretty = pretty)
   }, error = function(e) {
     stop("Failed to serialize pipeline to JSON: ", conditionMessage(e),
          call. = FALSE)
@@ -162,8 +162,7 @@
   # Read and parse JSON
   spec <- tryCatch({
     json_text <- readLines(path, warn = FALSE)
-    jsonlite::fromJSON(paste(json_text, collapse = ""),
-                       simplifyVector = FALSE)
+    yyjsonr::read_json_str(paste(json_text, collapse = ""))
   }, error = function(e) {
     stop("Failed to parse pipeline JSON file: ", path, "\n",
          "  Error: ", conditionMessage(e), call. = FALSE)

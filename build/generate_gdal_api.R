@@ -2,7 +2,7 @@
 
 # Load required packages with error handling for optional dependencies
 library(processx)
-library(jsonlite)
+library(yyjsonr)
 library(glue)
 
 # Source GDAL repo setup utilities
@@ -146,12 +146,12 @@ source("build/extract_step_mappings.R")
     r_version = paste(R.version$major, R.version$minor, sep = "."),
     packages = list(
       processx = as.character(packageVersion("processx")),
-      jsonlite = as.character(packageVersion("jsonlite"))
+      yyjsonr = as.character(packageVersion("yyjsonr"))
     )
   )
 
   # Write as JSON
-  json_content <- jsonlite::toJSON(metadata, pretty = TRUE, auto_unbox = TRUE)
+  json_content <- yyjsonr::write_json_str(metadata, pretty = TRUE)
   writeLines(json_content, output_file)
 
   cat(sprintf("Wrote GDAL version metadata to %s\n", output_file))
@@ -1348,7 +1348,7 @@ crawl_gdal_api <- function(command_path = c("gdal")) {
   # simplifyVector = FALSE prevents collapsing arrays of mixed types
   # simplifyDataFrame = FALSE prevents converting array of objects to dataframes
   api_spec <- tryCatch(
-    jsonlite::fromJSON(json_str, simplifyVector = FALSE, simplifyDataFrame = FALSE),
+    yyjsonr::read_json_str(json_str),
     error = function(e) {
       warning(sprintf("Failed to parse JSON from '%s': %s", cmd, e$message))
       NULL
@@ -2658,7 +2658,7 @@ main <- function() {
   dir.create("inst", showWarnings = FALSE)
   mappings_file <- "inst/GDAL_STEP_MAPPINGS.json"
   writeLines(
-    jsonlite::toJSON(step_mappings, pretty = TRUE, auto_unbox = TRUE),
+    yyjsonr::write_json_str(step_mappings, pretty = TRUE),
     mappings_file
   )
   cat(sprintf("[OK] Saved step mappings to %s\n\n", mappings_file))

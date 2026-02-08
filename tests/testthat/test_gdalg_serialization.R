@@ -297,7 +297,7 @@ test_that("Complex argument quoting works correctly in full pipeline", {
 })
 
 test_that("gdal_save_pipeline saves GDALG JSON format to disk", {
-  skip_if_not(requireNamespace("jsonlite", quietly = TRUE))
+  skip_if_not(requireNamespace("yyjsonr", quietly = TRUE))
 
   tmpfile <- tempfile(fileext = ".gdalg.json")
   on.exit(unlink(tmpfile))
@@ -324,14 +324,14 @@ test_that("gdal_save_pipeline saves GDALG JSON format to disk", {
   expect_true(file.exists(tmpfile))
 
   # Check file contains valid JSON
-  json_content <- jsonlite::fromJSON(tmpfile)
+  json_content <- yyjsonr::read_json_file(tmpfile)
   expect_equal(json_content$type, "gdal_streamed_alg")
   expect_true(is.character(json_content$command_line))
   expect_true(json_content$relative_paths_relative_to_this_file)
 })
 
 test_that("gdal_load_pipeline loads GDALG JSON and reconstructs pipeline", {
-  skip_if_not(requireNamespace("jsonlite", quietly = TRUE))
+  skip_if_not(requireNamespace("yyjsonr", quietly = TRUE))
 
   tmpfile <- tempfile(fileext = ".gdalg.json")
   on.exit(unlink(tmpfile))
@@ -393,24 +393,24 @@ test_that("gdal_save_pipeline errors on non-existent path and requires overwrite
 })
 
 test_that("gdal_load_pipeline validates GDALG spec structure", {
-  skip_if_not(requireNamespace("jsonlite", quietly = TRUE))
+  skip_if_not(requireNamespace("yyjsonr", quietly = TRUE))
 
   tmpfile <- tempfile(fileext = ".json")
   on.exit(unlink(tmpfile))
 
   # Invalid: missing type
   invalid_spec <- list(command_line = "...")
-  writeLines(jsonlite::toJSON(invalid_spec), tmpfile)
+  writeLines(yyjsonr::write_json_str(invalid_spec, pretty = TRUE), tmpfile)
   expect_error(gdal_load_pipeline(tmpfile), "type")
 
   # Invalid: wrong type value
   invalid_spec <- list(type = "wrong", command_line = "...")
-  writeLines(jsonlite::toJSON(invalid_spec), tmpfile)
+  writeLines(yyjsonr::write_json_str(invalid_spec, pretty = TRUE), tmpfile)
   expect_error(gdal_load_pipeline(tmpfile), 'gdal_streamed_alg')
 
   # Invalid: missing command_line
   invalid_spec <- list(type = "gdal_streamed_alg")
-  writeLines(jsonlite::toJSON(invalid_spec), tmpfile)
+  writeLines(yyjsonr::write_json_str(invalid_spec, pretty = TRUE), tmpfile)
   expect_error(gdal_load_pipeline(tmpfile), "command_line")
 })
 
@@ -609,10 +609,10 @@ test_that("Hybrid format round-trip: save and load preserves metadata", {
   )
 
   # Serialize to JSON
-  json_str <- jsonlite::toJSON(spec1, pretty = TRUE, auto_unbox = TRUE)
+  json_str <- yyjsonr::write_json_str(spec1, pretty = TRUE)
 
   # Deserialize from JSON
-  spec2 <- jsonlite::fromJSON(json_str, simplifyVector = FALSE)
+  spec2 <- yyjsonr::read_json_str(json_str)
 
   # Verify metadata preserved through JSON round-trip
   expect_equal(spec2$metadata$pipeline_name, "Round-trip Test")

@@ -228,7 +228,7 @@ jobs:
             R --version | head -3
             Rscript -e "cat(\"R works\n\")"
             echo "=== R Packages Smoke Test ==="
-            Rscript -e "library(processx); library(jsonlite); library(gdalraster); cat(\"All deps present\n\")"
+            Rscript -e "library(processx); library(yyjsonr); library(gdalraster); cat(\"All deps present\\n\")"
             echo "=== All smoke tests passed ==="
           '
 

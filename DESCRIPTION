@@ -27,7 +27,6 @@ Imports:
     utils,
     rlang (>= 1.0.0),
     cli (>= 3.0.0),
-    jsonlite (>= 1.7.0),
     yyjsonr (>= 0.1.0),
     digest (>= 0.6.0),
     processx (>= 3.8.0)

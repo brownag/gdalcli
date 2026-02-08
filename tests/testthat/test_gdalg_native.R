@@ -39,7 +39,7 @@ test_that("gdalg_write creates valid GDALG JSON via GDAL", {
   expect_true(file.exists(tmpfile))
 
   # File should contain valid JSON
-  json_data <- jsonlite::read_json(tmpfile)
+  json_data <- yyjsonr::read_json_file(tmpfile)
   expect_type(json_data, "list")
 
   expect_true(!is.null(json_data$type))

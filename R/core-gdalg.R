@@ -94,7 +94,7 @@ gdal_has_gdalg_driver <- function() {
 #'
 #' **GDALG Format:**
 #' The GDALG driver in GDAL 3.11+ is read-only. It can load GDALG JSON files
-#' but cannot write them directly. GDALG JSON is generated using R's jsonlite
+#' but cannot write them directly. GDALG JSON is generated using R's yyjsonr
 #' library. The format is well-documented (RFC 104) and stable.
 #'
 #' **Output Compatibility:**

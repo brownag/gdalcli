@@ -96,7 +96,7 @@ tryCatch({
   cat("5. Hybrid Format Structure:\n")
   cat(paste(rep("-", 70), collapse = ""), "\n\n")
   
-  saved_json <- jsonlite::fromJSON(readLines(pipeline_file), simplifyVector = FALSE)
+  saved_json <- yyjsonr::read_json_file(pipeline_file)
   
   cat("GDALG Component (RFC 104):\n")
   cat("  Type:", saved_json$gdalg$type, "\n")

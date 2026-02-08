@@ -1210,7 +1210,7 @@ gdal_job_run.default <- function(x, ...) {
 
   # Save metadata
   writeLines(
-    jsonlite::toJSON(metadata, pretty = TRUE, auto_unbox = TRUE),
+    yyjsonr::write_json_str(metadata, pretty = TRUE),
     metadata_file
   )
 
