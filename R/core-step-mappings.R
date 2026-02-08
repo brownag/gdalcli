@@ -37,7 +37,14 @@
   mappings <- .gdalcli_env$step_mappings %||% .get_default_step_mappings()
 
   # Return mapping or default to operation name (if module or operation not found)
-  mappings[[module]][[operation]] %||% operation
+  # Safely handle missing modules and operations:
+  # - If module not found, return operation.
+  # - If operation not found within module, return operation.
+  module_map <- mappings[[module]]
+  if (is.null(module_map)) {
+    return(operation)
+  }
+  module_map[[operation]] %||% operation
 }
 
 #' Load Step Mappings from Generated JSON
