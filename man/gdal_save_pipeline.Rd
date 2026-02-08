@@ -55,6 +55,11 @@ The saved gdalcli pipeline file can be:
 \item Shared with colleagues or version controlled
 \item Used in other gdalcli-compatible tools
 }
+
+\strong{Note on File Formats:}
+This function produces \code{.gdalcli.json} (hybrid) files. For pure GDALG (RFC 104)
+output suitable for \verb{gdal raster pipeline}, use \code{\link[=gdal_save_pipeline_native]{gdal_save_pipeline_native()}}
+or \code{\link[=gdalg_write]{gdalg_write()}}, which typically use the \code{.gdalg.json} extension.
 }
 \examples{
 \dontrun{

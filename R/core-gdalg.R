@@ -167,6 +167,11 @@ gdal_save_pipeline_native <- function(pipeline,
 #' - Shared with colleagues or version controlled
 #' - Used in other gdalcli-compatible tools
 #'
+#' **Note on File Formats:**
+#' This function produces `.gdalcli.json` (hybrid) files. For pure GDALG (RFC 104)
+#' output suitable for `gdal raster pipeline`, use [gdal_save_pipeline_native()]
+#' or [gdalg_write()], which typically use the `.gdalg.json` extension.
+#'
 #' @examples
 #' \dontrun{
 #' pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
