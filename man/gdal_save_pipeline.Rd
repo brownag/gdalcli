@@ -41,27 +41,11 @@ format is a JSON-based pipeline definition that can be saved to disk and loaded 
 for execution.
 }
 \details{
-This function supports two serialization methods:
-
-\strong{Method: "json" (Custom JSON)}
+This function saves the pipeline in gdalcli's hybrid JSON format, which combines:
 \itemize{
-\item Works with any GDAL version
-\item Fast serialization (direct write)
-\item gdalcli-specific format
-}
-
-\strong{Method: "native" (GDALG Format)}
-\itemize{
-\item Requires GDAL 3.11+ with GDALG driver
-\item Uses GDAL-compatible JSON serialization
-\item Universal GDAL compatibility
-\item Full GDAL metadata
-}
-
-\strong{Method: "auto" (Recommended)}
-\itemize{
-\item Automatically selects the best method for your system
-\item Uses native if available, falls back to JSON
+\item A pure GDALG specification (RFC 104) for GDAL compatibility
+\item R-specific metadata/tags for gdalcli features
+\item Full job specifications for lossless round-tripping
 }
 
 The saved gdalcli pipeline file can be:
@@ -77,11 +61,11 @@ The saved gdalcli pipeline file can be:
 pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "out.tif")
 
-# Save to GDALG format (.gdalg.json)
-gdal_save_pipeline(pipeline, "workflow.gdalg.json")
+# Save to gdalcli format (.gdalcli.json)
+gdal_save_pipeline(pipeline, "workflow.gdalcli.json")
 
 # Load and execute later
-loaded <- gdal_load_pipeline("workflow.gdalg.json")
+loaded <- gdal_load_pipeline("workflow.gdalcli.json")
 gdal_job_run(loaded)
 }
 

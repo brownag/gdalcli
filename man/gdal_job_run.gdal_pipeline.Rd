@@ -11,7 +11,7 @@ Execute a GDAL Pipeline}
   stream_in = NULL,
   stream_out_format = NULL,
   env = NULL,
-  checkpoint = FALSE,
+  checkpoint = NULL,
   checkpoint_dir = NULL,
   resume = FALSE,
   ...,

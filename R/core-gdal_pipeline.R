@@ -256,17 +256,12 @@ gdal_job_run.gdal_pipeline <- function(x,
                                        stream_in = NULL,
                                        stream_out_format = NULL,
                                        env = NULL,
-                                       checkpoint = FALSE,
+                                       checkpoint = NULL,
                                        checkpoint_dir = NULL,
                                        resume = FALSE,
                                        ...,
                                        verbose = FALSE) {
   execution_mode <- match.arg(execution_mode)
-
-  # Get checkpoint directory from global option if not specified
-  if (is.null(checkpoint_dir)) {
-    checkpoint_dir <- getOption("gdalcli.checkpoint_dir", ".gdalcli.checkpoint")
-  }
 
   if (length(x$jobs) == 0) {
     if (verbose) cli::cli_alert_info("Pipeline is empty - nothing to execute")
@@ -331,14 +326,24 @@ gdal_job_run.gdal_pipeline <- function(x,
 
   # Handle checkpoint/resume
   # Respect global option if checkpoint parameter not explicitly set
-  checkpoint_enabled <- checkpoint || getOption("gdalcli.checkpoint", FALSE)
+  checkpoint_enabled <- if (missing(checkpoint) || is.null(checkpoint)) {
+    getOption("gdalcli.checkpoint", FALSE)
+  } else {
+    isTRUE(checkpoint)
+  }
 
   if (checkpoint_enabled || resume) {
-    # If checkpoint_dir not specified, use global option or current working directory
-    if (is.null(checkpoint_dir)) {
-      checkpoint_dir <- getOption("gdalcli.checkpoint_dir", NULL)
-      if (is.null(checkpoint_dir) && checkpoint_enabled) {
+    # If checkpoint_dir not specified, use global option or current working directory.
+    # Use missing() so that we can distinguish "not supplied" from an explicit value,
+    # even if earlier code has already assigned to checkpoint_dir.
+    if (missing(checkpoint_dir) || is.null(checkpoint_dir)) {
+      opt_checkpoint_dir <- getOption("gdalcli.checkpoint_dir", NULL)
+      if (!is.null(opt_checkpoint_dir)) {
+        checkpoint_dir <- opt_checkpoint_dir
+      } else if (checkpoint_enabled) {
         checkpoint_dir <- getwd()  # Default to current working directory
+      } else {
+        checkpoint_dir <- NULL
       }
     }
 

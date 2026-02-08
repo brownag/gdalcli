@@ -156,22 +156,10 @@ gdal_save_pipeline_native <- function(pipeline,
 #' @return Invisibly returns the path where the pipeline was saved
 #'
 #' @details
-#' This function supports two serialization methods:
-#'
-#' **Method: "json" (Custom JSON)**
-#' - Works with any GDAL version
-#' - Fast serialization (direct write)
-#' - gdalcli-specific format
-#'
-#' **Method: "native" (GDALG Format)**
-#' - Requires GDAL 3.11+ with GDALG driver
-#' - Uses GDAL-compatible JSON serialization
-#' - Universal GDAL compatibility
-#' - Full GDAL metadata
-#'
-#' **Method: "auto" (Recommended)**
-#' - Automatically selects the best method for your system
-#' - Uses native if available, falls back to JSON
+#' This function saves the pipeline in gdalcli's hybrid JSON format, which combines:
+#' - A pure GDALG specification (RFC 104) for GDAL compatibility
+#' - R-specific metadata/tags for gdalcli features
+#' - Full job specifications for lossless round-tripping
 #'
 #' The saved gdalcli pipeline file can be:
 #' - Executed with gdal_job_run()
@@ -184,11 +172,11 @@ gdal_save_pipeline_native <- function(pipeline,
 #' pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
 #'   gdal_raster_convert(output = "out.tif")
 #'
-#' # Save to GDALG format (.gdalg.json)
-#' gdal_save_pipeline(pipeline, "workflow.gdalg.json")
+#' # Save to gdalcli format (.gdalcli.json)
+#' gdal_save_pipeline(pipeline, "workflow.gdalcli.json")
 #'
 #' # Load and execute later
-#' loaded <- gdal_load_pipeline("workflow.gdalg.json")
+#' loaded <- gdal_load_pipeline("workflow.gdalcli.json")
 #' gdal_job_run(loaded)
 #' }
 #'

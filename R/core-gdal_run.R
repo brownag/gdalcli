@@ -1196,9 +1196,11 @@ gdal_job_run.default <- function(x, ...) {
 
   # Save step output if provided
   if (!is.null(step_output) && file.exists(step_output)) {
+    ext <- tools::file_ext(step_output)
+    ext_suffix <- if (nzchar(ext)) paste0(".", ext) else ""
     checkpoint_file <- file.path(
       checkpoint_dir,
-      sprintf("step_%03d_output%s", step_index, tools::file_ext(step_output))
+      sprintf("step_%03d_output%s", step_index, ext_suffix)
     )
     file.copy(step_output, checkpoint_file, overwrite = TRUE)
     metadata$step_outputs[[as.character(step_index)]] <- checkpoint_file
@@ -1432,7 +1434,7 @@ gdal_job_run.default <- function(x, ...) {
 
     # Save updated checkpoint
     step_output <- job$arguments$output
-    checkpoint_state <<- .save_checkpoint(pipeline, checkpoint_dir, i, step_output)
+    checkpoint_state <- .save_checkpoint(pipeline, checkpoint_dir, i, step_output)
 
     if (verbose) {
       cli::cli_alert_success(sprintf("Step %d complete", i))
