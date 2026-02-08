@@ -1,40 +1,96 @@
 {
   "driver": {
-    "repack": "write",
-    "create": "write",
-    "list-layers": "read"
+    "repack": [
+      "write"
+    ],
+    "create": [
+      "write"
+    ],
+    "list-layers": [
+      "read"
+    ]
   },
   "mdim": {
-    "mdim": "read",
-    "convert": "write",
-    "info": "read"
+    "mdim": [
+      "read"
+    ],
+    "convert": [
+      "write"
+    ],
+    "info": [
+      "read"
+    ]
   },
   "raster": {
-    "raster": "read",
-    "clean-collar": "cleancol",
-    "convert": "write",
-    "create": "write",
-    "edit": "read",
-    "fill-nodata": "fillnodata",
-    "info": "read",
-    "add": "read",
-    "delete": "read",
-    "pixel-info": "read",
-    "tile": "write"
+    "raster": [
+      "read"
+    ],
+    "clean-collar": [
+      "cleancol"
+    ],
+    "convert": [
+      "write"
+    ],
+    "create": [
+      "write"
+    ],
+    "edit": [
+      "read"
+    ],
+    "fill-nodata": [
+      "fillnodata"
+    ],
+    "info": [
+      "read"
+    ],
+    "add": [
+      "read"
+    ],
+    "delete": [
+      "read"
+    ],
+    "pixel-info": [
+      "read"
+    ],
+    "tile": [
+      "write"
+    ]
   },
   "vector": {
-    "vector": "read",
-    "convert": "write",
-    "info": "read"
+    "vector": [
+      "read"
+    ],
+    "convert": [
+      "write"
+    ],
+    "info": [
+      "read"
+    ]
   },
   "vsi": {
-    "copy": "read",
-    "delete": "read",
-    "list": "read",
-    "move": "read",
-    "create": "write",
-    "optimize": "read",
-    "validate": "read",
-    "sync": "read"
+    "copy": [
+      "read"
+    ],
+    "delete": [
+      "read"
+    ],
+    "list": [
+      "read"
+    ],
+    "move": [
+      "read"
+    ],
+    "create": [
+      "write"
+    ],
+    "optimize": [
+      "read"
+    ],
+    "validate": [
+      "read"
+    ],
+    "sync": [
+      "read"
+    ]
   }
 }

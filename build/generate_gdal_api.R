@@ -700,7 +700,7 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
           r_name <- gsub("-", "_", gdal_short)
         }
         
-        max_count <- if (!is.null(arg$max_count)) arg$max_count else 1
+        max_count <- if (!is.null(arg$max_count) && !is.na(arg$max_count)) arg$max_count else 1
         param_metadata[[r_name]] <- list(gdal_name = gdal_name, max_count = max_count)
         positional_param_names <- c(positional_param_names, r_name)
       }
@@ -720,7 +720,7 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
       first_param_max_count <- param_metadata[[first_param]]$max_count
       
       # If first parameter accepts multiple values, combine all but last arg into a vector
-      if (!is.null(first_param_max_count) && first_param_max_count > 1) {
+      if (!is.null(first_param_max_count) && !is.na(first_param_max_count) && first_param_max_count > 1) {
         # All args except the last go to the first parameter as a vector
         input_files <- parsed_cli$positional_args[-length(parsed_cli$positional_args)]
         output_file <- parsed_cli$positional_args[length(parsed_cli$positional_args)]
@@ -764,8 +764,8 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
         
         # Check if this is a composite argument
         param_meta <- if (!is.null(arg_mapping[[arg_name]])) arg_mapping[[arg_name]] else NULL
-        max_count <- if (!is.null(param_meta)) param_meta$max_count else 1
-        min_count <- if (!is.null(param_meta)) param_meta$min_count else 0
+        max_count <- if (!is.null(param_meta) && !is.null(param_meta$max_count) && !is.na(param_meta$max_count)) param_meta$max_count else 1
+        min_count <- if (!is.null(param_meta) && !is.null(param_meta$min_count) && !is.na(param_meta$min_count)) param_meta$min_count else 0
         
         # Detect composite: fixed-count with commas
         is_composite <- (max_count == min_count && max_count > 1 && grepl(",", val))
@@ -912,8 +912,8 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
         # Check if this is a composite argument (fixed-count comma-separated values)
         # by looking at arg_mapping
         param_meta <- if (!is.null(arg_mapping[[opt_name_r]])) arg_mapping[[opt_name_r]] else NULL
-        max_count <- if (!is.null(param_meta)) param_meta$max_count else 1
-        min_count <- if (!is.null(param_meta)) param_meta$min_count else 0
+        max_count <- if (!is.null(param_meta) && !is.null(param_meta$max_count) && !is.na(param_meta$max_count)) param_meta$max_count else 1
+        min_count <- if (!is.null(param_meta) && !is.null(param_meta$min_count) && !is.na(param_meta$min_count)) param_meta$min_count else 0
         
         # Detect composite argument: single value with commas and fixed max_count > 1
         is_composite <- (length(values) == 1 && max_count == min_count && max_count > 1 && grepl(",", values[[1]]))
@@ -1382,24 +1382,31 @@ crawl_gdal_api <- function(command_path = c("gdal")) {
   }
 
   # Recurse into sub-algorithms if they exist
-  if (!is.null(api_spec$sub_algorithms) && length(api_spec$sub_algorithms) > 0) {
-    for (i in seq_along(api_spec$sub_algorithms)) {
-      sub_algo <- api_spec$sub_algorithms[[i]]
+  if (!is.null(api_spec$sub_algorithms)) {
+    sub_algos <- api_spec$sub_algorithms
+    names_to_crawl <- character(0)
 
-      # Sub-algorithm can be either:
-      # 1. A character string (the name)
-      # 2. A list with "name" and "full_path" properties
-      if (is.list(sub_algo) && !is.null(sub_algo$name)) {
-        # It's a list with name and potentially full_path
-        sub_name <- sub_algo$name
-        if (is.character(sub_name) && length(sub_name) == 1) {
-          sub_path <- c(command_path, sub_name)
-          sub_endpoints <- crawl_gdal_api(sub_path)
-          endpoints <- c(endpoints, sub_endpoints)
+    if (is.data.frame(sub_algos)) {
+      if ("name" %in% names(sub_algos)) {
+        names_to_crawl <- sub_algos$name
+      }
+    } else if (is.character(sub_algos)) {
+      names_to_crawl <- sub_algos
+    } else if (is.list(sub_algos)) {
+      for (i in seq_along(sub_algos)) {
+        item <- sub_algos[[i]]
+        if (is.list(item) && !is.null(item$name)) {
+          names_to_crawl <- c(names_to_crawl, item$name)
+        } else if (is.character(item) && length(item) == 1) {
+          names_to_crawl <- c(names_to_crawl, item)
         }
-      } else if (is.character(sub_algo) && length(sub_algo) == 1) {
-        # It's just a string
-        sub_path <- c(command_path, sub_algo)
+      }
+    }
+
+    # Recurse for each found sub-algorithm
+    for (name in names_to_crawl) {
+      if (!is.na(name) && nzchar(name)) {
+        sub_path <- c(command_path, name)
         sub_endpoints <- crawl_gdal_api(sub_path)
         endpoints <- c(endpoints, sub_endpoints)
       }
@@ -1931,28 +1938,37 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
   if (!is.null(arg_names) && length(arg_names) > 0) {
     # Build a map of R argument names to their JSON metadata
     arg_metadata_map <- list()
-    all_input_args <- c(input_output_args, input_args)
-    if (!is.null(all_input_args) && length(all_input_args) > 0) {
-      if (is.data.frame(all_input_args)) {
-        # Convert dataframe to list of lists
-        for (i in seq_len(nrow(all_input_args))) {
-          row_list <- as.list(all_input_args[i, ])
-          gdal_name <- ifelse(is.null(row_list$name), NA_character_, row_list$name)
-          if (!is.na(gdal_name)) {
-            r_name <- gsub("-", "_", gdal_name)
-            if (grepl("^[0-9]", r_name)) r_name <- paste0("X", r_name)
-            arg_metadata_map[[r_name]] <- row_list
-          }
+    # Helper to normalize argument lists/dataframes to list of list objects
+    normalize_arg_list <- function(args) {
+      if (is.null(args) || length(args) == 0) return(list())
+      if (is.data.frame(args)) {
+        return(lapply(1:nrow(args), function(i) as.list(args[i, ])))
+      }
+      if (is.list(args)) {
+        # Check if it looks like a single argument object (has "name" field directly)
+        if ("name" %in% names(args)) {
+           return(list(args))
         }
-      } else if (is.list(all_input_args)) {
-        for (i in seq_along(all_input_args)) {
-          arg <- all_input_args[[i]]
-          gdal_name <- ifelse(is.null(arg$name), NA_character_, arg$name)
-          if (!is.na(gdal_name)) {
-            r_name <- gsub("-", "_", gdal_name)
-            if (grepl("^[0-9]", r_name)) r_name <- paste0("X", r_name)
-            arg_metadata_map[[r_name]] <- arg
-          }
+        return(args)
+      }
+      return(list())
+    }
+
+    # Combine input and output args into a single list of parameter objects
+    all_input_args <- c(normalize_arg_list(input_output_args), normalize_arg_list(input_args))
+    
+    if (length(all_input_args) > 0) {
+      for (i in seq_along(all_input_args)) {
+        arg <- all_input_args[[i]]
+        # Ensure arg is a list before accessing via $
+        if (!is.list(arg)) next
+        
+        gdal_name <- if (is.null(arg$name)) NA_character_ else as.character(arg$name)
+        
+        if (!is.na(gdal_name)) {
+          r_name <- gsub("-", "_", gdal_name)
+          if (grepl("^[0-9]", r_name)) r_name <- paste0("X", r_name)
+          arg_metadata_map[[r_name]] <- arg
         }
       }
     }
@@ -2034,7 +2050,8 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       }
       
       # Add count info for lists
-      if (!is.null(arg_meta$min_count) && !is.null(arg_meta$max_count)) {
+      if (!is.null(arg_meta$min_count) && !is.null(arg_meta$max_count) &&
+          !is.na(arg_meta$min_count) && !is.na(arg_meta$max_count)) {
         if (arg_meta$min_count == arg_meta$max_count) {
           param_desc <- paste0(param_desc, ". Exactly `", arg_meta$min_count, "` value(s)")
         } else {
