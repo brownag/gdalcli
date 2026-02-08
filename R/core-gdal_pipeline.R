@@ -344,30 +344,56 @@ gdal_job_run.gdal_pipeline <- function(x,
         checkpoint_dir <- getwd()  # Default to current working directory
       } else {
         checkpoint_dir <- NULL
+        # At this point, checkpointing is disabled but resume = TRUE (because
+        # we are inside `if (checkpoint_enabled || resume)` and
+        # `checkpoint_enabled` is FALSE). Resuming without a known checkpoint
+        # directory would be ambiguous, so require the user to specify one.
+        cli::cli_abort(
+          c(
+            "Cannot resume pipeline: no checkpoint directory is configured.",
+            "i" = "Supply `checkpoint_dir` explicitly or set the option 'gdalcli.checkpoint_dir'."
+          )
+        )
       }
     }
 
     # Check for existing checkpoint
-    checkpoint_state <- .load_checkpoint(checkpoint_dir)
+    checkpoint_state <- if (!is.null(checkpoint_dir)) .load_checkpoint(checkpoint_dir) else NULL
+
+    # Sanitize dots to avoid duplicate backend arguments downstream
+    dots <- list(...)
+    if ("backend" %in% names(dots)) {
+      dots[["backend"]] <- NULL
+    }
 
     if (resume && !is.null(checkpoint_state)) {
       # Resume from checkpoint
-      return(.resume_pipeline(
-        x,
-        checkpoint_state,
-        checkpoint_dir,
-        backend,
-        verbose = verbose,
-        ...
+      return(do.call(
+        what = .resume_pipeline,
+        args = c(
+          list(
+            x,
+            checkpoint_state,
+            checkpoint_dir,
+            backend,
+            verbose = verbose
+          ),
+          dots
+        )
       ))
     } else if (checkpoint_enabled && !resume) {
       # Start new checkpoint run
-      return(.run_pipeline_with_checkpoint(
-        x,
-        checkpoint_dir,
-        backend,
-        verbose = verbose,
-        ...
+      return(do.call(
+        what = .run_pipeline_with_checkpoint,
+        args = c(
+          list(
+            x,
+            checkpoint_dir,
+            backend,
+            verbose = verbose
+          ),
+          dots
+        )
       ))
     } else if (resume && is.null(checkpoint_state)) {
       cli::cli_warn(
