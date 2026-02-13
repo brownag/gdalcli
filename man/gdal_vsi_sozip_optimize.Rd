@@ -38,9 +38,11 @@ Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vsi_sozip_optimize(input = "my.gpkg", output = "my.gpkg.zip")
 \dontrun{
-  result <- gdal_job_run(job)
+# TODO: No examples available for gdal_vsi_sozip_optimize.
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-sozip-optimize.html
+job <- gdal_vsi_sozip_optimize()
+# gdal_job_run(job)
 }
 }
 \seealso{
