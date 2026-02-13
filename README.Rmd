@@ -29,8 +29,8 @@ An R interface to GDAL's unified command-line interface (GDAL >=3.11). Provides 
 
 Each release is tagged with both the package version and the GDAL version it targets:
 
-- `v0.2.1-3.11.0` - Compatible with GDAL 3.11.0
-- `v0.2.1-3.12.0` - Compatible with GDAL 3.12.0
+- `v0.5.0-3.11.4` - Compatible with GDAL 3.11.4
+- `v0.5.0-3.12.0` - Compatible with GDAL 3.12.0
 - etc.
 
 #### Finding Your GDAL Version
@@ -111,7 +111,7 @@ gdal_job_run(pipeline)
 ```{r}
 # Save pipeline to gdalcli pipeline format
 workflow_file <- tempfile(fileext = ".gdalcli.json")
-gdal_save_pipeline(pipeline, workflow_file)
+gdal_save_pipeline(pipeline, workflow_file, name = "Example Pipeline")
 
 # Load pipeline for later use
 loaded <- gdal_load_pipeline(workflow_file)
@@ -145,7 +145,7 @@ gdal_job_run(info_job)
 
 ### Vector Operations
 
-```{r}
+```{r, eval=FALSE}
 # Convert vector format
 vector_job <- gdal_vector_convert(
   input = system.file("extdata/sample_mapunit_polygons.gpkg", package = "gdalcli"),
@@ -225,15 +225,28 @@ gdal_job_run(pipeline, backend = "processx")
 
 ### gdalcli Pipeline Format: Save and Load Pipelines
 
-Persist pipelines as JSON for sharing and version control:
+Persist pipelines as JSON for sharing and version control. gdalcli supports three formats:
+
+- **Hybrid Format** (.gdalcli.json): Combines GDAL command with R metadata for lossless round-trip serialization
+- **Pure GDALG Format** (.gdalg.json): RFC 104 compliant GDAL specification for compatibility with other GDAL tools
+- **Legacy Format**: Deprecated (pre-v0.5.0) - no longer recommended
 
 ```{r}
-# Save pipeline to gdalcli pipeline format
+# Save pipeline to gdalcli hybrid format (recommended)
 workflow_file <- tempfile(fileext = ".gdalcli.json")
-gdal_save_pipeline(pipeline, workflow_file)
+gdal_save_pipeline(
+  pipeline,
+  workflow_file,
+  name = "Reproject and Scale",
+  description = "Reproject to UTM Zone 32N and scale to 0-255"
+)
 
-# Load pipeline for later use
+# Load pipeline for later use (auto-detects format)
 loaded <- gdal_load_pipeline(workflow_file)
+
+# Export as pure GDALG for use with other GDAL tools
+gdalg <- as_gdalg(loaded)
+gdalg_write(gdalg, "workflow.gdalg.json")
 ```
 
 ### Shell Script Generation

@@ -17,23 +17,23 @@ gdal_raster_resize(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{NA}. Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{size}{Target size in pixels (or percentage if using '\%' suffix) (Character vector). Format: \verb{<width[\%]>,<height[\%]>} (required). Minimum: \code{0}. Exactly \code{2} value(s)}
+\item{size}{Target size in pixels (or percentage if using '\%' suffix) (Character vector). Format: \verb{<width[\%]>,<height[\%]>}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
+\item{resampling}{Resampling method. Format: \code{NA}. Choices: c("nearest", "bilinear", "cubic", "cubicspline", "lanczos", "average", "mode") (Default: \code{nearest}). Minimum: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.

@@ -11,6 +11,9 @@ Execute a GDAL Pipeline}
   stream_in = NULL,
   stream_out_format = NULL,
   env = NULL,
+  checkpoint = NULL,
+  checkpoint_dir = NULL,
+  resume = FALSE,
   ...,
   verbose = FALSE
 )
@@ -31,13 +34,28 @@ Options: \code{NULL} (no streaming), \code{"text"}, or \code{"raw"}. Only used i
 
 \item{env}{Environment variables to pass to the GDAL process. Only used in native execution mode.}
 
+\item{checkpoint}{Logical. Override global checkpoint setting for this pipeline only.
+If not specified (NULL/missing), respects \code{getOption("gdalcli.checkpoint", FALSE)}.
+To enable checkpointing by default, use \code{gdalcli_options(checkpoint = TRUE)}.
+When enabled, saves intermediate results to enable resumption from failures.
+Default: \code{FALSE} (disabled unless configured via \code{gdalcli_options()}).}
+
+\item{checkpoint_dir}{Character. Directory for checkpoint files. If not specified,
+uses \code{getOption("gdalcli.checkpoint_dir", NULL)} or current working directory
+if checkpointing is enabled. Set via \code{gdalcli_options(checkpoint_dir = "/path")}.}
+
+\item{resume}{Logical. Resume pipeline execution from the most recent checkpoint.
+If checkpoint is enabled and a checkpoint exists at the checkpoint directory,
+set \code{resume = TRUE} to continue from where execution stopped. Default: \code{FALSE}.}
+
 \item{...}{Additional arguments passed to individual job execution.}
 
 \item{verbose}{Logical. If \code{TRUE}, prints progress information. Default \code{FALSE}.}
 }
 \value{
 Invisibly returns \code{TRUE} on successful completion, or (in native mode with
-streaming output) returns the captured output.
+streaming output) returns the captured output. When checkpointing is enabled and
+completes successfully, the checkpoint directory is cleaned up.
 }
 \description{
 Executes a sequence of GDAL jobs in order, with output from one job
@@ -59,6 +77,19 @@ gdal_job_run(pipeline)
 
 # Native pipeline execution (single GDAL pipeline command)
 gdal_job_run(pipeline, execution_mode = "native")
+
+# Enable checkpointing globally (opt-in)
+gdalcli_options(checkpoint = TRUE)
+gdal_job_run(pipeline)  # Now automatically checkpoints!
+
+# Enable checkpoints with custom directory
+gdalcli_options(
+  checkpoint = TRUE,
+  checkpoint_dir = "~/my_checkpoints"
+)
+
+# Resume from checkpoint if interrupted
+gdal_job_run(pipeline, resume = TRUE)
 }
 
 }

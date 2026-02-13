@@ -17,23 +17,23 @@ gdal_raster_tpi(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA} (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
+\item{band}{Input band (1-based index) (Integer). Format: \code{NA} (Default: \code{1})}
 
-\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
+\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical). Format: \code{NA} (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.

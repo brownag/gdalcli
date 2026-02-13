@@ -29,8 +29,8 @@ the latest version-specific builds.**
 Each release is tagged with both the package version and the GDAL
 version it targets:
 
-- `v0.2.1-3.11.0` - Compatible with GDAL 3.11.0
-- `v0.2.1-3.12.0` - Compatible with GDAL 3.12.0
+- `v0.5.0-3.11.4` - Compatible with GDAL 3.11.4
+- `v0.5.0-3.12.0` - Compatible with GDAL 3.12.0
 - etc.
 
 #### Finding Your GDAL Version
@@ -116,7 +116,7 @@ gdal_job_run(pipeline)
 ``` r
 # Save pipeline to gdalcli pipeline format
 workflow_file <- tempfile(fileext = ".gdalcli.json")
-gdal_save_pipeline(pipeline, workflow_file)
+gdal_save_pipeline(pipeline, workflow_file, name = "Example Pipeline")
 
 # Load pipeline for later use
 loaded <- gdal_load_pipeline(workflow_file)
@@ -231,15 +231,31 @@ gdal_job_run(pipeline, backend = "processx")
 
 ### gdalcli Pipeline Format: Save and Load Pipelines
 
-Persist pipelines as JSON for sharing and version control:
+Persist pipelines as JSON for sharing and version control. gdalcli
+supports three formats:
+
+- **Hybrid Format** (.gdalcli.json): Combines GDAL command with R
+  metadata for lossless round-trip serialization
+- **Pure GDALG Format** (.gdalg.json): RFC 104 compliant GDAL
+  specification for compatibility with other GDAL tools
+- **Legacy Format**: Deprecated (pre-v0.5.0) - no longer recommended
 
 ``` r
-# Save pipeline to gdalcli pipeline format
+# Save pipeline to gdalcli hybrid format (recommended)
 workflow_file <- tempfile(fileext = ".gdalcli.json")
-gdal_save_pipeline(pipeline, workflow_file)
+gdal_save_pipeline(
+  pipeline,
+  workflow_file,
+  name = "Reproject and Scale",
+  description = "Reproject to UTM Zone 32N and scale to 0-255"
+)
 
-# Load pipeline for later use
+# Load pipeline for later use (auto-detects format)
 loaded <- gdal_load_pipeline(workflow_file)
+
+# Export as pure GDALG for use with other GDAL tools
+gdalg <- as_gdalg(loaded)
+gdalg_write(gdalg, "workflow.gdalg.json")
 ```
 
 ### Shell Script Generation
@@ -255,7 +271,7 @@ cat(script)
 #> set -e
 #> 
 #> # Native GDAL pipeline execution
-#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_a076b690b9b3e.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpPRKY4D/filea076b4b8c7be7.tif --input /vsimem/gdalcli_a076b17cb9337.tif
+#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_9860c6c83523c.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/Rtmpw8bD5X/file9860c5ba69099.tif --input /vsimem/gdalcli_9860c372bd35c.tif
 ```
 
 ## Architecture

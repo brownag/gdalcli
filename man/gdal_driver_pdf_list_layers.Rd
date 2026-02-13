@@ -7,9 +7,9 @@
 gdal_driver_pdf_list_layers(input, output_format = NULL)
 }
 \arguments{
-\item{input}{Input raster or vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster or vector dataset (Dataset path). Choices: NULL (Default: \code{NA}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
+\item{output_format}{Output format. Choices: c("json", "text") (Default: \code{json})}
 }
 \value{
 A \link{gdal_job} object.

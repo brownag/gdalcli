@@ -1,12 +1,13 @@
 #' Package Load Hook
 #'
 #' @description
-#' Minimal onLoad hook. The gdalcli package uses a static API of pre-generated
-#' functions for a specific GDAL version. No runtime API generation occurs.
+#' Package initialization hook. Loads RFC 104 step name mappings and initializes
+#' package configuration.
 #'
 #' @keywords internal
+#' @noRd
 
 .onLoad <- function(libname, pkgname) {
-  # Static API only - no dynamic initialization needed
-  invisible(NULL)
+  # Load RFC 104 step name mappings from auto-generated JSON
+  .load_step_mappings()
 }

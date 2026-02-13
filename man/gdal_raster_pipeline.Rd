@@ -19,21 +19,21 @@ gdal_raster_pipeline(
 \arguments{
 \item{jobs}{A vector of gdal_job objects to execute in sequence, or NULL to use pipeline string}
 
-\item{input}{Input raster dataset (Dataset path)}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA} (Default: \code{NA})}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NA})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{pipeline}{Pipeline string (ignored if jobs is provided)}
+\item{pipeline}{Pipeline string. Format: \code{NA} (Default: \code{NA}) (ignored if jobs is provided)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.

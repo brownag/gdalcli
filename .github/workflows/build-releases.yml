@@ -334,7 +334,7 @@ jobs:
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
           R_VERSION=$(docker run --rm "$IMAGE" R --version 2>/dev/null | head -1 | sed 's/R version \([0-9.]*\).*/\1/')
           PROCESSX_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")
-          JSONLITE_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('jsonlite')))" 2>/dev/null || echo "unknown")
+          YYJSONR_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('yyjsonr')))" 2>/dev/null || echo "unknown")
           
           cat > inst/GDAL_VERSION_INFO.json <<EOF
           {
@@ -350,7 +350,7 @@ jobs:
             "r_version": "$R_VERSION",
             "packages": {
               "processx": "$PROCESSX_VERSION",
-              "jsonlite": "$JSONLITE_VERSION"
+              "yyjsonr": "$YYJSONR_VERSION"
             }
           }
           EOF

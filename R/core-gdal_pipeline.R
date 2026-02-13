@@ -197,11 +197,23 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #' @param stream_out_format Character string: output format for the last pipeline step.
 #'   Options: `NULL` (no streaming), `"text"`, or `"raw"`. Only used in native execution mode.
 #' @param env Environment variables to pass to the GDAL process. Only used in native execution mode.
+#' @param checkpoint Logical. Override global checkpoint setting for this pipeline only.
+#'   If not specified (NULL/missing), respects `getOption("gdalcli.checkpoint", FALSE)`.
+#'   To enable checkpointing by default, use `gdalcli_options(checkpoint = TRUE)`.
+#'   When enabled, saves intermediate results to enable resumption from failures.
+#'   Default: `FALSE` (disabled unless configured via `gdalcli_options()`).
+#' @param checkpoint_dir Character. Directory for checkpoint files. If not specified,
+#'   uses `getOption("gdalcli.checkpoint_dir", NULL)` or current working directory
+#'   if checkpointing is enabled. Set via `gdalcli_options(checkpoint_dir = "/path")`.
+#' @param resume Logical. Resume pipeline execution from the most recent checkpoint.
+#'   If checkpoint is enabled and a checkpoint exists at the checkpoint directory,
+#'   set `resume = TRUE` to continue from where execution stopped. Default: `FALSE`.
 #' @param ... Additional arguments passed to individual job execution.
 #' @param verbose Logical. If `TRUE`, prints progress information. Default `FALSE`.
 #'
 #' @return Invisibly returns `TRUE` on successful completion, or (in native mode with
-#'   streaming output) returns the captured output.
+#'   streaming output) returns the captured output. When checkpointing is enabled and
+#'   completes successfully, the checkpoint directory is cleaned up.
 #'
 #' @seealso
 #' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()]
@@ -222,6 +234,19 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #'
 #' # Native pipeline execution (single GDAL pipeline command)
 #' gdal_job_run(pipeline, execution_mode = "native")
+#'
+#' # Enable checkpointing globally (opt-in)
+#' gdalcli_options(checkpoint = TRUE)
+#' gdal_job_run(pipeline)  # Now automatically checkpoints!
+#'
+#' # Enable checkpoints with custom directory
+#' gdalcli_options(
+#'   checkpoint = TRUE,
+#'   checkpoint_dir = "~/my_checkpoints"
+#' )
+#'
+#' # Resume from checkpoint if interrupted
+#' gdal_job_run(pipeline, resume = TRUE)
 #' }
 #'
 #' @export
@@ -231,6 +256,9 @@ gdal_job_run.gdal_pipeline <- function(x,
                                        stream_in = NULL,
                                        stream_out_format = NULL,
                                        env = NULL,
+                                       checkpoint = NULL,
+                                       checkpoint_dir = NULL,
+                                       resume = FALSE,
                                        ...,
                                        verbose = FALSE) {
   execution_mode <- match.arg(execution_mode)
@@ -296,10 +324,90 @@ gdal_job_run.gdal_pipeline <- function(x,
     }
   }
 
+  # Handle checkpoint/resume
+  # Respect global option if checkpoint parameter not explicitly set
+  checkpoint_enabled <- if (missing(checkpoint) || is.null(checkpoint)) {
+    getOption("gdalcli.checkpoint", FALSE)
+  } else {
+    isTRUE(checkpoint)
+  }
+
+  if (checkpoint_enabled || resume) {
+    # If checkpoint_dir not specified, use global option or current working directory.
+    # Use missing() so that we can distinguish "not supplied" from an explicit value,
+    # even if earlier code has already assigned to checkpoint_dir.
+    if (missing(checkpoint_dir) || is.null(checkpoint_dir)) {
+      opt_checkpoint_dir <- getOption("gdalcli.checkpoint_dir", NULL)
+      if (!is.null(opt_checkpoint_dir)) {
+        checkpoint_dir <- opt_checkpoint_dir
+      } else if (checkpoint_enabled) {
+        checkpoint_dir <- getwd()  # Default to current working directory
+      } else {
+        # At this point, checkpointing is disabled but resume = TRUE (because
+        # we are inside `if (checkpoint_enabled || resume)` and
+        # `checkpoint_enabled` is FALSE). Resuming without a known checkpoint
+        # directory would be ambiguous, so require the user to specify one.
+        cli::cli_abort(
+          c(
+            "Cannot resume pipeline: no checkpoint directory is configured.",
+            "i" = "Supply `checkpoint_dir` explicitly or set the option 'gdalcli.checkpoint_dir'."
+          )
+        )
+      }
+    }
+
+    # Check for existing checkpoint
+    checkpoint_state <- if (!is.null(checkpoint_dir)) .load_checkpoint(checkpoint_dir) else NULL
+
+    # Sanitize dots to avoid duplicate backend arguments downstream
+    dots <- list(...)
+    if ("backend" %in% names(dots)) {
+      dots[["backend"]] <- NULL
+    }
+
+    if (resume && !is.null(checkpoint_state)) {
+      # Resume from checkpoint
+      return(do.call(
+        what = .resume_pipeline,
+        args = c(
+          list(
+            x,
+            checkpoint_state,
+            checkpoint_dir,
+            backend,
+            verbose = verbose
+          ),
+          dots
+        )
+      ))
+    } else if (checkpoint_enabled && !resume) {
+      # Start new checkpoint run
+      return(do.call(
+        what = .run_pipeline_with_checkpoint,
+        args = c(
+          list(
+            x,
+            checkpoint_dir,
+            backend,
+            verbose = verbose
+          ),
+          dots
+        )
+      ))
+    } else if (resume && is.null(checkpoint_state)) {
+      cli::cli_warn(
+        c(
+          "No checkpoint found at: {checkpoint_dir}",
+          "i" = "Starting fresh pipeline execution"
+        )
+      )
+    }
+  }
+
   # Collect temporary files for cleanup
   temp_files <- character()
 
-  # Execute jobs sequentially
+  # Execute jobs sequentially (without checkpoint)
   for (i in seq_along(x$jobs)) {
     job <- x$jobs[[i]]
 

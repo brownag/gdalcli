@@ -1144,3 +1144,312 @@ gdal_job_run.default <- function(x, ...) {
 
   kwargs
 }
+
+# ===================================================================
+# Checkpoint/Resume Support for Long-Running Pipelines
+# ===================================================================
+
+#' Save Pipeline Checkpoint
+#'
+#' Internal function that saves pipeline state and intermediate outputs
+#' to enable resumption from a checkpoint.
+#'
+#' @param pipeline List. The gdal_pipeline object.
+#' @param checkpoint_dir Character. Directory to save checkpoint files.
+#' @param step_index Integer. Current step number (1-based).
+#' @param step_output Character. Path to output file from this step (optional).
+#'
+#' @return List containing updated checkpoint metadata.
+#'
+#' @keywords internal
+#' @noRd
+.save_checkpoint <- function(pipeline, checkpoint_dir, step_index, step_output = NULL) {
+  # Create checkpoint directory if needed
+  if (!dir.exists(checkpoint_dir)) {
+    dir.create(checkpoint_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+
+  # Compute pipeline hash for validation
+  pipeline_hash <- .compute_pipeline_hash(pipeline)
+
+  # Load existing metadata or create new
+  metadata_file <- file.path(checkpoint_dir, "metadata.json")
+  if (file.exists(metadata_file)) {
+    metadata <- tryCatch(
+      {
+        yyjsonr::read_json_file(metadata_file)
+      },
+      error = function(e) {
+        list()
+      }
+    )
+  } else {
+    metadata <- list(
+      pipeline_id = pipeline_hash,
+      created_at = as.character(Sys.time()),
+      total_steps = length(pipeline$jobs),
+      completed_steps = 0,
+      step_outputs = list(),
+      gdalcli_version = as.character(packageVersion("gdalcli"))
+    )
+  }
+
+  # Save step output if provided
+  if (!is.null(step_output) && file.exists(step_output)) {
+    ext <- tools::file_ext(step_output)
+    ext_suffix <- if (nzchar(ext)) paste0(".", ext) else ""
+    checkpoint_file <- file.path(
+      checkpoint_dir,
+      sprintf("step_%03d_output%s", step_index, ext_suffix)
+    )
+    file.copy(step_output, checkpoint_file, overwrite = TRUE)
+    metadata$step_outputs[[as.character(step_index)]] <- checkpoint_file
+  }
+
+  # Update progress
+  metadata$completed_steps <- step_index
+  metadata$last_updated <- as.character(Sys.time())
+
+  # Save metadata
+  writeLines(
+    yyjsonr::write_json_str(metadata, pretty = TRUE),
+    metadata_file
+  )
+
+  metadata
+}
+
+#' Load Checkpoint Metadata
+#'
+#' Internal function that loads checkpoint state from disk.
+#'
+#' @param checkpoint_dir Character. Directory containing checkpoint files.
+#'
+#' @return List containing checkpoint metadata, or NULL if not found.
+#'
+#' @keywords internal
+#' @noRd
+.load_checkpoint <- function(checkpoint_dir) {
+  metadata_file <- file.path(checkpoint_dir, "metadata.json")
+  if (!file.exists(metadata_file)) {
+    return(NULL)
+  }
+
+  tryCatch(
+    {
+      yyjsonr::read_json_file(metadata_file)
+    },
+    error = function(e) {
+      NULL
+    }
+  )
+}
+
+#' Compute Pipeline Hash for Validation
+#'
+#' Internal function that computes a hash of the pipeline structure
+#' to detect changes between checkpoint save and resume.
+#'
+#' @param pipeline List. The gdal_pipeline object.
+#'
+#' @return Character. SHA256 hash of pipeline structure.
+#'
+#' @keywords internal
+#' @noRd
+.compute_pipeline_hash <- function(pipeline) {
+  # Hash the pipeline structure (command paths + arguments only)
+  spec <- lapply(pipeline$jobs, function(job) {
+    list(
+      command_path = job$command_path,
+      arguments = job$arguments
+    )
+  })
+  digest::digest(spec, algo = "sha256")
+}
+
+#' Run Pipeline with Checkpointing
+#'
+#' Internal function that executes a pipeline with checkpoint support,
+#' saving intermediate results after each step.
+#'
+#' @param pipeline List. The gdal_pipeline object.
+#' @param checkpoint_dir Character. Directory for checkpoint files.
+#' @param backend Character. Execution backend (processx, gdalraster, etc.).
+#' @param verbose Logical. Print progress messages.
+#' @param ... Additional arguments passed to gdal_job_run().
+#'
+#' @return Invisible TRUE on success.
+#'
+#' @keywords internal
+#' @noRd
+.run_pipeline_with_checkpoint <- function(pipeline, checkpoint_dir, backend,
+                                         verbose = FALSE, ...) {
+  # Create checkpoint directory
+  if (!dir.exists(checkpoint_dir)) {
+    dir.create(checkpoint_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+
+  if (verbose) {
+    cli::cli_alert_info(
+      sprintf("Running pipeline with checkpointing to: %s", checkpoint_dir)
+    )
+  }
+
+  # Execute each job, saving checkpoint after each
+  for (i in seq_along(pipeline$jobs)) {
+    job <- pipeline$jobs[[i]]
+
+    if (verbose) {
+      cli::cli_alert_info(
+        sprintf("Executing step %d of %d: %s",
+          i, length(pipeline$jobs),
+          paste(c("gdal", job$command_path), collapse = " ")
+        )
+      )
+    }
+
+    # Execute job
+    tryCatch(
+      {
+        gdal_job_run(job, backend = backend, verbose = verbose, ...)
+      },
+      error = function(e) {
+        cli::cli_abort(
+          c(
+            sprintf("Step %d failed: %s", i, conditionMessage(e)),
+            "i" = "Checkpoint saved - use resume = TRUE to continue"
+          )
+        )
+      }
+    )
+
+    # Save checkpoint with output if present
+    step_output <- job$arguments$output
+    .save_checkpoint(pipeline, checkpoint_dir, i, step_output)
+
+    if (verbose) {
+      cli::cli_alert_success(
+        sprintf("Step %d complete, checkpoint saved", i)
+      )
+    }
+  }
+
+  if (verbose) {
+    cli::cli_alert_success("Pipeline completed successfully")
+  }
+
+  # Clean up checkpoint on successful completion
+  if (verbose) {
+    cli::cli_alert_info("Cleaning up checkpoint directory")
+  }
+  unlink(checkpoint_dir, recursive = TRUE)
+
+  invisible(TRUE)
+}
+
+#' Resume Pipeline from Checkpoint
+#'
+#' Internal function that continues pipeline execution from a saved checkpoint.
+#'
+#' @param pipeline List. The gdal_pipeline object.
+#' @param checkpoint_state List. State loaded from checkpoint.
+#' @param checkpoint_dir Character. Directory containing checkpoint files.
+#' @param backend Character. Execution backend (processx, gdalraster, etc.).
+#' @param verbose Logical. Print progress messages.
+#' @param ... Additional arguments passed to gdal_job_run().
+#'
+#' @return Invisible TRUE on success.
+#'
+#' @keywords internal
+#' @noRd
+.resume_pipeline <- function(pipeline, checkpoint_state, checkpoint_dir, backend,
+                            verbose = FALSE, ...) {
+  # Verify pipeline hash matches
+  current_hash <- .compute_pipeline_hash(pipeline)
+  if (current_hash != checkpoint_state$pipeline_id) {
+    cli::cli_abort(
+      c(
+        "Pipeline has changed since checkpoint was created",
+        "i" = "Pipeline structure must remain unchanged to resume",
+        "i" = "Delete checkpoint directory to start fresh"
+      )
+    )
+  }
+
+  # Check if already completed
+  start_step <- checkpoint_state$completed_steps + 1
+  if (start_step > length(pipeline$jobs)) {
+    if (verbose) {
+      cli::cli_alert_info("Pipeline already completed")
+    }
+    return(invisible(TRUE))
+  }
+
+  if (verbose) {
+    cli::cli_alert_info(
+      sprintf("Resuming from step %d of %d", start_step, length(pipeline$jobs))
+    )
+  }
+
+  # Continue execution from start_step
+  for (i in start_step:length(pipeline$jobs)) {
+    job <- pipeline$jobs[[i]]
+
+    # If this job's input comes from previous step, use checkpointed output
+    if (i > 1 && !is.null(job$arguments$input)) {
+      prev_output <- checkpoint_state$step_outputs[[as.character(i - 1)]]
+      if (!is.null(prev_output) && file.exists(prev_output)) {
+        job$arguments$input <- prev_output
+        if (verbose) {
+          cli::cli_alert_info(
+            sprintf("Using checkpointed output from step %d as input", i - 1)
+          )
+        }
+      }
+    }
+
+    if (verbose) {
+      cli::cli_alert_info(
+        sprintf("Executing step %d of %d: %s",
+          i, length(pipeline$jobs),
+          paste(c("gdal", job$command_path), collapse = " ")
+        )
+      )
+    }
+
+    # Execute and checkpoint
+    tryCatch(
+      {
+        gdal_job_run(job, backend = backend, verbose = verbose, ...)
+      },
+      error = function(e) {
+        cli::cli_abort(
+          c(
+            sprintf("Step %d failed: %s", i, conditionMessage(e)),
+            "i" = "Checkpoint updated - use resume = TRUE to continue"
+          )
+        )
+      }
+    )
+
+    # Save updated checkpoint
+    step_output <- job$arguments$output
+    checkpoint_state <- .save_checkpoint(pipeline, checkpoint_dir, i, step_output)
+
+    if (verbose) {
+      cli::cli_alert_success(sprintf("Step %d complete", i))
+    }
+  }
+
+  if (verbose) {
+    cli::cli_alert_success("Pipeline completed successfully")
+  }
+
+  # Clean up on success
+  if (verbose) {
+    cli::cli_alert_info("Cleaning up checkpoint directory")
+  }
+  unlink(checkpoint_dir, recursive = TRUE)
+
+  invisible(TRUE)
+}

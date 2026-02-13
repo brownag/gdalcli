@@ -8,8 +8,6 @@
 # 4. No "Phase X:" comments in generated files
 # 5. Documentation URLs are version-aware
 
-library(jsonlite)
-
 sep_line <- paste(rep("=", 70), collapse = "")
 cat(sep_line, "\n", sep = "")
 cat("Generated API Validation Report\n")

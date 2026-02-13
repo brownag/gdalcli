@@ -187,12 +187,9 @@ test_that("modifier composition: gdal_with_config chaining", {
   job_modified <- job |>
     gdal_with_config("GDAL_CACHEMAX=512") |>
     gdal_with_config("CPL_DEBUG=ON")
-  
-  # Both config options should be present
+
   expect_true("GDAL_CACHEMAX" %in% names(job_modified$config_options))
   expect_true("CPL_DEBUG" %in% names(job_modified$config_options))
-  
-  # Values should be correct
   expect_equal(unname(job_modified$config_options["GDAL_CACHEMAX"]), "512")
   expect_equal(unname(job_modified$config_options["CPL_DEBUG"]), "ON")
 })
@@ -204,8 +201,7 @@ test_that("with_env modifier works with both backends", {
   ) |>
     gdal_with_env("AWS_ACCESS_KEY_ID=test_key") |>
     gdal_with_env("AWS_SECRET_ACCESS_KEY=test_secret")
-  
-  # Verify environment variables were added
+
   expect_equal(unname(job$env_vars["AWS_ACCESS_KEY_ID"]), "test_key")
   expect_equal(unname(job$env_vars["AWS_SECRET_ACCESS_KEY"]), "test_secret")
 })

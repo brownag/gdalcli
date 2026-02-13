@@ -7,8 +7,10 @@
 gdal_save_pipeline(
   pipeline,
   path,
+  name = NULL,
+  description = NULL,
+  custom_tags = list(),
   pretty = TRUE,
-  method = c("auto", "native", "json"),
   overwrite = FALSE,
   verbose = FALSE
 )
@@ -18,16 +20,15 @@ gdal_save_pipeline(
 
 \item{path}{Character string specifying the path to save to (typically .gdalcli.json)}
 
+\item{name}{Character string. Optional name for the pipeline}
+
+\item{description}{Character string. Optional description of the pipeline}
+
+\item{custom_tags}{List. Optional user-defined metadata to include}
+
 \item{pretty}{Logical. If TRUE (default), formats JSON with indentation for readability}
 
-\item{method}{Character string: "auto" (default), "native", or "json"
-\itemize{
-\item "auto": Uses native GDALG driver if GDAL 3.11+ with driver available, else custom JSON
-\item "native": Forces native GDALG driver (requires GDAL 3.11+)
-\item "json": Forces custom JSON serialization
-}}
-
-\item{overwrite}{Logical. If TRUE, overwrites existing file (used with method="native")}
+\item{overwrite}{Logical. If TRUE, overwrites existing file}
 
 \item{verbose}{Logical. If TRUE, prints diagnostic information}
 }
@@ -40,27 +41,11 @@ format is a JSON-based pipeline definition that can be saved to disk and loaded 
 for execution.
 }
 \details{
-This function supports two serialization methods:
-
-\strong{Method: "json" (Custom JSON)}
+This function saves the pipeline in gdalcli's hybrid JSON format, which combines:
 \itemize{
-\item Works with any GDAL version
-\item Fast serialization (direct write)
-\item gdalcli-specific format
-}
-
-\strong{Method: "native" (GDALG Format)}
-\itemize{
-\item Requires GDAL 3.11+ with GDALG driver
-\item Uses GDAL-compatible JSON serialization
-\item Universal GDAL compatibility
-\item Full GDAL metadata
-}
-
-\strong{Method: "auto" (Recommended)}
-\itemize{
-\item Automatically selects the best method for your system
-\item Uses native if available, falls back to JSON
+\item A pure GDALG specification (RFC 104) for GDAL compatibility
+\item R-specific metadata/tags for gdalcli features
+\item Full job specifications for lossless round-tripping
 }
 
 The saved gdalcli pipeline file can be:
@@ -70,20 +55,19 @@ The saved gdalcli pipeline file can be:
 \item Shared with colleagues or version controlled
 \item Used in other gdalcli-compatible tools
 }
+
+\strong{Note on File Formats:}
+This function produces \code{.gdalcli.json} (hybrid) files. For pure GDALG (RFC 104)
+output suitable for \verb{gdal raster pipeline}, use \code{\link[=gdal_save_pipeline_native]{gdal_save_pipeline_native()}}
+or \code{\link[=gdalg_write]{gdalg_write()}}, which typically use the \code{.gdalg.json} extension.
 }
 \examples{
 \dontrun{
 pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
   gdal_raster_convert(output = "out.tif")
 
-# Save to file (auto-detects best method)
+# Save to gdalcli format (.gdalcli.json)
 gdal_save_pipeline(pipeline, "workflow.gdalcli.json")
-
-# Force native GDALG driver
-gdal_save_pipeline(pipeline, "workflow_native.gdalcli.json", method = "native")
-
-# Force custom JSON
-gdal_save_pipeline(pipeline, "workflow_json.gdalcli.json", method = "json")
 
 # Load and execute later
 loaded <- gdal_load_pipeline("workflow.gdalcli.json")
