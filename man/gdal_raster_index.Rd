@@ -29,47 +29,47 @@ gdal_raster_index(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{source_crs_field_name}{Name of the field to store the CRS of each dataset}
+\item{source_crs_field_name}{Name of the field to store the CRS of each dataset. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{source_crs_format}{Format in which the CRS of each dataset must be written. Choices: auto, WKT, EPSG, PROJ (Default: \code{auto})}
+\item{source_crs_format}{Format in which the CRS of each dataset must be written. Format: \code{NA}. Choices: c("auto", "WKT", "EPSG", "PROJ") (Default: \code{auto}). Minimum: \code{NA}}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{output_layer}{Output layer name}
+\item{output_layer}{Output layer name. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{recursive}{Whether input directories should be explored recursively. (Logical)}
+\item{recursive}{Whether input directories should be explored recursively. (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{filename_filter}{Pattern that the filenames in input directories should follow ('*' and '?' wildcard) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{filename_filter}{Pattern that the filenames in input directories should follow ('*' and '?' wildcard) (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
+\item{min_pixel_size}{Minimum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{max_pixel_size}{Maximum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Minimum: \code{0}}
+\item{max_pixel_size}{Maximum pixel size in term of geospatial extent per pixel (resolution) that a raster should have to be selected.. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{location_name}{Name of the field with the raster path (Default: \code{location})}
+\item{location_name}{Name of the field with the raster path. Format: \code{NA}. Choices: NULL (Default: \code{location}). Minimum: \code{NA}}
 
-\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
+\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{dst_crs}{Destination CRS}
+\item{dst_crs}{Destination CRS. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{skip_errors}{Skip errors related to input datasets (Logical)}
+\item{skip_errors}{Skip errors related to input datasets (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
@@ -77,7 +77,7 @@ A \link{gdal_job} object.
 \description{
 Create a vector index of raster datasets.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_index.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_index.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")
@@ -105,7 +105,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_hillshade}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -114,7 +113,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

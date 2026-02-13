@@ -21,31 +21,31 @@ gdal_raster_aspect(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
+\item{append}{Append as a subdataset to existing output (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
+\item{band}{Input band (1-based index) (Integer). Format: \code{NA}. Choices: NULL (Default: \code{1})}
 
-\item{convention}{Convention for output angles. Choices: azimuth, trigonometric-angle (Default: \code{azimuth})}
+\item{convention}{Convention for output angles. Format: \code{NA}. Choices: c("azimuth", "trigonometric-angle") (Default: \code{azimuth})}
 
-\item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: Horn, ZevenbergenThorne (Default: \code{Horn})}
+\item{gradient_alg}{Algorithm used to compute terrain gradient. Format: \code{NA}. Choices: c("Horn", "ZevenbergenThorne") (Default: \code{Horn})}
 
-\item{zero_for_flat}{Whether to output zero for flat areas (Logical)}
+\item{zero_for_flat}{Whether to output zero for flat areas (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
+\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.
@@ -53,7 +53,7 @@ A \link{gdal_job} object.
 \description{
 Generate an aspect map
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_aspect.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_aspect.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_aspect(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
@@ -81,7 +81,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -90,7 +89,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

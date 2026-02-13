@@ -16,21 +16,21 @@ gdal_mdim_info(
 )
 }
 \arguments{
-\item{input}{Input multidimensional raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input multidimensional raster dataset (Dataset path). Format: \code{NA} (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{detailed}{Most verbose output. Report attribute data types and array values. (Logical)}
+\item{detailed}{Most verbose output. Report attribute data types and array values. (Logical). Format: \code{NA}}
 
-\item{array}{Name of the array, used to restrict the output to the specified array.}
+\item{array}{Name of the array, used to restrict the output to the specified array.. Format: \code{NA}}
 
-\item{limit}{Number of values in each dimension that is used to limit the display of array values. (Integer)}
+\item{limit}{Number of values in each dimension that is used to limit the display of array values. (Integer). Format: \code{NA}}
 
 \item{array_option}{Option passed to GDALGroup::GetMDArrayNames() to filter reported arrays. (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{stats}{Read and display image statistics. (Logical)}
+\item{stats}{Read and display image statistics. (Logical). Format: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Return information on a multidimensional dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_info(input = "netcdf-4d.nc")

@@ -26,41 +26,41 @@ gdal_raster_info(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset. Format: \code{NA}. Choices: NULL (required). Minimum: \code{NA}. Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{Output format. Choices: json, text}
+\item{output_format}{Output format. Format: \code{NA}. Choices: c("json", "text"). Minimum: \code{NA}}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{min_max}{Compute minimum and maximum value (Logical)}
+\item{min_max}{Compute minimum and maximum value (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
 
-\item{stats}{Retrieve or compute statistics, using all pixels (Logical)}
+\item{stats}{Retrieve or compute statistics, using all pixels (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
 
-\item{approx_stats}{Retrieve or compute statistics, using a subset of pixels (Logical)}
+\item{approx_stats}{Retrieve or compute statistics, using a subset of pixels (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
 
-\item{hist}{Retrieve or compute histogram (Logical)}
+\item{hist}{Retrieve or compute histogram (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
 
-\item{no_gcp}{Suppress ground control points list printing (Logical) (Advanced)}
+\item{no_gcp}{Suppress ground control points list printing (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Advanced)}
 
-\item{no_md}{Suppress metadata printing (Logical) (Advanced)}
+\item{no_md}{Suppress metadata printing (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Advanced)}
 
-\item{no_ct}{Suppress color table printing (Logical) (Advanced)}
+\item{no_ct}{Suppress color table printing (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Advanced)}
 
-\item{no_fl}{Suppress file list printing (Logical) (Advanced)}
+\item{no_fl}{Suppress file list printing (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Advanced)}
 
-\item{checksum}{Compute pixel checksum (Logical) (Advanced)}
+\item{checksum}{Compute pixel checksum (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Advanced)}
 
-\item{list_mdd}{List all metadata domains available for the dataset (Logical) (Advanced)}
+\item{list_mdd}{List all metadata domains available for the dataset (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Advanced)}
 
-\item{metadata_domain}{Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)}
+\item{metadata_domain}{Report metadata for the specified domain. 'all' can be used to report metadata in all domains. Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Advanced)}
 
-\item{no_nodata}{Suppress retrieving nodata value (Logical) (Esoteric)}
+\item{no_nodata}{Suppress retrieving nodata value (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Esoteric)}
 
-\item{no_mask}{Suppress mask band information (Logical) (Esoteric)}
+\item{no_mask}{Suppress mask band information (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA} (Esoteric)}
 
-\item{subdataset}{Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: \code{1} (Esoteric)}
+\item{subdataset}{Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Format: \code{NA}. Choices: NULL. Minimum: \code{1} (Esoteric)}
 }
 \value{
 A \link{gdal_job} object.
@@ -68,7 +68,7 @@ A \link{gdal_job} object.
 \description{
 Return information on a raster dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_info(input = "utmsmall.tif")
@@ -96,7 +96,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_hillshade}()},
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -105,7 +104,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

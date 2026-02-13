@@ -1,0 +1,116 @@
+{
+  "dataset": {
+    "copy": [
+      "read"
+    ],
+    "delete": [
+      "read"
+    ],
+    "identify": [
+      "read"
+    ],
+    "rename": [
+      "read"
+    ]
+  },
+  "driver": {
+    "repack": [
+      "write"
+    ],
+    "create": [
+      "write"
+    ]
+  },
+  "mdim": {
+    "mdim": [
+      "read"
+    ],
+    "convert": [
+      "write"
+    ],
+    "info": [
+      "read"
+    ]
+  },
+  "raster": {
+    "raster": [
+      "read"
+    ],
+    "clean-collar": [
+      "cleancol"
+    ],
+    "compare": [
+      "read"
+    ],
+    "convert": [
+      "write"
+    ],
+    "create": [
+      "write"
+    ],
+    "edit": [
+      "read"
+    ],
+    "fill-nodata": [
+      "fillnodata"
+    ],
+    "info": [
+      "read"
+    ],
+    "add": [
+      "read"
+    ],
+    "delete": [
+      "read"
+    ],
+    "refresh": [
+      "read"
+    ],
+    "pixel-info": [
+      "read"
+    ],
+    "tile": [
+      "write"
+    ]
+  },
+  "vector": {
+    "vector": [
+      "read"
+    ],
+    "convert": [
+      "write"
+    ],
+    "info": [
+      "read"
+    ],
+    "partition": [
+      "read"
+    ]
+  },
+  "vsi": {
+    "copy": [
+      "read"
+    ],
+    "delete": [
+      "read"
+    ],
+    "list": [
+      "read"
+    ],
+    "move": [
+      "read"
+    ],
+    "create": [
+      "write"
+    ],
+    "optimize": [
+      "read"
+    ],
+    "validate": [
+      "read"
+    ],
+    "sync": [
+      "read"
+    ]
+  }
+}

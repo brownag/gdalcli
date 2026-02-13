@@ -17,7 +17,7 @@ A \link{gdal_job} object.
 \description{
 Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vsi_move.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vsi_move.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vsi_move(source = "/vsis3/bucket/my.tif", 

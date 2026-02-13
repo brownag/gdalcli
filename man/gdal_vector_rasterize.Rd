@@ -37,63 +37,63 @@ gdal_vector_rasterize(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{Input layer name}
+\item{input_layer}{Input layer name. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical)}
+\item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
+\item{output_data_type}{Output data type. Format: \code{NA}. Choices: c("Byte", "Int8", "UInt16", "Int16", "UInt32", "Int32", "UInt64", "Int64", "CInt16", "CInt32", "Float16", "Float32", "Float64", "CFloat32", "CFloat64") (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{band}{The band(s) to burn values into (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+\item{band}{The band(s) to burn values into (1-based index) (Integer vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{invert}{Invert the rasterization (Logical) (Default: \code{false})}
+\item{invert}{Invert the rasterization (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{all_touched}{Enables the ALL_TOUCHED rasterization option (Logical)}
+\item{all_touched}{Enables the ALL_TOUCHED rasterization option (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{burn}{Burn value. \code{0} to \code{2147483647} value(s)}
+\item{burn}{Burn value. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{attribute_name}{Attribute name}
+\item{attribute_name}{Attribute name. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{X3d}{Indicates that a burn value should be extracted from the Z values of the feature (Logical)}
+\item{X3d}{Indicates that a burn value should be extracted from the Z values of the feature (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{where}{SQL where clause}
+\item{where}{SQL where clause. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{sql}{SQL select statement}
+\item{sql}{SQL select statement. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{dialect}{SQL dialect}
+\item{dialect}{SQL dialect. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{nodata}{Assign a specified nodata value to output bands}
+\item{nodata}{Assign a specified nodata value to output bands. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{init}{Pre-initialize output bands with specified value. \code{0} to \code{2147483647} value(s)}
+\item{init}{Pre-initialize output bands with specified value. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{crs}{Override the projection for the output file}
+\item{crs}{Override the projection for the output file. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{transformer_option}{Set a transformer option suitable to pass to GDALCreateGenImgProjTransformer2 (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{transformer_option}{Set a transformer option suitable to pass to GDALCreateGenImgProjTransformer2 (Character vector). Format: \verb{<NAME>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Choices: NULL (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{optimization}{Force the algorithm used (results are identical). Choices: AUTO, RASTER, VECTOR (Default: \code{AUTO})}
+\item{optimization}{Force the algorithm used (results are identical). Format: \code{NA}. Choices: c("AUTO", "RASTER", "VECTOR") (Default: \code{AUTO})}
 
-\item{add}{Add to existing raster (Logical) (Default: \code{false})}
+\item{add}{Add to existing raster (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 }
 \value{
 A \link{gdal_job} object.
@@ -101,7 +101,7 @@ A \link{gdal_job} object.
 \description{
 Burns vector geometries into a raster.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -114,7 +114,6 @@ job <- gdal_vector_rasterize()
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
 \code{\link{gdal_vector_check_coverage}()},
 \code{\link{gdal_vector_check_geometry}()},
 \code{\link{gdal_vector_clean_coverage}()},
@@ -122,7 +121,6 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -147,15 +145,9 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_layer_algebra}()},
 \code{\link{gdal_vector_make_point}()},
 \code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
 \code{\link{gdal_vector_sql}()},
 \code{\link{gdal_vector_swap_xy}()}
 }

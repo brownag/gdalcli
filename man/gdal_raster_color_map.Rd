@@ -12,7 +12,6 @@ gdal_raster_color_map(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   band = NULL,
   color_map = NULL,
   add_alpha = FALSE,
@@ -20,7 +19,7 @@ gdal_raster_color_map(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -33,8 +32,6 @@ gdal_raster_color_map(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
@@ -50,7 +47,7 @@ A \link{gdal_job} object.
 \description{
 Generate a RGB or RGBA dataset from a single band, using a color map
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
@@ -79,7 +76,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -88,7 +84,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

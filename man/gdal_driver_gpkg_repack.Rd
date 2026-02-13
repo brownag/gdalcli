@@ -15,7 +15,7 @@ A \link{gdal_job} object.
 \description{
 Repack/vacuum in-place a GeoPackage dataset
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")

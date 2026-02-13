@@ -21,31 +21,31 @@ gdal_mdim_convert(
 )
 }
 \arguments{
-\item{input}{Input raster or multidimensional raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster or multidimensional raster dataset (Dataset path). Format: \code{NA} (Default: \code{NA}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output multidimensional raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA} (Default: \code{NA})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{array}{Select a single array instead of converting the whole dataset. (Character vector). Format: \code{ARRAY-SPEC}. \code{0} to \code{2147483647} value(s)}
+\item{array}{Select a single array instead of converting the whole dataset. (Character vector). Format: \code{ARRAY-SPEC} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{array_option}{Option passed to GDALGroup::GetMDArrayNames() to filter arrays. (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{array_option}{Option passed to GDALGroup::GetMDArrayNames() to filter arrays. (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{group}{Select a single group instead of converting the whole dataset. (Character vector). Format: \code{GROUP-SPEC}. \code{0} to \code{2147483647} value(s)}
+\item{group}{Select a single group instead of converting the whole dataset. (Character vector). Format: \code{GROUP-SPEC} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{subset}{Select a subset of the data. (Character vector). Format: \code{SUBSET-SPEC}. \code{0} to \code{2147483647} value(s)}
+\item{subset}{Select a subset of the data. (Character vector). Format: \code{SUBSET-SPEC} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{scale_axes}{Applies a integral scale factor to one or several dimensions (Character vector). Format: \code{SCALEAXES-SPEC}. \code{0} to \code{2147483647} value(s)}
+\item{scale_axes}{Applies a integral scale factor to one or several dimensions (Character vector). Format: \code{SCALEAXES-SPEC} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{strict}{Turn warnings into failures. (Logical)}
+\item{strict}{Turn warnings into failures. (Logical). Format: \code{NA} (Default: \code{NA})}
 }
 \value{
 A \link{gdal_job} object.
@@ -53,7 +53,7 @@ A \link{gdal_job} object.
 \description{
 Convert a multidimensional dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")

@@ -13,12 +13,11 @@ gdal_raster_select(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   mask = NULL
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -34,8 +33,6 @@ gdal_raster_select(
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
-
 \item{mask}{Mask band (1-based index, 'mask', 'mask:\if{html}{\out{<band>}}' or 'none')}
 }
 \value{
@@ -44,7 +41,7 @@ A \link{gdal_job} object.
 \description{
 Select a subset of bands from a raster dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_select.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_select.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_select(input = "bgr.tif", output = "rgb.tif", overwrite = TRUE, 
@@ -74,7 +71,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -83,7 +79,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

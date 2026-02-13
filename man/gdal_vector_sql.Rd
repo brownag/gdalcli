@@ -25,39 +25,39 @@ gdal_vector_sql(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets. Format: \code{NA} (Default: \code{NA}) (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NA})}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_layer}{Output layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{output_layer}{Output layer name(s) (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{sql}{SQL statement(s) (Character vector). Format: \verb{<statement>|@<filename>} (required). \code{0} to \code{2147483647} value(s)}
+\item{sql}{SQL statement(s) (Character vector). Format: \verb{<statement>|@<filename>} (Default: \code{NA}) (required). \code{0} to \code{2147483647} value(s)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
+\item{upsert}{Upsert features (implies 'append') (Logical). Format: \code{NA} (Default: \code{NA}) (Advanced)}
 
-\item{skip_errors}{Skip errors when writing features (Logical)}
+\item{skip_errors}{Skip errors when writing features (Logical). Format: \code{NA} (Default: \code{NA})}
 
-\item{dialect}{SQL dialect (e.g. OGRSQL, SQLITE)}
+\item{dialect}{SQL dialect (e.g. OGRSQL, SQLITE). Format: \code{NA} (Default: \code{NA})}
 }
 \value{
 A \link{gdal_job} object.
@@ -65,7 +65,7 @@ A \link{gdal_job} object.
 \description{
 Apply SQL statement(s) to a dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_sql.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_sql.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -78,7 +78,6 @@ job <- gdal_vector_sql()
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
 \code{\link{gdal_vector_check_coverage}()},
 \code{\link{gdal_vector_check_geometry}()},
 \code{\link{gdal_vector_clean_coverage}()},
@@ -86,7 +85,6 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -111,16 +109,10 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_layer_algebra}()},
 \code{\link{gdal_vector_make_point}()},
 \code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
 \code{\link{gdal_vector_swap_xy}()}
 }
 \concept{gdal_vector_utilities}

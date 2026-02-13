@@ -7,11 +7,11 @@
 gdal_raster_overview_delete(dataset, open_option = NULL, external = FALSE)
 }
 \arguments{
-\item{dataset}{Dataset (to be updated in-place, unless --read-only) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{dataset}{Dataset (to be updated in-place, unless --read-only) (Dataset path). Format: \code{NA} (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{external}{Delete external overviews (Logical)}
+\item{external}{Delete external overviews (Logical). Format: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
@@ -19,7 +19,7 @@ A \link{gdal_job} object.
 \description{
 Deleting overviews.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_overview_delete(dataset = "my.tif")
@@ -48,7 +48,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_refresh}()},
@@ -56,7 +55,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

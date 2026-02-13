@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdal_vector_pipeline.R
 \name{gdal_vector_pipeline}
 \alias{gdal_vector_pipeline}
-\title{Process a vector dataset applying several steps}
+\title{Process a vector dataset}
 \usage{
 gdal_vector_pipeline(
   jobs = NULL,
@@ -11,7 +11,6 @@ gdal_vector_pipeline(
   input_layer = NULL,
   output = NULL,
   output_format = NULL,
-  output_open_option = NULL,
   output_layer = NULL,
   open_option = NULL,
   pipeline = NULL,
@@ -20,9 +19,7 @@ gdal_vector_pipeline(
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
-  append = FALSE,
-  upsert = FALSE,
-  skip_errors = FALSE
+  append = FALSE
 )
 }
 \arguments{
@@ -38,8 +35,6 @@ gdal_vector_pipeline(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output_layer}{Output layer name}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
@@ -54,24 +49,20 @@ gdal_vector_pipeline(
 
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
-
-\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
-
-\item{skip_errors}{Skip errors when writing features (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Process a vector dataset applying several steps.
+Process a vector dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write"), 
+job <- gdal_vector_pipeline(input = c("read", "in.gpkg", "!", "reproject", "!", "write"), 
     output = "out.gpkg", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)
@@ -80,7 +71,6 @@ job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write")
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
 \code{\link{gdal_vector_check_coverage}()},
 \code{\link{gdal_vector_check_geometry}()},
 \code{\link{gdal_vector_clean_coverage}()},
@@ -88,7 +78,6 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -113,15 +102,9 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_layer_algebra}()},
 \code{\link{gdal_vector_make_point}()},
 \code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
 \code{\link{gdal_vector_sql}()},
 \code{\link{gdal_vector_swap_xy}()}
 }

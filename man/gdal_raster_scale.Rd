@@ -13,7 +13,6 @@ gdal_raster_scale(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   band = NULL,
   src_min = NULL,
   src_max = NULL,
@@ -24,7 +23,7 @@ gdal_raster_scale(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -39,8 +38,6 @@ gdal_raster_scale(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{band}{Select band to restrict the scaling (1-based index) (Integer)}
 
@@ -62,7 +59,7 @@ A \link{gdal_job} object.
 \description{
 Scale the values of the bands of a raster dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_scale.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_scale.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_scale(input = "uint16.tif", output = "byte.tif", overwrite = TRUE, 
@@ -92,7 +89,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -101,7 +97,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

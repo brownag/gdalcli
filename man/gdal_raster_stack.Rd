@@ -24,37 +24,37 @@ gdal_raster_stack(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames) (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{NA} (Default: \code{NULL}) (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NULL})}
 
-\item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical). Format: \code{NA} (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
+\item{append}{Append as a subdataset to existing output (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+\item{band}{Input band(s) (1-based index) (Integer vector). Format: \code{NA} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
+\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical). Format: \code{NA} (Default: \code{NULL})}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>|same|average|common|highest|lowest} (Default: \code{same})}
 
-\item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Exactly \code{4} value(s)}
+\item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Format: \code{NA} (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
+\item{src_nodata}{Set nodata values for input bands.. Format: \code{NA} (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
 
-\item{dst_nodata}{Set nodata values at the destination band level.. \code{1} to \code{2147483647} value(s)}
+\item{dst_nodata}{Set nodata values at the destination band level.. Format: \code{NA} (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
 
-\item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
+\item{hide_nodata}{Makes the destination band not report the NoData. (Logical). Format: \code{NA} (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.
@@ -62,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Combine together input bands into a multi-band output, either virtual (VRT) or materialized.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_stack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_stack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_stack(input = c("red.tif", "green.tif", "blue.tif"), output = "rgb.tif")
@@ -91,7 +91,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -100,7 +99,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

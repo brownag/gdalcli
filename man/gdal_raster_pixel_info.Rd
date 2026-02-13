@@ -17,23 +17,23 @@ gdal_raster_pixel_info(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required). Minimum: \code{NA}. Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{Output format. Choices: geojson, csv (Default: \code{geojson})}
+\item{output_format}{Output format. Format: \code{NA}. Choices: c("geojson", "csv") (Default: \code{geojson}). Minimum: \code{NA}}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+\item{band}{Input band(s) (1-based index) (Integer vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{overview}{Which overview level of source file must be used (Integer). Minimum: \code{0}}
+\item{overview}{Which overview level of source file must be used (Integer). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{0}}
 
-\item{position}{Pixel position. Format: \verb{<column,line> or <X,Y>}. \code{0} to \code{2147483647} value(s)}
+\item{position}{Pixel position. Format: \verb{<column,line> or <X,Y>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{position_crs}{CRS of position (Default: \code{pixel})}
+\item{position_crs}{CRS of position. Format: \code{NA}. Choices: NULL (Default: \code{pixel}). Minimum: \code{NA}}
 
-\item{resampling}{Resampling algorithm for interpolation. Choices: nearest, bilinear, cubic, cubicspline (Default: \code{nearest})}
+\item{resampling}{Resampling algorithm for interpolation. Format: \code{NA}. Choices: c("nearest", "bilinear", "cubic", "cubicspline") (Default: \code{nearest}). Minimum: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
@@ -41,7 +41,7 @@ A \link{gdal_job} object.
 \description{
 Return information on a pixel of a raster dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -72,7 +72,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -80,7 +79,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

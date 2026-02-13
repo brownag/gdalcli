@@ -15,7 +15,7 @@ A \link{gdal_job} object.
 \description{
 Multidimensional commands.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_mdim.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_mdim.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

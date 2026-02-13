@@ -37,63 +37,63 @@ gdal_vector_grid_invdist(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{Input layer name (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Float64})}
+\item{output_data_type}{Output data type. Format: \code{NA}. Choices: c("Byte", "Int8", "UInt16", "Int16", "UInt32", "Int32", "UInt64", "Int64", "CInt16", "CInt32", "Float16", "Float32", "Float64", "CFloat32", "CFloat64") (Default: \code{Float64})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Choices: NULL (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{crs}{Override the projection for the output file}
+\item{crs}{Override the projection for the output file. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
 
-\item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
+\item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}. Choices: NULL (Default: \code{NULL})}
 
-\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
+\item{bbox}{Select only points contained within the specified bounding box. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{zfield}{Field name from which to get Z values.}
+\item{zfield}{Field name from which to get Z values.. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply). Format: \code{NA}. Choices: NULL (Default: \code{0})}
 
-\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset). Format: \code{NA}. Choices: NULL (Default: \code{1})}
 
-\item{power}{Weighting power (Default: \code{2})}
+\item{power}{Weighting power. Format: \code{NA}. Choices: NULL (Default: \code{2})}
 
-\item{smoothing}{Smoothing parameter (Default: \code{0})}
+\item{smoothing}{Smoothing parameter. Format: \code{NA}. Choices: NULL (Default: \code{0})}
 
-\item{radius}{Radius of the search circle}
+\item{radius}{Radius of the search circle. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{radius1}{First axis of the search ellipse}
+\item{radius1}{First axis of the search ellipse. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{radius2}{Second axis of the search ellipse}
+\item{radius2}{Second axis of the search ellipse. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 
-\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise) (Default: \code{0})}
+\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise). Format: \code{NA}. Choices: NULL (Default: \code{0})}
 
-\item{min_points}{Minimum number of data points to use (Integer) (Default: \code{0})}
+\item{min_points}{Minimum number of data points to use (Integer). Format: \code{NA}. Choices: NULL (Default: \code{0})}
 
-\item{max_points}{Maximum number of data points to use (Integer) (Default: \code{2147483647})}
+\item{max_points}{Maximum number of data points to use (Integer). Format: \code{NA}. Choices: NULL (Default: \code{2147483647})}
 
-\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer) (Default: \code{0})}
+\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer). Format: \code{NA}. Choices: NULL (Default: \code{0})}
 
-\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
+\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer). Format: \code{NA}. Choices: NULL (Default: \code{2147483647})}
 
-\item{nodata}{Target nodata value (Default: \code{0})}
+\item{nodata}{Target nodata value. Format: \code{NA}. Choices: NULL (Default: \code{0})}
 }
 \value{
 A \link{gdal_job} object.
@@ -101,7 +101,7 @@ A \link{gdal_job} object.
 \description{
 Create a regular grid from scattered points using weighted inverse distance interpolation.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_grid_invdist.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_grid_invdist.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -114,7 +114,6 @@ job <- gdal_vector_grid_invdist()
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
 \code{\link{gdal_vector_check_coverage}()},
 \code{\link{gdal_vector_check_geometry}()},
 \code{\link{gdal_vector_clean_coverage}()},
@@ -122,7 +121,6 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -146,16 +144,10 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_layer_algebra}()},
 \code{\link{gdal_vector_make_point}()},
 \code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
 \code{\link{gdal_vector_sql}()},
 \code{\link{gdal_vector_swap_xy}()}
 }

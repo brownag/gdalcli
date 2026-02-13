@@ -1,6 +1,6 @@
 Package: gdalcli
 Title: Frontend for the GDAL (>= 3.11) CLI
-Version: 0.3.0-3.12.0
+Version: 0.5.0-3.12.2
 Authors@R:
     person("Andrew", "Brown", role = c("aut", "cre"), 
            email = "brown.andrewg@gmail.com",
@@ -37,7 +37,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-SystemRequirements: GDAL (>= 3.12.0)
+SystemRequirements: GDAL (>= 3.12.2)
 URL: https://github.com/brownag/gdalcli
 BugReports: https://github.com/brownag/gdalcli/issues
 VignetteBuilder: knitr

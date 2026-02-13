@@ -5,31 +5,23 @@
 \title{mosaic: Build a mosaic, either virtual (VRT) or materialized}
 \usage{
 gdal_raster_mosaic(
-  input,
-  input_format = NULL,
+  input = NULL,
   output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
-  open_option = NULL,
   creation_option = NULL,
-  overwrite = FALSE,
-  append = FALSE,
   band = NULL,
-  absolute_path = FALSE,
+  overwrite = FALSE,
   resolution = NULL,
   bbox = NULL,
   src_nodata = NULL,
   dst_nodata = NULL,
   hide_nodata = FALSE,
-  add_alpha = FALSE,
-  pixel_function = NULL,
-  pixel_function_arg = NULL
+  add_alpha = FALSE
 )
 }
 \arguments{
-\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames) (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
-
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
@@ -37,17 +29,11 @@ gdal_raster_mosaic(
 
 \item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
-
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
 
-\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>|same|average|common|highest|lowest} (Default: \code{same})}
 
@@ -60,10 +46,6 @@ gdal_raster_mosaic(
 \item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
 
 \item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical)}
-
-\item{pixel_function}{Specify a pixel function to calculate output value from overlapping inputs. Choices: argmax, argmin, cmul, complex, conj, ...}
-
-\item{pixel_function_arg}{Specify argument(s) to pass to the pixel function (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -71,7 +53,7 @@ A \link{gdal_job} object.
 \description{
 Build a mosaic, either virtual (VRT) or materialized.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", 
@@ -100,7 +82,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_hillshade}()},
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -109,7 +90,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

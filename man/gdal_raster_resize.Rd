@@ -19,27 +19,27 @@ gdal_raster_resize(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{NA}. Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{size}{Target size in pixels (or percentage if using '\%' suffix) (Character vector). Format: \verb{<width[\%]>,<height[\%]>} (required). Minimum: \code{0}. Exactly \code{2} value(s)}
+\item{size}{Target size in pixels (or percentage if using '\%' suffix) (Character vector). Format: \verb{<width[\%]>,<height[\%]>}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
+\item{append}{Append as a subdataset to existing output (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>}. Minimum: \code{0}. Exactly \code{2} value(s)}
+\item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
+\item{resampling}{Resampling method. Format: \code{NA}. Choices: c("nearest", "bilinear", "cubic", "cubicspline", "lanczos", "average", "mode") (Default: \code{nearest}). Minimum: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
@@ -47,7 +47,7 @@ A \link{gdal_job} object.
 \description{
 Resize a raster dataset without changing the georeferenced extents.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_resize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_resize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -78,7 +78,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -87,7 +86,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_rgb_to_palette}()},

@@ -74,7 +74,6 @@ job <- gdal_vector_geom_segmentize(input = "in.gpkg", output = "out.gpkg",
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
 \code{\link{gdal_vector_check_coverage}()},
 \code{\link{gdal_vector_check_geometry}()},
 \code{\link{gdal_vector_clean_coverage}()},
@@ -82,7 +81,6 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -106,16 +104,10 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_layer_algebra}()},
 \code{\link{gdal_vector_make_point}()},
 \code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
 \code{\link{gdal_vector_sql}()},
 \code{\link{gdal_vector_swap_xy}()}
 }

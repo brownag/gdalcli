@@ -24,37 +24,37 @@ gdal_raster_polygonize(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets. Format: \code{NA} (Default: \code{NULL}) (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NULL})}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_layer}{Output layer name}
+\item{output_layer}{Output layer name. Format: \code{NA} (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
+\item{band}{Input band (1-based index) (Integer). Format: \code{NA} (Default: \code{1})}
 
-\item{attribute_name}{Name of the field with the pixel value (Default: \code{DN})}
+\item{attribute_name}{Name of the field with the pixel value. Format: \code{NA} (Default: \code{DN})}
 
-\item{connect_diagonal_pixels}{Consider diagonal pixels as connected (Logical) (Default: \code{false})}
+\item{connect_diagonal_pixels}{Consider diagonal pixels as connected (Logical). Format: \code{NA} (Default: \code{FALSE})}
 }
 \value{
 A \link{gdal_job} object.
@@ -62,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Create a polygon feature dataset from a raster band.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
@@ -91,7 +91,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -99,7 +98,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

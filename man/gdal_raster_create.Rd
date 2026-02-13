@@ -68,7 +68,7 @@ A \link{gdal_job} object.
 \description{
 Create a new raster dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_create.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_create.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_create(input = "out.tif", size = c(20, 20), band_count = 3, 
@@ -97,7 +97,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -106,7 +105,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

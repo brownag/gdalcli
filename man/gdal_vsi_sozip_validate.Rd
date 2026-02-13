@@ -15,7 +15,7 @@ A \link{gdal_job} object.
 \description{
 Validate a ZIP file, possibly using SOZIP optimization.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

@@ -16,21 +16,21 @@ gdal_raster_overview_add(
 )
 }
 \arguments{
-\item{input}{Dataset (to be updated in-place, unless --external) (required). \code{0} to \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Dataset (to be updated in-place, unless --external). Format: \code{NA}. Choices: NULL (required). Minimum: \code{NA}. \code{0} to \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{overview_src}{Source overview dataset. \code{0} to \code{2147483647} value(s)}
+\item{overview_src}{Source overview dataset. Format: \code{NA}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{external}{Add external overviews (Logical)}
+\item{external}{Add external overviews (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
 
-\item{resampling}{Resampling method. Choices: nearest, average, cubic, cubicspline, lanczos, ...}
+\item{resampling}{Resampling method. Format: \code{NA}. Choices: c("nearest", "average", "cubic", "cubicspline", "lanczos", "bilinear", "gauss", "average_magphase", "rms", "mode"). Minimum: \code{NA}}
 
-\item{levels}{Levels / decimation factors (Integer vector). Minimum: \code{2}. \code{0} to \code{2147483647} value(s)}
+\item{levels}{Levels / decimation factors (Integer vector). Format: \code{NA}. Choices: NULL. Minimum: \code{2}. \code{0} to \code{2147483647} value(s)}
 
-\item{min_size}{Maximum width or height of the smallest overview level. (Integer). Minimum: \code{1}}
+\item{min_size}{Maximum width or height of the smallest overview level. (Integer). Format: \code{NA}. Choices: NULL. Minimum: \code{1}}
 
-\item{creation_option}{Overview creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Overview creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Adding overviews.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -69,7 +69,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_delete}()},
 \code{\link{gdal_raster_overview_refresh}()},
@@ -77,7 +76,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

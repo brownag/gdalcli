@@ -9,13 +9,11 @@ gdal_raster_contour(
   input_format = NULL,
   output,
   output_format = NULL,
-  output_open_option = NULL,
-  output_layer = NULL,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
-  overwrite = FALSE,
   band = NULL,
+  layer = NULL,
   elevation_name = NULL,
   min_name = NULL,
   max_name = NULL,
@@ -26,21 +24,18 @@ gdal_raster_contour(
   exp_base = NULL,
   offset = NULL,
   polygonize = FALSE,
-  group_transactions = NULL
+  group_transactions = NULL,
+  overwrite = FALSE
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
-
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{output_layer}{Output layer name}
+\item{output_format}{Output format}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -48,9 +43,9 @@ gdal_raster_contour(
 
 \item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
+
+\item{layer}{Layer name}
 
 \item{elevation_name}{Name of the elevation field}
 
@@ -73,6 +68,8 @@ gdal_raster_contour(
 \item{polygonize}{Create polygons instead of lines (Logical)}
 
 \item{group_transactions}{Group n features per transaction (default 100 000) (Integer). Minimum: \code{0}}
+
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.
@@ -80,7 +77,7 @@ A \link{gdal_job} object.
 \description{
 Creates a vector contour from a raster elevation model (DEM).
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_contour.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp", interval = 100)
@@ -108,7 +105,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -117,7 +113,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

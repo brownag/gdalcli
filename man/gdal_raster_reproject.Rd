@@ -13,7 +13,6 @@ gdal_raster_reproject(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   src_crs = NULL,
   dst_crs = NULL,
   resampling = NULL,
@@ -26,12 +25,11 @@ gdal_raster_reproject(
   add_alpha = FALSE,
   warp_option = NULL,
   transform_option = NULL,
-  error_threshold = NULL,
-  num_threads = NULL
+  error_threshold = NULL
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -46,8 +44,6 @@ gdal_raster_reproject(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{src_crs}{Source CRS}
 
@@ -73,9 +69,7 @@ gdal_raster_reproject(
 
 \item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{error_threshold}{Error threshold. Minimum: \code{0} (Advanced)}
-
-\item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{ALL_CPUS})}
+\item{error_threshold}{Error threshold (Advanced)}
 }
 \value{
 A \link{gdal_job} object.
@@ -83,7 +77,7 @@ A \link{gdal_job} object.
 \description{
 Reproject a raster dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = TRUE, 
@@ -113,7 +107,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -122,7 +115,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_resize}()},
 \code{\link{gdal_raster_rgb_to_palette}()},
