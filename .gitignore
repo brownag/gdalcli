@@ -11,3 +11,6 @@ README.html
 vignettes/*.html
 venv/
 scratch/
+.Rproj.user
+*.Rproj
+*.Rhistory

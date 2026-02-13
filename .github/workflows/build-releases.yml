@@ -256,19 +256,27 @@ jobs:
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
           BRANCH="${{ needs.validate.outputs.branch_name }}"
           GDAL_SHORT="${{ needs.validate.outputs.gdal_short }}"
-          
+
+          # Clean up R check directory with restricted permissions before stashing
+          echo "Cleaning up build artifacts..."
+          sudo rm -rf workspace.Rcheck 2>/dev/null || rm -rf workspace.Rcheck
+
+          # Stash any uncommitted changes BEFORE checkout (including untracked generated files)
+          echo "Stashing generated files and changes..."
+          git stash push -u -m "temp: generated files for $BRANCH (GDAL $GDAL_VERSION)"
+
           # Determine if this is a patch version of an existing minor version
           # or a new minor version release
           IS_PATCH_VERSION=false
-          
+
           echo "Checking if branch $BRANCH exists in remote..."
           git fetch origin
-          
+
           if git rev-parse --verify origin/$BRANCH 2>/dev/null; then
             echo "Release branch exists: $BRANCH"
             echo "This is a patch version release (e.g., updating 3.12.0 -> 3.12.1)"
             IS_PATCH_VERSION=true
-            
+
             # For patch version: checkout existing branch and continue from it
             # This preserves prior work for earlier patches
             echo "Checking out existing release branch..."
@@ -276,21 +284,13 @@ jobs:
           else
             echo "Release branch does not exist: $BRANCH"
             echo "This is a new minor version release (e.g., first 3.12.x)"
-            
+
             # For new minor version: create branch from main
             echo "Creating new release branch from main..."
             git fetch origin main
             git checkout -b $BRANCH origin/main
           fi
-          
-          # Clean up R check directory with restricted permissions before stashing
-          echo "Cleaning up build artifacts..."
-          sudo rm -rf workspace.Rcheck 2>/dev/null || rm -rf workspace.Rcheck
-          
-          # Stash any uncommitted changes (including untracked generated files)
-          echo "Stashing generated files and changes..."
-          git stash push -u -m "temp: generated files for $BRANCH (GDAL $GDAL_VERSION)"
-          
+
           # For new minor version only: reset to main to get latest base code
           if [ "$IS_PATCH_VERSION" = false ]; then
             echo "New minor version: resetting to main base..."
@@ -299,7 +299,7 @@ jobs:
           else
             echo "Patch version: continuing on existing branch without reset"
           fi
-          
+
           # Restore the stashed changes (generated files)
           # This must succeed or the workflow should fail
           echo "Restoring generated files..."
