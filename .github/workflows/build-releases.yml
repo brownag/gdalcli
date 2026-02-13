@@ -301,9 +301,19 @@ jobs:
           fi
 
           # Restore the stashed changes (generated files)
-          # This must succeed or the workflow should fail
+          # Conflicts are expected for patch versions where old generated files exist on the branch
           echo "Restoring generated files..."
-          git stash pop
+          if ! git stash pop --index; then
+            echo "Merge conflicts detected (expected for patch versions)"
+            echo "Resolving conflicts by taking stashed version (newly generated files)..."
+
+            # Take the stashed version for all conflicted files
+            git diff --name-only --diff-filter=U | while read file; do
+              git checkout --theirs "$file" && git add "$file"
+            done
+
+            echo "Conflict resolution complete"
+          fi
 
       - name: Update DESCRIPTION
         run: |
