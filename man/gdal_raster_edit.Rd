@@ -12,6 +12,8 @@ gdal_raster_edit(
   nodata = NULL,
   metadata = NULL,
   unset_metadata = NULL,
+  unset_metadata_domain = NULL,
+  gcp = NULL,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE
@@ -30,7 +32,11 @@ gdal_raster_edit(
 
 \item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
 
-\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}. \code{0} to \code{2147483647} value(s)}
+\item{unset_metadata}{Remove dataset metadata item(s) (Character vector). Format: \code{KEY}. \code{0} to \code{2147483647} value(s)}
+
+\item{unset_metadata_domain}{Remove dataset metadata domain(s) (Character vector). Format: \code{DOMAIN}. \code{0} to \code{2147483647} value(s)}
+
+\item{gcp}{Add ground control point, formatted as pixel,line,easting,northing[,elevation], or @filename (Character vector). \code{0} to \code{2147483647} value(s)}
 
 \item{stats}{Compute statistics, using all pixels (Logical)}
 
@@ -44,7 +50,7 @@ A \link{gdal_job} object.
 \description{
 Edit a raster dataset.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
@@ -72,6 +78,7 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
+\code{\link{gdal_raster_neighbors}()},
 \code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
@@ -80,6 +87,7 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
+\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},

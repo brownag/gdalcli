@@ -10,3 +10,5 @@ README.html
 .github/GHA_LOGS/
 vignettes/*.html
 venv/
+.Rproj.user
+.positai
