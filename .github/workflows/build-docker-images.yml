@@ -194,7 +194,7 @@ jobs:
       - name: Build and push GDAL deps image
         id: build-deps
         if: github.event.inputs.force_rebuild == 'true' || steps.check-deps-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: .github/dockerfiles/Dockerfile.template
@@ -332,7 +332,7 @@ jobs:
       - name: Build and push GDAL full runtime image
         id: build-full
         if: github.event.inputs.force_rebuild == 'true' || steps.check-full-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: .github/dockerfiles/Dockerfile.template
