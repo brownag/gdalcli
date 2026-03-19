@@ -375,7 +375,7 @@ jobs:
 
       - name: Create GitHub release
         if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main' && github.event.inputs.dry_run == 'false'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.validate.outputs.tag_name }}
           target_commitish: ${{ needs.validate.outputs.branch_name }}
