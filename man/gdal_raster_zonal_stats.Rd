@@ -34,57 +34,57 @@ gdal_raster_zonal_stats(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{NA}. Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_layer}{Output layer name}
+\item{output_layer}{Output layer name. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{zones}{Dataset containing zone definitions (Dataset path) (required)}
+\item{zones}{Dataset containing zone definitions (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{NA}}
 
-\item{stat}{Statistic(s) to compute for each zone (Character vector). Choices: center_x, center_y, count, coverage, frac, ... (required). Minimum: \code{1}. \code{0} to \code{2147483647} value(s)}
+\item{stat}{Statistic(s) to compute for each zone (Character vector). Format: \code{NA}. Choices: c("center_x", "center_y", "count", "coverage", "frac", "max", "max_center_x", "max_center_y", "mean", "median", "min", "minority", "min_center_x", "min_center_y", "mode", "stdev", "sum", "unique", "values", "variance", "variety", "weighted_mean", "weighted_stdev", "weighted_sum", "weighted_variance", "weights") (Default: \code{NULL}) (required). Minimum: \code{1}. \code{0} to \code{2147483647} value(s)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
 
-\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
+\item{upsert}{Upsert features (implies 'append') (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA} (Advanced)}
 
-\item{skip_errors}{Skip errors when writing features (Logical)}
+\item{skip_errors}{Skip errors when writing features (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+\item{band}{Input band(s) (1-based index) (Integer vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{zones_band}{Band from which zones should be read (Integer)}
+\item{zones_band}{Band from which zones should be read (Integer). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{zones_layer}{Layer from which zones should be read}
+\item{zones_layer}{Layer from which zones should be read. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{weights}{Weighting raster dataset (Dataset path)}
+\item{weights}{Weighting raster dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{weights_band}{Band from which weights should be read (Integer) (Default: \code{1})}
+\item{weights_band}{Band from which weights should be read (Integer). Format: \code{NA}. Choices: NULL (Default: \code{1}). Minimum: \code{NA}}
 
-\item{pixels}{Method to determine which pixels are included in stat calculation.. Choices: default, fractional, all-touched}
+\item{pixels}{Method to determine which pixels are included in stat calculation.. Format: \code{NA}. Choices: c("default", "fractional", "all-touched") (Default: \code{NULL}). Minimum: \code{NA}}
 
-\item{include_field}{Fields from polygon zones to include in output (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{include_field}{Fields from polygon zones to include in output (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{strategy}{For polygon zones, whether to iterate over input features or raster chunks. Choices: feature, raster (Default: \code{feature})}
+\item{strategy}{For polygon zones, whether to iterate over input features or raster chunks. Format: \code{NA}. Choices: c("feature", "raster") (Default: \code{feature}). Minimum: \code{NA}}
 
-\item{chunk_size}{Maximum size of raster chunks read into memory (Default: \verb{5\%})}
+\item{chunk_size}{Maximum size of raster chunks read into memory. Format: \code{NA}. Choices: NULL (Default: \verb{5\%}). Minimum: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
@@ -92,7 +92,7 @@ A \link{gdal_job} object.
 \description{
 Calculate raster zonal statistics
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_zonal-stats.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_zonal-stats.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

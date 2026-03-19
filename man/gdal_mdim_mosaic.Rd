@@ -16,21 +16,21 @@ gdal_mdim_mosaic(
 )
 }
 \arguments{
-\item{input}{Input multidimensional raster datasets (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input multidimensional raster datasets. Format: \code{NA} (Default: \code{NA}) (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output multidimensional raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA} (Default: \code{NA})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{array}{Name of array(s) to mosaic. (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{array}{Name of array(s) to mosaic. (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Build a mosaic, either virtual (VRT) or materialized, from multidimensional datasets.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_mdim_mosaic.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_mdim_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_mosaic(input = "slice*.nc", output = "out.vrt")

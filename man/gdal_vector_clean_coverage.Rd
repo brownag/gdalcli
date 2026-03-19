@@ -28,45 +28,45 @@ gdal_vector_clean_coverage(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets. Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required). Minimum: \code{NA}. Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_layer}{Output layer name}
+\item{output_layer}{Output layer name. Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false}). Minimum: \code{NA}}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false}). Minimum: \code{NA}}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false}). Minimum: \code{NA}}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false}). Minimum: \code{NA}}
 
-\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
+\item{upsert}{Upsert features (implies 'append') (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{skip_errors}{Skip errors when writing features (Logical)}
+\item{skip_errors}{Skip errors when writing features (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{active_layer}{Set active layer (if not specified, all)}
+\item{active_layer}{Set active layer (if not specified, all). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{snapping_distance}{Distance tolerance for snapping nodes. Minimum: \code{0}}
+\item{snapping_distance}{Distance tolerance for snapping nodes. Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{0}}
 
-\item{merge_strategy}{Algorithm to assign overlaps to neighboring polygons. Choices: longest-border, max-area, min-area, min-index}
+\item{merge_strategy}{Algorithm to assign overlaps to neighboring polygons. Format: \code{NA}. Choices: c("longest-border", "max-area", "min-area", "min-index") (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{maximum_gap_width}{Maximum width of a gap to be closed. Minimum: \code{0}}
+\item{maximum_gap_width}{Maximum width of a gap to be closed. Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{0}}
 }
 \value{
 A \link{gdal_job} object.
@@ -74,7 +74,7 @@ A \link{gdal_job} object.
 \description{
 Alter polygon boundaries to make shared edges identical, removing gaps and overlaps
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_clean-coverage.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_clean-coverage.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

@@ -19,27 +19,27 @@ gdal_raster_blend(
 )
 }
 \arguments{
-\item{input}{Input raster dataset. Format: \code{COLOR-INPUT} (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset. Format: \code{COLOR-INPUT}. Choices: NULL (Default: \code{NULL}) (required). Range: (\code{NA} to \code{NA}). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Range: (\code{NA} to \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Range: (\code{NA} to \code{NA})}
 
-\item{overlay}{Overlay dataset (Dataset path) (required)}
+\item{overlay}{Overlay dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Range: (\code{NA} to \code{NA})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Range: (\code{NA} to \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Range: (\code{NA} to \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Range: (\code{NA} to \code{NA})}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
+\item{append}{Append as a subdataset to existing output (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Range: (\code{NA} to \code{NA})}
 
-\item{operator}{Composition operator. Choices: src-over, hsv-value (Default: \code{src-over})}
+\item{operator}{Composition operator. Format: \code{NA}. Choices: c("src-over", "hsv-value") (Default: \code{src-over}). Range: (\code{NA} to \code{NA})}
 
-\item{opacity}{Opacity percentage to apply to the overlay dataset (0=fully transparent, 100=full use of overlay opacity) (Integer) (Default: \code{100}). Range: (\code{0} to \code{100})}
+\item{opacity}{Opacity percentage to apply to the overlay dataset (0=fully transparent, 100=full use of overlay opacity) (Integer). Format: \code{NA}. Choices: NULL (Default: \code{100}). Range: (\code{0} to \code{100})}
 }
 \value{
 A \link{gdal_job} object.
@@ -47,7 +47,7 @@ A \link{gdal_job} object.
 \description{
 Blend/compose two raster datasets
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_blend.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_blend.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

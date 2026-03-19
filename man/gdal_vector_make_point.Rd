@@ -29,47 +29,47 @@ gdal_vector_make_point(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets. Format: \code{NA} (Default: \code{NA}) (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NA})}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_layer}{Output layer name}
+\item{output_layer}{Output layer name. Format: \code{NA} (Default: \code{NA})}
 
-\item{x}{Field from which X coordinate should be read (required)}
+\item{x}{Field from which X coordinate should be read. Format: \code{NA} (Default: \code{NA}) (required)}
 
-\item{y}{Field from which Y coordinate should be read (required)}
+\item{y}{Field from which Y coordinate should be read. Format: \code{NA} (Default: \code{NA}) (required)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
+\item{upsert}{Upsert features (implies 'append') (Logical). Format: \code{NA} (Default: \code{NA}) (Advanced)}
 
-\item{skip_errors}{Skip errors when writing features (Logical)}
+\item{skip_errors}{Skip errors when writing features (Logical). Format: \code{NA} (Default: \code{NA})}
 
-\item{z}{Optional field from which Z coordinate should be read}
+\item{z}{Optional field from which Z coordinate should be read. Format: \code{NA} (Default: \code{NA})}
 
-\item{m}{Optional field from which M coordinate should be read}
+\item{m}{Optional field from which M coordinate should be read. Format: \code{NA} (Default: \code{NA})}
 
-\item{dst_crs}{Destination CRS}
+\item{dst_crs}{Destination CRS. Format: \code{NA} (Default: \code{NA})}
 }
 \value{
 A \link{gdal_job} object.
@@ -77,7 +77,7 @@ A \link{gdal_job} object.
 \description{
 Create point geometries from attribute fields
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_make-point.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_make-point.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

@@ -21,31 +21,31 @@ gdal_raster_compare(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset. Format: \code{NA} (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{reference}{Reference dataset (Dataset path) (required)}
+\item{reference}{Reference dataset (Dataset path). Format: \code{NA} (required)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{skip_all_optional}{Skip all optional comparisons (Logical)}
+\item{skip_all_optional}{Skip all optional comparisons (Logical). Format: \code{NA}}
 
-\item{skip_binary}{Skip binary file comparison (Logical)}
+\item{skip_binary}{Skip binary file comparison (Logical). Format: \code{NA}}
 
-\item{skip_crs}{Skip CRS comparison (Logical)}
+\item{skip_crs}{Skip CRS comparison (Logical). Format: \code{NA}}
 
-\item{skip_geotransform}{Skip geotransform comparison (Logical)}
+\item{skip_geotransform}{Skip geotransform comparison (Logical). Format: \code{NA}}
 
-\item{skip_overview}{Skip overview comparison (Logical)}
+\item{skip_overview}{Skip overview comparison (Logical). Format: \code{NA}}
 
-\item{skip_metadata}{Skip metadata comparison (Logical)}
+\item{skip_metadata}{Skip metadata comparison (Logical). Format: \code{NA}}
 
-\item{skip_rpc}{Skip RPC metadata comparison (Logical)}
+\item{skip_rpc}{Skip RPC metadata comparison (Logical). Format: \code{NA}}
 
-\item{skip_geolocation}{Skip Geolocation metadata comparison (Logical)}
+\item{skip_geolocation}{Skip Geolocation metadata comparison (Logical). Format: \code{NA}}
 
-\item{skip_subdataset}{Skip subdataset comparison (Logical)}
+\item{skip_subdataset}{Skip subdataset comparison (Logical). Format: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.
@@ -53,7 +53,7 @@ A \link{gdal_job} object.
 \description{
 Compare two raster datasets.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_compare.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_compare.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
