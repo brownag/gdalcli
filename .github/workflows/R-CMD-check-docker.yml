@@ -18,19 +18,40 @@ jobs:
       - name: Query GHCR for latest deps image
         id: version
         run: |
-          LATEST=$(curl -s \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ github.token }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/users/${{ github.repository_owner }}/packages/container/gdalcli/versions" | \
-            jq -r '.[].metadata.container.tags[] | select(startswith("deps-gdal-")) | gsub("deps-gdal-|-amd64"; "") | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' | \
-            sort -V | tail -1)
-          
+          # Fetch all package versions and find the latest deps-gdal version
+          LATEST=""
+          PAGE=1
+          while true; do
+            RESPONSE=$(curl -s \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/users/${{ github.repository_owner }}/packages/container/gdalcli/versions?page=${PAGE}&per_page=100")
+
+            # Extract all deps-gdal versions from this page
+            VERSIONS=$(echo "$RESPONSE" | jq -r '.[].metadata.container.tags[] | select(startswith("deps-gdal-")) | gsub("deps-gdal-|-amd64"; "") | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))' 2>/dev/null)
+
+            # Update LATEST if we found any versions on this page
+            if [ -n "$VERSIONS" ]; then
+              LATEST=$(echo -e "${LATEST}\n${VERSIONS}" | sort -Vr | head -1)
+            fi
+
+            # Check how many items were in this page's response
+            COUNT=$(echo "$RESPONSE" | jq 'length')
+
+            # If we got fewer than 100 results, this is the last page
+            if [ "$COUNT" -lt 100 ]; then
+              break
+            fi
+
+            PAGE=$((PAGE + 1))
+          done
+
           if [ -z "$LATEST" ]; then
             echo "ERROR: Could not find any deps-gdal images in GHCR"
             exit 1
           fi
-          
+
           echo "latest=$LATEST" >> $GITHUB_OUTPUT
           echo "Found latest GDAL version in GHCR: $LATEST"
           
