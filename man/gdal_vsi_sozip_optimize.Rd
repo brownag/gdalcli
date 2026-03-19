@@ -10,7 +10,8 @@ gdal_vsi_sozip_optimize(
   overwrite = FALSE,
   enable_sozip = NULL,
   sozip_chunk_size = NULL,
-  sozip_min_file_size = NULL
+  sozip_min_file_size = NULL,
+  stdout = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ gdal_vsi_sozip_optimize(
 \item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix}. Choices: NULL (Default: \code{32768})}
 
 \item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix}. Choices: NULL (Default: \verb{1 MB})}
+
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.
@@ -32,14 +35,12 @@ A \link{gdal_job} object.
 \description{
 Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
 }
 \examples{
+job <- gdal_vsi_sozip_optimize(input = "my.gpkg", output = "my.gpkg.zip")
 \dontrun{
-# TODO: No examples available for gdal_vsi_sozip_optimize.
-# See GDAL documentation: https://gdal.org/programs/gdal-vsi-sozip-optimize.html
-job <- gdal_vsi_sozip_optimize()
-# gdal_job_run(job)
+  result <- gdal_job_run(job)
 }
 }
 \seealso{

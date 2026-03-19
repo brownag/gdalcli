@@ -197,11 +197,23 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #' @param stream_out_format Character string: output format for the last pipeline step.
 #'   Options: `NULL` (no streaming), `"text"`, or `"raw"`. Only used in native execution mode.
 #' @param env Environment variables to pass to the GDAL process. Only used in native execution mode.
+#' @param checkpoint Logical. Override global checkpoint setting for this pipeline only.
+#'   If not specified (NULL/missing), respects `getOption("gdalcli.checkpoint", FALSE)`.
+#'   To enable checkpointing by default, use `gdalcli_options(checkpoint = TRUE)`.
+#'   When enabled, saves intermediate results to enable resumption from failures.
+#'   Default: `FALSE` (disabled unless configured via `gdalcli_options()`).
+#' @param checkpoint_dir Character. Directory for checkpoint files. If not specified,
+#'   uses `getOption("gdalcli.checkpoint_dir", NULL)` or current working directory
+#'   if checkpointing is enabled. Set via `gdalcli_options(checkpoint_dir = "/path")`.
+#' @param resume Logical. Resume pipeline execution from the most recent checkpoint.
+#'   If checkpoint is enabled and a checkpoint exists at the checkpoint directory,
+#'   set `resume = TRUE` to continue from where execution stopped. Default: `FALSE`.
 #' @param ... Additional arguments passed to individual job execution.
 #' @param verbose Logical. If `TRUE`, prints progress information. Default `FALSE`.
 #'
 #' @return Invisibly returns `TRUE` on successful completion, or (in native mode with
-#'   streaming output) returns the captured output.
+#'   streaming output) returns the captured output. When checkpointing is enabled and
+#'   completes successfully, the checkpoint directory is cleaned up.
 #'
 #' @seealso
 #' [render_gdal_pipeline()], [gdal_job_run.gdal_pipeline()]
@@ -222,6 +234,19 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #'
 #' # Native pipeline execution (single GDAL pipeline command)
 #' gdal_job_run(pipeline, execution_mode = "native")
+#'
+#' # Enable checkpointing globally (opt-in)
+#' gdalcli_options(checkpoint = TRUE)
+#' gdal_job_run(pipeline)  # Now automatically checkpoints!
+#'
+#' # Enable checkpoints with custom directory
+#' gdalcli_options(
+#'   checkpoint = TRUE,
+#'   checkpoint_dir = "~/my_checkpoints"
+#' )
+#'
+#' # Resume from checkpoint if interrupted
+#' gdal_job_run(pipeline, resume = TRUE)
 #' }
 #'
 #' @export
@@ -231,6 +256,9 @@ gdal_job_run.gdal_pipeline <- function(x,
                                        stream_in = NULL,
                                        stream_out_format = NULL,
                                        env = NULL,
+                                       checkpoint = NULL,
+                                       checkpoint_dir = NULL,
+                                       resume = FALSE,
                                        ...,
                                        verbose = FALSE) {
   execution_mode <- match.arg(execution_mode)
@@ -238,6 +266,34 @@ gdal_job_run.gdal_pipeline <- function(x,
   if (length(x$jobs) == 0) {
     if (verbose) cli::cli_alert_info("Pipeline is empty - nothing to execute")
     return(invisible(TRUE))
+  }
+
+  # Get backend from args if provided
+  backend_arg <- if (length(list(...)) > 0 && "backend" %in% names(list(...))) {
+    list(...)$backend
+  } else {
+    NULL
+  }
+
+  # Determine if we should try gdalraster native pipeline
+  use_gdalraster_native <- FALSE
+  if (execution_mode == "native" || is.null(execution_mode)) {
+    # Try native execution if available
+    if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
+      use_gdalraster_native <- TRUE
+      if (verbose) {
+        cli::cli_alert_info("Using gdalraster native pipeline support")
+      }
+    }
+  }
+
+  if (use_gdalraster_native && .gdal_has_feature("native_pipeline")) {
+    return(.gdal_job_run_native_pipeline_gdalraster(
+      x,
+      stream_out_format = stream_out_format,
+      env = env,
+      verbose = verbose
+    ))
   }
 
   if (execution_mode == "native") {
@@ -268,10 +324,90 @@ gdal_job_run.gdal_pipeline <- function(x,
     }
   }
 
+  # Handle checkpoint/resume
+  # Respect global option if checkpoint parameter not explicitly set
+  checkpoint_enabled <- if (missing(checkpoint) || is.null(checkpoint)) {
+    getOption("gdalcli.checkpoint", FALSE)
+  } else {
+    isTRUE(checkpoint)
+  }
+
+  if (checkpoint_enabled || resume) {
+    # If checkpoint_dir not specified, use global option or current working directory.
+    # Use missing() so that we can distinguish "not supplied" from an explicit value,
+    # even if earlier code has already assigned to checkpoint_dir.
+    if (missing(checkpoint_dir) || is.null(checkpoint_dir)) {
+      opt_checkpoint_dir <- getOption("gdalcli.checkpoint_dir", NULL)
+      if (!is.null(opt_checkpoint_dir)) {
+        checkpoint_dir <- opt_checkpoint_dir
+      } else if (checkpoint_enabled) {
+        checkpoint_dir <- getwd()  # Default to current working directory
+      } else {
+        # At this point, checkpointing is disabled but resume = TRUE (because
+        # we are inside `if (checkpoint_enabled || resume)` and
+        # `checkpoint_enabled` is FALSE). Resuming without a known checkpoint
+        # directory would be ambiguous, so require the user to specify one.
+        cli::cli_abort(
+          c(
+            "Cannot resume pipeline: no checkpoint directory is configured.",
+            "i" = "Supply `checkpoint_dir` explicitly or set the option 'gdalcli.checkpoint_dir'."
+          )
+        )
+      }
+    }
+
+    # Check for existing checkpoint
+    checkpoint_state <- if (!is.null(checkpoint_dir)) .load_checkpoint(checkpoint_dir) else NULL
+
+    # Sanitize dots to avoid duplicate backend arguments downstream
+    dots <- list(...)
+    if ("backend" %in% names(dots)) {
+      dots[["backend"]] <- NULL
+    }
+
+    if (resume && !is.null(checkpoint_state)) {
+      # Resume from checkpoint
+      return(do.call(
+        what = .resume_pipeline,
+        args = c(
+          list(
+            x,
+            checkpoint_state,
+            checkpoint_dir,
+            backend,
+            verbose = verbose
+          ),
+          dots
+        )
+      ))
+    } else if (checkpoint_enabled && !resume) {
+      # Start new checkpoint run
+      return(do.call(
+        what = .run_pipeline_with_checkpoint,
+        args = c(
+          list(
+            x,
+            checkpoint_dir,
+            backend,
+            verbose = verbose
+          ),
+          dots
+        )
+      ))
+    } else if (resume && is.null(checkpoint_state)) {
+      cli::cli_warn(
+        c(
+          "No checkpoint found at: {checkpoint_dir}",
+          "i" = "Starting fresh pipeline execution"
+        )
+      )
+    }
+  }
+
   # Collect temporary files for cleanup
   temp_files <- character()
 
-  # Execute jobs sequentially
+  # Execute jobs sequentially (without checkpoint)
   for (i in seq_along(x$jobs)) {
     job <- x$jobs[[i]]
 
@@ -311,10 +447,6 @@ gdal_job_run.gdal_pipeline <- function(x,
     if (file.exists(temp_file)) {
       try(unlink(temp_file), silent = TRUE)
     }
-  }
-
-  if (verbose) {
-    cli::cli_alert_success("Pipeline completed successfully")
   }
 
   invisible(TRUE)
@@ -405,7 +537,9 @@ gdal_job_run.gdal_pipeline <- function(x,
 
   # Prepare stdin/stdout for streaming
   stdin_arg <- if (!is.null(stream_in)) stream_in else NULL
-  stdout_arg <- if (!is.null(stream_out_format)) "|" else NULL
+  # For "stdout" format, use TRUE to pipe directly to parent stdout
+  # For other formats, use "|" to capture output
+  stdout_arg <- if (stream_out_format == "stdout") TRUE else if (!is.null(stream_out_format)) "|" else NULL
 
   # Merge environment variables from all pipeline jobs
   env_final <- character()
@@ -438,21 +572,28 @@ gdal_job_run.gdal_pipeline <- function(x,
 
     # Handle output based on streaming format
     if (!is.null(stream_out_format)) {
-      if (stream_out_format == "text") {
-        if (verbose) {
-          cli::cli_alert_success("Native pipeline completed successfully")
-        }
+      if (stream_out_format == "stdout") {
+        # Output already printed to stdout during execution
+        invisible(TRUE)
+      } else if (stream_out_format == "text") {
         return(result$stdout)
       } else if (stream_out_format == "raw") {
-        if (verbose) {
-          cli::cli_alert_success("Native pipeline completed successfully")
-        }
         return(charToRaw(result$stdout))
+      } else if (stream_out_format == "json") {
+        # Try to parse as JSON
+        tryCatch({
+          return(yyjsonr::read_json_str(result$stdout))
+        }, .error = function(e) {
+          cli::cli_warn(
+            c(
+              "Failed to parse output as JSON",
+              "x" = conditionMessage(e),
+              "i" = "Returning raw stdout instead"
+            )
+          )
+          return(result$stdout)
+        })
       }
-    }
-
-    if (verbose) {
-      cli::cli_alert_success("Native pipeline completed successfully")
     }
 
     invisible(TRUE)
@@ -1060,15 +1201,32 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 }
 
 
-#' Process GDAL Pipeline (Convenience Wrapper)
+#' Compose GDAL Jobs into a Pipeline (Auto-Detecting Raster/Vector)
 #'
 #' @description
-#' Convenience function that automatically detects whether a pipeline contains
+#' **DEPRECATED** - This function is deprecated as of gdalcli 0.4.x and will be removed in 0.5.x.
+#'
+#' Convenience function that automatically detects whether a composition of jobs contains
 #' raster or vector operations and delegates to the appropriate `gdal_raster_pipeline()`
 #' or `gdal_vector_pipeline()` function.
 #'
-#' This function is useful when you want a single unified interface to process
-#' pipelines without needing to explicitly choose the raster or vector variant.
+#' This function is useful when you want a single unified interface to compose and process
+#' jobs without needing to explicitly choose the raster or vector variant.
+#'
+#' **Migration**: Use the pipe operator (`|>`) to compose jobs instead. This approach is
+#' more idiomatic R and handles composition naturally:
+#'
+#' ```r
+#' # Old (deprecated)
+#' gdal_compose(jobs = list(job1, job2, job3))
+#'
+#' # New (recommended)
+#' job1 |> job2 |> job3 |> gdal_job_run()
+#' ```
+#'
+#' **Note**: This function was previously named `gdal_pipeline()`. It was renamed to
+#' `gdal_compose()` to avoid conflict with GDAL 3.12+'s native `gdal pipeline` command,
+#' which is available as an auto-generated function.
 #'
 #' @param jobs A list or vector of `gdal_job` objects to execute in sequence,
 #'   or NULL to use pipeline string
@@ -1078,6 +1236,8 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' @param ... Additional arguments passed to `gdal_raster_pipeline()` or `gdal_vector_pipeline()`
 #'
 #' @return A `gdal_job` object representing the pipeline.
+#'
+#' @usage gdal_compose(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...)
 #'
 #' @details
 #' The pipeline type is determined by examining the first job's command_path:
@@ -1092,11 +1252,15 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' job2 <- gdal_raster_convert(output = "output.tif")
 #'
 #' # This will automatically use gdal_raster_pipeline
-#' pipeline <- gdal_pipeline(jobs = list(job1, job2))
+#' pipeline <- gdal_compose(jobs = list(job1, job2))
 #' }
 #'
 #' @export
-gdal_pipeline <- function(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...) {
+gdal_compose <- function(jobs = NULL, pipeline = NULL, input = NULL, output = NULL, ...) {
+  .Deprecated(
+    msg = "gdal_compose() is deprecated and will be removed in gdalcli 0.5.x. Use the pipe operator (|>) to compose jobs instead:\n  job1 |> job2 |> job3 |> gdal_job_run()"
+  )
+
   # If pipeline string is provided directly, determine type and delegate
   if (!is.null(pipeline) && is.null(jobs)) {
     # Default to raster if type not determinable from pipeline string

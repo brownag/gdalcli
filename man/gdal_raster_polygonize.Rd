@@ -9,8 +9,6 @@ gdal_raster_polygonize(
   input_format = NULL,
   output,
   output_format = NULL,
-  output_open_option = NULL,
-  output_layer = NULL,
   open_option = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -19,22 +17,19 @@ gdal_raster_polygonize(
   overwrite_layer = FALSE,
   append = FALSE,
   band = NULL,
+  layer = NULL,
   attribute_name = NULL,
   connect_diagonal_pixels = FALSE
 )
 }
 \arguments{
-\item{input}{Input raster datasets. Format: \code{NA} (Default: \code{NULL}) (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA} (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NULL})}
-
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
-
-\item{output_layer}{Output layer name. Format: \code{NA} (Default: \code{NULL})}
+\item{output_format}{Output format. Format: \code{NA} (Default: \code{NULL})}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
@@ -46,11 +41,13 @@ gdal_raster_polygonize(
 
 \item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
 \item{band}{Input band (1-based index) (Integer). Format: \code{NA} (Default: \code{1})}
+
+\item{layer}{Layer name. Format: \code{NA} (Default: \code{polygonize})}
 
 \item{attribute_name}{Name of the field with the pixel value. Format: \code{NA} (Default: \code{DN})}
 
@@ -62,7 +59,7 @@ A \link{gdal_job} object.
 \description{
 Create a polygon feature dataset from a raster band.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
@@ -73,14 +70,11 @@ job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -91,17 +85,13 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -113,8 +103,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

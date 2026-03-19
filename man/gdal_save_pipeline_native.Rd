@@ -9,38 +9,50 @@ gdal_save_pipeline_native(pipeline, path, overwrite = FALSE, verbose = FALSE)
 \arguments{
 \item{pipeline}{A gdal_pipeline or gdal_job object with pipeline}
 
-\item{path}{Character string specifying output path (typically .gdalcli.json)}
+\item{path}{Character string specifying output path (typically .gdalg.json)}
 
 \item{overwrite}{Logical. If TRUE, overwrites existing file}
 
-\item{verbose}{Logical. If TRUE, prints execution details}
+\item{verbose}{Logical. If TRUE, prints diagnostic information}
 }
 \value{
 Invisibly returns the path where pipeline was saved
 }
 \description{
-Saves a gdal_pipeline using GDAL's native GDALG format. This method produces
-GDALG JSON that is compatible with GDAL's native pipeline format, ensuring
-maximum compatibility with other GDAL tools and future versions.
+Saves a gdal_pipeline using the native GDALG format. This method produces
+pure GDALG JSON that is compatible with GDAL's GDALG driver (read-only in GDAL 3.11+).
 }
 \details{
-This function requires GDAL 3.11 or later with the GDALG format driver.
-It produces GDALG JSON format that can be loaded by GDAL's native tools.
+This function:
+\enumerate{
+\item Converts the R pipeline to a gdalg S3 object with RFC 104 command string
+\item Serializes the GDALG specification to JSON format
+\item Writes the JSON to the specified file
+}
 
-The native GDALG format provides:
+\strong{GDALG Format:}
+The GDALG driver in GDAL 3.11+ is read-only. It can load GDALG JSON files
+but cannot write them directly. GDALG JSON is generated using R's yyjsonr
+library. The format is well-documented (RFC 104) and stable.
+
+\strong{Output Compatibility:}
+Generated GDALG files are:
 \itemize{
-\item Compatibility with GDAL Python/C++ APIs
-\item Full GDAL version metadata
-\item Recognition by other GDAL tools
+\item RFC 104 compliant
+\item Loadable by GDAL 3.11+ GDALG driver
+\item Readable by gdalg_read()
+\item Compatible with other GDALG-aware tools
 }
 }
 \examples{
 \dontrun{
-pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
-  gdal_raster_convert(output = "out.tif")
+pipeline <- gdal_raster_reproject(input = "in.tif",
+                                  dst_crs = "EPSG:32632") |>
+  gdal_raster_scale(src_min = 0, src_max = 100)
 
 if (gdal_has_gdalg_driver()) {
-  gdal_save_pipeline_native(pipeline, "workflow.gdalcli.json")
+  # Save as native GDALG format
+  gdal_save_pipeline_native(pipeline, "workflow.gdalg.json")
 }
 }
 

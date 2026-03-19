@@ -2,6 +2,7 @@
 
 # cleanup-ghcr-images.sh
 # GitHub CLI script to cleanup old Docker images from GHCR
+# Removes images for GDAL versions not in .github/versions.json
 # Run this locally to clean up old images from GitHub Container Registry
 
 set -e
@@ -9,15 +10,20 @@ set -e
 # Configuration
 REPO_OWNER="brownag"
 REPO_NAME="gdalcli"
+VERSIONS_FILE=".github/versions.json"
+MODE="unsupported"  # "unsupported" to remove versions not in versions.json, or "keep-n" to keep N most recent
 KEEP_VERSIONS=3
 DRY_RUN=false
 FORCE=false
 
 usage() {
-    echo "Usage: $0 [--dry-run] [--force] [--keep VERSIONS] [--owner OWNER] [--repo REPO]"
+    echo "Usage: $0 [--dry-run] [--force] [--mode MODE] [--keep VERSIONS] [--owner OWNER] [--repo REPO]"
     echo "  --dry-run: Show what would be removed without actually removing"
     echo "  --force: Skip confirmation prompts"
-    echo "  --keep VERSIONS: Number of recent GDAL versions to keep (default: $KEEP_VERSIONS)"
+    echo "  --mode MODE: Cleanup strategy (default: $MODE)"
+    echo "    unsupported: Remove images for GDAL versions not in .github/versions.json"
+    echo "    keep-n: Keep only the N most recent GDAL versions (all images preserved per version)"
+    echo "  --keep VERSIONS: When using keep-n mode, number of recent versions to keep (default: $KEEP_VERSIONS)"
     echo "                   All images for each kept GDAL version will be preserved"
     echo "  --owner OWNER: Repository owner (default: $REPO_OWNER)"
     echo "  --repo REPO: Repository name (default: $REPO_NAME)"
@@ -36,6 +42,10 @@ while [[ $# -gt 0 ]]; do
         --force)
             FORCE=true
             shift
+            ;;
+        --mode)
+            MODE="$2"
+            shift 2
             ;;
         --keep)
             KEEP_VERSIONS="$2"
@@ -85,9 +95,42 @@ if ! gh auth token | gh api /user/packages?package_type=container &>/dev/null; t
     exit 1
 fi
 
+# Load supported versions from versions.json if using unsupported mode
+declare -A supported_versions
+if [ "$MODE" = "unsupported" ]; then
+    if [ ! -f "$VERSIONS_FILE" ]; then
+        echo "[ERROR] Mode is 'unsupported' but $VERSIONS_FILE not found"
+        echo "Please ensure .github/versions.json exists or use --mode keep-n"
+        exit 1
+    fi
+    
+    echo "[CONFIG] Reading supported versions from $VERSIONS_FILE..."
+    # Parse supported versions using jq
+    supported_list=$(jq -r '.supported[]' "$VERSIONS_FILE" 2>/dev/null)
+    
+    if [ -z "$supported_list" ]; then
+        echo "[ERROR] Could not parse supported versions from $VERSIONS_FILE"
+        exit 1
+    fi
+    
+    while IFS= read -r version; do
+        supported_versions["$version"]=1
+    done <<< "$supported_list"
+    
+    echo "[CONFIG] Supported GDAL versions from $VERSIONS_FILE:"
+    for ver in "${!supported_versions[@]}"; do
+        echo "  [OK] GDAL $ver"
+    done
+fi
+
 echo "[ACTION] GHCR Cleanup Script"
 echo "Repository: $REPO_OWNER/$REPO_NAME"
-echo "Keep GDAL versions: $KEEP_VERSIONS (all images per version)"
+echo "Mode: $MODE"
+if [ "$MODE" = "unsupported" ]; then
+    echo "Action: Remove images for unsupported GDAL versions"
+else
+    echo "Keep most recent GDAL versions: $KEEP_VERSIONS (all images per version)"
+fi
 if [ "$DRY_RUN" = true ]; then
     echo "Mode: DRY RUN (no changes will be made)"
 else
@@ -158,13 +201,13 @@ while IFS= read -r package; do
         created_at=$(echo "$version_json" | jq -r '.created_at')
         tags=$(echo "$version_json" | jq -r '.tags[]')
 
-        # Extract GDAL version from tags
+        # Extract GDAL version from tags (full version X.Y.Z)
         gdal_ver=""
         for tag in $tags; do
-            if [[ $tag =~ gdal-([0-9]+\.[0-9]+) ]]; then
+            if [[ $tag =~ gdal-([0-9]+\.[0-9]+\.[0-9]+) ]]; then
                 gdal_ver="${BASH_REMATCH[1]}"
                 break
-            elif [[ $tag =~ deps-gdal-([0-9]+\.[0-9]+) ]]; then
+            elif [[ $tag =~ deps-gdal-([0-9]+\.[0-9]+\.[0-9]+) ]]; then
                 gdal_ver="${BASH_REMATCH[1]}"
                 break
             fi
@@ -176,7 +219,7 @@ while IFS= read -r package; do
         fi
 
         # Store version details
-        version_details["$version_id"]="$created_at|$tags"
+        version_details["$version_id"]="$created_at|$tags|$gdal_ver"
 
         # Track latest creation time for each GDAL version
         if [ -z "${gdal_versions[$gdal_ver]}" ] || [ "$created_at" \> "${gdal_versions[$gdal_ver]}" ]; then
@@ -184,10 +227,22 @@ while IFS= read -r package; do
         fi
     done <<< "$(echo "$all_versions" | jq -c '.')"
 
-    # Sort GDAL versions by creation time (newest first) and keep top N
-    sorted_gdal_versions=$(for ver in "${!gdal_versions[@]}"; do
-        echo "${gdal_versions[$ver]}|$ver"
-    done | sort -r | head -n "$KEEP_VERSIONS" | cut -d'|' -f2)
+    # Determine which GDAL versions to keep based on mode
+    declare -a keep_gdal_vers
+    
+    if [ "$MODE" = "unsupported" ]; then
+        # Keep only supported versions from versions.json
+        for gdal_ver in "${!gdal_versions[@]}"; do
+            if [[ -v supported_versions[$gdal_ver] ]]; then
+                keep_gdal_vers+=("$gdal_ver")
+            fi
+        done
+    else
+        # keep-n mode: Sort GDAL versions by creation time (newest first) and keep top N
+        keep_gdal_vers=($(for ver in "${!gdal_versions[@]}"; do
+            echo "${gdal_versions[$ver]}|$ver"
+        done | sort -r | head -n "$KEEP_VERSIONS" | cut -d'|' -f2))
+    fi
 
     # Build lists of versions to keep and remove
     keep_versions=()
@@ -196,26 +251,12 @@ while IFS= read -r package; do
     for version_id in "${!version_details[@]}"; do
         details="${version_details[$version_id]}"
         created_at=$(echo "$details" | cut -d'|' -f1)
-
-        # Extract GDAL version for this version
-        gdal_ver=""
         tags=$(echo "$details" | cut -d'|' -f2-)
-        for tag in $tags; do
-            if [[ $tag =~ gdal-([0-9]+\.[0-9]+) ]]; then
-                gdal_ver="${BASH_REMATCH[1]}"
-                break
-            elif [[ $tag =~ deps-gdal-([0-9]+\.[0-9]+) ]]; then
-                gdal_ver="${BASH_REMATCH[1]}"
-                break
-            fi
-        done
-        if [ -z "$gdal_ver" ]; then
-            gdal_ver="unknown"
-        fi
+        gdal_ver=$(echo "$details" | cut -d'|' -f3)
 
         # Check if this GDAL version should be kept
         should_keep=false
-        for keep_gdal_ver in $sorted_gdal_versions; do
+        for keep_gdal_ver in "${keep_gdal_vers[@]}"; do
             if [ "$gdal_ver" = "$keep_gdal_ver" ]; then
                 should_keep=true
                 break
@@ -232,14 +273,23 @@ while IFS= read -r package; do
     keep_count=${#keep_versions[@]}
     remove_count=${#remove_versions[@]}
 
-    echo "  Found ${#version_details[@]} versions across ${#gdal_versions[@]} GDAL versions"
-    echo "  Keeping $KEEP_VERSIONS most recent GDAL versions ($keep_count images)"
-    echo "  Would remove $remove_count older images from older GDAL versions"
+    echo "  Found ${#version_details[@]} total image versions"
+    if [ "$MODE" = "unsupported" ]; then
+        echo "  Found ${#gdal_versions[@]} unique GDAL versions"
+        supported_count=${#keep_gdal_vers[@]}
+        unsupported_count=$((${#gdal_versions[@]} - supported_count))
+        echo "  Supported versions to keep: $supported_count"
+        echo "  Unsupported versions to remove: $unsupported_count"
+    else
+        echo "  Found ${#gdal_versions[@]} unique GDAL versions"
+        echo "  Keeping $KEEP_VERSIONS most recent GDAL versions ($keep_count images total)"
+        echo "  Would remove $remove_count older images from older GDAL versions"
+    fi
 
     # Show GDAL versions to keep
-    if [ ${#sorted_gdal_versions[@]} -gt 0 ]; then
+    if [ ${#keep_gdal_vers[@]} -gt 0 ]; then
         echo "  [PIN] GDAL versions to keep:"
-        for gdal_ver in $sorted_gdal_versions; do
+        for gdal_ver in "${keep_gdal_vers[@]}"; do
             echo "    [OK] GDAL $gdal_ver"
         done
     fi
@@ -251,22 +301,24 @@ while IFS= read -r package; do
             details="${version_details[$version_id]}"
             created_at=$(echo "$details" | cut -d'|' -f1)
             tags=$(echo "$details" | cut -d'|' -f2-)
-            tag_list=$(echo "$tags" | tr '\n' ',' | sed 's/,$//')
+            gdal_ver=$(echo "$details" | cut -d'|' -f3)
+            tag_list=$(echo "$tags" | tr ' ' ',' | sed 's/,$//')
             [ -z "$tag_list" ] && tag_list="untagged"
-            echo "    [OK] $tag_list (created: $created_at)"
+            echo "    [OK] GDAL $gdal_ver: $tag_list (created: $created_at)"
         done
     fi
 
     # Show versions to remove
     if [ $remove_count -gt 0 ]; then
-        echo "  [REMOVE]  Images to remove:"
+        echo "  [REMOVE] Images to remove:"
         for version_id in "${remove_versions[@]}"; do
             details="${version_details[$version_id]}"
             created_at=$(echo "$details" | cut -d'|' -f1)
             tags=$(echo "$details" | cut -d'|' -f2-)
-            tag_list=$(echo "$tags" | tr '\n' ',' | sed 's/,$//')
+            gdal_ver=$(echo "$details" | cut -d'|' -f3)
+            tag_list=$(echo "$tags" | tr ' ' ',' | sed 's/,$//')
             [ -z "$tag_list" ] && tag_list="untagged"
-            echo "    [FAIL] $tag_list (created: $created_at)"
+            echo "    [DELETE] GDAL $gdal_ver: $tag_list (created: $created_at)"
         done
 
         # Confirm removal unless forced or dry run
@@ -313,5 +365,9 @@ if [ "$DRY_RUN" = true ]; then
 else
     echo "  - Analyzed all packages"
     echo "  - Successfully removed $total_removed old image versions"
-    echo "  - Kept the $KEEP_VERSIONS most recent GDAL versions and all their associated images"
+    if [ "$MODE" = "unsupported" ]; then
+        echo "  - Removed all images for versions not in $VERSIONS_FILE"
+    else
+        echo "  - Kept the $KEEP_VERSIONS most recent GDAL versions and all their associated images"
+    fi
 fi

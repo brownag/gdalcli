@@ -256,7 +256,7 @@ WORKDIR /tmp/gdalcli
 RUN Rscript -e "install.packages(c('remotes', 'devtools', 'roxygen2'), repos='https://cran.rstudio.com/')"
 
 # Layer 2: Build-time dependencies (rarely change)
-RUN Rscript -e "install.packages(c('processx', 'jsonlite', 'glue', 'httr'), repos='https://cran.rstudio.com/')"
+RUN Rscript -e "install.packages(c('processx', 'yyjsonr', 'glue', 'httr'), repos='https://cran.rstudio.com/')"
 
 # Layer 3: Package dependencies from DESCRIPTION (changes with updates)
 RUN Rscript -e "remotes::install_deps(dependencies = TRUE, repos='https://cran.rstudio.com/')"
@@ -265,7 +265,7 @@ RUN Rscript -e "remotes::install_deps(dependencies = TRUE, repos='https://cran.r
 RUN rm -rf /tmp/gdalcli /tmp/downloaded_packages /tmp/*.rds
 
 # Verify key packages are installed
-RUN Rscript -e "library(processx); library(jsonlite); library(gdalraster); cat('All dependencies installed\n')"
+RUN Rscript -e "library(processx); library(yyjsonr); library(gdalraster); cat('All dependencies installed\\n')"
 
 # ============================================================================
 # STAGE 5: gdalcli Build

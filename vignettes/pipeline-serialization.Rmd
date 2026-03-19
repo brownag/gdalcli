@@ -1,0 +1,443 @@
+---
+title: "Pipeline Serialization and Format Support"
+description: >
+  Learn about the three pipeline serialization formats supported by gdalcli:
+  the hybrid format for complete R integration, pure GDALG for GDAL compatibility,
+  and legacy format support. Understand when to use each format and how to convert between them.
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pipeline Serialization and Format Support}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+library(gdalcli)
+```
+
+## Overview
+
+The gdalcli package supports three pipeline serialization formats, each optimized for different use cases:
+
+1. **Hybrid Format** (.gdalcli.json) - Combines GDALG with R-specific metadata for complete round-trip preservation
+2. **Pure GDALG Format** (.gdalg.json) - RFC 104 compliant, minimal, GDAL-compatible
+3. **Legacy Format** - Old internal format (deprecated, no longer recommended)
+
+## Format Comparison
+
+| Feature | Hybrid | Pure GDALG | Legacy |
+|---------|--------|-----------|--------|
+| GDAL Compatible | ✓ | ✓ | ✗ |
+| Lossless Round-Trip | ✓ | ✗ | ✗ |
+| Preserves Arg Mapping | ✓ | ✗ | ✗ |
+| Preserves Config/Env | ✓ | ✗ | ✗ |
+| RFC 104 Compliant | ✓ | ✓ | ✗ |
+| R-Specific Metadata | ✓ | ✗ | ✓ |
+| File Size | Medium | Small | Large |
+| Recommended | ✓ | For GDAL Use | ✗ Deprecated |
+
+## Hybrid Format (Recommended)
+
+The hybrid format is the default and recommended choice for most gdalcli workflows. It combines:
+
+- **gdalg**: Pure RFC 104 GDALG specification for GDAL compatibility
+- **metadata**: Pipeline name, version, creation date, custom tags, and other R-specific info
+- **r_job_specs**: Complete R job specifications enabling lossless round-trip conversion
+
+### Saving a Pipeline (Hybrid Format)
+
+```{r hybrid-save}
+library(gdalcli)
+
+# Create a processing pipeline
+pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32618"
+) |>
+  gdal_raster_scale(src_min = 0, src_max = 255)
+
+# Create a temporary file for demonstration
+workflow_file <- tempfile(fileext = ".gdalcli.json")
+
+# Save as hybrid format (default)
+gdal_save_pipeline(
+  pipeline,
+  path = workflow_file,
+  name = "Reproject and Scale",
+  description = "Reproject to UTM Zone 18N and scale to 0-255",
+  custom_tags = list(
+    version = "1.0",
+    author = "data-team",
+    purpose = "preprocessing"
+  )
+)
+```
+
+### Loading a Hybrid Pipeline
+
+```{r hybrid-load, dependson="hybrid-save"}
+# Load hybrid format pipeline (auto-detected)
+pipeline <- gdal_load_pipeline(workflow_file)
+
+# The loaded pipeline is identical to the original
+# All arg_mapping, config_options, and env_vars are preserved
+```
+
+### Hybrid Format Structure
+
+A hybrid format file looks like this:
+
+```json
+{
+  "gdalg": {
+    "type": "gdal_streamed_alg",
+    "command_line": "gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32618 ! scale --src-min 0 --src-max 255",
+    "relative_paths_relative_to_this_file": true
+  },
+  "metadata": {
+    "format_version": "1.0",
+    "pipeline_name": "Reproject and Scale",
+    "description": "Reproject to UTM Zone 18N and scale to 0-255",
+    "gdalcli_version": "0.5.0",
+    "created_at": "2024-01-15T10:30:00Z",
+    "custom_tags": {
+      "version": "1.0",
+      "author": "data-team",
+      "purpose": "preprocessing"
+    }
+  },
+  "r_job_specs": [
+    {
+      "command_path": ["gdal", "raster", "reproject"],
+      "arguments": { "input": "input.tif", "dst_crs": "EPSG:32618" },
+      "arg_mapping": { "input": 1, "dst_crs": "--dst-crs" },
+      "config_options": {},
+      "env_vars": {}
+    },
+    {
+      "command_path": ["gdal", "raster", "scale"],
+      "arguments": { "src_min": 0, "src_max": 255 },
+      "arg_mapping": { "src_min": "--src-min", "src_max": "--src-max" },
+      "config_options": {},
+      "env_vars": {}
+    }
+  ]
+}
+```
+
+## Pure GDALG Format
+
+The pure GDALG format is the minimal, RFC 104-compliant specification. Use this when:
+
+- Sharing pipelines with non-R GDAL users
+- Minimizing file size
+- Ensuring maximum GDAL compatibility
+- You don't need R-specific metadata
+
+**Note**: GDALG JSON files are generated using GDAL's native writing capability when GDAL 3.12+ is available, ensuring full RFC 104 compliance. For older GDAL versions (3.11 and below), gdalcli falls back to direct JSON serialization using the yyjsonr library. The GDALG driver in GDAL is read-only and loads GDALG JSON files; the write operations are performed via `gdal raster/vector pipeline ... ! write -f GDALG` commands.
+
+### Creating a Pure GDALG Object
+
+```{r pure-gdalg-create}
+# Convert an existing pipeline to GDALG
+pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32618"
+)
+
+gdalg <- as_gdalg(pipeline)
+```
+
+### Saving Pure GDALG
+
+```{r pure-gdalg-save}
+# Create GDALG directly
+gdalg <- new_gdalg(
+  command_line = "gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32618",
+  type = "gdal_streamed_alg",
+  relative_paths = TRUE
+)
+
+# Save to file
+gdalg_write(gdalg, "workflow.gdalg.json")
+```
+
+### Loading Pure GDALG
+
+```{r pure-gdalg-load}
+# Load pure GDALG
+gdalg <- gdalg_read("workflow.gdalg.json")
+
+# Inspect the structure
+print(gdalg)
+
+# Convert to R pipeline
+pipeline <- gdalg_to_pipeline(gdalg)
+```
+
+### Pure GDALG Format Structure
+
+A pure GDALG file is minimal and RFC 104-compliant:
+
+```json
+{
+  "type": "gdal_streamed_alg",
+  "command_line": "gdal raster pipeline ! read input.tif ! reproject --dst-crs EPSG:32618",
+  "relative_paths_relative_to_this_file": true
+}
+```
+
+## Converting Between Formats
+
+### Hybrid to Pure GDALG
+
+Extract pure GDALG from a hybrid format file:
+
+```{r hybrid-to-pure, eval=FALSE}
+# Load hybrid format
+pipeline <- gdal_load_pipeline("workflow.gdalcli.json")
+
+# Extract GDALG component
+gdalg <- as_gdalg(pipeline)
+
+# Save as pure GDALG
+gdalg_write(gdalg, "workflow-pure.gdalg.json")
+```
+
+### Pure GDALG to Hybrid
+
+Enrich a pure GDALG file with R-specific metadata:
+
+```{r pure-to-hybrid, eval=FALSE}
+# Load pure GDALG
+gdalg <- gdalg_read("workflow.gdalg.json")
+
+# Convert to R pipeline (lossy - some metadata lost)
+pipeline <- gdalg_to_pipeline(gdalg)
+
+# Save as hybrid format
+gdal_save_pipeline(
+  pipeline,
+  path = "workflow-enriched.gdalcli.json",
+  name = "Enriched Workflow",
+  description = "GDALG enriched with R metadata"
+)
+```
+
+## Format Auto-Detection
+
+The `gdal_load_pipeline()` function automatically detects the format of the file:
+
+```{r auto-detect, eval=FALSE}
+# All of these work seamlessly with auto-detection
+pipeline1 <- gdal_load_pipeline("workflow.gdalcli.json")  # Hybrid
+pipeline2 <- gdal_load_pipeline("workflow.gdalg.json")    # Pure GDALG
+pipeline3 <- gdal_load_pipeline("legacy.json")            # Legacy (error)
+```
+
+The auto-detection logic:
+
+1. **Hybrid Format**: File contains both `gdalg` and `r_job_specs` fields
+2. **Pure GDALG**: File contains `type = "gdal_streamed_alg"` and `command_line` at root level
+3. **Legacy**: File contains `steps` array (old internal format)
+4. **Unknown**: File doesn't match any recognized format
+
+## Lossless Round-Trip Serialization
+
+The hybrid format enables perfect round-trip preservation:
+
+```{r round-trip, eval=FALSE}
+# Original pipeline
+original <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32618"
+)
+
+# Save to hybrid format
+gdal_save_pipeline(original, "workflow.gdalcli.json")
+
+# Load back
+loaded <- gdal_load_pipeline("workflow.gdalcli.json")
+
+# Verify they're identical
+identical(
+  original$jobs[[1]]$arg_mapping,
+  loaded$jobs[[1]]$arg_mapping
+)  # TRUE
+
+identical(
+  original$jobs[[1]]$config_options,
+  loaded$jobs[[1]]$config_options
+)  # TRUE
+
+identical(
+  original$jobs[[1]]$env_vars,
+  loaded$jobs[[1]]$env_vars
+)  # TRUE
+```
+
+In contrast, pure GDALG loses this detail:
+
+```{r lossy-round-trip, eval=FALSE}
+# Pure GDALG conversion
+gdalg <- as_gdalg(original)
+gdalg_write(gdalg, "workflow.gdalg.json")
+loaded_gdalg <- gdalg_read("workflow.gdalg.json")
+pipeline2 <- gdalg_to_pipeline(loaded_gdalg)
+
+# arg_mapping, config_options, env_vars may be empty
+# This is acceptable when sharing with non-R users
+```
+
+## Legacy Format (Deprecated)
+
+The old legacy format is no longer recommended. If you have legacy format files:
+
+```{r legacy-error, error=TRUE, eval=FALSE}
+# Attempting to load legacy format produces a clear error
+pipeline <- gdal_load_pipeline("legacy.json")
+# Error: Legacy pipeline format detected.
+# Please regenerate your pipeline using current gdalcli functions
+# and save it in the new hybrid format.
+```
+
+To migrate from legacy format:
+
+1. Recreate the pipeline using current gdalcli functions
+2. Save in hybrid format using `gdal_save_pipeline()`
+3. Delete the legacy file
+
+## Working with GDALG Objects
+
+### Validating GDALG Specifications
+
+```{r validate}
+# Validation happens automatically during creation
+gdalg <- new_gdalg(
+  command_line = "gdal raster pipeline ! read input.tif"
+)
+
+# Invalid specs produce clear errors
+try({
+  bad_gdalg <- structure(
+    list(command_line = "test"),  # Missing type field
+    class = c("gdalg", "list")
+  )
+  validate_gdalg(bad_gdalg)
+})
+# Error: Invalid gdalg object: missing required field 'type'
+```
+
+### Inspecting GDALG Objects
+
+```{r inspect}
+# Load a GDALG
+gdalg <- gdalg_read("workflow.gdalg.json")
+
+# Print summary
+print(gdalg)
+
+# Access components
+command <- gdalg$command_line
+type <- gdalg$type
+relative <- gdalg$relative_paths_relative_to_this_file
+```
+
+### Creating GDALG from Scratch
+
+```{r create-from-scratch}
+# Manually create GDALG for custom pipelines
+custom_gdalg <- new_gdalg(
+  command_line = "gdal vector pipeline ! read input.shp ! filter --sql 'SELECT * WHERE area > 1000'",
+  type = "gdal_streamed_alg",
+  relative_paths = TRUE
+)
+
+# Save it
+gdalg_write(custom_gdalg, "custom.gdalg.json")
+```
+
+## Best Practices
+
+### When to Use Each Format
+
+**Use Hybrid Format when:**
+- Working in R and need preservation of all configuration
+- You want to archive complete processing specifications
+- Sharing within R teams
+- Reproducibility is critical
+
+**Use Pure GDALG when:**
+- Sharing with non-R GDAL users
+- File size is a concern
+- Maximum compatibility with other GDAL tools is required
+- You don't need R-specific metadata
+
+**Avoid Legacy Format:**
+- Regenerate all legacy pipelines in hybrid format
+- Legacy format is deprecated and no longer supported
+
+### File Naming Conventions
+
+While format detection is content-based and not extension-based, these conventions are recommended:
+
+- **Hybrid format**: `*.gdalcli.json` (e.g., `workflow.gdalcli.json`)
+- **Pure GDALG**: `*.gdalg.json` (e.g., `workflow.gdalg.json`)
+
+This makes format intent clear from the filename without relying on detection.
+
+### Metadata Organization
+
+Use `custom_tags` for application-specific metadata:
+
+```{r metadata, eval=FALSE}
+gdal_save_pipeline(
+  pipeline,
+  path = "workflow.gdalcli.json",
+  name = "Satellite Processing",
+  description = "Monthly sentinel-2 processing pipeline",
+  custom_tags = list(
+    dataset = "sentinel-2",
+    frequency = "monthly",
+    quality_level = "L2A",
+    version = "2.0",
+    reviewed = TRUE,
+    reviewer = "alice@example.com"
+  )
+)
+```
+
+### Version Management
+
+Include version information in metadata for pipeline evolution tracking:
+
+```{r versioning, eval=FALSE}
+gdal_save_pipeline(
+  pipeline_v2,
+  path = "workflow-v2.gdalcli.json",
+  name = "Satellite Processing",
+  description = "Improved cloud detection",
+  custom_tags = list(
+    version = "2.0",
+    previous_version = "1.0",
+    changes = "Enhanced cloud masking algorithm",
+    released = "2024-02-01"
+  )
+)
+```
+
+## See Also
+
+- `?gdal_save_pipeline` - Save pipelines to files
+- `?gdal_load_pipeline` - Load pipelines from files
+- `?new_gdalg` - Create GDALG specifications
+- `?gdalg_read` - Read pure GDALG files
+- `?gdalg_write` - Write pure GDALG files
+- `?gdalg_to_pipeline` - Convert GDALG to R pipelines
+- `?as_gdalg` - Extract GDALG from R pipelines
+- `?validate_gdalg` - Validate GDALG objects

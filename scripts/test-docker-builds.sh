@@ -41,7 +41,7 @@ docker run --rm ${REPO_NAME}:deps-gdal-${GDAL_VERSION}-amd64 bash -c '
   echo "--- R version ---"
   R --version | head -3
   echo "--- R packages ---"
-  Rscript -e "library(processx); library(jsonlite); library(gdalraster); library(devtools); cat(\"All deps present\n\")"
+  Rscript -e "library(processx); library(yyjsonr); library(gdalraster); library(devtools); cat(\"All deps present\\n\")"
   echo "✓ Deps image tests passed"
 '
 

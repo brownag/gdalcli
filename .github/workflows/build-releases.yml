@@ -189,96 +189,122 @@ jobs:
         run: |
           docker load --input /tmp/image.tar
 
+      - name: Prepare release branch (merge with main)
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          BRANCH="${{ needs.validate.outputs.branch_name }}"
+
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          echo "Cleaning up build artifacts..."
+          sudo rm -rf workspace.Rcheck 2>/dev/null || rm -rf workspace.Rcheck
+
+          echo "Fetching latest main..."
+          git fetch origin main
+
+          if git rev-parse --verify origin/$BRANCH 2>/dev/null; then
+            echo "Checking out $BRANCH"
+            git checkout -b $BRANCH origin/$BRANCH
+            echo "Merging latest main..."
+            git merge --no-edit origin/main || {
+              echo "Resolving merge conflicts..."
+              git diff --name-only --diff-filter=U | while read file; do
+                if [[ $file == man/* ]] || [[ $file == NAMESPACE ]] || [[ $file == DESCRIPTION ]]; then
+                  git checkout --theirs "$file"
+                  git add "$file"
+                elif [[ $file == R/* ]]; then
+                  git checkout --ours "$file"
+                  git add "$file"
+                elif [[ $file == inst/* ]]; then
+                  git checkout --ours "$file"
+                  git add "$file"
+                else
+                  echo "WARNING: Unhandled conflict in $file, taking theirs"
+                  git checkout --theirs "$file"
+                  git add "$file"
+                fi
+              done
+              git commit --no-edit -m "Merge main into $BRANCH (auto-resolved)"
+            }
+          else
+            echo "Creating new branch from main"
+            git checkout -b $BRANCH origin/main
+          fi
+
       - name: Generate API and build release in Docker
         if: github.event.inputs.dry_run == 'false'
         run: |
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
-          
-          # Generate API and documentation inside Docker where GDAL is available
+
+          # Generate API and documentation in Docker context (merged working directory)
           docker run --rm \
             -v "$PWD:/workspace" \
             -w /workspace \
             "$IMAGE" \
             bash -c "
               set -e
-              
-              echo 'Generating GDAL API in workspace...'
+
+              echo 'Generating GDAL API for $GDAL_VERSION...'
               Rscript /workspace/build/generate_gdal_api.R
-              
-              echo 'Generating documentation...'
+
+              echo 'Generating NAMESPACE and documentation...'
               Rscript -e 'roxygen2::roxygenise()'
-              
-              # Run checks on the generated package
+
+              echo 'Validating NAMESPACE...'
+              Rscript -e '
+                ns <- getNamespace(\"gdalcli\")
+                exports <- getNamespaceExports(ns)
+                missing <- character()
+                for (exp in exports) {
+                  if (!exists(exp, envir = ns)) {
+                    missing <- c(missing, exp)
+                  }
+                }
+                if (length(missing) > 0) {
+                  cat(\"ERROR: Undefined exports found:\\n\")
+                  print(missing)
+                  quit(status = 1)
+                } else {
+                  cat(\"✓ All exports are defined\\n\")
+                }
+              '
+
               echo 'Running R CMD check...'
               R CMD check --no-manual --compact-vignettes=gs+qpdf /workspace 2>&1 | tail -50 || {
                 echo 'WARNING: R CMD check had issues, but continuing...'
               }
-              
-              # Show generated files
+
               echo ''
-              echo 'Generated files summary:'
-              echo \"R files: \$(ls -1 /workspace/R/*.R 2>/dev/null | wc -l)\"
-              echo \"Rd files: \$(ls -1 /workspace/man/*.Rd 2>/dev/null | wc -l)\"
-              test -f /workspace/NAMESPACE && echo 'NAMESPACE: OK' || echo 'NAMESPACE: MISSING'
+              echo 'Generated files:'
+              echo \"  R files: \$(ls -1 /workspace/R/*.R 2>/dev/null | wc -l)\"
+              echo \"  Rd files: \$(ls -1 /workspace/man/*.Rd 2>/dev/null | wc -l)\"
+              test -f /workspace/NAMESPACE && echo '  NAMESPACE: OK' || echo '  NAMESPACE: MISSING'
             "
-          
-          # Verify files exist in workspace (should be source .R files, not binaries)
+
           echo ""
-          echo "Verifying generated files in workspace..."
+          echo "Verifying generated files..."
           test -d R && ls -lh R/*.R 2>/dev/null | head -3 || echo "✗ R/ missing source files!"
           test -d man && echo "✓ man/ directory exists ($(ls -1 man/*.Rd 2>/dev/null | wc -l) files)" || echo "✗ man/ directory missing!"
           test -f NAMESPACE && echo "✓ NAMESPACE exists" || echo "✗ NAMESPACE missing!"
-          
-          # Sanity check: no binary files should be staged
+
           if [ -f R/gdalcli ] || [ -f R/gdalcli.rdb ]; then
-            echo "ERROR: Binary package files detected in R/ - these should not be staged!"
+            echo "ERROR: Binary files detected in R/"
             ls -la R/
             exit 1
           fi
 
-      - name: Configure git and prepare release branch
-        if: github.event.inputs.dry_run == 'false'
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-
-          BRANCH="${{ needs.validate.outputs.branch_name }}"
-          
-          # Clean up R check directory with restricted permissions before stashing
-          echo "Cleaning up build artifacts..."
-          sudo rm -rf workspace.Rcheck 2>/dev/null || rm -rf workspace.Rcheck
-          
-          # Stash any uncommitted changes (including untracked generated files)
-          echo "Stashing generated files and changes..."
-          git stash push -u -m "temp: generated files for $BRANCH"
-          
-          # Fetch latest main and prepare branch
-          git fetch origin main
-          
-          if git rev-parse --verify origin/$BRANCH 2>/dev/null; then
-            git checkout -b $BRANCH origin/$BRANCH
-            git reset --hard origin/main
-          else
-            git checkout -b $BRANCH origin/main
-          fi
-          
-          # Restore the stashed changes (generated files)
-          # This must succeed or the workflow should fail
-          echo "Restoring generated files..."
-          git stash pop
-
       - name: Update DESCRIPTION
+        if: github.event.inputs.dry_run == 'false'
         run: |
           GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
           PKG_VERSION="${{ needs.validate.outputs.package_version }}"
 
-          # Update Version field with GDAL suffix
           sed -i "s/^Version:.*/Version: ${PKG_VERSION}-${GDAL_VERSION}/" DESCRIPTION
-
-          # Update SystemRequirements field
           sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
 
+          echo "Updated DESCRIPTION:"
           cat DESCRIPTION | grep -E "^Version:|^SystemRequirements:"
 
       - name: Update version info and commit release
@@ -297,8 +323,11 @@ jobs:
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
           R_VERSION=$(docker run --rm "$IMAGE" R --version 2>/dev/null | head -1 | sed 's/R version \([0-9.]*\).*/\1/')
           PROCESSX_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")
-          JSONLITE_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('jsonlite')))" 2>/dev/null || echo "unknown")
-          
+          YYJSONR_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('yyjsonr')))" 2>/dev/null || echo "unknown")
+
+          # Ensure inst/ directory exists
+          mkdir -p inst
+
           cat > inst/GDAL_VERSION_INFO.json <<EOF
           {
             "generated_at": "$GENERATED_AT",
@@ -313,48 +342,32 @@ jobs:
             "r_version": "$R_VERSION",
             "packages": {
               "processx": "$PROCESSX_VERSION",
-              "jsonlite": "$JSONLITE_VERSION"
+              "yyjsonr": "$YYJSONR_VERSION"
             }
           }
           EOF
 
-          # Stage all changes (with verbose output for debugging)
-          echo "Staging DESCRIPTION..."
+          echo "Staging changes..."
           git add DESCRIPTION
-          
-          echo "Staging GDAL_VERSION_INFO.json..."
           git add -f inst/GDAL_VERSION_INFO.json
-          
-          echo "Staging generated R files..."
+
           if [ -d R ]; then
             git add R/
-            echo "  R/ staged ($(git diff --cached --name-only R/ | wc -l) files)"
-          else
-            echo "  R/ directory not found!"
           fi
-          
-          echo "Staging documentation files..."
+
           if [ -d man ]; then
             git add man/
-            echo "  man/ staged ($(git diff --cached --name-only man/ | wc -l) files)"
-          else
-            echo "  man/ directory not found!"
           fi
-          
-          echo "Staging NAMESPACE..."
+
           if [ -f NAMESPACE ]; then
             git add NAMESPACE
-            echo "  NAMESPACE staged"
-          else
-            echo "  NAMESPACE file not found!"
           fi
-          
-          echo ""
-          echo "Status of staged changes:"
-          git diff --cached --name-only | head -20
+
+          echo "Staged $(git diff --cached --name-only | wc -l) files"
           
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
+            # Force push is safe here because we've reset branch to main and applied generated files
             git push origin ${{ needs.validate.outputs.branch_name }} --force
           else
             echo "No changes to commit"
