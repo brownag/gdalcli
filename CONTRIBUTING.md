@@ -72,61 +72,225 @@ If tests fail:
 
 These workflows are triggered manually via GitHub Actions when infrastructure updates are needed:
 
-#### build-base-images.yml
+#### Managing Supported Versions
 
-- **Purpose**: Build reusable GDAL base images for CI
-- **Output**: `ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64` images
-- **Manual parameters**: `gdal_version`, `push_images` (set to `true` to publish)
-- **When to use**: After GDAL version changes or base image dependency updates
+Supported GDAL versions are defined in `.github/versions.json`:
 
-#### build-runtime-images.yml
+```json
+{
+  "supported": ["3.11.4", "3.12.0"]
+}
+```
 
-- **Purpose**: Build full runtime Docker images with gdalcli installed
-- **Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest` images
-- **Manual parameters**: `gdal_version` (default: 3.11.4)
-- **Trigger**: Weekly schedule, main branch pushes, or manual dispatch
-- **When to use**: Weekly automated builds or when runtime images need updates
+**To add a new GDAL version:**
+1. Update `.github/versions.json` with new version in the `supported` array
+2. Commit and push to main
+3. Workflows auto-detect the change and build Docker images
+4. This pins the version for long-term support and CI testing
+
+#### build-docker-images.yml
+
+- **Purpose**: Build GDAL Docker images (base and runtime) for specific GDAL versions
+- **Base Image Output**: `ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`
+- **Runtime Image Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
+- **Version Source**: Reads from `.github/versions.json` supported array
+- **Smart Build**: 
+  - Checks if image already exists in GHCR
+  - Skips build if image exists (unless `force_rebuild=true`)
+  - Always builds on weekly schedule
+- **Manual parameters**: 
+  - `gdal_version` (optional): Build specific version
+  - `image_stage` (both/deps/full)
+  - `push_images`: Push to GHCR?
+  - `force_rebuild`: Force rebuild even if image exists?
+- **Trigger**: 
+  - Weekly schedule (Saturdays at 00:00 UTC)
+  - Changes to `.github/versions.json`
+  - Changes to `.github/dockerfiles/Dockerfile.template`
+  - Manual dispatch
+- **When to use**: 
+  - Adding new GDAL version to `versions.json`
+  - Fixing container issues with `force_rebuild=true`
+  - Manual builds of specific versions
 
 #### build-releases.yml
 
-- **Purpose**: Dynamic package builds and GitHub releases
-- **Manual parameters**: `gdal_version`, `package_version`, `create_release`, etc.
-- **Output**: Release branches, GitHub releases, package binaries
+- **Purpose**: Generate gdalcli source code for a specific GDAL version and create release
+- **Version Validation**: Checks version against `.github/versions.json` (optional, warns if not in list)
+- **Versioning Strategy**:
+  - **New minor version** (e.g., first 3.12.x): Creates `release/gdal-3.12` branch from main
+  - **Patch version** (e.g., 3.12.1 on existing 3.12): Continues on `release/gdal-3.12` without reset to main
+- **Release artifacts**:
+  - Release branch: `release/gdal-X.Y` (shared across all patches in minor version)
+  - Git tags: `v{package_version}-{gdal_version}` (e.g., `v0.3.0-3.12.0`, `v0.3.0-3.12.1`)
+  - GitHub release with generated API and documentation
+- **Manual parameters**: `gdal_version`, `create_release`, `dry_run`
+- **Output**: Release branches, GitHub releases with source code
 - **When to use**: Creating new package releases for specific GDAL versions
+
+#### Patch Version Workflow
+
+When a new GDAL patch version is released (e.g., 3.12.0 -> 3.12.1):
+
+1. **Update versions.json** (recommended):
+   ```json
+   "supported": ["3.11.4", "3.12.0", "3.12.1"]
+   ```
+   Commit to main → workflow auto-builds 3.12.1 image
+
+   OR **Manual build**:
+   ```
+   Actions → Build GDAL Docker Images → Run workflow
+   - gdal_version: 3.12.1
+   - image_stage: both
+   - push_images: true
+   - force_rebuild: false (skip if already built)
+   ```
+
+2. **Generate release**:
+   ```
+   Actions → Build Release for GDAL Version → Run workflow
+   - gdal_version: 3.12.1
+   - create_release: true
+   ```
+
+3. **Workflow behavior**:
+   - Detects that `release/gdal-3.12` already exists (from 3.12.0)
+   - Checks out existing branch (preserves 3.12.0 work)
+   - Generates API for 3.12.1
+   - Creates new commit on `release/gdal-3.12` with 3.12.1 generated code
+   - Tags release as `v0.3.0-3.12.1`
+
+#### Fixing Container Issues
+
+If a container issue is discovered (e.g., missing system dependency):
+
+```
+Actions → Build GDAL Docker Images → Run workflow
+- gdal_version: 3.12.0
+- image_stage: both
+- force_rebuild: true
+```
+
+This rebuilds the image even though it already exists, allowing you to fix the Dockerfile and re-push.
+
+2. **Generate release** for new patch version:
+   ```
+   Actions → Build Release for GDAL Version → Run workflow
+   - gdal_version: 3.12.1
+   - create_release: true
+   ```
+
+3. **Workflow behavior**:
+   - Detects that `release/gdal-3.12` already exists (from 3.12.0)
+   - Checks out existing branch (preserves 3.12.0 work)
+   - Generates API for 3.12.1 (may differ from 3.12.0)
+   - Creates new commit on `release/gdal-3.12` with 3.12.1 generated code
+   - Tags release as `v0.3.0-3.12.1`
+
+4. **User installation options**:
+   - Latest patch: Install from release branch for latest patch
+     ```r
+     remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.12")
+     ```
+   - Specific patch: Install from tag for a specific version
+     ```r
+     remotes::install_github("brownag/gdalcli", ref = "v0.3.0-3.12.0")
+     remotes::install_github("brownag/gdalcli", ref = "v0.3.0-3.12.1")
+     ```
 
 ### Docker Image Architecture
 
 The project uses a two-layer Docker architecture for consistent GDAL environments:
 
-**Base Images** (`ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64`)
+**Base Images** (`ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`)
 
-- Contains: GDAL X.Y.Z, R, and all package dependencies
+- Contains: GDAL X.Y.Z, R, and all package dependencies (no gdalcli package)
 - Purpose: Reusable foundation for CI and development
 - Usage in CI: R-CMD-check-docker workflow tests against these images
 - When updated: When GDAL versions change or dependencies update
+- Built for: All patch versions (3.11.4, 3.12.0, 3.12.1, etc.)
 
 **Runtime Images** (`ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`)
 
 - Contains: Complete gdalcli package installed and tested
 - Purpose: Production-ready images for users and deployment
-- When updated: Weekly or when package changes significantly
+- Built from: Corresponding base images
+- When updated: When GDAL patch or minor versions change
+- Multiple versions: One per GDAL patch version (3.11.4, 3.12.0, 3.12.1, etc.)
 
 **Relationship:**
 
 - Base images provide the GDAL + R foundation
 - Runtime images extend base images with the compiled gdalcli package
 - CI workflows use base images for testing (faster, no package pre-install needed)
-- Users can pull runtime images for ready-to-use gdalcli environments
+- Users can pull runtime images for ready-to-use gdalcli environments for specific GDAL versions
 
 ### Workflow Selection Guide
 
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
 | Code changes | R-CMD-check-ubuntu + R-CMD-check-docker | Both run automatically on PRs |
-| GDAL version updates | build-base-images -> build-runtime-images | Update base images first |
-| Package releases | build-releases | Manual workflow with version parameters |
+| New GDAL version | build-docker-images → build-releases | Build image first, then release |
+| GDAL patch update | build-docker-images → build-releases | Same workflow, new patch version |
 | Docker issues | R-CMD-check-docker | Isolated testing environment |
 | Performance testing | R-CMD-check-docker | Consistent environment |
+
+### Docker Image Maintenance
+
+The project maintains Docker images for CI/CD and user deployment. To prevent accumulation of old images, automated cleanup is available:
+
+#### Local Docker Cleanup
+
+Use this script to remove old local Docker images you've pulled locally:
+
+```bash
+# Dry run (recommended first)
+./scripts/cleanup-local-docker-images.sh --dry-run
+
+# Remove old images (keeps latest base and runtime images)
+./scripts/cleanup-local-docker-images.sh --force
+```
+
+**Options:**
+
+- `--dry-run`: Show what would be removed without actually removing
+- `--force`: Skip confirmation prompts
+- `--repo REPO`: Specify different repository (default: `ghcr.io/brownag/gdalcli`)
+
+#### Remote GHCR Cleanup
+
+Use the GitHub CLI script to clean up old images from GitHub Container Registry remotely:
+
+```bash
+# Dry run (recommended first)
+./scripts/cleanup-ghcr-images.sh --dry-run
+
+# Remove old GDAL versions (keeps 3 most recent)
+./scripts/cleanup-ghcr-images.sh --force
+```
+
+Alternatively, the `cleanup-ghcr.yml` GitHub Actions workflow can run the cleanup manually:
+
+- **Manual Trigger**: Actions → "Cleanup GHCR Images" → Run workflow
+- **Retention**: Keeps the 3 most recent GDAL versions (all images per version are preserved)
+- **Safety**: Supports dry-run mode for testing (enabled by default)
+
+**Manual workflow options:**
+
+- `dry_run`: `true` (default) or `false`
+- `keep_versions`: Number of recent GDAL versions to keep (default: 3)
+- `force`: Skip confirmation prompts (default: false)
+
+#### Image Types
+
+- **Base Images**: `ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`
+  - Used for CI testing and as foundation for runtime images
+  - Cleanup keeps all images for the most recent GDAL versions
+
+- **Runtime Images**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
+  - Complete images with gdalcli package installed
+  - Cleanup keeps all images for the most recent GDAL versions
 
 ## Questions?
 

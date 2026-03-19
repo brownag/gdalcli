@@ -493,7 +493,7 @@ test_that("render_shell_script with format defaults to 'commands'", {
   expect_equal(script_default, script_explicit)
 })
 
-test_that("gdal_pipeline convenience function detects pipeline type", {
+test_that("gdal_compose convenience function detects pipeline type", {
   # Create raster jobs
   job1 <- gdal_raster_reproject(
     input = "input.tif",
@@ -502,14 +502,14 @@ test_that("gdal_pipeline convenience function detects pipeline type", {
   job2 <- gdal_raster_convert(output = "output.tif")
 
   # Create pipeline using convenience function
-  pipeline_job <- gdal_pipeline(jobs = list(job1, job2))
+  pipeline_job <- gdal_compose(jobs = list(job1, job2))
 
   expect_s3_class(pipeline_job, "gdal_job")
   expect_equal(pipeline_job$command_path[1], "raster")
   expect_equal(pipeline_job$command_path[2], "pipeline")
 })
 
-test_that("gdal_pipeline convenience function works with vector jobs", {
+test_that("gdal_compose convenience function works with vector jobs", {
   # Create vector jobs
   job1 <- gdal_vector_reproject(
     input = "input.gpkg",
@@ -518,7 +518,7 @@ test_that("gdal_pipeline convenience function works with vector jobs", {
   job2 <- gdal_vector_convert(output = "output.shp")
 
   # Create pipeline using convenience function
-  pipeline_job <- gdal_pipeline(jobs = list(job1, job2))
+  pipeline_job <- gdal_compose(jobs = list(job1, job2))
 
   expect_s3_class(pipeline_job, "gdal_job")
   expect_equal(pipeline_job$command_path[1], "vector")

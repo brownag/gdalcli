@@ -454,56 +454,6 @@ names.gdal_job <- function(x) {
   pipeline_parts <- character()
   num_jobs <- length(jobs)
 
-  # Step mapping for GDAL commands to pipeline step names
-  step_mapping <- list(
-    # Raster operations
-    "raster" = c(
-      # I/O
-      "convert" = "write",
-      "create" = "write",
-      "tile" = "write",
-      # Analysis & transformation
-      "reproject" = "reproject",
-      "clip" = "clip",
-      "edit" = "edit",
-      "select" = "select",
-      "scale" = "scale",
-      "unscale" = "unscale",
-      "resize" = "resize",
-      "calc" = "calc",
-      "reclassify" = "reclassify",
-      "hillshade" = "hillshade",
-      "slope" = "slope",
-      "aspect" = "aspect",
-      "roughness" = "roughness",
-      "tpi" = "tpi",
-      "tri" = "tri",
-      # Cleanup
-      "fill_nodata" = "fillnodata",
-      "fill-nodata" = "fillnodata",
-      "clean_collar" = "cleancol",
-      "clean-collar" = "cleancol",
-      "sieve" = "sieve",
-      # Other
-      "mosaic" = "mosaic",
-      "stack" = "stack",
-      "info" = "read"
-    ),
-    # Vector operations
-    "vector" = c(
-      # I/O
-      "convert" = "write",
-      # Analysis & transformation
-      "reproject" = "reproject",
-      "clip" = "clip",
-      "filter" = "filter",
-      "select" = "select",
-      "sql" = "sql",
-      "intersection" = "intersection",
-      "info" = "read"
-    )
-  )
-
   for (i in seq_along(jobs)) {
     job <- jobs[[i]]
     if (!inherits(job, "gdal_job")) {
@@ -523,18 +473,8 @@ names.gdal_job <- function(x) {
     cmd_type <- cmd_path[1]  # "raster" or "vector"
     operation <- cmd_path[2]  # The actual operation name
 
-    # Get the appropriate mapping for this command type
-    type_mapping <- step_mapping[[cmd_type]]
-    if (is.null(type_mapping)) {
-      rlang::abort(sprintf("Unknown command type '%s' in job %d", cmd_type, i))
-    }
-
-    # Map the operation to a step name
-    step_name <- if (operation %in% names(type_mapping)) {
-      type_mapping[operation]
-    } else {
-      operation  # Use operation as-is if no mapping exists
-    }
+    # Get step name from RFC 104 mappings (loaded at package load time)
+    step_name <- .get_step_mapping(cmd_type, operation)
 
     # Determine job position
     is_first <- (i == 1)

@@ -14,17 +14,17 @@ gdal_raster_overview_add(
 )
 }
 \arguments{
-\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path). Format: \code{NA}. Choices: NULL (required). Minimum: \code{NA}. Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{external}{Add external overviews (Logical)}
+\item{external}{Add external overviews (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
 
-\item{resampling}{Resampling method. Choices: nearest, average, cubic, cubicspline, lanczos, ...}
+\item{resampling}{Resampling method. Format: \code{NA}. Choices: c("nearest", "average", "cubic", "cubicspline", "lanczos", "bilinear", "gauss", "average_magphase", "rms", "mode"). Minimum: \code{NA}}
 
-\item{levels}{Levels / decimation factors (Integer vector). Minimum: \code{2}. \code{0} to \code{2147483647} value(s)}
+\item{levels}{Levels / decimation factors (Integer vector). Format: \code{NA}. Choices: NULL. Minimum: \code{2}. \code{0} to \code{2147483647} value(s)}
 
-\item{min_size}{Maximum width or height of the smallest overview level. (Integer). Minimum: \code{1}}
+\item{min_size}{Maximum width or height of the smallest overview level. (Integer). Format: \code{NA}. Choices: NULL. Minimum: \code{1}}
 }
 \value{
 A \link{gdal_job} object.

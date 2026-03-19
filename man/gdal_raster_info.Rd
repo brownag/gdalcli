@@ -27,43 +27,43 @@ gdal_raster_info(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required). Minimum: \code{NA}. Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
+\item{output_format}{Output format. Format: \code{NA}. Choices: c("json", "text") (Default: \code{json}). Minimum: \code{NA}}
 
-\item{min_max}{Compute minimum and maximum value (Logical)}
+\item{min_max}{Compute minimum and maximum value (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{stats}{Retrieve or compute statistics, using all pixels (Logical)}
+\item{stats}{Retrieve or compute statistics, using all pixels (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{approx_stats}{Retrieve or compute statistics, using a subset of pixels (Logical)}
+\item{approx_stats}{Retrieve or compute statistics, using a subset of pixels (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{hist}{Retrieve or compute histogram (Logical)}
+\item{hist}{Retrieve or compute histogram (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{no_gcp}{Suppress ground control points list printing (Logical) (Advanced)}
+\item{no_gcp}{Suppress ground control points list printing (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{no_md}{Suppress metadata printing (Logical) (Advanced)}
+\item{no_md}{Suppress metadata printing (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{no_ct}{Suppress color table printing (Logical) (Advanced)}
+\item{no_ct}{Suppress color table printing (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{no_fl}{Suppress file list printing (Logical) (Advanced)}
+\item{no_fl}{Suppress file list printing (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{checksum}{Compute pixel checksum (Logical) (Advanced)}
+\item{checksum}{Compute pixel checksum (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{list_mdd}{List all metadata domains available for the dataset (Logical) (Advanced)}
+\item{list_mdd}{List all metadata domains available for the dataset (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{metadata_domain}{Report metadata for the specified domain. 'all' can be used to report metadata in all domains (Advanced)}
+\item{metadata_domain}{Report metadata for the specified domain. 'all' can be used to report metadata in all domains. Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Advanced)}
 
-\item{no_nodata}{Suppress retrieving nodata value (Logical) (Esoteric)}
+\item{no_nodata}{Suppress retrieving nodata value (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Esoteric)}
 
-\item{no_mask}{Suppress mask band information (Logical) (Esoteric)}
+\item{no_mask}{Suppress mask band information (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA} (Esoteric)}
 
-\item{subdataset}{Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: \code{1} (Esoteric)}
+\item{subdataset}{Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{1} (Esoteric)}
 
-\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
+\item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
 }
 \value{
 A \link{gdal_job} object.

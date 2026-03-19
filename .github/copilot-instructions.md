@@ -28,6 +28,25 @@ UNDER NO CIRCUMSTANCES SHOULD YOU EVER PUSH TO A REMOTE GIT REPOSITORY
 - **S3 Composition**: All modifiers are S3 generics that return modified `gdal_job` objects
 - **Environment-Based Auth**: Credentials read from environment variables, never passed as arguments
 - **Process Isolation**: Each command runs in isolated subprocess with injected environment
+- **Pipe Composition**: Use native R pipe (`|>`) to compose jobs into pipelines naturally
+
+### GDAL Version Conflicts and API Evolution
+
+**GDAL 3.12+ Native Commands:**
+- GDAL 3.12.0+ introduced native `gdal pipeline` command
+- This conflicts with gdalcli's original `gdal_pipeline()` convenience wrapper function
+- **Resolution**: Renamed function to `gdal_compose()`, marked deprecated for 0.5.x removal
+- **Rationale**: 
+  - Piping with `|>` is more idiomatic R for composition
+  - Explicit type specification (`gdal_raster_pipeline()` vs `gdal_vector_pipeline()`) is clearer than type auto-detection
+  - Function added minimal value over direct function calls
+  - Users can still pass lists directly: `gdal_raster_pipeline(jobs = list(j1, j2, j3))`
+
+**Deprecated Functions:**
+- `gdal_compose()` - Deprecated as of 0.4.x, removal planned for 0.5.x
+  - Issues warning via `.Deprecated()` on use
+  - Docs recommend pipe approach instead
+  - Will remove unless real-world use cases emerge
 
 ## CI/CD Workflows
 
@@ -51,31 +70,30 @@ The project uses GitHub Actions for automated testing, building, and deployment.
 
 ### Build Workflows
 
-**build-base-images.yml**
-- **Purpose**: Build reusable GDAL base images for CI
-- **Trigger**: Manual dispatch
-- **Output**: `ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64` images
-- **When to run**: When GDAL versions change or base image updates needed
-
-**build-runtime-images.yml**
-- **Purpose**: Build full runtime Docker images with gdalcli installed
-- **Trigger**: Weekly schedule, main branch pushes, manual dispatch
-- **Output**: `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest` images
-- **When to run**: Automated weekly builds or when runtime images need updates
+**build-docker-images.yml**
+- **Purpose**: Build GDAL Docker images (base and runtime) for specific GDAL versions
+- **Flexibility**: Accepts any GDAL version via `gdal_version` input in workflow_dispatch
+  - When `gdal_version` provided: builds only that specific version
+  - When triggered by schedule/push: builds default matrix (3.11.4, 3.12.0)
+- **Trigger**: Weekly schedule (Saturdays), main branch pushes, manual dispatch
+- **When to run**: New GDAL patch versions, when dependencies need updates, or to build arbitrary versions
 
 **build-releases.yml**
-- **Purpose**: Dynamic package builds and GitHub releases
-- **Trigger**: Manual dispatch with parameters
-- **Output**: Release branches, GitHub releases, package binaries
-- **When to run**: When creating new package releases for specific GDAL versions
+- **Purpose**: Generate gdalcli for specific GDAL version and create releases with tagged commits
+- **Branching Strategy**:
+  - New minor version: Creates `release/gdal-X.Y` from main
+  - Patch version: Continues on existing `release/gdal-X.Y` without reset to main
+- **Releases**: Creates tags like `v0.3.0-3.12.0`, `v0.3.0-3.12.1` for each patch
+- **Trigger**: Manual dispatch with `gdal_version`
+- **When to run**: After building Docker image for new GDAL patch or minor version
 
 ### Workflow Selection Guide
 
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
 | Code changes | R-CMD-check-ubuntu.yml + R-CMD-check-docker.yml | Both run automatically on PRs |
-| GDAL version updates | build-base-images.yml → build-runtime-images.yml | Update base images first |
-| Package releases | build-releases.yml | Manual workflow with version parameters |
+| New GDAL version | build-docker-images.yml → build-releases.yml | Build image first, then release |
+| GDAL patch update | build-docker-images.yml → build-releases.yml | Same workflow for new patch |
 | Docker issues | R-CMD-check-docker.yml | Isolated testing environment |
 | Performance testing | R-CMD-check-docker.yml | Consistent environment |
 
@@ -83,31 +101,54 @@ The project uses GitHub Actions for automated testing, building, and deployment.
 
 Some workflows require manual triggering via GitHub Actions:
 
-- **build-base-images.yml**: Set `push_images=true` to publish to GHCR
-- **build-runtime-images.yml**: Specify `gdal_version` (default: 3.11.4)  
-- **build-releases.yml**: Configure `gdal_version`, `package_version`, `create_release`, etc.
+- **build-docker-images.yml**: 
+  - Optional `gdal_version`: Leave empty for default matrix, or specify any version (e.g., 3.12.1)
+  - Set `push_images=true` to publish to GHCR
+  - Choose `image_stage` (both/deps/full) for what to build
+
+- **build-releases.yml**: 
+  - `gdal_version`: Specific version to release (must have corresponding Docker image)
+  - `create_release`: true/false to create GitHub release and tag
+  - `dry_run`: true/false to test without committing
+
+### Patch Version Release Workflow
+
+When GDAL patch version is released (e.g., 3.12.0 -> 3.12.1):
+
+1. Build Docker images via `build-docker-images.yml` with `gdal_version=3.12.1`
+2. Run `build-releases.yml` with `gdal_version=3.12.1`
+3. Workflow automatically:
+   - Detects existing `release/gdal-3.12` branch
+   - Checks out existing branch (preserves 3.12.0 work)
+   - Generates API for 3.12.1
+   - Creates new commit on `release/gdal-3.12` with generated code
+   - Tags as `v0.3.0-3.12.1`
+
+Users can then:
+- Install latest patch: `remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.12")`
+- Install specific patch: `remotes::install_github("brownag/gdalcli", ref = "v0.3.0-3.12.0")`
 
 ### Docker Image Architecture
 
 The project uses a multi-stage Docker architecture for consistent GDAL environments:
 
-**Base Images** (`ghcr.io/brownag/gdalcli:base-gdal-X.Y.Z-amd64`)
-- Built by: `build-base-images.yml`
-- Contains: GDAL X.Y.Z, R, and all package dependencies
+**Base Images** (`ghcr.io/brownag/gdalcli:deps-gdal-X.Y.Z-amd64`)
+- Built by: `build-docker-images.yml` with `image_stage=deps` or `image_stage=both`
+- Contains: GDAL X.Y.Z, R, and all package dependencies (no gdalcli package)
 - Purpose: Reusable foundation for CI and development
-- When updated: When GDAL versions change or dependencies update
+- Built for: All patch versions (one per patch, e.g., 3.11.4, 3.12.0, 3.12.1)
 
 **Runtime Images** (`ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`)  
-- Built by: `build-runtime-images.yml`
+- Built by: `build-docker-images.yml` with `image_stage=full` or `image_stage=both`
 - Contains: Complete gdalcli package installed and tested
 - Purpose: Production-ready images for users and deployment
-- When updated: Weekly or when package changes significantly
+- Built for: All patch versions (one per patch, e.g., 3.11.4, 3.12.0, 3.12.1)
 
 **Relationship:**
 - Base images provide the GDAL + R foundation
 - Runtime images extend base images with the compiled gdalcli package
 - CI workflows use base images for testing (faster, no package pre-install needed)
-- Users can pull runtime images for ready-to-use gdalcli environments
+- Users can pull runtime images for ready-to-use gdalcli with specific GDAL patch versions
 
 ## Development Workflow
 
@@ -175,6 +216,28 @@ gdal_raster_convert(...) |>
   gdal_run()
 ```
 
+### Pipeline Composition
+
+**Preferred approach: Use the pipe operator**
+```r
+# Compose multiple operations naturally with piping
+result <- gdal_raster_reproject(
+  input = "input.tif",
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(src_min = 0, src_max = 100) |>
+  gdal_raster_convert(output = "output.tif") |>
+  gdal_job_run()
+```
+
+**For programmatic job lists: Use explicit pipeline functions**
+```r
+# When you have a list of jobs and know the type
+jobs <- build_job_list(config)
+pipeline <- gdal_raster_pipeline(jobs = jobs)
+gdal_job_run(pipeline)
+```
+
 ### Authentication
 
 ```r
@@ -187,6 +250,45 @@ auth <- gdal_auth_gcs()  # GOOGLE_APPLICATION_CREDENTIALS
 job |> gdal_with_env(auth) |> gdal_run()
 ```
 
+### Package Options
+
+The package provides a comprehensive options system via `gdalcli_options()` for controlling default behaviors.
+
+```r
+# View current options
+gdalcli_options()
+
+# Set options
+gdalcli_options(backend = "processx", verbose = TRUE)
+
+# Common options:
+gdalcli_options(
+  backend = "auto",              # "auto" (default), "gdalraster", or "processx"
+  verbose = FALSE,               # Enable verbose output
+  stream_out_format = NULL,      # NULL, "text", or "binary" for streaming
+  audit_logging = FALSE          # Enable audit logging of executed commands
+)
+```
+
+**Backend Selection:**
+- `"auto"` (default): Automatically select the best available backend
+- `"gdalraster"`: Use gdalraster backend (faster, direct API calls when available)
+- `"processx"`: Use processx backend (universal, subprocess-based)
+- `"reticulate"`: Use reticulate backend (Python GDAL bindings)
+
+**Verbose Output:**
+- `FALSE` (default): No verbose output
+- `TRUE`: Print detailed execution information during command execution
+
+**Streaming Output Format:**
+- `NULL` (default): No streaming format preference
+- `"text"`: Use text format for streaming output
+- `"binary"`: Use binary format for streaming output
+
+**Audit Logging:**
+- `FALSE` (default): No audit logging
+- `TRUE`: Log all executed commands (requires setting up audit handler via `gdal_job_run_with_audit()`)
+
 ## Testing
 
 ### Test Structure
@@ -195,6 +297,7 @@ job |> gdal_with_env(auth) |> gdal_run()
 - **Pipeline Tests**: `tests/testthat/test_pipeline.R` - Core functionality
 - **Mocking**: Use `mockery` for external dependencies
 - **File System**: Avoid real file operations in tests
+- **Expected Failures**: Use "nonexistent.tif" for tests where GDAL should fail (file not found) - makes GDAL error messages consistent and clearly intentional
 
 ### Running Tests
 
@@ -293,7 +396,7 @@ job |> gdal_with_dry_run() |> gdal_run()
 - `rlang` - Tidyverse infrastructure
 - `cli` - Command-line interface tools
 - `processx` - Process management
-- `jsonlite` - JSON parsing
+- `yyjsonr` - Fast JSON parsing and serialization (YYJSON bindings)
 - `gdalraster` - GDAL R bindings
 - `digest` - Hashing utilities
 

@@ -15,8 +15,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r-version: ['release', 'devel']
-        gdal-version: ['3.11']
+        include:
+          - r-version: 'release'
+            gdal-version: '3.11'
+          - r-version: 'devel'
+            gdal-version: '3.11'  # Latest available from ubuntugis-unstable PPA
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}

@@ -119,7 +119,7 @@ Execute the job with `gdal_job_run()`:
 
 ```{r execute-job}
 # Now execute the job
-gdalcli::gdal_job_run(job)
+gdal_job_run(job)
 ```
 
 # Raster Operations
@@ -136,7 +136,7 @@ elev_file <- system.file("extdata", "storml_elev.tif", package = "gdalraster")
 
 # Get dataset information
 elev_info <- gdal_raster_info(input = elev_file)
-gdalcli::gdal_job_run(elev_info)
+gdal_job_run(elev_info)
 ```
 
 ## Format Conversion with Options
@@ -155,7 +155,7 @@ convert_job <- gdal_raster_convert(
   gdal_with_co("COMPRESS=DEFLATE", "PREDICTOR=2") |>  # Compression options
   gdal_with_config("GDAL_CACHEMAX=128")           # Memory configuration
 
-gdalcli::gdal_job_run(convert_job)
+gdal_job_run(convert_job)
 
 # Check the output file
 file.info(output_file)
@@ -178,7 +178,7 @@ clip_job <- gdal_raster_clip(
   bbox = clip_bounds
 )
 
-gdalcli::gdal_job_run(clip_job)
+gdal_job_run(clip_job)
 ```
 
 # Vector Operations
@@ -192,7 +192,7 @@ gdalcli::gdal_job_run(clip_job)
 fires_file <- system.file("extdata", "ynp_fires_1984_2022.gpkg", package = "gdalraster")
 
 vector_info <- gdal_vector_info(input = fires_file)
-gdalcli::gdal_job_run(vector_info)
+gdal_job_run(vector_info)
 ```
 
 ## Vector Format Conversion
@@ -206,7 +206,7 @@ convert_vector <- gdal_vector_convert(
   output_format = "ESRI Shapefile"
 )
 
-gdalcli::gdal_job_run(convert_vector)
+gdal_job_run(convert_vector)
 ```
 
 # Pipeline Composition
@@ -218,20 +218,19 @@ Multi-step workflows can be composed using R's native pipe operator.
 Build multi-step processing pipelines:
 
 ```{r pipeline-example}
-# Create a processing pipeline: convert -> clip
+# Create a processing pipeline: convert -> scale -> compress
 pipeline_job <- gdal_raster_convert(
   input = tcc_file,
   output = tempfile(fileext = ".tif"),
   output_format = "GTiff"
 ) |>
-  gdal_raster_clip(
-    bbox = clip_bounds,
-    output = tempfile(fileext = ".tif")
-  ) |>
+  gdal_raster_scale(src_min = 0, src_max = 255) |>
   gdal_with_co("COMPRESS=LZW")  # Add compression to the final output
 
-# Execute the entire pipeline
-gdalcli::gdal_job_run(pipeline_job)
+# Inspect the job spec before execution
+str(pipeline_job)
+
+# Execute would be: gdal_job_run(pipeline_job)
 ```
 
 ## Job Reuse and Modification
@@ -247,8 +246,8 @@ info_verbose <- base_info |> gdal_with_config("CPL_DEBUG=ON")
 info_quiet <- base_info |> gdal_with_config("CPL_LOG=OFF")
 
 # Execute different versions
-gdalcli::gdal_job_run(info_verbose)
-gdalcli::gdal_job_run(info_quiet)
+gdal_job_run(info_verbose)
+gdal_job_run(info_quiet)
 ```
 
 # Optional Features
@@ -262,7 +261,7 @@ If you have the `gdalraster` package installed, you can use its native GDAL bind
 ```{r gdalraster-backend, eval=FALSE}
 # gdalraster backend uses native GDAL bindings
 job <- gdal_raster_info(input = byte_file)
-gdalcli::gdal_job_run(job, backend = "gdalraster")
+gdal_job_run(job, backend = "gdalraster")
 ```
 
 **When to use gdalraster backend:**
@@ -282,7 +281,7 @@ job <- gdal_raster_convert(
   input = byte_file,
   output = tempfile(fileext = ".tif")
 )
-gdalcli::gdal_job_run(job, backend = "reticulate")
+gdal_job_run(job, backend = "reticulate")
 ```
 
 **When to use Python backend:**
@@ -323,7 +322,7 @@ configured_job <- gdal_raster_info(input = byte_file) |>
     "CPL_VSIL_CURL_ALLOWED_EXTENSIONS=.tif,.tiff"
   )
 
-gdalcli::gdal_job_run(configured_job)
+gdal_job_run(configured_job)
 ```
 
 ## Error Handling
@@ -333,7 +332,7 @@ gdalcli::gdal_job_run(configured_job)
 ```{r error-handling, error=TRUE}
 # This will fail because the file doesn't exist
 bad_job <- gdal_raster_info(input = "nonexistent.tif")
-try(gdalcli::gdal_job_run(bad_job))
+try(gdal_job_run(bad_job))
 ```
 
 # Performance Considerations
@@ -353,7 +352,7 @@ memory_optimized <- gdal_raster_convert(
     "GDAL_DISABLE_READDIR_ON_OPEN=TRUE"  # Avoid directory scans
   )
 
-gdalcli::gdal_job_run(memory_optimized)
+gdal_job_run(memory_optimized)
 ```
 
 ## Batch Processing
@@ -374,7 +373,7 @@ batch_jobs <- lapply(sample_files, function(file) {
 })
 
 # Execute all jobs
-lapply(batch_jobs, gdalcli::gdal_job_run)
+lapply(batch_jobs, gdal_job_run)
 ```
 
 # Summary

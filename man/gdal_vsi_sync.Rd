@@ -13,15 +13,15 @@ gdal_vsi_sync(
 )
 }
 \arguments{
-\item{source}{Source file or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{source}{Source file or directory name. Choices: NULL (Default: \code{NA}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{destination}{Destination file or directory name (required)}
+\item{destination}{Destination file or directory name. Choices: NULL (Default: \code{NA}) (required)}
 
-\item{recursive}{Synchronize recursively (Logical)}
+\item{recursive}{Synchronize recursively (Logical). Choices: NULL (Default: \code{NA})}
 
-\item{strategy}{Synchronization strategy. Choices: timestamp, ETag, overwrite (Default: \code{timestamp})}
+\item{strategy}{Synchronization strategy. Choices: c("timestamp", "ETag", "overwrite") (Default: \code{timestamp})}
 
-\item{num_threads}{Number of jobs (or ALL_CPUS)}
+\item{num_threads}{Number of jobs (or ALL_CPUS). Choices: NULL (Default: \code{NA})}
 }
 \value{
 A \link{gdal_job} object.

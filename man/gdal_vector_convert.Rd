@@ -21,31 +21,31 @@ gdal_vector_convert(
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector dataset (Dataset path). Format: \code{NA} (Default: \code{NA}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA} (Default: \code{NA})}
 
-\item{output_layer}{Output layer name}
+\item{output_layer}{Output layer name. Format: \code{NA} (Default: \code{NA})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA} (Default: \code{false})}
 }
 \value{
 A \link{gdal_job} object.

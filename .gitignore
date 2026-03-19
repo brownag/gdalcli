@@ -10,3 +10,7 @@ README.html
 .github/GHA_LOGS/
 vignettes/*.html
 venv/
+scratch/
+.Rproj.user
+*.Rproj
+*.Rhistory

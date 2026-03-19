@@ -23,35 +23,35 @@ gdal_raster_polygonize(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path). Format: \code{NA} (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format. Format: \code{NA} (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
 
-\item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
+\item{band}{Input band (1-based index) (Integer). Format: \code{NA} (Default: \code{1})}
 
-\item{layer}{Layer name (Default: \code{polygonize})}
+\item{layer}{Layer name. Format: \code{NA} (Default: \code{polygonize})}
 
-\item{attribute_name}{Name of the field with the pixel value (Default: \code{DN})}
+\item{attribute_name}{Name of the field with the pixel value. Format: \code{NA} (Default: \code{DN})}
 
-\item{connect_diagonal_pixels}{Consider diagonal pixels as connected (Logical) (Default: \code{false})}
+\item{connect_diagonal_pixels}{Consider diagonal pixels as connected (Logical). Format: \code{NA} (Default: \code{FALSE})}
 }
 \value{
 A \link{gdal_job} object.
