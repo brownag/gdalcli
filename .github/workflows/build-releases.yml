@@ -214,7 +214,14 @@ jobs:
                   git checkout --theirs "$file"
                   git add "$file"
                 elif [[ $file == R/* ]]; then
-                  echo "Keeping release version of $file"
+                  git checkout --ours "$file"
+                  git add "$file"
+                elif [[ $file == inst/* ]]; then
+                  git checkout --ours "$file"
+                  git add "$file"
+                else
+                  echo "WARNING: Unhandled conflict in $file, taking theirs"
+                  git checkout --theirs "$file"
                   git add "$file"
                 fi
               done
