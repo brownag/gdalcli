@@ -271,7 +271,7 @@ cat(script)
 #> set -e
 #> 
 #> # Native GDAL pipeline execution
-#> gdal raster pipeline ! read /home/andrew/R/x86_64-pc-linux-gnu-library/4.5/gdalcli/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_2532770a221cf.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/Rtmpd7lBSK/file2532745b399d8.tif --input /vsimem/gdalcli_253273097d5e0.tif
+#> gdal raster pipeline ! read /home/andrew/workspace/gdalcli/inst/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_3db8c31df3955.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpvUIido/file3db8c68032907.tif --input /vsimem/gdalcli_3db8c370bdb6a.tif
 ```
 
 ## Architecture
