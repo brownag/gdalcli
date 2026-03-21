@@ -234,7 +234,8 @@ The project uses a two-layer Docker architecture for consistent GDAL environment
 
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
-| Code changes | R-CMD-check-ubuntu + R-CMD-check-docker | Both run automatically on PRs |
+| Code changes (main) | R-CMD-check-docker | Runs automatically on PRs to main |
+| Release branch updates | R-CMD-check-release | Runs automatically on `release/gdal-*` updates |
 | New GDAL version | build-docker-images → build-releases | Build image first, then release |
 | GDAL patch update | build-docker-images → build-releases | Same workflow, new patch version |
 | Docker issues | R-CMD-check-docker | Isolated testing environment |

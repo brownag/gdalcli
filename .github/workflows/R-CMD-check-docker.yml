@@ -136,21 +136,22 @@ jobs:
           }
           "
 
-      - name: Run package tests
-        run: |
-          Rscript -e "devtools::test()"
-
       - name: Generate test summary
         if: always()
         run: |
-          if [ -f gdalcli.Rcheck/tests/test_pipeline.Rout ]; then
-            cat gdalcli.Rcheck/tests/test_pipeline.Rout
+          ROUT_DIR="gdalcli.Rcheck/tests"
+          if ls "$ROUT_DIR"/*.Rout 2>/dev/null | head -1 > /dev/null; then
+            for f in "$ROUT_DIR"/*.Rout; do
+              echo "=== $f ===" && tail -20 "$f"
+            done
+          else
+            echo "No .Rout test output files found"
           fi
 
       - name: Upload check results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: check-results-${{ matrix.r-version }}
+          name: check-results-${{ matrix.r-version }}-gdal-${{ matrix.gdal-version }}
           path: gdalcli.Rcheck/
           retention-days: 7

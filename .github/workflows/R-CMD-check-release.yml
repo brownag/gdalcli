@@ -1,0 +1,70 @@
+name: R-CMD-check (Release)
+
+on:
+  push:
+    branches: ['release/gdal-*']
+  pull_request:
+    branches: ['release/gdal-*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    name: R CMD check / ${{ github.base_ref || github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse GDAL version from branch name
+        id: gdal
+        run: |
+          BRANCH="${{ github.base_ref || github.ref_name }}"
+          SHORT=$(echo "$BRANCH" | sed 's|release/gdal-||')
+          if ! [[ "$SHORT" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "ERROR: Cannot parse GDAL version from branch '$BRANCH'"
+            exit 1
+          fi
+          echo "short=$SHORT" >> $GITHUB_OUTPUT
+          echo "image=ghcr.io/${{ github.repository }}:deps-gdal-${SHORT}-amd64" >> $GITHUB_OUTPUT
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run R CMD check inside Docker
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            -e LANG=en_US.UTF-8 \
+            "${{ steps.gdal.outputs.image }}" \
+            Rscript -e "devtools::check(args = c('--no-manual'), error_on = 'error')"
+
+      - name: Verify package installs and loads
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace" \
+            -w /workspace \
+            "${{ steps.gdal.outputs.image }}" \
+            Rscript -e "
+              devtools::install(quiet = TRUE)
+              library(gdalcli)
+              cat('gdalcli loaded successfully\n')
+              cat('GDAL version:', as.character(gdalraster::gdal_version()[1]), '\n')
+            "
+
+      - name: Upload check results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: check-results-release-gdal-${{ steps.gdal.outputs.short }}
+          path: gdalcli.Rcheck/
+          retention-days: 7
+          if-no-files-found: ignore
