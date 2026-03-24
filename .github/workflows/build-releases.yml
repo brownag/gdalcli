@@ -436,7 +436,7 @@ jobs:
 
       - name: Upload R CMD check log
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rcheck-log-gdal-${{ needs.validate.outputs.gdal_version }}
           path: workspace.Rcheck/
