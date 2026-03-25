@@ -106,7 +106,7 @@ jobs:
       - name: Run R CMD check
         run: |
           export LANG=en_US.UTF-8
-          R CMD check --no-manual --compact-vignettes=gs+qpdf gdalcli
+          R CMD check --no-manual .
 
       - name: Install package
         run: |
