@@ -7,7 +7,7 @@
 ^vignettes/\.DS_Store$
 ^man/figures/.*\.png$
 ^Makefile$
-^\.gdal_doc_cache
+^\.gdal_doc_cache.*$
 ^LICENSE\.md$
 ^docs$
 ^.*\.Rcheck$
