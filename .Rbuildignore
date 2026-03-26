@@ -6,12 +6,11 @@
 ^\.DS_Store$
 ^vignettes/\.DS_Store$
 ^man/figures/.*\.png$
-build/
 ^Makefile$
-^\.gdal_doc_cache
+^\.gdal_doc_cache.*$
 ^LICENSE\.md$
 ^docs$
-^\.\.Rcheck$
+^.*\.Rcheck$
 ^\.test_cache$
 ^\.git$
 ^\.claude$
@@ -27,5 +26,4 @@ build/
 ^examples$
 ^scratch$
 ^venv$
-^venv/
 ^build/

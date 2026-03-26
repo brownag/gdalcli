@@ -348,13 +348,13 @@ find_python_gdal_env <- function() {
   if (!requireNamespace("reticulate", quietly = TRUE)) {
     return(FALSE)
   }
-  
-  tryCatch({
+
+  suppressWarnings(tryCatch({
     # Check current environment first
     if (reticulate::py_module_available("osgeo.gdal")) {
       return(TRUE)
     }
-    
+
     # Try venv in project root and common relative locations
     venv_paths <- c(
       file.path(getwd(), "venv"),                    # venv in current dir
@@ -362,7 +362,7 @@ find_python_gdal_env <- function() {
       "venv",                                        # relative venv
       "~/.venv"                                      # user home venv
     )
-    
+
     for (path in venv_paths) {
       expanded_path <- path.expand(path)
       if (dir.exists(expanded_path)) {
@@ -372,7 +372,7 @@ find_python_gdal_env <- function() {
         }
       }
     }
-    
+
     # Try standard virtualenv locations
     venvs <- reticulate::virtualenv_list()
     for (venv in venvs) {
@@ -385,7 +385,7 @@ find_python_gdal_env <- function() {
       }
     }
     FALSE
-  }, error = function(e) FALSE)
+  }, error = function(e) FALSE))
 }
 
 # Helper function to check if Python GDAL is available
@@ -534,7 +534,7 @@ test_that("gdalraster backend returns text output from raster_info", {
   
   # If we got output, verify it's character
   if (!is.null(result)) {
-    expect_is(result, "character")
+    expect_type(result, "character")
     expect_gt(nchar(result), 0)
   }
 })
@@ -748,9 +748,9 @@ test_that("gdalraster backend produces text output from raster_info", {
   # Execute with gdalraster backend requesting text output
   job <- gdal_raster_info(input = sample_file)
   result <- gdal_job_run(job, backend = "gdalraster", stream_out_format = "text")
-  
+
   # Verify output
-  expect_is(result, "character")
+  expect_type(result, "character")
   expect_gt(nchar(result), 0)
   
   # Should contain GDAL output characteristics
@@ -779,7 +779,7 @@ test_that("reticulate backend produces text output from raster_info", {
     expect_true(result)
   } else {
     # Should be character text
-    expect_is(result, "character")
+    expect_type(result, "character")
     expect_gt(nchar(result), 0)
   }
 })
@@ -878,12 +878,12 @@ test_that("execution tests handle both backends with stream_out_format parameter
   # Test text format
   job1 <- gdal_raster_info(input = sample_file)
   result_text <- gdal_job_run(job1, backend = "gdalraster", stream_out_format = "text")
-  expect_is(result_text, "character")
+  expect_type(result_text, "character")
   
   # Test raw format
   job2 <- gdal_raster_info(input = sample_file)
   result_raw <- gdal_job_run(job2, backend = "gdalraster", stream_out_format = "raw")
-  expect_is(result_raw, "raw")
+  expect_type(result_raw, "raw")
   
   # Raw and text should both represent the same output
   expect_equal(length(result_raw), nchar(result_text))
@@ -984,7 +984,7 @@ test_that("backends handle environment variables properly", {
   
   # Should produce valid output or be skipped
   if (result != "skipped") {
-    expect_is(result, "character")
+    expect_type(result, "character")
     expect_gt(nchar(result), 0)
   }
 })

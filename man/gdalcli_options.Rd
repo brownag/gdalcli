@@ -10,7 +10,8 @@ gdalcli_options(
   backend = NULL,
   verbose = NULL,
   audit_logging = NULL,
-  stream_out_format = NULL
+  stream_out_format = NULL,
+  ...
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ Default: "auto".}
 
 \item{stream_out_format}{Character. Default output streaming format:
 NULL (no streaming), "text", "raw", "json", or "stdout". Default: NULL.}
+
+\item{...}{Additional arguments (not allowed; raises error if provided).}
 }
 \value{
 Invisibly returns a list of current gdalcli options (before modification).

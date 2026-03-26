@@ -62,11 +62,16 @@
 
 #' Check Arrow Vectors Capability
 #'
-#' Internal check: Arrow support available in GDAL
+#' Internal check: Arrow support available in GDAL (requires GDAL 3.12+)
 #'
 #' @keywords internal
 #' @noRd
 .check_arrow_vectors_available <- function() {
+  # Requires GDAL 3.12+
+  if (!gdal_check_version("3.12", op = ">=")) {
+    return(FALSE)
+  }
+
   # Check if GDAL was compiled with Arrow support
   .check_gdal_has_arrow_driver()
 }

@@ -38,6 +38,7 @@
 #' @param audit_logging Logical. Log all job executions. Default: FALSE.
 #' @param stream_out_format Character. Default output streaming format:
 #'   NULL (no streaming), "text", "raw", "json", or "stdout". Default: NULL.
+#' @param ... Additional arguments (not allowed; raises error if provided).
 #'
 #' @return Invisibly returns a list of current gdalcli options (before modification).
 #'
@@ -111,7 +112,17 @@ gdalcli_options <- function(checkpoint = NULL,
                             backend = NULL,
                             verbose = NULL,
                             audit_logging = NULL,
-                            stream_out_format = NULL) {
+                            stream_out_format = NULL,
+                            ...) {
+  # Check for unknown arguments
+  dots <- list(...)
+  if (length(dots) > 0) {
+    unknown_arg <- names(dots)[1]
+    cli::cli_abort(
+      "Unknown option: {unknown_arg}. Valid options are: checkpoint, checkpoint_dir, backend, verbose, audit_logging, stream_out_format"
+    )
+  }
+
   # Store current options for return value
   current_opts <- .get_all_gdalcli_options()
 

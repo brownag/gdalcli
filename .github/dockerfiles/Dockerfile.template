@@ -186,8 +186,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     locales \
     pandoc \
+    python3-pip \
     qpdf && \
     rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --no-cache-dir osgeo-gdal
 
 # Generate en_US.UTF-8 locale to prevent Sys.setlocale() warnings
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \

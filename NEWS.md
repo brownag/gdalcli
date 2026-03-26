@@ -1,4 +1,4 @@
-# gdalcli 0.5.2 (2026-03-21)
+# gdalcli 0.5.2 (2026-03-25)
 
 - Added Arrow support for in-memory vector processing
 - Added arrow R package to Docker dependencies

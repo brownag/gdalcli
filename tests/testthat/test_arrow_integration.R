@@ -126,7 +126,7 @@ test_that("arrow table has schema", {
   tbl <- arrow::arrow_table(df)
   schema <- arrow::schema(tbl)
 
-  expect_type(schema, "list")
+  expect_true(inherits(schema, c("Schema", "ArrowObject", "R6")))
   expect_true(length(schema) > 0)
 })
 
@@ -345,8 +345,8 @@ test_that("Round-trip conversion preserves basic structure", {
     tbl <- arrow::arrow_table(df)
     arrow::write_feather(tbl, temp_file)
 
-    # Read back
-    tbl_read <- arrow::read_feather(temp_file)
+    # Read back as Arrow table (as_data_frame = FALSE to get Arrow table)
+    tbl_read <- arrow::read_feather(temp_file, as_data_frame = FALSE)
     expect_s3_class(tbl_read, "ArrowTabular")
   }
 })
