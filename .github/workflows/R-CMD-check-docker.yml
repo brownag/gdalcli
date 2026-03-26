@@ -105,16 +105,19 @@ jobs:
 
       - name: Clean build and cache artifacts
         run: |
-          echo "=== Cleaning artifacts before R CMD check ==="
           rm -rf build/gdal_repo build/*.o build/*.so .gdal_doc_cache_*
-          find . -maxdepth 1 -name "*Rcheck" -type d -exec rm -rf {} + 2>/dev/null || true
-          echo "=== Cleanup complete ==="
 
-      - name: Run R CMD check
+      - name: Build source package
+        run: |
+          cd ..
+          R CMD build --no-manual gdalcli
+
+      - name: Run R CMD check on tarball
         run: |
           export LANG=en_US.UTF-8
           cd ..
-          R CMD check --no-manual gdalcli
+          R CMD check --no-manual *.tar.gz
+          mv gdalcli.Rcheck gdalcli/
 
       - name: Install package
         run: |
@@ -151,6 +154,6 @@ jobs:
         if: always()
         with:
           name: check-results-${{ matrix.r-version }}-gdal-${{ matrix.gdal-version }}
-          path: ../gdalcli.Rcheck/
+          path: gdalcli.Rcheck/
           retention-days: 7
           if-no-files-found: warn
