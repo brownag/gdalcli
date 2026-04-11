@@ -5,7 +5,9 @@ on:
     branches: [main, master]
   pull_request:
 
-permissions: read-all
+permissions:
+  contents: read
+  packages: read
 
 jobs:
   determine-gdal-version:
@@ -75,7 +77,7 @@ jobs:
     name: R ${{ matrix.r-version }} / GDAL ${{ matrix.gdal-version }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify GDAL environment
         run: |
@@ -89,10 +91,6 @@ jobs:
           echo "=== R packages ===" 
           Rscript -e "sessionInfo()"
 
-      - name: Verify development dependencies
-        run: |
-          Rscript -e "if (!require('devtools', quietly=TRUE)) stop('devtools not installed in base image')"
-
       - name: Generate GDAL API
         run: |
           Rscript build/generate_gdal_api.R
@@ -101,34 +99,58 @@ jobs:
         run: |
           Rscript -e "roxygen2::roxygenise()"
 
-      - name: Run R CMD check
+      - name: Clean build and cache artifacts
+        run: |
+          rm -rf build/gdal_repo build/*.o build/*.so .gdal_doc_cache_*
+
+      - name: Build source package
+        run: |
+          cd ..
+          R CMD build --no-manual gdalcli
+
+      - name: Run R CMD check on tarball
         run: |
           export LANG=en_US.UTF-8
-          Rscript -e "devtools::check(args = c('--no-manual'))"
+          cd ..
+          R CMD check --no-manual *.tar.gz
+          mv gdalcli.Rcheck gdalcli/gdalcli.Rcheck
 
       - name: Install package
         run: |
-          Rscript -e "devtools::install()"
+          cd ..
+          R CMD INSTALL gdalcli
 
       - name: Verify package installation
         run: |
           Rscript -e "library(gdalcli); cat('gdalcli loaded successfully\n'); print(gdal_capabilities())"
 
-      - name: Run package tests
+      - name: Report Arrow Support Status
         run: |
-          Rscript -e "devtools::test()"
-
-      - name: Generate test summary
-        if: always()
-        run: |
-          if [ -f gdalcli.Rcheck/tests/test_pipeline.Rout ]; then
-            cat gdalcli.Rcheck/tests/test_pipeline.Rout
-          fi
+          Rscript -e "
+          library(gdalcli)
+          cat('=== Arrow Support Report ===\n')
+          if (gdalcli:::.gdal_has_feature('arrow_vectors')) {
+            cat('✓ Arrow in-memory vector processing: AVAILABLE\n')
+            info <- gdalcli:::.get_gdal_arrow_support_info()
+            cat('  GDAL version compatible:', info\$gdal_version_compatible, '\n')
+            cat('  Arrow package version:', info\$arrow_package_version, '\n')
+            cat('  gdalraster version:', info\$gdalraster_version, '\n')
+            cat('  Driver detected:', info\$driver_detected, '\n')
+          } else {
+            cat('✗ Arrow in-memory vector processing: NOT AVAILABLE\n')
+            info <- gdalcli:::.get_gdal_arrow_support_info()
+            cat('  GDAL version compatible:', info\$gdal_version_compatible, '\n')
+            cat('  Arrow package available:', !is.null(info\$arrow_package_version), '\n')
+            cat('  gdalraster available:', !is.null(info\$gdalraster_version), '\n')
+            cat('  Driver detected:', info\$driver_detected, '\n')
+          }
+          "
 
       - name: Upload check results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: check-results-${{ matrix.r-version }}
+          name: check-results-${{ matrix.r-version }}-gdal-${{ matrix.gdal-version }}
           path: gdalcli.Rcheck/
           retention-days: 7
+          if-no-files-found: warn

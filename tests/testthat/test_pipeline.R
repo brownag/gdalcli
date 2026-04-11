@@ -502,7 +502,10 @@ test_that("gdal_compose convenience function detects pipeline type", {
   job2 <- gdal_raster_convert(output = "output.tif")
 
   # Create pipeline using convenience function
-  pipeline_job <- gdal_compose(jobs = list(job1, job2))
+  expect_warning(
+    {pipeline_job <- gdal_compose(jobs = list(job1, job2))},
+    "gdal_compose\\(\\) is deprecated"
+  )
 
   expect_s3_class(pipeline_job, "gdal_job")
   expect_equal(pipeline_job$command_path[1], "raster")
@@ -518,7 +521,10 @@ test_that("gdal_compose convenience function works with vector jobs", {
   job2 <- gdal_vector_convert(output = "output.shp")
 
   # Create pipeline using convenience function
-  pipeline_job <- gdal_compose(jobs = list(job1, job2))
+  expect_warning(
+    {pipeline_job <- gdal_compose(jobs = list(job1, job2))},
+    "gdal_compose\\(\\) is deprecated"
+  )
 
   expect_s3_class(pipeline_job, "gdal_job")
   expect_equal(pipeline_job$command_path[1], "vector")

@@ -26,6 +26,11 @@
 #' @keywords internal
 #' @noRd
 .quote_argument <- function(str) {
+  # Empty strings must be quoted
+  if (str == "") {
+    return("''")
+  }
+
   # Characters that are safe without quoting (alphanumeric + common safe chars)
   # This covers most common filenames and simple arguments
   if (grepl("^[a-zA-Z0-9/_.:=-]*$", str)) {
@@ -66,13 +71,13 @@
 
   # Generate the CLI flag from argument name
   # Special mappings for common deviations
-  flag_mapping <- c(
+  flag_mapping <- list(
     "resolution" = "--resolution",
     "size" = "--ts",
     "extent" = "--te"
   )
   cli_flag <- if (arg_name %in% names(flag_mapping)) {
-    flag_mapping[arg_name]
+    flag_mapping[[arg_name]]
   } else {
     paste0("--", gsub("_", "-", arg_name))
   }
@@ -80,7 +85,7 @@
   # Handle logical/boolean arguments
   if (is.logical(value)) {
     if (value) {
-      return(cli_flag)  # Just the flag for TRUE
+      return(unname(cli_flag))  # Just the flag for TRUE
     } else {
       return(character(0))  # Nothing for FALSE
     }
@@ -89,7 +94,7 @@
   # Check if this is a composite (fixed-count, comma-separated) argument
   is_composite <- FALSE
   arg_meta <- arg_mapping[[arg_name]]
-  if (!is.null(arg_meta) && !is.null(arg_meta$min_count) && !is.null(arg_meta$max_count)) {
+  if (!is.null(arg_meta) && is.list(arg_meta) && !is.null(arg_meta$min_count) && !is.null(arg_meta$max_count)) {
     is_composite <- arg_meta$min_count == arg_meta$max_count && arg_meta$min_count > 1
   }
 
@@ -98,7 +103,7 @@
     if (is_composite) {
       # Composite: comma-separated
       formatted_values <- sapply(value, function(v) .quote_argument(as.character(v)), USE.NAMES = FALSE)
-      return(c(cli_flag, paste(formatted_values, collapse = ",")))
+      return(unname(c(cli_flag, paste(formatted_values, collapse = ","))))
     } else {
       # Repeatable: repeated flags
       formatted_values <- sapply(value, function(v) .quote_argument(as.character(v)), USE.NAMES = FALSE)
@@ -107,13 +112,13 @@
       for (val in formatted_values) {
         result <- c(result, cli_flag, val)
       }
-      return(result)
+      return(unname(result))
     }
   }
 
   # Single value: quote and return
   formatted_value <- .quote_argument(as.character(value))
-  c(cli_flag, formatted_value)
+  unname(c(cli_flag, formatted_value))
 }
 
 
@@ -329,7 +334,7 @@
     
     # For now, use a simpler grepl-based approach that's more reliable
     # This regex matches either single-quoted strings or sequences of non-whitespace
-    pattern <- "(['\"][^'\"]*['\"]|[^ \\t]+)"
+    pattern <- "(['\"][^'\"]*['\"]|[^ \t]+)"
     
     # Use gregexpr with the ENTIRE result to pass to regmatches
     matches <- gregexpr(pattern, step_str)

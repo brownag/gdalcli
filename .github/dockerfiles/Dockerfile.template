@@ -58,6 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     gzip \
+    libarrow-dev \
     libfontconfig1-dev \
     libharfbuzz-dev \
     libfribidi-dev \
@@ -68,6 +69,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjsoncpp-dev \
     libnetcdf-dev \
     libopenjp2-7-dev \
+    libparquet-dev \
     libpng-dev \
     libpq-dev \
     libproj-dev \
@@ -124,6 +126,7 @@ RUN mkdir -p /tmp/gdal-build && cd /tmp/gdal-build && \
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
       -DCMAKE_C_COMPILER_LAUNCHER=ccache \
       -DBUILD_SHARED_LIBS=ON \
+      -DGDAL_USE_ARROW=ON \
       -DGDAL_USE_CURL=ON \
       -DGDAL_USE_NETCDF=ON \
       -DGDAL_USE_HDF5=ON \
@@ -146,7 +149,9 @@ RUN mkdir -p /tmp/gdal-build && cd /tmp/gdal-build && \
 # Verify GDAL installation
 RUN gdal --version && \
     which gdalinfo && \
-    gdalinfo --version
+    gdalinfo --version && \
+    echo "Checking Arrow driver support..." && \
+    (gdalinfo --formats 2>&1 | grep -i arrow && echo "Arrow driver found" || echo "Arrow driver not found")
 
 # ============================================================================
 # STAGE 2: System Base
@@ -168,9 +173,12 @@ LABEL gdal.version="${GDAL_VERSION}" \
 # Install system dependencies for R and gdalcli
 # These rarely change, so they get their own layer for better caching
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     ca-certificates \
+    cmake \
     curl \
     gnupg \
+    libuv1-dev \
     lsb-release \
     libcurl4-openssl-dev \
     libfontconfig1-dev \
@@ -183,8 +191,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     locales \
     pandoc \
+    python3-dev \
+    python3-pip \
+    python3-venv \
     qpdf && \
     rm -rf /var/lib/apt/lists/*
+
+# Create Python virtual environment for reticulate
+# Note: GDAL Python bindings come from system compilation, not pip
+ENV PYTHON_VENV=/opt/py-venv \
+    RETICULATE_PYTHON=/opt/py-venv/bin/python
+
+RUN python3 -m venv ${PYTHON_VENV} && \
+    ${PYTHON_VENV}/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    ${PYTHON_VENV}/bin/pip install --no-cache-dir gdal==${GDAL_VERSION}
 
 # Generate en_US.UTF-8 locale to prevent Sys.setlocale() warnings
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
@@ -245,7 +265,10 @@ LABEL version="${PACKAGE_VERSION}" \
 ENV GDAL_CONFIG=/usr/bin/gdal-config \
     GDAL_VERSION="${GDAL_VERSION}" \
     GDAL_RELEASE_TYPE="${GDAL_RELEASE_TYPE}" \
-    PATH="/usr/bin:${PATH}"
+    PYTHON_VENV=/opt/py-venv \
+    RETICULATE_PYTHON=/opt/py-venv/bin/python \
+    R_LIBS=/opt/R/site-library \
+    PATH="/opt/py-venv/bin:/usr/bin:${PATH}"
 
 # Copy DESCRIPTION for dependency resolution
 COPY DESCRIPTION /tmp/gdalcli/
@@ -253,16 +276,20 @@ WORKDIR /tmp/gdalcli
 
 # Install R package dependencies in separate layers by frequency of change
 # Layer 1: Core development tools (rarely change)
-RUN Rscript -e "install.packages(c('remotes', 'devtools', 'roxygen2'), repos='https://cran.rstudio.com/')"
+RUN mkdir -p "${R_LIBS}" && chmod -R 777 /opt/R && \
+    Rscript -e ".libPaths(c(Sys.getenv('R_LIBS'), .libPaths())); install.packages(c('remotes', 'roxygen2'), repos='https://cran.rstudio.com/', lib=Sys.getenv('R_LIBS')); if (!requireNamespace('roxygen2', quietly = TRUE, lib.loc = Sys.getenv('R_LIBS'))) stop('roxygen2 installation failed'); cat('roxygen2:', as.character(packageVersion('roxygen2', lib.loc = Sys.getenv('R_LIBS'))), 'at', find.package('roxygen2', lib.loc = Sys.getenv('R_LIBS')), '\\n')"
 
 # Layer 2: Build-time dependencies (rarely change)
-RUN Rscript -e "install.packages(c('processx', 'yyjsonr', 'glue', 'httr'), repos='https://cran.rstudio.com/')"
+RUN Rscript -e ".libPaths(c(Sys.getenv('R_LIBS'), .libPaths())); install.packages(c('processx', 'yyjsonr', 'glue', 'httr', 'arrow'), repos='https://cran.rstudio.com/', lib=Sys.getenv('R_LIBS'))"
 
 # Layer 3: Package dependencies from DESCRIPTION (changes with updates)
-RUN Rscript -e "remotes::install_deps(dependencies = TRUE, repos='https://cran.rstudio.com/')"
+RUN Rscript -e ".libPaths(c(Sys.getenv('R_LIBS'), .libPaths())); remotes::install_deps(dependencies = TRUE, repos='https://cran.rstudio.com/', lib=Sys.getenv('R_LIBS'))"
 
 # Clean up
 RUN rm -rf /tmp/gdalcli /tmp/downloaded_packages /tmp/*.rds
+
+# Verify Python virtual environment and reticulate integration
+RUN Rscript -e "library(reticulate); cfg <- reticulate::py_config(); cat('Python:', cfg\$python, '\n'); v <- cfg\$version; cat('Version:', paste0(v\$major, '.', v\$minor, '.', v\$patch), '\n'); tryCatch({reticulate::py_run_string('import osgeo.gdal; print(\"osgeo-gdal available\")'); cat('✓ osgeo-gdal importable\n')}, error = function(e) {cat('✗ osgeo-gdal not importable:', conditionMessage(e), '\n')})"
 
 # Verify key packages are installed
 RUN Rscript -e "library(processx); library(yyjsonr); library(gdalraster); cat('All dependencies installed\\n')"
@@ -289,6 +316,8 @@ RUN echo "=== Generating GDAL API at $(date) ===" && \
     echo "=== API generation completed at $(date) ==="
 
 # Update package documentation
+RUN Rscript -e "cat('libPaths:', paste(.libPaths(), collapse=' | '), '\\n'); if (!requireNamespace('roxygen2', quietly = TRUE)) stop('roxygen2 missing in gdalcli-build stage'); cat('roxygen2:', as.character(packageVersion('roxygen2')), 'at', find.package('roxygen2'), '\\n')"
+
 RUN echo "=== Building documentation at $(date) ===" && \
     Rscript -e "roxygen2::roxygenise()" && \
     echo "=== Documentation build completed at $(date) ==="

@@ -37,6 +37,11 @@ if (requireNamespace("reticulate", quietly = TRUE)) {
 }
 
 # Ensure step mappings are loaded for tests
-if (is.null(.gdalcli_env$step_mappings)) {
-  .load_step_mappings()
+if (requireNamespace("gdalcli", quietly = TRUE)) {
+  if (exists(".gdalcli_env", where = asNamespace("gdalcli"))) {
+    env <- get(".gdalcli_env", envir = asNamespace("gdalcli"))
+    if (is.null(env$step_mappings)) {
+      gdalcli:::.load_step_mappings()
+    }
+  }
 }
