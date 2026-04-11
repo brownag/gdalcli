@@ -309,7 +309,7 @@ jobs:
               R CMD check --no-manual --compact-vignettes=gs+qpdf /tmp/gdalcli_*.tar.gz 2>&1 | tee /tmp/rcmdcheck.out
               mv gdalcli.Rcheck /workspace/gdalcli.Rcheck
               tail -50 /tmp/rcmdcheck.out
-              if grep -qE '^ERROR\$|^ERROR ' /tmp/rcmdcheck.out; then
+              if grep -q "^Status:.*ERROR" /tmp/rcmdcheck.out; then
                 echo "ERROR: R CMD check reported errors -- aborting release"
                 exit 1
               fi
