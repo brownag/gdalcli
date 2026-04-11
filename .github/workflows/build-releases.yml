@@ -162,44 +162,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set release version in DESCRIPTION for image build
-        run: |
-          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
-          PKG_VERSION="${{ needs.validate.outputs.package_version }}"
-
-          sed -i "s/^Version:.*/Version: ${PKG_VERSION}-${GDAL_VERSION}/" DESCRIPTION
-          sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
-
-          echo "DESCRIPTION prepared for Docker build context:"
-          grep -E "^Version:|^SystemRequirements:" DESCRIPTION
-
-      - name: Build runtime image for GDAL ${{ needs.validate.outputs.gdal_version }}
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: .github/dockerfiles/Dockerfile.template
-          target: gdalcli-runtime
-          build-args: |
-            GDAL_BUILD_MODE=osgeo
-            GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
-            GDAL_RELEASE_TYPE=tagged
-            GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
-            R_VERSION=latest
-            PACKAGE_VERSION=${{ needs.validate.outputs.package_version }}-${{ needs.validate.outputs.gdal_version }}
-          tags: |
-            ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest
-          platforms: linux/amd64
-          cache-from: type=gha,scope=release-${{ needs.validate.outputs.gdal_version }}
-          cache-to: type=gha,mode=max,scope=release-${{ needs.validate.outputs.gdal_version }}
-          push: ${{ github.event.inputs.dry_run == 'false' }}
-          build-contexts: context=.github/dockerfiles
-          outputs: type=docker,dest=/tmp/image.tar
-
-      - name: Load Docker image
-        if: github.event.inputs.dry_run == 'false'
-        run: |
-          docker load --input /tmp/image.tar
-
       - name: Prepare release branch (merge with main)
         if: github.event.inputs.dry_run == 'false'
         run: |
@@ -242,6 +204,44 @@ jobs:
             echo "Creating new branch from main"
             git checkout -b $BRANCH origin/main
           fi
+
+      - name: Set release version in DESCRIPTION for image build
+        run: |
+          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          PKG_VERSION="${{ needs.validate.outputs.package_version }}"
+
+          sed -i "s/^Version:.*/Version: ${PKG_VERSION}-${GDAL_VERSION}/" DESCRIPTION
+          sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
+
+          echo "DESCRIPTION prepared for Docker build context:"
+          grep -E "^Version:|^SystemRequirements:" DESCRIPTION
+
+      - name: Build runtime image for GDAL ${{ needs.validate.outputs.gdal_version }}
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: .github/dockerfiles/Dockerfile.template
+          target: gdalcli-runtime
+          build-args: |
+            GDAL_BUILD_MODE=osgeo
+            GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
+            GDAL_RELEASE_TYPE=tagged
+            GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
+            R_VERSION=latest
+            PACKAGE_VERSION=${{ needs.validate.outputs.package_version }}-${{ needs.validate.outputs.gdal_version }}
+          tags: |
+            ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest
+          platforms: linux/amd64
+          cache-from: type=gha,scope=release-${{ needs.validate.outputs.gdal_version }}
+          cache-to: type=gha,mode=max,scope=release-${{ needs.validate.outputs.gdal_version }}
+          push: ${{ github.event.inputs.dry_run == 'false' }}
+          build-contexts: context=.github/dockerfiles
+          outputs: type=docker,dest=/tmp/image.tar
+
+      - name: Load Docker image
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          docker load --input /tmp/image.tar
 
       - name: Generate API and build release in Docker
         if: github.event.inputs.dry_run == 'false'
