@@ -34,6 +34,22 @@ on:
         options:
           - 'true'
           - 'false'
+  workflow_call:
+    inputs:
+      gdal_version:
+        description: 'GDAL version to build for (e.g., 3.11.4, 3.12.0)'
+        required: true
+        type: string
+      create_release:
+        description: 'Create GitHub release and tag? (only effective on main branch)'
+        required: true
+        default: 'true'
+        type: string
+      dry_run:
+        description: 'Dry run mode: skip branch/release creation and image push'
+        required: true
+        default: 'false'
+        type: string
 
 permissions:
   contents: write
@@ -50,7 +66,7 @@ jobs:
       tag_name: ${{ steps.parse.outputs.tag_name }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Validate and parse GDAL version
         id: parse
@@ -114,12 +130,12 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Check OSGeo GDAL image availability
         id: check-image
@@ -156,38 +172,11 @@ jobs:
           echo "selected_gdal_image_tag=$SELECTED_TAG" >> $GITHUB_OUTPUT
 
       - name: Log in to Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build runtime image for GDAL ${{ needs.validate.outputs.gdal_version }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: .github/dockerfiles/Dockerfile.template
-          target: gdalcli-runtime
-          build-args: |
-            GDAL_BUILD_MODE=osgeo
-            GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
-            GDAL_RELEASE_TYPE=tagged
-            GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
-            R_VERSION=latest
-            PACKAGE_VERSION=${{ needs.validate.outputs.package_version }}
-          tags: |
-            ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest
-          platforms: linux/amd64
-          cache-from: type=gha,scope=release-${{ needs.validate.outputs.gdal_version }}
-          cache-to: type=gha,mode=max,scope=release-${{ needs.validate.outputs.gdal_version }}
-          push: ${{ github.event.inputs.dry_run == 'false' }}
-          build-contexts: context=.github/dockerfiles
-          outputs: type=docker,dest=/tmp/image.tar
-
-      - name: Load Docker image
-        if: github.event.inputs.dry_run == 'false'
-        run: |
-          docker load --input /tmp/image.tar
 
       - name: Prepare release branch (merge with main)
         if: github.event.inputs.dry_run == 'false'
@@ -232,6 +221,44 @@ jobs:
             git checkout -b $BRANCH origin/main
           fi
 
+      - name: Set release version in DESCRIPTION for image build
+        run: |
+          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          PKG_VERSION="${{ needs.validate.outputs.package_version }}"
+
+          sed -i "s/^Version:.*/Version: ${PKG_VERSION}-${GDAL_VERSION}/" DESCRIPTION
+          sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
+
+          echo "DESCRIPTION prepared for Docker build context:"
+          grep -E "^Version:|^SystemRequirements:" DESCRIPTION
+
+      - name: Build runtime image for GDAL ${{ needs.validate.outputs.gdal_version }}
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: .github/dockerfiles/Dockerfile.template
+          target: gdalcli-runtime
+          build-args: |
+            GDAL_BUILD_MODE=osgeo
+            GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
+            GDAL_RELEASE_TYPE=tagged
+            GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
+            R_VERSION=latest
+            PACKAGE_VERSION=${{ needs.validate.outputs.package_version }}-${{ needs.validate.outputs.gdal_version }}
+          tags: |
+            ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest
+          platforms: linux/amd64
+          cache-from: type=gha,scope=release-${{ needs.validate.outputs.gdal_version }}
+          cache-to: type=gha,mode=max,scope=release-${{ needs.validate.outputs.gdal_version }}
+          push: ${{ github.event.inputs.dry_run == 'false' }}
+          build-contexts: context=.github/dockerfiles
+          outputs: type=docker,dest=/tmp/image.tar
+
+      - name: Load Docker image
+        if: github.event.inputs.dry_run == 'false'
+        run: |
+          docker load --input /tmp/image.tar
+
       - name: Generate API and build release in Docker
         if: github.event.inputs.dry_run == 'false'
         run: |
@@ -252,6 +279,9 @@ jobs:
               echo 'Generating NAMESPACE and documentation...'
               Rscript -e 'roxygen2::roxygenise()'
 
+              echo 'Cleaning build artifacts before validation...'
+              rm -rf .gdal_doc_cache_* build/
+
               echo 'Validating NAMESPACE...'
               Rscript -e '
                 ns <- getNamespace(\"gdalcli\")
@@ -271,10 +301,13 @@ jobs:
                 }
               '
 
-              echo 'Running R CMD check...'
-              R CMD check --no-manual --compact-vignettes=gs+qpdf /workspace 2>&1 | tail -50 || {
-                echo 'WARNING: R CMD check had issues, but continuing...'
-              }
+              echo 'Building package tarball...'
+              cd /tmp
+              R CMD build --no-manual /workspace 2>&1 | tee /tmp/build.out
+
+              echo 'Running R CMD check on tarball...'
+              R CMD check --no-manual --compact-vignettes=gs+qpdf /tmp/gdalcli_*.tar.gz
+              rm -rf /workspace/gdalcli.Rcheck && mv gdalcli.Rcheck /workspace/gdalcli.Rcheck
 
               echo ''
               echo 'Generated files:'
@@ -294,18 +327,6 @@ jobs:
             ls -la R/
             exit 1
           fi
-
-      - name: Update DESCRIPTION
-        if: github.event.inputs.dry_run == 'false'
-        run: |
-          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
-          PKG_VERSION="${{ needs.validate.outputs.package_version }}"
-
-          sed -i "s/^Version:.*/Version: ${PKG_VERSION}-${GDAL_VERSION}/" DESCRIPTION
-          sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
-
-          echo "Updated DESCRIPTION:"
-          cat DESCRIPTION | grep -E "^Version:|^SystemRequirements:"
 
       - name: Update version info and commit release
         if: success() && github.event.inputs.dry_run == 'false'
@@ -375,7 +396,7 @@ jobs:
 
       - name: Create GitHub release
         if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main' && github.event.inputs.dry_run == 'false'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.validate.outputs.tag_name }}
           target_commitish: ${{ needs.validate.outputs.branch_name }}
@@ -415,7 +436,7 @@ jobs:
             RELEASE_INFO="Yes (${{ needs.validate.outputs.tag_name }})"
           fi
 
-          cat >> $GITHUB_STEP_SUMMARY <<'EOF'
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
           ## Build Summary
 
           | Item | Value |
@@ -425,6 +446,17 @@ jobs:
           | Release Branch | `${{ needs.validate.outputs.branch_name }}` |
           | Docker Image | `ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest` |
           | Build Status | ${{ job.status }} |
-          | GitHub Release | ${RELEASE_INFO} |
+          | GitHub Release | RELEASE_PLACEHOLDER |
           | Dry Run | ${{ github.event.inputs.dry_run }} |
           EOF
+
+          sed -i "s|RELEASE_PLACEHOLDER|$RELEASE_INFO|g" $GITHUB_STEP_SUMMARY
+
+      - name: Upload R CMD check log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rcheck-log-gdal-${{ needs.validate.outputs.gdal_version }}
+          path: workspace.Rcheck/
+          retention-days: 30
+          if-no-files-found: ignore

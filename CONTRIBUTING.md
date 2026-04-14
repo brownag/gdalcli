@@ -33,24 +33,28 @@ The project uses automated testing and building via GitHub Actions. As a contrib
 
 ### Automatic Testing on Pull Requests
 
-When you create a pull request, the following workflows automatically trigger:
+When you create a pull request to `main`, the following workflow automatically triggers:
 
-- **R-CMD-check-ubuntu.yml**: Comprehensive R CMD check on native Ubuntu/GitHub runners with GDAL 3.11+ from ubuntugis PPA
-- **R-CMD-check-docker.yml**: R CMD check in isolated Docker containers with controlled GDAL versions
+- **R-CMD-check-docker.yml**: R CMD check in isolated Docker containers with controlled GDAL versions (3.11.4 and latest 3.12.x)
 
 **All tests must pass** before your PR can be merged.
 
-#### R-CMD-check-ubuntu.yml
+Note: Release branches (`release/gdal-*`) are managed automatically by the release workflow (`build-releases.yml`). As a contributor, any work you do on a development branch will be made in a PR to the `main` branch.
 
-- **Environment**: Ubuntu 24.04 with GDAL 3.11+ from ubuntugis PPA
-- **Coverage**: Full R CMD check including vignettes, tests, and gdalraster compatibility
-- **When to use for debugging**: Standard CI issues, dependency problems on Ubuntu
+#### R-CMD-check-docker.yml (on main branch)
 
-#### R-CMD-check-docker.yml
+- **Trigger**: Push to `main` or PR targeting `main`
+- **Environment**: Custom Docker images with controlled GDAL versions (3.11.4 + latest 3.12.x)
+- **Coverage**: Full R CMD check with dynamic API generation, vignettes, tests, optional features (Arrow, gdalg, explicit args)
+- **When to use for debugging**: Environment-specific issues, GDAL version compatibility, Docker-related problems, feature availability
 
-- **Environment**: Custom Docker images with controlled GDAL versions
-- **Coverage**: Full R CMD check with pre-installed dependencies
-- **When to use for debugging**: Environment-specific issues, GDAL version compatibility, Docker-related problems
+#### R-CMD-check-release.yml (Release workflow verification)
+
+- **Trigger**: Automatically runs on `release/gdal-*` branches when updated by `build-releases.yml`
+- **Environment**: Docker `deps-gdal-X.Y-amd64` image matching the branch's GDAL version
+- **Coverage**: R CMD check using pre-committed generated API files; verifies package builds, passes checks with no errors, and loads correctly
+- **Purpose**: Safety gate to verify release branches are in a clean, releasable state (not triggered by contributors)
+- **Note**: Does not run `generate_gdal_api.R` — release branches already have generated files committed
 
 ### Common CI Failures and Debugging
 
@@ -230,7 +234,8 @@ The project uses a two-layer Docker architecture for consistent GDAL environment
 
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
-| Code changes | R-CMD-check-ubuntu + R-CMD-check-docker | Both run automatically on PRs |
+| Code changes (main) | R-CMD-check-docker | Runs automatically on PRs to main |
+| Release branch updates | R-CMD-check-release | Runs automatically on `release/gdal-*` updates |
 | New GDAL version | build-docker-images → build-releases | Build image first, then release |
 | GDAL patch update | build-docker-images → build-releases | Same workflow, new patch version |
 | Docker issues | R-CMD-check-docker | Isolated testing environment |

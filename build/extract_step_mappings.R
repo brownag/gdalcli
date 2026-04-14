@@ -148,7 +148,7 @@ extract_step_mappings <- function(endpoints) {
     return("read")
   }
 
-  # Fallback: if only has input, no output → "read"
+  # Fallback: if only has input, no explicit output → "read"
   if (has_input && !has_output) {
     return("read")
   }
@@ -168,15 +168,16 @@ extract_step_mappings <- function(endpoints) {
 
 #' Validate extracted step mappings against expected defaults
 #'
-#' Performs a sanity check by comparing generated mappings against
-#' known-good hardcoded defaults. Issues warnings for mismatches.
+#' Only warns on actual mismatches (wrong value), not missing mappings.
+#' Missing mappings vary by GDAL version - .get_step_mapping() has fallback.
 #'
 #' @param generated List. Step mappings from extract_step_mappings()
+#' @param quiet Logical. If TRUE, suppress success message.
 #'
-#' @return Invisible TRUE. Issues warnings if mismatches found.
+#' @return Invisible TRUE
 #'
 #' @keywords internal
-.validate_step_mappings <- function(generated) {
+.validate_step_mappings <- function(generated, quiet = FALSE) {
   # Reference mappings (hardcoded from R/core-gdal_job.R)
   expected <- list(
     raster = c(
@@ -219,51 +220,39 @@ extract_step_mappings <- function(endpoints) {
 
   mismatch_found <- FALSE
 
-  # Check each expected mapping
   for (module in names(expected)) {
     if (!module %in% names(generated)) {
-      cat(sprintf("[WARN] Module '%s' not found in generated mappings\n", module))
-      mismatch_found <- TRUE
       next
     }
 
     for (op in names(expected[[module]])) {
       exp_val <- expected[[module]][[op]]
 
-      # Try different key name variants (underscore vs dash)
+      # Handle underscore/dash variants
       gen_val <- generated[[module]][[op]]
       if (is.null(gen_val)) {
-        # Try with dashes instead of underscores
         op_dash <- gsub("_", "-", op)
         gen_val <- generated[[module]][[op_dash]]
       }
       if (is.null(gen_val)) {
-        # Try with underscores instead of dashes
         op_under <- gsub("-", "_", op)
         gen_val <- generated[[module]][[op_under]]
       }
 
-      if (is.na(gen_val) || is.null(gen_val)) {
-        cat(sprintf("[WARN] Step mapping missing: %s.%s (expected: %s)\n",
-                    module, op, exp_val))
+      # Only validate if mapping exists - missing mappings are OK (version-specific)
+      if (!is.null(gen_val) && !is.na(gen_val) && gen_val != exp_val) {
+        if (!quiet) {
+          cat(sprintf("[WARN] Step mapping mismatch: %s.%s\n",
+                      module, op))
+          cat(sprintf("       Expected: %s\n", exp_val))
+          cat(sprintf("       Generated: %s\n", gen_val))
+        }
         mismatch_found <- TRUE
-      } else if (gen_val != exp_val) {
-        # Only warn about actual value mismatches, not missing keys
-        # Some operations may have different heuristic classifications
-        cat(sprintf("[WARN] Step mapping mismatch: %s.%s\n",
-                    module, op))
-        cat(sprintf("       Expected: %s\n", exp_val))
-        cat(sprintf("       Generated: %s\n", gen_val))
-        # Don't set mismatch_found for minor differences in operations
-        # that have both input and output (like "edit" -> "read")
-        # as these are lower priority than the main I/O operations
       }
     }
   }
 
-  if (!mismatch_found) {
-    cat("[OK] All step mappings validated successfully\n")
+  if (!quiet && !mismatch_found) {
+    cat("[OK] Step mappings validated\n")
   }
-
-  invisible(TRUE)
 }

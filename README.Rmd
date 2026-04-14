@@ -231,7 +231,7 @@ Persist pipelines as JSON for sharing and version control. gdalcli supports thre
 - **Pure GDALG Format** (.gdalg.json): RFC 104 compliant GDAL specification for compatibility with other GDAL tools
 - **Legacy Format**: Deprecated (pre-v0.5.0) - no longer recommended
 
-```{r}
+```{r, eval=TRUE}
 # Save pipeline to gdalcli hybrid format (recommended)
 workflow_file <- tempfile(fileext = ".gdalcli.json")
 gdal_save_pipeline(

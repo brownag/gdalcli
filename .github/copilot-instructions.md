@@ -54,19 +54,19 @@ The project uses GitHub Actions for automated testing, building, and deployment.
 
 ### Testing Workflows
 
-**R-CMD-check-ubuntu.yml**
-- **Purpose**: Comprehensive R CMD check on native Ubuntu/GitHub runners
-- **Trigger**: Push to main, pull requests
-- **Environment**: Ubuntu 22.04 with GDAL 3.11+ from ubuntugis PPA
-- **Coverage**: Full R CMD check including vignettes, tests, and gdalraster compatibility
-- **When to use**: Standard CI for all changes
-
-**R-CMD-check-docker.yml** 
+**R-CMD-check-docker.yml** (Primary CI for main branch)
 - **Purpose**: R CMD check in isolated Docker containers
 - **Trigger**: Push to main, pull requests
-- **Environment**: Custom Docker images with controlled GDAL versions
-- **Coverage**: Full R CMD check with pre-installed dependencies
-- **When to use**: Verify Docker compatibility and controlled environments
+- **Environment**: Custom Docker images with controlled GDAL versions (3.11.4 + latest 3.12.x)
+- **Coverage**: Full R CMD check with dynamic API generation, vignettes, tests, optional features (Arrow, gdalg, explicit args)
+- **When to use**: Standard CI for all code changes
+
+**R-CMD-check-release.yml** (Release branch verification)
+- **Purpose**: R CMD check for release branches
+- **Trigger**: Automatically runs on `release/gdal-*` branches when updated by `build-releases.yml`
+- **Environment**: Docker `deps-gdal-X.Y-amd64` image matching the branch's GDAL version
+- **Coverage**: R CMD check using pre-committed generated API files; verifies package builds, passes checks, and loads
+- **When to use**: Safety gate for releases (not triggered by contributors)
 
 ### Build Workflows
 
@@ -91,7 +91,8 @@ The project uses GitHub Actions for automated testing, building, and deployment.
 
 | Scenario | Recommended Workflow | Notes |
 |----------|---------------------|-------|
-| Code changes | R-CMD-check-ubuntu.yml + R-CMD-check-docker.yml | Both run automatically on PRs |
+| Code changes (main) | R-CMD-check-docker.yml | Runs automatically on PRs to main |
+| Release branch updates | R-CMD-check-release.yml | Runs automatically on `release/gdal-*` updates |
 | New GDAL version | build-docker-images.yml → build-releases.yml | Build image first, then release |
 | GDAL patch update | build-docker-images.yml → build-releases.yml | Same workflow for new patch |
 | Docker issues | R-CMD-check-docker.yml | Isolated testing environment |
@@ -252,7 +253,7 @@ job |> gdal_with_env(auth) |> gdal_run()
 
 ### Package Options
 
-The package provides a comprehensive options system via `gdalcli_options()` for controlling default behaviors.
+The package provides an options system via `gdalcli_options()` for controlling default behaviors.
 
 ```r
 # View current options

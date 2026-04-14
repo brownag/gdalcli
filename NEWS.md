@@ -1,3 +1,10 @@
+# gdalcli 0.5.2 (2026-03-25)
+
+- Added Arrow support for in-memory vector processing
+- Added arrow R package to Docker dependencies
+- Improved CI/CD workflows with Docker-based release branch verification
+- Suppressed expected step mapping warnings for version-specific GDAL API differences
+
 # gdalcli 0.5.1 (2026-03-18)
 
 - Fixed release branch build workflow NAMESPACE consistency across GDAL versions
@@ -6,7 +13,6 @@
 # gdalcli 0.5.0 (2026-02-12)
 
 - Major GDALG architectural improvements (#7): refactored core modules, enhanced pipeline composition and execution
-
 
 # gdalcli 0.4.1 (2026-01-28)
 

@@ -42,7 +42,7 @@ cat("2. Created pipeline with 2 operations:\n")
 cat("   - Reproject to Web Mercator (EPSG:3857)\n")
 cat("   - Convert to GeoPackage format\n\n")
 
-# Create comprehensive metadata with nested structure
+# Create metadata with nested structure
 metadata <- list(
   # Project information
   project = list(

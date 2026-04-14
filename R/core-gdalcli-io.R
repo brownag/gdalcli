@@ -162,7 +162,10 @@
   # Read and parse JSON
   spec <- tryCatch({
     json_text <- readLines(path, warn = FALSE)
-    yyjsonr::read_json_str(paste(json_text, collapse = ""))
+    yyjsonr::read_json_str(
+      paste(json_text, collapse = ""),
+      opts = list(arr_of_objs_to_df = FALSE)
+    )
   }, error = function(e) {
     stop("Failed to parse pipeline JSON file: ", path, "\n",
          "  Error: ", conditionMessage(e), call. = FALSE)

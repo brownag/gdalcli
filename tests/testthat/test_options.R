@@ -9,12 +9,14 @@ test_that("gdalcli_options() returns default values when called without argument
 
   result <- gdalcli_options()
 
-  expect_is(result, "list")
-  expect_named(result, c("backend", "stream_out_format", "verbose", "audit_logging"))
+  expect_type(result, "list")
+  expect_named(result, c("checkpoint", "checkpoint_dir", "backend", "verbose", "audit_logging", "stream_out_format"))
   expect_equal(result$backend, "auto")
   expect_null(result$stream_out_format)
   expect_false(result$verbose)
   expect_false(result$audit_logging)
+  expect_false(result$checkpoint)
+  expect_equal(result$checkpoint_dir, getwd())
 })
 
 test_that("gdalcli_options() can set single option", {
@@ -94,11 +96,11 @@ test_that("gdalcli_options() accepts all valid backend options", {
 test_that("gdalcli_options() rejects invalid backend values", {
   expect_error(
     gdalcli_options(backend = "invalid_backend"),
-    "Invalid backend.*invalid_backend.*Valid backends are"
+    "backend must be one of"
   )
 
   expect_error(
     gdalcli_options(backend = "gdal"),
-    "Invalid backend.*gdal.*Valid backends are"
+    "backend must be one of"
   )
 })

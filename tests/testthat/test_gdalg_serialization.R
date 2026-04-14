@@ -325,9 +325,9 @@ test_that("gdal_save_pipeline saves GDALG JSON format to disk", {
 
   # Check file contains valid JSON
   json_content <- yyjsonr::read_json_file(tmpfile)
-  expect_equal(json_content$type, "gdal_streamed_alg")
-  expect_true(is.character(json_content$command_line))
-  expect_true(json_content$relative_paths_relative_to_this_file)
+  expect_equal(json_content$gdalg$type, "gdal_streamed_alg")
+  expect_true(is.character(json_content$gdalg$command_line))
+  expect_true(json_content$gdalg$relative_paths_relative_to_this_file)
 })
 
 test_that("gdal_load_pipeline loads GDALG JSON and reconstructs pipeline", {
@@ -401,17 +401,17 @@ test_that("gdal_load_pipeline validates GDALG spec structure", {
   # Invalid: missing type
   invalid_spec <- list(command_line = "...")
   writeLines(yyjsonr::write_json_str(invalid_spec, pretty = TRUE), tmpfile)
-  expect_error(gdal_load_pipeline(tmpfile), "type")
+  expect_error(gdal_load_pipeline(tmpfile), "Cannot determine format")
 
   # Invalid: wrong type value
   invalid_spec <- list(type = "wrong", command_line = "...")
   writeLines(yyjsonr::write_json_str(invalid_spec, pretty = TRUE), tmpfile)
-  expect_error(gdal_load_pipeline(tmpfile), 'gdal_streamed_alg')
+  expect_error(gdal_load_pipeline(tmpfile), "Cannot determine format")
 
   # Invalid: missing command_line
   invalid_spec <- list(type = "gdal_streamed_alg")
   writeLines(yyjsonr::write_json_str(invalid_spec, pretty = TRUE), tmpfile)
-  expect_error(gdal_load_pipeline(tmpfile), "command_line")
+  expect_error(gdal_load_pipeline(tmpfile), "Specification must contain")
 })
 
 test_that("Complex vector pipeline with multiple operations round-trips", {
