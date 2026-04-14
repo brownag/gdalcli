@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-19 03:04:31",
+  "generated_at": "2026-04-14 16:01:04",
   "gdal_version": "3.12.2",
   "gdal_version_parsed": {
     "full": "3.12.2",
@@ -7,10 +7,10 @@
     "minor": 12,
     "patch": 2
   },
-  "generation_date": "2026-03-19",
+  "generation_date": "2026-04-14",
   "r_version": "4.5.3",
   "packages": {
-    "processx": "3.8.6",
-    "yyjsonr": "0.1.21"
+    "processx": "3.8.7",
+    "yyjsonr": "0.1.22"
   }
 }
