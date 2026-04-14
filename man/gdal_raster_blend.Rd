@@ -47,7 +47,7 @@ A \link{gdal_job} object.
 \description{
 Blend/compose two raster datasets
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_blend.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_blend.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

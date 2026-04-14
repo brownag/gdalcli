@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-04-14 16:01:04",
-  "gdal_version": "3.12.2",
+  "generated_at": "2026-04-14 17:02:53",
+  "gdal_version": "3.12.3",
   "gdal_version_parsed": {
-    "full": "3.12.2",
+    "full": "3.12.3",
     "major": 3,
     "minor": 12,
-    "patch": 2
+    "patch": 3
   },
   "generation_date": "2026-04-14",
   "r_version": "4.5.3",

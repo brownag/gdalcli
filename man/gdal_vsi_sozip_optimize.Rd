@@ -32,7 +32,7 @@ A \link{gdal_job} object.
 \description{
 Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

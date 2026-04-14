@@ -71,7 +71,7 @@ A \link{gdal_job} object.
 \description{
 Check a dataset for invalid geometries
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_check-geometry.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_check-geometry.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

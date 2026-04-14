@@ -38,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Return information on a multidimensional dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_info(input = "netcdf-4d.nc")

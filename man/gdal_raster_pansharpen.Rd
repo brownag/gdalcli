@@ -59,7 +59,7 @@ A \link{gdal_job} object.
 \description{
 Perform a pansharpen operation.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_pansharpen.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_pansharpen.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

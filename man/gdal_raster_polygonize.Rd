@@ -62,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Create a polygon feature dataset from a raster band.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")
