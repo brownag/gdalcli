@@ -152,7 +152,7 @@ vector_job <- gdal_vector_convert(
   output = tempfile(fileext = ".geojson"),
   output_format = "GeoJSON"
 )
-gdal_job_run(vector_job, backend = "processx")
+gdal_job_run(vector_job)
 ```
 
 ### Raster Processing Pipeline
@@ -165,7 +165,7 @@ processing_pipeline <- gdal_raster_reproject(
 ) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"))
 
-gdal_job_run(processing_pipeline, backend = "processx")
+gdal_job_run(processing_pipeline)
 ```
 
 ## Backends

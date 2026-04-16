@@ -1,33 +1,26 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# gdalcli: An R Frontend for the GDAL (\>=3.11) Unified CLI
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
-An R interface to GDAL’s unified command-line interface (GDAL \>=3.11).
-Provides a lazy evaluation framework for building and executing GDAL
-commands with composable, pipe-aware functions. Supports native GDAL
-pipelines, gdalcli pipeline format persistence, and pipeline
-composition.
+# gdalcli: An R Frontend for the GDAL (>=3.11) Unified CLI
+
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+
+An R interface to GDAL's unified command-line interface (GDAL >=3.11). Provides a lazy evaluation framework for building and executing GDAL commands with composable, pipe-aware functions. Supports native GDAL pipelines, gdalcli pipeline format persistence, and pipeline composition.
 
 ## Installation
 
 ### Version-Specific Releases
 
-`gdalcli` is released as version-specific builds tied to particular GDAL
-releases. Using a package version matching your GDAL version is
-recommended. Newer package versions introduce features that require
-newer GDAL versions. Existing functionality should generally remain
-compatible with older GDAL installations, though this cannot be
-guaranteed until the GDAL CLI is stabilized.
+`gdalcli` is released as version-specific builds tied to particular GDAL releases. Using a package version matching your GDAL version is recommended. Newer package versions introduce features that require newer GDAL versions. Existing functionality should generally remain compatible with older GDAL installations, though this cannot be guaranteed until the GDAL CLI is stabilized.
 
-**See [GitHub Releases](https://github.com/brownag/gdalcli/releases) for
-the latest version-specific builds.**
+**See [GitHub Releases](https://github.com/brownag/gdalcli/releases) for the latest version-specific builds.**
 
-Each release is tagged with both the package version and the GDAL
-version it targets:
+Each release is tagged with both the package version and the GDAL version it targets:
 
 - `v0.5.0-3.11.4` - Compatible with GDAL 3.11.4
 - `v0.5.0-3.12.0` - Compatible with GDAL 3.12.0
@@ -35,7 +28,7 @@ version it targets:
 
 #### Finding Your GDAL Version
 
-``` r
+```r
 # Check your system GDAL installation
 system2("gdalinfo", "--version")
 ```
@@ -44,7 +37,7 @@ system2("gdalinfo", "--version")
 
 Install the version compatible with your GDAL installation:
 
-``` r
+```r
 # For GDAL 3.12.x
 remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.12")
 
@@ -52,20 +45,19 @@ remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.12")
 remotes::install_github("brownag/gdalcli", ref = "release/gdal-3.11")
 ```
 
-**Docker**: Pre-built images available at
-`ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
+**Docker**: Pre-built images available at `ghcr.io/brownag/gdalcli:gdal-X.Y.Z-latest`
 
 ### Requirements
 
-- **R** \>= 4.1
-- **GDAL** \>= 3.11 (CLI must be available in system PATH for processx
-  backend)
+- **R** >= 4.1
+- **GDAL** >= 3.11 (CLI must be available in system PATH for processx backend)
 - **gdalraster** (optional; enables gdalraster backend)
 - **reticulate** (optional; enables reticulate backend)
 
 ## Examples
 
 ### Basic Usage
+
 
 ``` r
 library(gdalcli)
@@ -79,10 +71,10 @@ job <- gdal_raster_convert(
 
 # Execute the job
 gdal_job_run(job)
-#> 0...10...20...30...40...50...60...70...80...90...100 - done.
 ```
 
 ### Adding Options
+
 
 ``` r
 job <- gdal_raster_convert(
@@ -98,6 +90,7 @@ gdal_job_run(job)
 
 ### Multi-Step Pipelines
 
+
 ``` r
 pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
@@ -107,11 +100,10 @@ pipeline <- gdal_raster_reproject(
   gdal_raster_convert(output = tempfile(fileext = ".tif"), output_format = "COG")
 
 gdal_job_run(pipeline)
-#> 0...10...20...30...40...50...60...70...80...90...100 - done.
-#> 0...10...20...30...40...50...60...70...80...90...100 - done.
 ```
 
 ### Pipeline Persistence
+
 
 ``` r
 # Save pipeline to gdalcli pipeline format
@@ -123,6 +115,7 @@ loaded <- gdal_load_pipeline(workflow_file)
 ```
 
 ### Cloud Storage
+
 
 ``` r
 # Set AWS credentials (from environment variables)
@@ -140,6 +133,7 @@ gdal_job_run(job)
 
 ### Raster Information
 
+
 ``` r
 # Get detailed information about a raster file
 info_job <- gdal_raster_info(
@@ -150,6 +144,7 @@ gdal_job_run(info_job)
 
 ### Vector Operations
 
+
 ``` r
 # Convert vector format
 vector_job <- gdal_vector_convert(
@@ -157,10 +152,11 @@ vector_job <- gdal_vector_convert(
   output = tempfile(fileext = ".geojson"),
   output_format = "GeoJSON"
 )
-gdal_job_run(vector_job, backend = "processx")
+gdal_job_run(vector_job)
 ```
 
 ### Raster Processing Pipeline
+
 
 ``` r
 # Simple processing pipeline: reproject and convert
@@ -170,7 +166,7 @@ processing_pipeline <- gdal_raster_reproject(
 ) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"))
 
-gdal_job_run(processing_pipeline, backend = "processx")
+gdal_job_run(processing_pipeline)
 ```
 
 ## Backends
@@ -178,13 +174,12 @@ gdal_job_run(processing_pipeline, backend = "processx")
 `gdalcli` supports multiple execution backends:
 
 - **processx** (default): Executes GDAL CLI commands as subprocesses
-- **gdalraster** (optional): Uses C++ GDAL bindings via gdalraster
-  package
+- **gdalraster** (optional): Uses C++ GDAL bindings via gdalraster package
 - **reticulate** (optional): Uses Python GDAL bindings via reticulate
 
 Set your preferred backend globally:
 
-``` r
+```r
 # Using gdalcli_options()
 gdalcli_options(backend = "gdalraster")
 
@@ -196,7 +191,7 @@ options(gdalcli.backend = "gdalraster")  # or "processx", "reticulate"
 
 Manage package behavior with `gdalcli_options()`:
 
-``` r
+```r
 # View current options
 gdalcli_options()
 
@@ -215,32 +210,24 @@ gdalcli_options(backend = "processx")
 
 ## Pipeline Features
 
-### Native GDAL Pipeline Execution
+### Pipeline Persistence
 
-Execute multi-step workflows as a single GDAL pipeline:
+Persist pipelines as JSON for sharing and version control. gdalcli supports three formats:
+
+- **Hybrid Format** (.gdalcli.json): Combines GDAL command with R metadata for lossless round-trip serialization
+- **Pure GDALG Format** (.gdalg.json): RFC 104 compliant GDAL specification for compatibility with other GDAL tools
+- **Legacy Format**: Deprecated (pre-v0.5.0) - no longer recommended
+
 
 ``` r
+# Create a multi-step processing pipeline
 pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
   dst_crs = "EPSG:32632"
 ) |>
-  gdal_raster_convert(output = tempfile(fileext = ".tif"))
+  gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
+  gdal_raster_convert(output = tempfile(fileext = ".tif"), output_format = "COG")
 
-gdal_job_run(pipeline, backend = "processx")
-```
-
-### gdalcli Pipeline Format: Save and Load Pipelines
-
-Persist pipelines as JSON for sharing and version control. gdalcli
-supports three formats:
-
-- **Hybrid Format** (.gdalcli.json): Combines GDAL command with R
-  metadata for lossless round-trip serialization
-- **Pure GDALG Format** (.gdalg.json): RFC 104 compliant GDAL
-  specification for compatibility with other GDAL tools
-- **Legacy Format**: Deprecated (pre-v0.5.0) - no longer recommended
-
-``` r
 # Save pipeline to gdalcli hybrid format (recommended)
 workflow_file <- tempfile(fileext = ".gdalcli.json")
 gdal_save_pipeline(
@@ -255,15 +242,16 @@ loaded <- gdal_load_pipeline(workflow_file)
 
 # Export as pure GDALG for use with other GDAL tools
 gdalg <- as_gdalg(loaded)
-gdalg_write(gdalg, "workflow.gdalg.json")
+gdalg_write(gdalg, tempfile(fileext = ".gdalg.json"))
 ```
 
 ### Shell Script Generation
 
 Generate executable shell scripts from pipelines:
 
+
 ``` r
-# Generate bash script
+# Generate bash script from pipeline
 script <- render_shell_script(pipeline, format = "native", shell = "bash")
 cat(script)
 #> #!/bin/bash
@@ -271,23 +259,20 @@ cat(script)
 #> set -e
 #> 
 #> # Native GDAL pipeline execution
-#> gdal raster pipeline ! read /home/andrew/workspace/gdalcli/inst/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_3db8c31df3955.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/RtmpvUIido/file3db8c68032907.tif --input /vsimem/gdalcli_3db8c370bdb6a.tif
+#> gdal raster pipeline ! read /home/andrew/workspace/gdalcli/inst/extdata/sample_clay_content.tif ! reproject --dst-crs EPSG:32632 --output /vsimem/gdalcli_15adfe25575b9.tif ! scale --src-min 0 --src-max 100 --dst-min 0 --dst-max 255 ! write /tmp/Rtmpdjaj7l/file15adfecff0485.tif --input /vsimem/gdalcli_15adfe4d19f59.tif
 ```
 
 ## Architecture
 
 `gdalcli` uses a three-layer architecture:
 
-1.  **Frontend Layer**: Auto-generated R functions with composable
-    modifiers
-2.  **Pipeline Layer**: Automatic pipeline building and gdalcli pipeline
-    format serialization  
-3.  **Engine Layer**: Command execution with multiple backend options
+1. **Frontend Layer**: Auto-generated R functions with composable modifiers
+2. **Pipeline Layer**: Automatic pipeline building and gdalcli pipeline format serialization  
+3. **Engine Layer**: Command execution with multiple backend options
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md)
-for guidelines.
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 

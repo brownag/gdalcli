@@ -162,10 +162,8 @@ gdal_job_run.gdal_job <- function(x,
     return(gdal_job_run(x$pipeline, ..., verbose = verbose))
   }
 
-  # Resolve streaming parameters (explicit args override job specs, which override global options)
   stream_in_final <- if (!is.null(stream_in)) stream_in else x$stream_in
-  
-  # Resolve stream_out_format with priority: explicit arg > job spec > global option > NULL
+
   stream_out_final <- if (!is.null(stream_out_format)) {
     stream_out_format
   } else if (!is.null(x$stream_out_format)) {
@@ -173,8 +171,7 @@ gdal_job_run.gdal_job <- function(x,
   } else {
     getOption("gdalcli.stream_out_format", NULL)
   }
-  
-  # Resolve verbose with priority: explicit arg > global option > FALSE
+
   verbose_final <- if (!is.na(verbose) && is.logical(verbose)) {
     verbose
   } else {
@@ -187,11 +184,8 @@ gdal_job_run.gdal_job <- function(x,
   # Merge environment variables
   env_final <- .merge_env_vars(x$env_vars, env, x$config_options)
 
-  # Configure input/output streams
   stdin_arg <- if (!is.null(stream_in_final)) stream_in_final else NULL
-  # For "stdout" format, use TRUE to pipe directly to parent stdout
-  # For other formats, use "|" to capture output
-  stdout_arg <- if (stream_out_final == "stdout") TRUE else if (!is.null(stream_out_final)) "|" else NULL
+  stdout_arg <- if (isTRUE(stream_out_final == "stdout")) TRUE else if (!is.null(stream_out_final)) "|" else NULL
 
   if (verbose_final) {
     # Extract command path for display (skip "gdal" prefix if present)
