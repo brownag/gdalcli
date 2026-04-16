@@ -191,6 +191,53 @@ Functions are generated from GDAL's JSON API specification in `build/generate_gd
 - **Defaults**: Optional parameters get `NULL` defaults
 - **Type Conversion**: Automatic R type conversion for GDAL parameters
 
+## API Change Tracking and Release Notes
+
+### Overview
+
+The package includes automated infrastructure for tracking GDAL API changes between versions, generating release notes, and maintaining an audit trail of all modifications.
+
+**Key components**:
+- `build/compare_gdal_api.R` - Compares GDAL APIs between versions
+- `build/generate_release_notes.R` - Formats API changes into release notes
+- `build/api_change_tracking.R` - Unified orchestration script
+- `inst/CHANGELOG-API.jsonl` - Append-only audit trail
+
+### API Comparison and Release Notes
+
+The build includes scripts to compare GDAL APIs between versions and generate release notes.
+
+**Scripts:**
+- `build/compare_gdal_api.R` - Compare two versions
+- `build/generate_release_notes.R` - Format release notes from diff
+- `build/api_change_tracking.R` - Orchestrate both steps and log changes
+
+**Typical workflow:**
+```bash
+Rscript build/generate_gdal_api.R
+Rscript build/api_change_tracking.R 3.11.4 3.12.3 \
+  --release-version 0.6.0 --release-notes RELEASE_NOTES.md \
+  --log-changes inst/CHANGELOG-API.jsonl
+```
+
+**Requirements:**
+- Previous version APIs in git (release/gdal-X.Y branch or tag)
+- Current GDAL version installed locally (or use Docker)
+- generate_gdal_api.R run with target version
+
+**If comparison shows 0 changes for different versions:**
+1. Check release/gdal-X.Y branch exists
+2. Check GDAL_VERSION_INFO.json matches current version
+3. Verify generate_gdal_api.R was run with target GDAL
+
+**Change log:**
+API changes recorded in `inst/CHANGELOG-API.jsonl` (JSONL format):
+```bash
+cat inst/CHANGELOG-API.jsonl | jq 'select(.current_version == "3.12.3")'
+```
+- Generates API with `generate_gdal_api.R`
+- Runs `api_change_tracking.R` to compare and create release notes
+
 ## Code Patterns
 
 ### Creating GDAL Jobs
@@ -211,17 +258,16 @@ gdal_run(job)
 
 ```r
 gdal_raster_convert(...) |>
-  gdal_with_co("COMPRESS=DEFLATE") |>     # Creation options
-  gdal_with_config("GDAL_CACHEMAX" = "512") |>  # GDAL config
-  gdal_with_env(auth) |>                  # Environment variables
+  gdal_with_co("COMPRESS=DEFLATE") |>
+  gdal_with_config("GDAL_CACHEMAX" = "512") |>
+  gdal_with_env(auth) |>
   gdal_run()
 ```
 
 ### Pipeline Composition
 
-**Preferred approach: Use the pipe operator**
 ```r
-# Compose multiple operations naturally with piping
+# Compose with native pipe
 result <- gdal_raster_reproject(
   input = "input.tif",
   dst_crs = "EPSG:32632"
@@ -230,12 +276,6 @@ result <- gdal_raster_reproject(
   gdal_raster_convert(output = "output.tif") |>
   gdal_job_run()
 ```
-
-**For programmatic job lists: Use explicit pipeline functions**
-```r
-# When you have a list of jobs and know the type
-jobs <- build_job_list(config)
-pipeline <- gdal_raster_pipeline(jobs = jobs)
 gdal_job_run(pipeline)
 ```
 

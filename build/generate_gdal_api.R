@@ -2728,6 +2728,45 @@ apply_automatic_signature_fixups <- function(r_dir = "R") {
   invisible(fixed_count > 0)
 }
 
+#' Save raw GDAL API JSON for each category
+#' 
+#' Queries each GDAL category (raster, vector, mdim, vsi, driver) via 
+#' `gdal <category> --json-usage` and saves the raw JSON to inst/GDAL_API_<category>.json
+#' These files are used later for API comparison between versions.
+#'
+#' @return Invisibly returns number of files saved
+#'
+.save_category_api_jsons <- function() {
+  categories <- c("raster", "vector", "mdim", "vsi", "driver")
+  saved_count <- 0
+  
+  dir.create("inst", showWarnings = FALSE)
+  
+  for (category in categories) {
+    tryCatch(
+      {
+        result <- processx::run(
+          "gdal",
+          c(category, "--json-usage"),
+          error_on_status = TRUE
+        )
+        
+        # Save raw JSON (don't parse, just write as-is)
+        output_file <- file.path("inst", sprintf("GDAL_API_%s.json", category))
+        writeLines(result$stdout, output_file)
+        cat(sprintf("  [OK] Saved %s API\n", category))
+        saved_count <- saved_count + 1
+      },
+      error = function(e) {
+        cat(sprintf("  [WARN] Could not save %s API: %s\n", category, e$message))
+      }
+    )
+  }
+  
+  cat(sprintf("[OK] Saved %d category API JSONs to inst/GDAL_API_*.json\n\n", saved_count))
+  invisible(saved_count)
+}
+
 
 # Main Execution
 # ============================================================================
@@ -2769,6 +2808,10 @@ main <- function() {
 
   cat(sprintf("[OK] Found %d GDAL command endpoints.\n\n", length(endpoints)))
 
+  # Save raw API JSONs for each category (for later API comparison)
+  cat("Saving raw GDAL API JSON for each category...\n")
+  .save_category_api_jsons()
+  
   # Extract and validate RFC 104 step mappings
   cat("Extracting RFC 104 step name mappings from endpoints...\n")
   step_mappings <- extract_step_mappings(endpoints)

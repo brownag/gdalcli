@@ -118,7 +118,7 @@ jobs:
 
           # Extract package version from DESCRIPTION
           PKG_VERSION=$(grep "^Version:" DESCRIPTION | sed 's/Version: //')
-          
+
           if [ -z "$PKG_VERSION" ]; then
             echo "ERROR: Could not extract package version from DESCRIPTION"
             exit 1
@@ -380,18 +380,164 @@ jobs:
             exit 1
           fi
 
+      - name: Compare GDAL APIs and generate release notes
+        if: success() && github.event.inputs.dry_run == 'false'
+        id: release_notes
+        run: |
+          GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
+          PKG_VERSION="${{ steps.validate.outputs.package_version }}"
+          GDAL_SHORT="${{ steps.validate.outputs.gdal_short }}"
+          IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
+
+          # Find the most recent previous release (by semantic version, filtering out >= current)
+          # This handles out-of-order releases correctly
+          PREV_VERSION=""
+          PREV_TAG=""
+
+          # Get all release tags sorted by semantic version (newest first)
+          # Tag format: v0.3.0-3.12.0 (package_version-gdal_version)
+          for tag in $(git tag -l "v*-*" --sort=-version:refname); do
+            tag_gdal=$(echo "$tag" | sed "s/.*-\([0-9.]*\)$/\1/")
+
+            # Version comparison: check if tag_gdal < GDAL_VERSION
+            # sort -V handles semantic versioning
+            if [ "$(printf '%s\n' "$GDAL_VERSION" "$tag_gdal" | sort -V | head -n1)" = "$tag_gdal" ]; then
+              # Found a tag with version < current, use it and stop
+              PREV_TAG="$tag"
+              PREV_VERSION="$tag_gdal"
+              echo "Found most recent previous release: $PREV_TAG (GDAL $PREV_VERSION)"
+              break
+            fi
+          done
+
+          mkdir -p build
+
+          # Default release notes template
+          cat > /tmp/default_release_notes.txt <<'TEMPLATE'
+          Release of gdalcli for GDAL ${{ steps.validate.outputs.gdal_version }}
+
+          ## Details
+          - GDAL Version: ${{ steps.validate.outputs.gdal_version }}
+          - Package Version: ${{ steps.validate.outputs.package_version }}-${{ steps.validate.outputs.gdal_version }}
+          - Release Branch: `${{ steps.validate.outputs.branch_name }}`
+          - Docker Image: `ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest`
+
+          ## Installation
+          Install from release branch:
+          ```r
+          remotes::install_github(
+            "brownag/gdalcli",
+            ref = "${{ steps.validate.outputs.branch_name }}"
+          )
+          ```
+
+          Pull runtime Docker image:
+          ```bash
+          docker pull ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest
+          ```
+          TEMPLATE
+
+          # Check if we can generate detailed notes
+          if [ -n "$PREV_VERSION" ]; then
+            echo "Comparing GDAL $PREV_VERSION -> $GDAL_VERSION APIs..."
+
+            docker run --rm \
+              -v "$PWD:/workspace" \
+              -w /workspace \
+              "$IMAGE" \
+              Rscript /workspace/build/compare_gdal_api.R "$PREV_VERSION" "$GDAL_VERSION" /workspace/build/api_diff.json
+
+            # Generate release notes from the comparison
+            echo "Generating release notes..."
+            docker run --rm \
+              -v "$PWD:/workspace" \
+              -w /workspace \
+              "$IMAGE" \
+              Rscript /workspace/build/generate_release_notes.R "$GDAL_VERSION" "$PKG_VERSION" /workspace/build/api_diff.json 2>&1 | tee /tmp/release_notes.txt
+
+            # Extract the notes (only the section before DONE)
+            if grep -q "^DONE$" /tmp/release_notes.txt; then
+              sed '/^DONE$/,$d' /tmp/release_notes.txt > /tmp/final_notes.txt
+              # Remove the first few lines of debug output, keep from the first "Release of gdalcli"
+              sed -n '/^Release of gdalcli/,$p' /tmp/final_notes.txt > /tmp/release_notes_body.txt
+            else
+              sed -n '/^Release of gdalcli/,$p' /tmp/release_notes.txt > /tmp/release_notes_body.txt
+            fi
+
+            if [ -s /tmp/release_notes_body.txt ]; then
+              cp /tmp/release_notes_body.txt /tmp/github_release_notes.txt
+              echo "✓ Generated detailed release notes"
+            else
+              cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+              echo "⚠ Could not generate detailed notes, using default template"
+            fi
+          else
+            echo "No previous version found; using default template"
+            cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+          fi
+
+          # Ensure we have a release notes file
+          if [ ! -f /tmp/github_release_notes.txt ]; then
+            cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+          fi
+
+          # Make available as artifact for next step
+          cp /tmp/github_release_notes.txt /tmp/release_notes_artifact.txt
+
+      - name: Upload release notes
+        if: success() && github.event.inputs.dry_run == 'false'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes-${{ steps.validate.outputs.gdal_version }}
+          path: /tmp/github_release_notes.txt
+          retention-days: 1
+          if-no-files-found: ignore
+
+      - name: Download release notes for GitHub release
+        if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main' && github.event.inputs.dry_run == 'false'
+        run: |
+          # Try to use generated notes, fall back to reading directly if artifact unavailable
+          if [ -f /tmp/github_release_notes.txt ]; then
+            cat /tmp/github_release_notes.txt > $GITHUB_WORKSPACE/release_notes_body.md
+          else
+            # Fallback: create default notes
+            cat > $GITHUB_WORKSPACE/release_notes_body.md <<'EOF'
+          Release of gdalcli for GDAL ${{ steps.validate.outputs.gdal_version }}
+
+          ## Details
+          - GDAL Version: ${{ steps.validate.outputs.gdal_version }}
+          - Package Version: ${{ steps.validate.outputs.package_version }}-${{ steps.validate.outputs.gdal_version }}
+          - Release Branch: `${{ steps.validate.outputs.branch_name }}`
+          - Docker Image: `ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest`
+
+          ## Installation
+          Install from release branch:
+          ```r
+          remotes::install_github(
+            "brownag/gdalcli",
+            ref = "${{ steps.validate.outputs.branch_name }}"
+          )
+          ```
+
+          Pull runtime Docker image:
+          ```bash
+          docker pull ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest
+          ```
+          EOF
+          fi
+
       - name: Update version info and commit release
         if: success() && github.event.inputs.dry_run == 'false'
         run: |
           GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
           BUILD_DATE="$(date -I)"
           GENERATED_AT="$(date '+%Y-%m-%d %H:%M:%S')"
-          
+
           # Parse version components
           MAJOR=$(echo "$GDAL_VERSION" | cut -d. -f1)
           MINOR=$(echo "$GDAL_VERSION" | cut -d. -f2)
           PATCH=$(echo "$GDAL_VERSION" | cut -d. -f3)
-          
+
           # Get R and package versions from the Docker image
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
           R_VERSION=$(docker run --rm "$IMAGE" R --version 2>/dev/null | head -1 | sed 's/R version \([0-9.]*\).*/\1/')
@@ -423,6 +569,7 @@ jobs:
           echo "Staging changes..."
           git add DESCRIPTION
           git add -f inst/GDAL_VERSION_INFO.json
+          git add inst/GDAL_API_*.json 2>/dev/null || true
 
           if [ -d R ]; then
             git add R/
@@ -437,7 +584,7 @@ jobs:
           fi
 
           echo "Staged $(git diff --cached --name-only | wc -l) files"
-          
+
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
             # Force push is safe here because we've reset branch to main and applied generated files
@@ -455,28 +602,7 @@ jobs:
           name: gdalcli v${{ steps.validate.outputs.package_version }} for GDAL ${{ steps.validate.outputs.gdal_version }}
           draft: false
           prerelease: false
-          body: |
-            Release of gdalcli for GDAL ${{ steps.validate.outputs.gdal_version }}
-
-            ## Details
-            - GDAL Version: ${{ steps.validate.outputs.gdal_version }}
-            - Package Version: ${{ steps.validate.outputs.package_version }}-${{ steps.validate.outputs.gdal_version }}
-            - Release Branch: `${{ steps.validate.outputs.branch_name }}`
-            - Docker Image: `ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest`
-
-            ## Installation
-            Install from release branch:
-            ```r
-            remotes::install_github(
-              "brownag/gdalcli",
-              ref = "${{ steps.validate.outputs.branch_name }}"
-            )
-            ```
-
-            Pull runtime Docker image:
-            ```bash
-            docker pull ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest
-            ```
+          body_path: ${{ github.workspace }}/release_notes_body.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
