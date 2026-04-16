@@ -44,77 +44,77 @@ gdal_raster_tile(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
-\item{output}{Output directory (required)}
+\item{output}{Output directory (Default: \code{NULL}) (required)}
 
 \item{output_format}{Output format (Default: \code{PNG})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{tiling_scheme}{Tiling scheme. Choices: raster, WebMercatorQuad, WorldCRS84Quad, WorldMercatorWGS84Quad, GoogleCRS84Quad, ... (Default: \code{WebMercatorQuad})}
+\item{tiling_scheme}{Tiling scheme. Choices: "raster", "WebMercatorQuad", "WorldCRS84Quad", "WorldMercatorWGS84Quad", "GoogleCRS84Quad", ... (Default: \code{WebMercatorQuad})}
 
-\item{min_zoom}{Minimum zoom level (Integer). Minimum: \code{0}}
+\item{min_zoom}{Minimum zoom level (Integer) (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{max_zoom}{Maximum zoom level (Integer). Minimum: \code{0}}
+\item{max_zoom}{Maximum zoom level (Integer) (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{min_x}{Minimum tile X coordinate (Integer). Minimum: \code{0}}
+\item{min_x}{Minimum tile X coordinate (Integer) (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{max_x}{Maximum tile X coordinate (Integer). Minimum: \code{0}}
+\item{max_x}{Maximum tile X coordinate (Integer) (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{min_y}{Minimum tile Y coordinate (Integer). Minimum: \code{0}}
+\item{min_y}{Minimum tile Y coordinate (Integer) (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{max_y}{Maximum tile Y coordinate (Integer). Minimum: \code{0}}
+\item{max_y}{Maximum tile Y coordinate (Integer) (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{no_intersection_ok}{Whether dataset extent not intersecting tile matrix is only a warning (Logical)}
+\item{no_intersection_ok}{Whether dataset extent not intersecting tile matrix is only a warning (Logical) (Default: \code{NULL})}
 
-\item{resampling}{Resampling method for max zoom. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{cubic})}
+\item{resampling}{Resampling method for max zoom. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{cubic})}
 
-\item{overview_resampling}{Resampling method for overviews. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ...}
+\item{overview_resampling}{Resampling method for overviews. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{NULL})}
 
-\item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: xyz, tms (Default: \code{xyz})}
+\item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: "xyz", "tms" (Default: \code{xyz})}
 
-\item{tile_size}{Override default tile size (Integer). Range: (\code{64} to \code{32768})}
+\item{tile_size}{Override default tile size (Integer) (Default: \code{NULL}). Range: (\code{64} to \code{32768})}
 
-\item{add_alpha}{Whether to force adding an alpha channel (Logical)}
+\item{add_alpha}{Whether to force adding an alpha channel (Logical) (Default: \code{NULL})}
 
-\item{no_alpha}{Whether to disable adding an alpha channel (Logical)}
+\item{no_alpha}{Whether to disable adding an alpha channel (Logical) (Default: \code{NULL})}
 
-\item{dst_nodata}{Destination nodata value}
+\item{dst_nodata}{Destination nodata value (Default: \code{NULL})}
 
-\item{skip_blank}{Do not generate blank tiles (Logical)}
+\item{skip_blank}{Do not generate blank tiles (Logical) (Default: \code{NULL})}
 
-\item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{copy_src_metadata}{Whether to copy metadata from source dataset (Logical)}
+\item{copy_src_metadata}{Whether to copy metadata from source dataset (Logical) (Default: \code{NULL})}
 
-\item{aux_xml}{Generate .aux.xml sidecar files when needed (Logical)}
+\item{aux_xml}{Generate .aux.xml sidecar files when needed (Logical) (Default: \code{NULL})}
 
-\item{kml}{Generate KML files (Logical)}
+\item{kml}{Generate KML files (Logical) (Default: \code{NULL})}
 
-\item{resume}{Generate only missing files (Logical)}
+\item{resume}{Generate only missing files (Logical) (Default: \code{NULL})}
 
 \item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{ALL_CPUS})}
 
-\item{excluded_values}{Tuples of values (e.g. \if{html}{\out{<R>}},\if{html}{\out{<G>}},\if{html}{\out{<B>}} or (\if{html}{\out{<R1>}},\if{html}{\out{<G1>}},\if{html}{\out{<B1>}}),(\if{html}{\out{<R2>}},\if{html}{\out{<G2>}},\if{html}{\out{<B2>}})) that must beignored as contributing source pixels during (average) resampling (Advanced Resampling)}
+\item{excluded_values}{Tuples of values (e.g. \if{html}{\out{<R>}},\if{html}{\out{<G>}},\if{html}{\out{<B>}} or (\if{html}{\out{<R1>}},\if{html}{\out{<G1>}},\if{html}{\out{<B1>}}),(\if{html}{\out{<R2>}},\if{html}{\out{<G2>}},\if{html}{\out{<B2>}})) that must beignored as contributing source pixels during (average) resampling (Default: \code{NULL}) (Advanced Resampling)}
 
 \item{excluded_values_pct_threshold}{Minimum percentage of source pixels that must be set at one of the --excluded-values to cause the excluded value to be used as the target pixel value (Default: \code{50}). Range: (\code{0} to \code{100}) (Advanced Resampling)}
 
 \item{nodata_values_pct_threshold}{Minimum percentage of source pixels that must be set at one of nodata (or alpha=0 or any other way to express transparent pixelto cause the target pixel value to be transparent (Default: \code{100}). Range: (\code{0} to \code{100}) (Advanced Resampling)}
 
-\item{webviewer}{Web viewer to generate (Character vector). Choices: none, all, leaflet, openlayers, mapml (Default: \code{all}). \code{0} to \code{2147483647} value(s) (Publication)}
+\item{webviewer}{Web viewer to generate (Character vector). Choices: "none", "all", "leaflet", "openlayers", "mapml" (Default: \code{all}) (Publication)}
 
-\item{url}{URL address where the generated tiles are going to be published (Publication)}
+\item{url}{URL address where the generated tiles are going to be published (Default: \code{NULL}) (Publication)}
 
-\item{title}{Title of the map (Publication)}
+\item{title}{Title of the map (Default: \code{NULL}) (Publication)}
 
-\item{copyright}{Copyright for the map (Publication)}
+\item{copyright}{Copyright for the map (Default: \code{NULL}) (Publication)}
 
-\item{mapml_template}{Filename of a template mapml file where variables will be substituted (Publication)}
+\item{mapml_template}{Filename of a template mapml file where variables will be substituted (Default: \code{NULL}) (Publication)}
 }
 \value{
 A \link{gdal_job} object.
@@ -125,8 +125,7 @@ Generate tiles in separate files from a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_tile.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom = 2, 
-    max_zoom = 5)
+job <- gdal_raster_tile(input = "input.tif", output = "output_folder")
 \dontrun{
   result <- gdal_job_run(job)
 }

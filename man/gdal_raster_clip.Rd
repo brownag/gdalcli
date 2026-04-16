@@ -28,15 +28,15 @@ gdal_raster_clip(
 \arguments{
 \item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -71,8 +71,7 @@ Clip a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_clip.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE, 
-    bbox = c(2, 49, 3, 50), bbox_crs = "EPSG:4326")
+job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)
 }

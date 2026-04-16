@@ -21,13 +21,13 @@ gdal_vector_info(
 \arguments{
 \item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
+\item{output_format}{Output format. Choices: "json", "text" (Default: \code{json})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{layer}{Layer name (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{layer}{Layer name (Character vector)}
 
 \item{features}{List all features (beware of RAM consumption on large layers) (Logical)}
 
@@ -50,7 +50,7 @@ Return information on a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_info.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vector_info(output_format = "text", features = "poly.gpkg")
+job <- gdal_vector_info(output_format = "text")
 \dontrun{
   result <- gdal_job_run(job)
 }

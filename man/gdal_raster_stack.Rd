@@ -24,25 +24,25 @@ gdal_raster_stack(
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NULL})}
+\item{output_format}{Output format ("GDALG" allowed) (Default: \code{NULL})}
 
-\item{target_aligned_pixels}{Round target extent to target resolution (Logical). Format: \code{NA} (Default: \code{NULL})}
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Default: \code{NULL})}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{band}{Input band(s) (1-based index) (Integer vector). Format: \code{NA} (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
+\item{band}{Input band(s) (1-based index) (Integer vector) (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>|same|average|common|highest|lowest} (Default: \code{same})}
 
-\item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Format: \code{NA} (Default: \code{NULL}). Exactly \code{4} value(s)}
+\item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units) (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{src_nodata}{Set nodata values for input bands.. Format: \code{NA} (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
+\item{src_nodata}{Set nodata values for input bands. (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
 
-\item{dst_nodata}{Set nodata values at the destination band level.. Format: \code{NA} (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
+\item{dst_nodata}{Set nodata values at the destination band level. (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
 
-\item{hide_nodata}{Makes the destination band not report the NoData. (Logical). Format: \code{NA} (Default: \code{NULL})}
+\item{hide_nodata}{Makes the destination band not report the NoData. (Logical) (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.

@@ -26,41 +26,41 @@ gdal_raster_create(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format (Default: \code{NULL})}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Byte})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{Byte})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
+\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{FALSE})}
 
-\item{size}{Output size in pixels (Integer vector). Format: \verb{<width>,<height>}. Minimum: \code{0}. Exactly \code{2} value(s)}
+\item{size}{Output size in pixels (Integer vector). Format: \verb{<width>,<height>} (Default: \code{NULL}). Minimum: \code{0}. Exactly \code{2} value(s)}
 
 \item{band_count}{Number of bands (Integer) (Default: \code{1}). Minimum: \code{0}}
 
-\item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')}
+\item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf') (Default: \code{NULL})}
 
-\item{burn}{Burn value. \code{0} to \code{2147483647} value(s)}
+\item{burn}{Burn value (Default: \code{NULL})}
 
-\item{crs}{Set CRS}
+\item{crs}{Set CRS (Default: \code{NULL})}
 
-\item{bbox}{Bounding box as xmin,ymin,xmax,ymax. Exactly \code{4} value(s)}
+\item{bbox}{Bounding box as xmin,ymin,xmax,ymax (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{metadata}{Add metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add metadata item (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{copy_metadata}{Copy metadata from input dataset (Logical)}
+\item{copy_metadata}{Copy metadata from input dataset (Logical) (Default: \code{NULL})}
 
-\item{copy_overviews}{Create same overview levels as input dataset (Logical)}
+\item{copy_overviews}{Create same overview levels as input dataset (Logical) (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.
@@ -71,8 +71,7 @@ Create a new raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_create.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_create(input = "out.tif", size = c(20, 20), band_count = 3, 
-    crs = "EPSG:4326", bbox = c(2, 49, 3, 50), burn = 10)
+job <- gdal_raster_create(input = "out.tif")
 \dontrun{
   result <- gdal_job_run(job)
 }

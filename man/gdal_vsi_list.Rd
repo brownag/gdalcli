@@ -18,7 +18,7 @@ gdal_vsi_list(
 \arguments{
 \item{filename}{File or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{output_format}{Output format. Choices: json, text (Default: \code{json})}
+\item{output_format}{Output format. Choices: "json", "text" (Default: \code{json})}
 
 \item{long_listing}{Use a long listing format (Logical)}
 

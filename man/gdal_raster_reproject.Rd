@@ -29,47 +29,47 @@ gdal_raster_reproject(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed) (Default: \code{NULL})}
 
-\item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Advanced)}
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Default: \code{NULL}) (Advanced)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
-\item{src_crs}{Source CRS}
+\item{src_crs}{Source CRS (Default: \code{NULL})}
 
-\item{dst_crs}{Destination CRS}
+\item{dst_crs}{Destination CRS (Default: \code{NULL})}
 
-\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
+\item{resampling}{Resampling method. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{nearest})}
 
-\item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>}. Minimum: \code{0}. Exactly \code{2} value(s)}
+\item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>} (Default: \code{NULL}). Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{size}{Target size in pixels (Integer vector). Format: \verb{<width>,<height>}. Minimum: \code{0}. Exactly \code{2} value(s)}
+\item{size}{Target size in pixels (Integer vector). Format: \verb{<width>,<height>} (Default: \code{NULL}). Minimum: \code{0}. Exactly \code{2} value(s)}
 
-\item{bbox}{Target bounding box (in destination CRS units). Exactly \code{4} value(s)}
+\item{bbox}{Target bounding box (in destination CRS units) (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{bbox_crs}{CRS of target bounding box}
+\item{bbox_crs}{CRS of target bounding box (Default: \code{NULL})}
 
-\item{src_nodata}{Set nodata values for input bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
+\item{src_nodata}{Set nodata values for input bands ('None' to unset). (Character vector) (Default: \code{NULL}). \code{1} to \code{2147483647} value(s) (Advanced)}
 
-\item{dst_nodata}{Set nodata values for output bands ('None' to unset). (Character vector). \code{1} to \code{2147483647} value(s) (Advanced)}
+\item{dst_nodata}{Set nodata values for output bands ('None' to unset). (Character vector) (Default: \code{NULL}). \code{1} to \code{2147483647} value(s) (Advanced)}
 
-\item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical) (Advanced)}
+\item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical) (Default: \code{NULL}) (Advanced)}
 
-\item{warp_option}{Warping option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{warp_option}{Warping option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{error_threshold}{Error threshold (Advanced)}
+\item{error_threshold}{Error threshold (Default: \code{NULL}) (Advanced)}
 }
 \value{
 A \link{gdal_job} object.
@@ -80,8 +80,7 @@ Reproject a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = TRUE, 
-    dst_crs = "EPSG:32632")
+job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)
 }

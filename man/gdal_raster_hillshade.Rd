@@ -24,37 +24,37 @@ gdal_raster_hillshade(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed) (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
-\item{zfactor}{Vertical exaggeration used to pre-multiply the elevations. Minimum: \code{0}}
+\item{zfactor}{Vertical exaggeration used to pre-multiply the elevations (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{xscale}{Ratio of vertical units to horizontal X axis units. Minimum: \code{0}}
+\item{xscale}{Ratio of vertical units to horizontal X axis units (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{yscale}{Ratio of vertical units to horizontal Y axis units. Minimum: \code{0}}
+\item{yscale}{Ratio of vertical units to horizontal Y axis units (Default: \code{NULL}). Minimum: \code{0}}
 
 \item{azimuth}{Azimuth of the light, in degrees (Default: \code{315})}
 
 \item{altitude}{Altitude of the light, in degrees (Default: \code{45}). Range: (\code{0} to \code{90})}
 
-\item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: Horn, ZevenbergenThorne (Default: \code{Horn})}
+\item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: "Horn", "ZevenbergenThorne" (Default: \code{Horn})}
 
-\item{variant}{Variant of the hillshading algorithm. Choices: regular, combined, multidirectional, Igor (Default: \code{regular})}
+\item{variant}{Variant of the hillshading algorithm. Choices: "regular", "combined", "multidirectional", "Igor" (Default: \code{regular})}
 
-\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
+\item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical) (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.
@@ -65,8 +65,7 @@ Generate a shaded relief map
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
-    zfactor = 30)
+job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)
 }

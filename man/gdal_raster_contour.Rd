@@ -29,47 +29,47 @@ gdal_raster_contour(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
-\item{layer}{Layer name}
+\item{layer}{Layer name (Default: \code{NULL})}
 
-\item{elevation_name}{Name of the elevation field}
+\item{elevation_name}{Name of the elevation field (Default: \code{NULL})}
 
-\item{min_name}{Name of the minimum elevation field}
+\item{min_name}{Name of the minimum elevation field (Default: \code{NULL})}
 
-\item{max_name}{Name of the maximum elevation field}
+\item{max_name}{Name of the maximum elevation field (Default: \code{NULL})}
 
-\item{X3d}{Force production of 3D vectors instead of 2D (Logical)}
+\item{X3d}{Force production of 3D vectors instead of 2D (Logical) (Default: \code{NULL})}
 
-\item{src_nodata}{Input pixel value to treat as 'nodata'}
+\item{src_nodata}{Input pixel value to treat as 'nodata' (Default: \code{NULL})}
 
-\item{interval}{Elevation interval between contours. Minimum: \code{0}}
+\item{interval}{Elevation interval between contours (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{levels}{List of contour levels (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{levels}{List of contour levels (Character vector) (Default: \code{NULL})}
 
-\item{exp_base}{Base for exponential contour level generation (Integer)}
+\item{exp_base}{Base for exponential contour level generation (Integer) (Default: \code{NULL})}
 
-\item{offset}{Offset to apply to contour levels}
+\item{offset}{Offset to apply to contour levels (Default: \code{NULL})}
 
-\item{polygonize}{Create polygons instead of lines (Logical)}
+\item{polygonize}{Create polygons instead of lines (Logical) (Default: \code{NULL})}
 
-\item{group_transactions}{Group n features per transaction (default 100 000) (Integer). Minimum: \code{0}}
+\item{group_transactions}{Group n features per transaction (default 100 000) (Integer) (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 }
 \value{
 A \link{gdal_job} object.
@@ -80,7 +80,7 @@ Creates a vector contour from a raster elevation model (DEM).
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp", interval = 100)
+job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp")
 \dontrun{
   result <- gdal_job_run(job)
 }

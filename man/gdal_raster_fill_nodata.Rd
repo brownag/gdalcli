@@ -19,17 +19,17 @@ gdal_raster_fill_nodata(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format (Default: \code{NULL})}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
@@ -37,9 +37,9 @@ gdal_raster_fill_nodata(
 
 \item{smoothing_iterations}{The number of 3x3 average filter smoothing iterations to run after the interpolation to dampen artifacts. The default is zero smoothing iterations. (Integer). Format: \code{SMOOTHING_ITERATIONS} (Default: \code{0})}
 
-\item{mask}{Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path)}
+\item{mask}{Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path) (Default: \code{NULL})}
 
-\item{strategy}{By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: invdist, nearest (Default: \code{invdist})}
+\item{strategy}{By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: "invdist", "nearest" (Default: \code{invdist})}
 }
 \value{
 A \link{gdal_job} object.
@@ -50,8 +50,7 @@ Fill nodata raster regions by interpolation from edges.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_fill_nodata(input = "input.tif", output = "output.tif", 
-    max_distance = 50, smoothing_iterations = 3, strategy = "nearest", mask = "mask.tif")
+job <- gdal_raster_fill_nodata(input = "input.tif", output = "output.tif")
 \dontrun{
   result <- gdal_job_run(job)
 }

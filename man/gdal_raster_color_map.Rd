@@ -19,27 +19,27 @@ gdal_raster_color_map(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed) (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
-\item{color_map}{Color map filename}
+\item{color_map}{Color map filename (Default: \code{NULL})}
 
-\item{add_alpha}{Adds an alpha mask band to the destination. (Logical)}
+\item{add_alpha}{Adds an alpha mask band to the destination. (Logical) (Default: \code{NULL})}
 
-\item{color_selection}{How to compute output colors from input values. Choices: interpolate, exact, nearest (Default: \code{interpolate})}
+\item{color_selection}{How to compute output colors from input values. Choices: "interpolate", "exact", "nearest" (Default: \code{interpolate})}
 }
 \value{
 A \link{gdal_job} object.
@@ -50,8 +50,7 @@ Generate a RGB or RGBA dataset from a single band, using a color map
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
-    color_map = "color-map.txt")
+job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)
 }

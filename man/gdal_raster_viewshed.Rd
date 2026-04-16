@@ -27,29 +27,29 @@ gdal_raster_viewshed(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format (Default: \code{NULL})}
 
 \item{target_height}{Height of the target above the DEM surface in the height unit of the DEM. (Default: \code{0})}
 
-\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>} (required). \code{2} to \code{3} value(s)}
+\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>} (Default: \code{NULL}) (required). \code{2} to \code{3} value(s)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
-\item{mode}{Sets what information the output contains.. Choices: normal, DEM, ground, cumulative (Default: \code{normal})}
+\item{mode}{Sets what information the output contains.. Choices: "normal", "DEM", "ground", "cumulative" (Default: \code{normal})}
 
-\item{max_distance}{Maximum distance from observer to compute visibility. It is also used to clamp the extent of the output raster.. Minimum: \code{0}}
+\item{max_distance}{Maximum distance from observer to compute visibility. It is also used to clamp the extent of the output raster. (Default: \code{NULL}). Minimum: \code{0}}
 
-\item{curvature_coefficient}{Coefficient to consider the effect of the curvature and refraction.. Minimum: \code{0}}
+\item{curvature_coefficient}{Coefficient to consider the effect of the curvature and refraction. (Default: \code{NULL}). Minimum: \code{0}}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
@@ -59,7 +59,7 @@ gdal_raster_viewshed(
 
 \item{out_of_range_value}{Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Integer) (Default: \code{0}). Range: (\code{0} to \code{255})}
 
-\item{dst_nodata}{The value to be set for the cells in the output raster that have no data. (Integer). Range: (\code{0} to \code{255})}
+\item{dst_nodata}{The value to be set for the cells in the output raster that have no data. (Integer) (Default: \code{NULL}). Range: (\code{0} to \code{255})}
 
 \item{observer_spacing}{Cell Spacing between observers (Integer) (Default: \code{10}). Minimum: \code{1}}
 
@@ -74,8 +74,7 @@ Compute the viewshed of a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 
-    max_distance = 500)
+job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif")
 \dontrun{
   result <- gdal_job_run(job)
 }

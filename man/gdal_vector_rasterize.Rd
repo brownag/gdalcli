@@ -37,63 +37,63 @@ gdal_vector_rasterize(
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector dataset (Dataset path) (Default: \code{NULL}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Default: \code{NULL}) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{output_format}{Output format (Default: \code{NULL})}
 
-\item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical) (Default: \code{NULL})}
 
-\item{output_data_type}{Output data type. Format: \code{NA}. Choices: c("Byte", "Int8", "UInt16", "Int16", "UInt32", "Int32", "UInt64", "Int64", "CInt16", "CInt32", "Float16", "Float32", "Float64", "CFloat32", "CFloat64") (Default: \code{NULL})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{NULL})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}) (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{band}{The band(s) to burn values into (1-based index) (Integer vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
+\item{band}{The band(s) to burn values into (1-based index) (Integer vector) (Default: \code{NULL})}
 
-\item{invert}{Invert the rasterization (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
+\item{invert}{Invert the rasterization (Logical) (Default: \code{FALSE})}
 
-\item{all_touched}{Enables the ALL_TOUCHED rasterization option (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{all_touched}{Enables the ALL_TOUCHED rasterization option (Logical) (Default: \code{NULL})}
 
-\item{burn}{Burn value. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
+\item{burn}{Burn value (Default: \code{NULL})}
 
-\item{attribute_name}{Attribute name. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{attribute_name}{Attribute name (Default: \code{NULL})}
 
-\item{X3d}{Indicates that a burn value should be extracted from the Z values of the feature (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{X3d}{Indicates that a burn value should be extracted from the Z values of the feature (Logical) (Default: \code{NULL})}
 
-\item{add}{Add to existing raster (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
+\item{add}{Add to existing raster (Logical) (Default: \code{FALSE})}
 
-\item{layer_name}{Layer name. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{layer_name}{Layer name (Default: \code{NULL})}
 
-\item{where}{SQL where clause. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{where}{SQL where clause (Default: \code{NULL})}
 
-\item{sql}{SQL select statement. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{sql}{SQL select statement (Default: \code{NULL})}
 
-\item{dialect}{SQL dialect. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{dialect}{SQL dialect (Default: \code{NULL})}
 
-\item{nodata}{Assign a specified nodata value to output bands. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{nodata}{Assign a specified nodata value to output bands (Default: \code{NULL})}
 
-\item{init}{Pre-initialize output bands with specified value. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
+\item{init}{Pre-initialize output bands with specified value (Default: \code{NULL})}
 
-\item{crs}{Override the projection for the output file. Format: \code{NA}. Choices: NULL (Default: \code{NULL})}
+\item{crs}{Override the projection for the output file (Default: \code{NULL})}
 
-\item{transformer_option}{Set a transformer option suitable to pass to GDALCreateGenImgProjTransformer2 (Character vector). Format: \verb{<NAME>=<VALUE>}. Choices: NULL (Default: \code{NULL}). \code{0} to \code{2147483647} value(s)}
+\item{transformer_option}{Set a transformer option suitable to pass to GDALCreateGenImgProjTransformer2 (Character vector). Format: \verb{<NAME>=<VALUE>} (Default: \code{NULL})}
 
-\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Choices: NULL (Default: \code{NULL}). Exactly \code{4} value(s)}
+\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>} (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>} (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Choices: NULL (Default: \code{NULL}). Exactly \code{2} value(s)}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>} (Default: \code{NULL}). Exactly \code{2} value(s)}
 
-\item{optimization}{Force the algorithm used (results are identical). Format: \code{NA}. Choices: c("AUTO", "RASTER", "VECTOR") (Default: \code{AUTO})}
+\item{optimization}{Force the algorithm used (results are identical). Choices: "AUTO", "RASTER", "VECTOR" (Default: \code{AUTO})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{FALSE})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 }
 \value{
 A \link{gdal_job} object.

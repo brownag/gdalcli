@@ -21,31 +21,31 @@ gdal_raster_mosaic(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS} (Default: \code{NULL}). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed)}
+\item{output_format}{Output format ("GDALG" allowed) (Default: \code{NULL})}
 
-\item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
+\item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Default: \code{NULL})}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL})}
 
-\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+\item{band}{Input band(s) (1-based index) (Integer vector) (Default: \code{NULL})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{FALSE})}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>|same|average|common|highest|lowest} (Default: \code{same})}
 
-\item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units). Exactly \code{4} value(s)}
+\item{bbox}{Target bounding box as xmin,ymin,xmax,ymax (in destination CRS units) (Default: \code{NULL}). Exactly \code{4} value(s)}
 
-\item{src_nodata}{Set nodata values for input bands.. \code{1} to \code{2147483647} value(s)}
+\item{src_nodata}{Set nodata values for input bands. (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
 
-\item{dst_nodata}{Set nodata values at the destination band level.. \code{1} to \code{2147483647} value(s)}
+\item{dst_nodata}{Set nodata values at the destination band level. (Default: \code{NULL}). \code{1} to \code{2147483647} value(s)}
 
-\item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
+\item{hide_nodata}{Makes the destination band not report the NoData. (Logical) (Default: \code{NULL})}
 
-\item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical)}
+\item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical) (Default: \code{NULL})}
 }
 \value{
 A \link{gdal_job} object.
@@ -57,7 +57,7 @@ See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_mosaic.html} for detail
 }
 \examples{
 job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", 
-    hide_nodata = TRUE, dst_nodata = "0,0,255")
+    hide_nodata = TRUE)
 \dontrun{
   result <- gdal_job_run(job)
 }

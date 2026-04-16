@@ -678,6 +678,7 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
     
     # Build metadata for each parameter
     for (arg in args_list) {
+      if (!is.list(arg)) next
       if (!is.null(arg$name)) {
         gdal_name <- as.character(arg$name)
         gdal_short <- sub("^-+", "", gdal_name)
@@ -854,6 +855,7 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
 
       # Build mapping from GDAL name -> R name
       for (arg in args_list) {
+        if (!is.list(arg)) next
         if (!is.null(arg$name)) {
           gdal_name <- as.character(arg$name)
           # Remove leading dashes and normalize
@@ -1628,6 +1630,8 @@ generate_r_arguments <- function(input_args, input_output_args) {
   # First pass: mark which are required
   required_status <- sapply(seq_along(args_list), function(i) {
     arg <- args_list[[i]]
+    # Skip non-list arguments (atomic vectors from GDAL metadata)
+    if (!is.list(arg)) return(FALSE)
     is_req <- ifelse(is.null(arg$required), FALSE, arg$required)
     if (is.na(is_req)) FALSE else is_req
   })
@@ -1671,6 +1675,7 @@ generate_r_arguments <- function(input_args, input_output_args) {
 
   for (idx in ordered_args_indices) {
     arg <- args_list[[idx]]
+    if (!is.list(arg)) next
     gdal_name <- if (is.null(arg$name)) {
       if (is.null(arg[[1]])) "" else as.character(arg[[1]][1])
     } else {
@@ -1783,6 +1788,55 @@ extract_short_title <- function(description) {
   }
 
   title
+}
+
+
+#' Check if a metadata value should be included in documentation.
+#'
+#' Validates that metadata is not empty/null but preserves sentinel values like
+#' Inf, INT_MAX, and 0 which are meaningful in documentation.
+#'
+#' @param val The metadata value to check.
+#'
+#' @return Logical TRUE if value should be included in documentation, FALSE if empty/null.
+#'
+#' @noRd
+has_valid_metadata <- function(val) {
+  if (is.null(val)) return(FALSE)
+
+  if (length(val) == 1 && is.na(val)) return(FALSE)
+
+  if (is.character(val)) {
+    if (length(val) == 0) return(FALSE)
+    return(any(nzchar(trimws(val)), na.rm = TRUE))
+  }
+
+  if (is.list(val) || is.vector(val)) {
+    return(length(val) > 0)
+  }
+
+  TRUE
+}
+
+
+# Helper to determine if a numeric range is informative and should be displayed
+# Filters out sentinel values like 2^31-1 (INT_MAX) and 2^63-1 (INT64_MAX) which represent "unbounded"
+should_suppress_range <- function(min_val, max_val, range_type = "value") {
+  # Check if max_val is a sentinel value representing "unbounded"
+  is_int32_max <- max_val == 2147483647  # 2^31-1
+  is_int64_max <- max_val == 9223372036854775807  # 2^63-1
+
+  if (range_type == "count") {
+    # For list value counts: suppress "0 to INT_MAX" (uninformative for optional lists)
+    return(min_val == 0 && (is_int32_max || is_int64_max))
+  }
+
+  if (range_type == "value") {
+    # For numeric values: suppress "0 to INT_MAX" (means any 32-bit/64-bit integer)
+    return(min_val == 0 && (is_int32_max || is_int64_max))
+  }
+
+  return(FALSE)
 }
 
 
@@ -1942,14 +1996,22 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     normalize_arg_list <- function(args) {
       if (is.null(args) || length(args) == 0) return(list())
       if (is.data.frame(args)) {
-        return(lapply(1:nrow(args), function(i) as.list(args[i, ])))
+        # Convert dataframe rows to lists, flattening list columns to vectors
+        return(lapply(1:nrow(args), function(i) {
+          row_list <- as.list(args[i, ])
+          # Flatten any list columns (e.g., choices arrays) to vectors
+          row_list <- lapply(row_list, function(x) if (is.list(x) && length(x) > 0) unlist(x, use.names = FALSE) else x)
+          row_list
+        }))
       }
       if (is.list(args)) {
         # Check if it looks like a single argument object (has "name" field directly)
         if ("name" %in% names(args)) {
            return(list(args))
         }
-        return(args)
+        # Filter out any atomic vectors (non-list elements) to ensure all items are lists
+        # GDAL 3.11.4 JSON parser sometimes returns mixed-type lists for heterogeneous parameters
+        return(Filter(function(x) is.list(x), args))
       }
       return(list())
     }
@@ -2012,29 +2074,39 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       }
       
       # Add format information if available
-      if (!is.null(arg_meta$metavar) && nzchar(arg_meta$metavar)) {
+      if (has_valid_metadata(arg_meta$metavar)) {
         param_desc <- paste0(param_desc, ". Format: `", arg_meta$metavar, "`")
       }
       
-      # Add choices if available
-      if (!is.null(arg_meta$choices) && length(arg_meta$choices) > 0) {
-        choices_str <- paste(arg_meta$choices, collapse = ", ")
-        # Only show first 5 choices to keep it reasonable
-        if (length(arg_meta$choices) > 5) {
-          choices_shown <- paste(arg_meta$choices[1:5], collapse = ", ")
-          param_desc <- paste0(param_desc, ". Choices: ", choices_shown, ", ...")
-        } else {
-          param_desc <- paste0(param_desc, ". Choices: ", choices_str)
+      # Add choices if available (skip if only choice is NULL)
+      if (has_valid_metadata(arg_meta$choices)) {
+        # Skip if choices is just "NULL" (uninformative)
+        if (!(length(arg_meta$choices) == 1 && arg_meta$choices[1] == "NULL")) {
+          choices_raw <- arg_meta$choices
+          # Quote each choice value
+          choices_quoted <- paste0('"', choices_raw, '"')
+
+          # Only show first 5 choices to keep it reasonable
+          if (length(choices_quoted) > 5) {
+            choices_shown <- paste(choices_quoted[1:5], collapse = ", ")
+            param_desc <- paste0(param_desc, ". Choices: ", choices_shown, ", ...")
+          } else {
+            choices_str <- paste(choices_quoted, collapse = ", ")
+            param_desc <- paste0(param_desc, ". Choices: ", choices_str)
+          }
         }
       }
       
-      # Add default value if available
+      # Add default value if available (skip NA as it's not a real default)
       if (!is.null(arg_meta$default)) {
-        default_val <- arg_meta$default
-        if (is.logical(default_val)) {
-          default_val <- tolower(as.character(default_val))
+        # Skip if the default is NA (not a real/meaningful default)
+        if (!isTRUE(is.na(arg_meta$default))) {
+          default_val <- arg_meta$default
+          if (is.logical(default_val)) {
+            default_val <- tolower(as.character(default_val))
+          }
+          param_desc <- paste0(param_desc, " (Default: `", default_val, "`)")
         }
-        param_desc <- paste0(param_desc, " (Default: `", default_val, "`)")
       }
       
       # Add requirement info (use different notation to avoid roxygen2 interpretation)
@@ -2043,24 +2115,28 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       }
       
       # Add min/max for numeric types (use parentheses instead of brackets to avoid roxygen2 link detection)
-      if (!is.null(arg_meta$min_value) && !is.null(arg_meta$max_value)) {
-        param_desc <- paste0(param_desc, ". Range: (`", arg_meta$min_value, "` to `", arg_meta$max_value, "`)")
-      } else if (!is.null(arg_meta$min_value)) {
+      # Skip uninformative ranges like "0 to 2147483647" (INT_MAX sentinel)
+      if (has_valid_metadata(arg_meta$min_value) && has_valid_metadata(arg_meta$max_value)) {
+        if (!should_suppress_range(arg_meta$min_value, arg_meta$max_value, "value")) {
+          param_desc <- paste0(param_desc, ". Range: (`", arg_meta$min_value, "` to `", arg_meta$max_value, "`)")
+        }
+      } else if (has_valid_metadata(arg_meta$min_value)) {
         param_desc <- paste0(param_desc, ". Minimum: `", arg_meta$min_value, "`")
       }
-      
-      # Add count info for lists
-      if (!is.null(arg_meta$min_count) && !is.null(arg_meta$max_count) &&
-          !is.na(arg_meta$min_count) && !is.na(arg_meta$max_count)) {
-        if (arg_meta$min_count == arg_meta$max_count) {
-          param_desc <- paste0(param_desc, ". Exactly `", arg_meta$min_count, "` value(s)")
-        } else {
-          param_desc <- paste0(param_desc, ". `", arg_meta$min_count, "` to `", arg_meta$max_count, "` value(s)")
+
+      # Add count info for lists (skip uninformative ranges like "0 to INT_MAX")
+      if (has_valid_metadata(arg_meta$min_count) && has_valid_metadata(arg_meta$max_count)) {
+        if (!should_suppress_range(arg_meta$min_count, arg_meta$max_count, "count")) {
+          if (arg_meta$min_count == arg_meta$max_count) {
+            param_desc <- paste0(param_desc, ". Exactly `", arg_meta$min_count, "` value(s)")
+          } else {
+            param_desc <- paste0(param_desc, ". `", arg_meta$min_count, "` to `", arg_meta$max_count, "` value(s)")
+          }
         }
       }
       
       # Add category info for better organization (use different notation to avoid roxygen2 interpretation)
-      if (!is.null(arg_meta$category) && nzchar(arg_meta$category)) {
+      if (has_valid_metadata(arg_meta$category)) {
         if (arg_meta$category != "Base") {
           param_desc <- paste0(param_desc, " (", arg_meta$category, ")")
         }
@@ -2133,8 +2209,38 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       # Parse the CLI command
       parsed_cli <- parse_cli_command(cli_example)
 
+      # Properly combine input_output_args and input_args as dataframes
+      # Cannot use c() as it flattens dataframe columns
+      # Use rbind() with column alignment when both are dataframes
+      if (is.data.frame(input_output_args) && is.data.frame(input_args) && 
+          nrow(input_output_args) > 0 && nrow(input_args) > 0) {
+        # Get all unique columns from both dataframes
+        all_cols <- unique(c(names(input_output_args), names(input_args)))
+        # Ensure both dataframes have the same columns by adding missing ones with NA
+        for (col in all_cols) {
+          if (!col %in% names(input_output_args)) {
+            input_output_args[[col]] <- NA
+          }
+          if (!col %in% names(input_args)) {
+            input_args[[col]] <- NA
+          }
+        }
+        # Reorder columns to be consistent
+        input_output_args <- input_output_args[,all_cols]
+        input_args <- input_args[,all_cols]
+        # Now combine by rows
+        combined_args <- rbind(input_output_args, input_args)
+      } else if (is.data.frame(input_output_args) && nrow(input_output_args) > 0) {
+        combined_args <- input_output_args
+      } else if (is.data.frame(input_args) && nrow(input_args) > 0) {
+        combined_args <- input_args
+      } else {
+        # Fallback if neither is a proper dataframe
+        combined_args <- c(input_output_args, input_args)
+      }
+
       # Convert to R code, passing arg_mapping so parameter names are correct
-      r_code <- convert_cli_to_r_example(parsed_cli, func_name, c(input_output_args, input_args), arg_mapping = arg_mapping)
+      r_code <- convert_cli_to_r_example(parsed_cli, func_name, combined_args, arg_mapping = arg_mapping)
 
       if (!is.null(r_code) && nzchar(r_code)) {
         # Validate that the generated code uses valid parameters
@@ -2395,8 +2501,8 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     for (i in seq_along(arg_mapping)) {
       arg_name <- names(arg_mapping)[i]
       meta <- arg_mapping[[i]]
-      min_count <- if (is.null(meta$min_count)) "0" else meta$min_count
-      max_count <- if (is.null(meta$max_count)) "1" else meta$max_count
+      min_count <- if (is.null(meta$min_count) || is.na(meta$min_count)) "0" else meta$min_count
+      max_count <- if (is.null(meta$max_count) || is.na(meta$max_count)) "1" else meta$max_count
       mapping_lines <- c(mapping_lines, sprintf("    %s = list(min_count = %s, max_count = %s),", arg_name, min_count, max_count))
     }
     # Remove trailing comma from last entry

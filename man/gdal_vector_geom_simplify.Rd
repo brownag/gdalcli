@@ -26,9 +26,9 @@ gdal_vector_geom_simplify(
 \arguments{
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
@@ -38,11 +38,11 @@ gdal_vector_geom_simplify(
 
 \item{tolerance}{Distance tolerance for simplification. (required). Minimum: \code{0}}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -65,8 +65,7 @@ Simplify geometries of a vector dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_simplify.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vector_geom_simplify(input = "in.gpkg", output = "out.gpkg", 
-    overwrite = TRUE, tolerance = 1000)
+job <- gdal_vector_geom_simplify(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE)
 \dontrun{
   result <- gdal_job_run(job)
 }

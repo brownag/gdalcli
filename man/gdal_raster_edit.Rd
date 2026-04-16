@@ -28,9 +28,9 @@ gdal_raster_edit(
 
 \item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')}
 
-\item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}. \code{0} to \code{2147483647} value(s)}
+\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}}
 
 \item{stats}{Compute statistics, using all pixels (Logical)}
 
@@ -47,7 +47,7 @@ Edit a raster dataset.
 See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
+job <- gdal_raster_edit(dataset = "my.tif")
 \dontrun{
   result <- gdal_job_run(job)
 }
