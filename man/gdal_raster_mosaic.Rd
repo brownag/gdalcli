@@ -29,9 +29,9 @@ gdal_raster_mosaic(
 
 \item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{band}{Input band(s) (1-based index) (Integer vector). \code{0} to \code{2147483647} value(s)}
+\item{band}{Input band(s) (1-based index) (Integer vector)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 

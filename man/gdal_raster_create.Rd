@@ -28,17 +28,17 @@ gdal_raster_create(
 \arguments{
 \item{input}{Input raster dataset (Dataset path). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Byte})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{Byte})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -50,13 +50,13 @@ gdal_raster_create(
 
 \item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')}
 
-\item{burn}{Burn value. \code{0} to \code{2147483647} value(s)}
+\item{burn}{Burn value}
 
 \item{crs}{Set CRS}
 
 \item{bbox}{Bounding box as xmin,ymin,xmax,ymax. Exactly \code{4} value(s)}
 
-\item{metadata}{Add metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{copy_metadata}{Copy metadata from input dataset (Logical)}
 

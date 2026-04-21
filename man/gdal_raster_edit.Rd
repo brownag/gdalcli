@@ -28,9 +28,9 @@ gdal_raster_edit(
 
 \item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')}
 
-\item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}. \code{0} to \code{2147483647} value(s)}
+\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}}
 
 \item{stats}{Compute statistics, using all pixels (Logical)}
 

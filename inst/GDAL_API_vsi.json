@@ -1,0 +1,549 @@
+{
+  "name":"vsi",
+  "full_path":[
+    "gdal",
+    "vsi"
+  ],
+  "description":"GDAL Virtual System Interface (VSI) commands.",
+  "short_url":"\/programs\/gdal_vsi.html",
+  "url":"https:\/\/gdal.org\/programs\/gdal_vsi.html",
+  "sub_algorithms":[
+    {
+      "name":"copy",
+      "full_path":[
+        "gdal",
+        "vsi",
+        "copy"
+      ],
+      "description":"Copy files located on GDAL Virtual System Interface (VSI).",
+      "short_url":"\/programs\/gdal_vsi_copy.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_vsi_copy.html",
+      "sub_algorithms":[],
+      "input_arguments":[
+        {
+          "name":"source",
+          "type":"string",
+          "description":"Source file or directory name",
+          "required":true,
+          "category":"Base"
+        },
+        {
+          "name":"destination",
+          "type":"string",
+          "description":"Destination file or directory name",
+          "required":true,
+          "category":"Base"
+        },
+        {
+          "name":"recursive",
+          "type":"boolean",
+          "description":"Copy subdirectories recursively",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"skip-errors",
+          "type":"boolean",
+          "description":"Skip errors",
+          "required":false,
+          "category":"Base"
+        }
+      ],
+      "output_arguments":[],
+      "input_output_arguments":[]
+    },
+    {
+      "name":"delete",
+      "full_path":[
+        "gdal",
+        "vsi",
+        "delete"
+      ],
+      "description":"Delete files located on GDAL Virtual System Interface (VSI).",
+      "short_url":"\/programs\/gdal_vsi_delete.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_vsi_delete.html",
+      "sub_algorithms":[],
+      "input_arguments":[
+        {
+          "name":"filename",
+          "type":"string",
+          "description":"File or directory name to delete",
+          "required":true,
+          "category":"Base"
+        },
+        {
+          "name":"recursive",
+          "type":"boolean",
+          "description":"Delete directories recursively",
+          "required":false,
+          "category":"Base"
+        }
+      ],
+      "output_arguments":[],
+      "input_output_arguments":[]
+    },
+    {
+      "name":"list",
+      "full_path":[
+        "gdal",
+        "vsi",
+        "list"
+      ],
+      "description":"List files of one of the GDAL Virtual System Interface (VSI).",
+      "short_url":"\/programs\/gdal_vsi_list.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_vsi_list.html",
+      "sub_algorithms":[],
+      "input_arguments":[
+        {
+          "name":"filename",
+          "type":"string",
+          "description":"File or directory name",
+          "required":true,
+          "category":"Base"
+        },
+        {
+          "name":"output-format",
+          "type":"string",
+          "description":"Output format",
+          "choices":[
+            "json",
+            "text"
+          ],
+          "default":"json",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"long-listing",
+          "type":"boolean",
+          "description":"Use a long listing format",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"recursive",
+          "type":"boolean",
+          "description":"List subdirectories recursively",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"depth",
+          "type":"integer",
+          "description":"Maximum depth in recursive mode",
+          "min_value":1,
+          "min_value_is_included":true,
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"absolute-path",
+          "type":"boolean",
+          "description":"Display absolute path",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"tree",
+          "type":"boolean",
+          "description":"Use a hierarchical presentation for JSON output",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"stdout",
+          "type":"boolean",
+          "description":"Directly output on stdout. If enabled, output-string will be empty",
+          "required":false,
+          "category":"Base"
+        }
+      ],
+      "output_arguments":[
+        {
+          "name":"output-string",
+          "type":"string",
+          "description":"Output string, in which the result is placed",
+          "required":false,
+          "category":"Base"
+        }
+      ],
+      "input_output_arguments":[]
+    },
+    {
+      "name":"move",
+      "full_path":[
+        "gdal",
+        "vsi",
+        "move"
+      ],
+      "description":"Move\/rename a file\/directory located on GDAL Virtual System Interface (VSI).",
+      "short_url":"\/programs\/gdal_vsi_move.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_vsi_move.html",
+      "sub_algorithms":[],
+      "input_arguments":[
+        {
+          "name":"source",
+          "type":"string",
+          "description":"Source file or directory name",
+          "required":true,
+          "category":"Base"
+        },
+        {
+          "name":"destination",
+          "type":"string",
+          "description":"Destination file or directory name",
+          "required":true,
+          "category":"Base"
+        }
+      ],
+      "output_arguments":[],
+      "input_output_arguments":[]
+    },
+    {
+      "name":"sozip",
+      "full_path":[
+        "gdal",
+        "vsi",
+        "sozip"
+      ],
+      "description":"Seek-optimized ZIP (SOZIP) commands.",
+      "short_url":"\/programs\/gdal_vsi_sozip.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
+      "sub_algorithms":[
+        {
+          "name":"create",
+          "full_path":[
+            "gdal",
+            "vsi",
+            "sozip",
+            "create"
+          ],
+          "description":"Create a Seek-optimized ZIP (SOZIP) file.",
+          "short_url":"\/programs\/gdal_vsi_sozip.html",
+          "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
+          "sub_algorithms":[],
+          "input_arguments":[
+            {
+              "name":"input",
+              "type":"string_list",
+              "description":"Input filenames",
+              "required":true,
+              "packed_values_allowed":true,
+              "repeated_arg_allowed":true,
+              "min_count":0,
+              "max_count":2147483647,
+              "category":"Base"
+            },
+            {
+              "name":"output",
+              "type":"string",
+              "description":"Output ZIP filename",
+              "required":true,
+              "category":"Base"
+            },
+            {
+              "name":"overwrite",
+              "type":"boolean",
+              "description":"Whether overwriting existing output is allowed",
+              "default":false,
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"recursive",
+              "type":"boolean",
+              "description":"Travels the directory structure of the specified directories recursively",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"no-paths",
+              "type":"boolean",
+              "description":"Store just the name of a saved file, and do not store directory names",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"enable-sozip",
+              "type":"string",
+              "description":"Whether to automatically\/systematically\/never apply the SOZIP optimization",
+              "choices":[
+                "auto",
+                "yes",
+                "no"
+              ],
+              "default":"auto",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"sozip-chunk-size",
+              "type":"string",
+              "description":"Chunk size for a seek-optimized file",
+              "metavar":"value in bytes or with K\/M suffix",
+              "default":"32768",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"sozip-min-file-size",
+              "type":"string",
+              "description":"Minimum file size to decide if a file should be seek-optimized",
+              "metavar":"value in bytes or with K\/M\/G suffix",
+              "default":"1 MB",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"content-type",
+              "type":"string",
+              "description":"Store the Content-Type of the file being added.",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"stdout",
+              "type":"boolean",
+              "description":"Directly output on stdout. If enabled, output-string will be empty",
+              "required":false,
+              "category":"Base"
+            }
+          ],
+          "output_arguments":[
+            {
+              "name":"output-string",
+              "type":"string",
+              "description":"Output string, in which the result is placed",
+              "required":false,
+              "category":"Base"
+            }
+          ],
+          "input_output_arguments":[]
+        },
+        {
+          "name":"list",
+          "full_path":[
+            "gdal",
+            "vsi",
+            "sozip",
+            "list"
+          ],
+          "description":"List content of a ZIP file, with SOZIP related information.",
+          "short_url":"\/programs\/gdal_vsi_sozip.html",
+          "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
+          "sub_algorithms":[],
+          "input_arguments":[
+            {
+              "name":"input",
+              "type":"string",
+              "description":"Input ZIP filename",
+              "required":true,
+              "category":"Base"
+            }
+          ],
+          "output_arguments":[
+            {
+              "name":"output-string",
+              "type":"string",
+              "description":"Output string, in which the result is placed",
+              "required":false,
+              "category":"Base"
+            }
+          ],
+          "input_output_arguments":[]
+        },
+        {
+          "name":"optimize",
+          "full_path":[
+            "gdal",
+            "vsi",
+            "sozip",
+            "optimize"
+          ],
+          "description":"Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.",
+          "short_url":"\/programs\/gdal_vsi_sozip.html",
+          "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
+          "sub_algorithms":[],
+          "input_arguments":[
+            {
+              "name":"input",
+              "type":"string_list",
+              "description":"Input ZIP filename",
+              "required":true,
+              "packed_values_allowed":true,
+              "repeated_arg_allowed":true,
+              "min_count":0,
+              "max_count":1,
+              "category":"Base"
+            },
+            {
+              "name":"output",
+              "type":"string",
+              "description":"Output ZIP filename",
+              "required":true,
+              "category":"Base"
+            },
+            {
+              "name":"overwrite",
+              "type":"boolean",
+              "description":"Whether overwriting existing output is allowed",
+              "default":false,
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"enable-sozip",
+              "type":"string",
+              "description":"Whether to automatically\/systematically\/never apply the SOZIP optimization",
+              "choices":[
+                "auto",
+                "yes",
+                "no"
+              ],
+              "default":"auto",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"sozip-chunk-size",
+              "type":"string",
+              "description":"Chunk size for a seek-optimized file",
+              "metavar":"value in bytes or with K\/M suffix",
+              "default":"32768",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"sozip-min-file-size",
+              "type":"string",
+              "description":"Minimum file size to decide if a file should be seek-optimized",
+              "metavar":"value in bytes or with K\/M\/G suffix",
+              "default":"1 MB",
+              "required":false,
+              "category":"Base"
+            },
+            {
+              "name":"stdout",
+              "type":"boolean",
+              "description":"Directly output on stdout. If enabled, output-string will be empty",
+              "required":false,
+              "category":"Base"
+            }
+          ],
+          "output_arguments":[
+            {
+              "name":"output-string",
+              "type":"string",
+              "description":"Output string, in which the result is placed",
+              "required":false,
+              "category":"Base"
+            }
+          ],
+          "input_output_arguments":[]
+        },
+        {
+          "name":"validate",
+          "full_path":[
+            "gdal",
+            "vsi",
+            "sozip",
+            "validate"
+          ],
+          "description":"Validate a ZIP file, possibly using SOZIP optimization.",
+          "short_url":"\/programs\/gdal_vsi_sozip.html",
+          "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
+          "sub_algorithms":[],
+          "input_arguments":[
+            {
+              "name":"input",
+              "type":"string",
+              "description":"Input ZIP filename",
+              "required":true,
+              "category":"Base"
+            },
+            {
+              "name":"stdout",
+              "type":"boolean",
+              "description":"Directly output on stdout. If enabled, output-string will be empty",
+              "required":false,
+              "category":"Base"
+            }
+          ],
+          "output_arguments":[
+            {
+              "name":"output-string",
+              "type":"string",
+              "description":"Output string, in which the result is placed",
+              "required":false,
+              "category":"Base"
+            }
+          ],
+          "input_output_arguments":[]
+        }
+      ],
+      "input_arguments":[],
+      "output_arguments":[],
+      "input_output_arguments":[]
+    },
+    {
+      "name":"sync",
+      "full_path":[
+        "gdal",
+        "vsi",
+        "sync"
+      ],
+      "description":"Synchronize source and target file\/directory located on GDAL Virtual System Interface (VSI).",
+      "short_url":"\/programs\/gdal_vsi_sync.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sync.html",
+      "sub_algorithms":[],
+      "input_arguments":[
+        {
+          "name":"source",
+          "type":"string",
+          "description":"Source file or directory name",
+          "required":true,
+          "category":"Base"
+        },
+        {
+          "name":"destination",
+          "type":"string",
+          "description":"Destination file or directory name",
+          "required":true,
+          "category":"Base"
+        },
+        {
+          "name":"recursive",
+          "type":"boolean",
+          "description":"Synchronize recursively",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"strategy",
+          "type":"string",
+          "description":"Synchronization strategy",
+          "choices":[
+            "timestamp",
+            "ETag",
+            "overwrite"
+          ],
+          "default":"timestamp",
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"num-threads",
+          "type":"string",
+          "description":"Number of jobs (or ALL_CPUS)",
+          "required":false,
+          "category":"Base"
+        }
+      ],
+      "output_arguments":[],
+      "input_output_arguments":[]
+    }
+  ],
+  "input_arguments":[],
+  "output_arguments":[],
+  "input_output_arguments":[]
+}

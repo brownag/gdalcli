@@ -21,13 +21,13 @@ gdal_raster_fill_nodata(
 \arguments{
 \item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -39,7 +39,7 @@ gdal_raster_fill_nodata(
 
 \item{mask}{Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path)}
 
-\item{strategy}{By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: invdist, nearest (Default: \code{invdist})}
+\item{strategy}{By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: "invdist", "nearest" (Default: \code{invdist})}
 }
 \value{
 A \link{gdal_job} object.

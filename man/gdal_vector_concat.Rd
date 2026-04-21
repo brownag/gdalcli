@@ -29,9 +29,9 @@ gdal_vector_concat(
 \arguments{
 \item{input}{Input vector datasets (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{source_layer_field_name}{Name of the new field to add to contain identificoncation of the source layer, with value determined from 'source-layer-field-content'}
 
@@ -43,11 +43,11 @@ gdal_vector_concat(
 
 \item{output_layer}{Name of the output vector layer (single mode), or template to name the output vector layers (stack mode)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -57,9 +57,9 @@ gdal_vector_concat(
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{mode}{Determine the strategy to create output layers from source layers . Choices: merge-per-layer-name, stack, single (Default: \code{merge-per-layer-name})}
+\item{mode}{Determine the strategy to create output layers from source layers . Choices: "merge-per-layer-name", "stack", "single" (Default: \code{merge-per-layer-name})}
 
-\item{field_strategy}{How to determine target fields from source fields. Choices: union, intersection (Default: \code{union})}
+\item{field_strategy}{How to determine target fields from source fields. Choices: "union", "intersection" (Default: \code{union})}
 
 \item{src_crs}{Source CRS}
 

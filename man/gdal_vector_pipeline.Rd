@@ -27,9 +27,9 @@ gdal_vector_pipeline(
 
 \item{input}{Input vector datasets. \code{1} to \code{2147483647} value(s)}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{output}{Output vector dataset (Dataset path)}
 
@@ -37,13 +37,13 @@ gdal_vector_pipeline(
 
 \item{output_layer}{Output layer name}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{pipeline}{Pipeline string (ignored if jobs is provided)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 

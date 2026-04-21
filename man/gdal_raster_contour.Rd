@@ -31,17 +31,17 @@ gdal_raster_contour(
 \arguments{
 \item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
@@ -59,7 +59,7 @@ gdal_raster_contour(
 
 \item{interval}{Elevation interval between contours. Minimum: \code{0}}
 
-\item{levels}{List of contour levels (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{levels}{List of contour levels (Character vector)}
 
 \item{exp_base}{Base for exponential contour level generation (Integer)}
 

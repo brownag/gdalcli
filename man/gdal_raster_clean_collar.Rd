@@ -24,21 +24,21 @@ gdal_raster_clean_collar(
 \arguments{
 \item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path)}
 
 \item{output_format}{Output format}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{color}{Transparent color(s): tuple of integer (like 'r,g,b'), 'black', 'white' (Character vector) (Default: \code{black}). \code{0} to \code{2147483647} value(s)}
+\item{color}{Transparent color(s): tuple of integer (like 'r,g,b'), 'black', 'white' (Character vector) (Default: \code{black})}
 
 \item{color_threshold}{Select how far from specified transparent colors the pixel values are considered transparent. (Integer) (Default: \code{15}). Minimum: \code{0}}
 
@@ -48,7 +48,7 @@ gdal_raster_clean_collar(
 
 \item{add_mask}{Adds a mask band to the output dataset. (Logical)}
 
-\item{algorithm}{Algorithm to apply. Choices: floodfill, twopasses (Default: \code{floodfill})}
+\item{algorithm}{Algorithm to apply. Choices: "floodfill", "twopasses" (Default: \code{floodfill})}
 }
 \value{
 A \link{gdal_job} object.

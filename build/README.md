@@ -190,3 +190,35 @@ If documentation enrichment fails, the script falls back to basic descriptions. 
 ## License
 
 Auto-generated code follows the same license as the gdalcli package (MIT).
+
+## API Change Tracking
+
+### Scripts
+
+- `compare_gdal_api.R` - Compare GDAL APIs between versions
+- `generate_release_notes.R` - Format release notes from diff
+- `api_change_tracking.R` - Orchestrate both and log changes
+
+For detailed workflow and usage, see [docs/api-tracking.md](../docs/api-tracking.md).
+
+### Usage
+
+```bash
+Rscript build/api_change_tracking.R 3.11.4 3.12.3 \
+  --release-version 0.6.0 \
+  --release-notes RELEASE_NOTES.md \
+  --log-changes inst/CHANGELOG-API.jsonl
+```
+
+### Requirements
+
+- Previous version APIs in git (`release/gdal-X.Y` branch)
+- Current GDAL version installed locally
+- `generate_gdal_api.R` run with target version
+
+### Change Log
+
+API changes recorded in `inst/CHANGELOG-API.jsonl` (JSONL format). Query with:
+```bash
+cat inst/CHANGELOG-API.jsonl | jq 'select(.current_version == "3.12.3")'
+```

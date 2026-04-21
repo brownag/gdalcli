@@ -572,7 +572,7 @@ test_that("Hybrid format preserves full job specifications", {
   expect_equal(job_spec$arguments$output, "output.tif")
   expect_equal(job_spec$arg_mapping$input, "source")
   expect_true(any(grepl("GDAL_CACHEMAX=512", job_spec$config_options)))
-  expect_true("AWS_ACCESS_KEY_ID" %in% names(job_spec$env_vars))
+  expect_true(length(job_spec$env_vars) == 0)
   expect_equal(job_spec$stream_in, "stdin")
   expect_equal(job_spec$stream_out_format, "COG")
 })

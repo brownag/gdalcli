@@ -46,17 +46,17 @@ gdal_raster_tile(
 \arguments{
 \item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output directory (required)}
 
 \item{output_format}{Output format (Default: \code{PNG})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{tiling_scheme}{Tiling scheme. Choices: raster, WebMercatorQuad, WorldCRS84Quad, WorldMercatorWGS84Quad, GoogleCRS84Quad, ... (Default: \code{WebMercatorQuad})}
+\item{tiling_scheme}{Tiling scheme. Choices: "raster", "WebMercatorQuad", "WorldCRS84Quad", "WorldMercatorWGS84Quad", "GoogleCRS84Quad", ... (Default: \code{WebMercatorQuad})}
 
 \item{min_zoom}{Minimum zoom level (Integer). Minimum: \code{0}}
 
@@ -72,11 +72,11 @@ gdal_raster_tile(
 
 \item{no_intersection_ok}{Whether dataset extent not intersecting tile matrix is only a warning (Logical)}
 
-\item{resampling}{Resampling method for max zoom. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{cubic})}
+\item{resampling}{Resampling method for max zoom. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{cubic})}
 
-\item{overview_resampling}{Resampling method for overviews. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ...}
+\item{overview_resampling}{Resampling method for overviews. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ...}
 
-\item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: xyz, tms (Default: \code{xyz})}
+\item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: "xyz", "tms" (Default: \code{xyz})}
 
 \item{tile_size}{Override default tile size (Integer). Range: (\code{64} to \code{32768})}
 
@@ -88,7 +88,7 @@ gdal_raster_tile(
 
 \item{skip_blank}{Do not generate blank tiles (Logical)}
 
-\item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{copy_src_metadata}{Whether to copy metadata from source dataset (Logical)}
 
@@ -106,7 +106,7 @@ gdal_raster_tile(
 
 \item{nodata_values_pct_threshold}{Minimum percentage of source pixels that must be set at one of nodata (or alpha=0 or any other way to express transparent pixelto cause the target pixel value to be transparent (Default: \code{100}). Range: (\code{0} to \code{100}) (Advanced Resampling)}
 
-\item{webviewer}{Web viewer to generate (Character vector). Choices: none, all, leaflet, openlayers, mapml (Default: \code{all}). \code{0} to \code{2147483647} value(s) (Publication)}
+\item{webviewer}{Web viewer to generate (Character vector). Choices: "none", "all", "leaflet", "openlayers", "mapml" (Default: \code{all}) (Publication)}
 
 \item{url}{URL address where the generated tiles are going to be published (Publication)}
 

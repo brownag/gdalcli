@@ -23,11 +23,11 @@ gdal_raster_calc(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ...}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ...}
 
 \item{calc}{Expression(s) to evaluate (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 

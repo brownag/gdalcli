@@ -1,3 +1,9 @@
+# gdalcli 0.6.0 (2026-04-15)
+
+- Authentication methods no longer scan for patterns of related environment variables, only explicitly-set credentials via `gdal_with_env()` are used
+- Verbose logging now displays command name only, not argument values
+- Environment variables are no longer serialized to `.gdalcli.json` files to prevent secret exposure
+
 # gdalcli 0.5.2 (2026-03-25)
 
 - Added Arrow support for in-memory vector processing
