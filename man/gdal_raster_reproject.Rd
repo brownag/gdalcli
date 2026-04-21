@@ -33,7 +33,7 @@ gdal_raster_reproject(
 \arguments{
 \item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
@@ -41,9 +41,9 @@ gdal_raster_reproject(
 
 \item{target_aligned_pixels}{Round target extent to target resolution (Logical) (Advanced)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -53,7 +53,7 @@ gdal_raster_reproject(
 
 \item{dst_crs}{Destination CRS}
 
-\item{resampling}{Resampling method. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{nearest})}
+\item{resampling}{Resampling method. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{nearest})}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>}. Minimum: \code{0}. Exactly \code{2} value(s)}
 
@@ -69,9 +69,9 @@ gdal_raster_reproject(
 
 \item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical) (Advanced)}
 
-\item{warp_option}{Warping option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{warp_option}{Warping option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Advanced)}
 
-\item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Advanced)}
 
 \item{error_threshold}{Error threshold. Minimum: \code{0} (Advanced)}
 

@@ -578,13 +578,13 @@
   )
 
   # Build r_job_specs: capture full job state for lossless round-trip
+  # NOTE: env_vars are NOT serialized to prevent credential exposure in stored files
   r_job_specs <- lapply(pipeline$jobs, function(job) {
     list(
       command_path = job$command_path,
       arguments = job$arguments,
       arg_mapping = if (length(job$arg_mapping) > 0) job$arg_mapping else list(),
       config_options = job$config_options,
-      env_vars = job$env_vars,
       stream_in = job$stream_in,
       stream_out_format = job$stream_out_format
     )

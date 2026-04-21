@@ -1,13 +1,14 @@
 ---
-# Build Release for GDAL Version
+# Build Release for GDAL Version(s)
 #
-# Manual workflow dispatch to build gdalcli for a specific GDAL version.
+# Manual workflow dispatch to build gdalcli for one or more GDAL versions.
 # Generates API, runs tests, and creates release branch and GitHub release.
 #
 # Strategy:
 # - Uses pre-built deps-gdal-X.Y.Z-amd64 images from build-docker-images.yml
 # - Builds gdalcli-runtime image with API generation and package tests
 # - Creates release branch and GitHub release on main branch
+# - Supports multiple versions (comma-separated) in gdal_version input
 #
 name: Build Release for GDAL Version
 
@@ -16,7 +17,7 @@ on:
     inputs:
       gdal_version:
         description: |
-          GDAL version to build for (e.g., 3.11.4, 3.12.0)
+          GDAL version(s) to build for (e.g., 3.11.4 or 3.12.0,3.12.1 for multiple)
         required: true
       create_release:
         description: 'Create GitHub release and tag? (only effective on main branch)'
@@ -37,7 +38,7 @@ on:
   workflow_call:
     inputs:
       gdal_version:
-        description: 'GDAL version to build for (e.g., 3.11.4, 3.12.0)'
+        description: 'GDAL version(s) to build for (e.g., 3.11.4 or 3.12.0,3.12.1 for multiple)'
         required: true
         type: string
       create_release:
@@ -56,22 +57,57 @@ permissions:
   packages: write
 
 jobs:
-  validate:
+  parse-versions:
     runs-on: ubuntu-latest
     outputs:
-      gdal_version: ${{ steps.parse.outputs.gdal_version }}
-      gdal_short: ${{ steps.parse.outputs.gdal_short }}
-      package_version: ${{ steps.parse.outputs.package_version }}
-      branch_name: ${{ steps.parse.outputs.branch_name }}
-      tag_name: ${{ steps.parse.outputs.tag_name }}
+      matrix: ${{ steps.parse.outputs.matrix }}
+    steps:
+      - name: Parse GDAL versions
+        id: parse
+        run: |
+          # Convert comma-separated input to JSON array
+          INPUT="${{ github.event.inputs.gdal_version }}"
+
+          # Replace commas with newlines, trim whitespace, filter empty lines
+          VERSIONS=$(echo "$INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$')
+
+          # Convert to JSON array
+          JSON_ARRAY=$(echo "$VERSIONS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+
+          echo "matrix={\"version\":$(echo "$JSON_ARRAY")}" >> $GITHUB_OUTPUT
+
+          echo "Parsed GDAL versions:"
+          echo "$JSON_ARRAY" | jq -r '.[]' | nl
+
+  ensure-deps-images:
+    needs: parse-versions
+    uses: ./.github/workflows/build-docker-images.yml
+    with:
+      gdal_version: ${{ github.event.inputs.gdal_version }}
+      image_stage: 'deps'
+      push_images: 'true'
+      force_rebuild: 'false'
+      disable_cache: 'false'
+      cache_version: 'v2'
+
+  build-and-release:
+    needs: [parse-versions, ensure-deps-images]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix: ${{ fromJson(needs.parse-versions.outputs.matrix) }}
+    timeout-minutes: 45
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
-      - name: Validate and parse GDAL version
-        id: parse
+      - name: Validate GDAL version
+        id: validate
         run: |
-          VERSION="${{ github.event.inputs.gdal_version }}"
+          VERSION="${{ matrix.version }}"
 
           # Validate semver format (X.Y.Z)
           if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -93,7 +129,7 @@ jobs:
 
           # Extract package version from DESCRIPTION
           PKG_VERSION=$(grep "^Version:" DESCRIPTION | sed 's/Version: //')
-          
+
           if [ -z "$PKG_VERSION" ]; then
             echo "ERROR: Could not extract package version from DESCRIPTION"
             exit 1
@@ -113,34 +149,13 @@ jobs:
           echo "  Branch: $BRANCH"
           echo "  Tag: $TAG"
 
-      - name: Check deps image availability
-        run: |
-          VERSION="${{ steps.parse.outputs.gdal_version }}"
-          IMAGE="ghcr.io/${{ github.repository }}:deps-gdal-${VERSION}-amd64"
-          
-          echo "Checking for deps image: $IMAGE"
-          
-          # Note: docker buildx imagetools requires authentication for private images
-          # For now, we'll just verify the image exists by trying to use it in a build
-          # The actual build will fail if the image doesn't exist
-
-  build:
-    needs: validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Check OSGeo GDAL image availability
         id: check-image
         run: |
-          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
 
           TAGS_TO_TRY=(
             "ubuntu-small-${GDAL_VERSION}-amd64"
@@ -181,7 +196,7 @@ jobs:
       - name: Prepare release branch (merge with main)
         if: github.event.inputs.dry_run == 'false'
         run: |
-          BRANCH="${{ needs.validate.outputs.branch_name }}"
+          BRANCH="${{ steps.validate.outputs.branch_name }}"
 
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -223,8 +238,8 @@ jobs:
 
       - name: Set release version in DESCRIPTION for image build
         run: |
-          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
-          PKG_VERSION="${{ needs.validate.outputs.package_version }}"
+          GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
+          PKG_VERSION="${{ steps.validate.outputs.package_version }}"
 
           sed -i "s/^Version:.*/Version: ${PKG_VERSION}-${GDAL_VERSION}/" DESCRIPTION
           sed -i "s/^SystemRequirements:.*/SystemRequirements: GDAL (>= ${GDAL_VERSION})/" DESCRIPTION
@@ -232,7 +247,7 @@ jobs:
           echo "DESCRIPTION prepared for Docker build context:"
           grep -E "^Version:|^SystemRequirements:" DESCRIPTION
 
-      - name: Build runtime image for GDAL ${{ needs.validate.outputs.gdal_version }}
+      - name: Build runtime image for GDAL ${{ steps.validate.outputs.gdal_version }}
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -240,16 +255,16 @@ jobs:
           target: gdalcli-runtime
           build-args: |
             GDAL_BUILD_MODE=osgeo
-            GDAL_VERSION=${{ needs.validate.outputs.gdal_version }}
+            GDAL_VERSION=${{ steps.validate.outputs.gdal_version }}
             GDAL_RELEASE_TYPE=tagged
             GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
             R_VERSION=latest
-            PACKAGE_VERSION=${{ needs.validate.outputs.package_version }}-${{ needs.validate.outputs.gdal_version }}
+            PACKAGE_VERSION=${{ steps.validate.outputs.package_version }}-${{ steps.validate.outputs.gdal_version }}
           tags: |
-            ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest
+            ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest
           platforms: linux/amd64
-          cache-from: type=gha,scope=release-${{ needs.validate.outputs.gdal_version }}
-          cache-to: type=gha,mode=max,scope=release-${{ needs.validate.outputs.gdal_version }}
+          cache-from: type=gha,scope=release-${{ steps.validate.outputs.gdal_version }}
+          cache-to: type=gha,mode=max,scope=release-${{ steps.validate.outputs.gdal_version }}
           push: ${{ github.event.inputs.dry_run == 'false' }}
           build-contexts: context=.github/dockerfiles
           outputs: type=docker,dest=/tmp/image.tar
@@ -262,7 +277,7 @@ jobs:
       - name: Generate API and build release in Docker
         if: github.event.inputs.dry_run == 'false'
         run: |
-          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
 
           # Generate API and documentation in Docker context (merged working directory)
@@ -328,18 +343,169 @@ jobs:
             exit 1
           fi
 
+      - name: Compare GDAL APIs and generate release notes
+        if: success() && github.event.inputs.dry_run == 'false'
+        id: release_notes
+        run: |
+          GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
+          PKG_VERSION="${{ steps.validate.outputs.package_version }}"
+          GDAL_SHORT="${{ steps.validate.outputs.gdal_short }}"
+
+          # Find the most recent previous release (by semantic version, filtering out >= current)
+          # This handles out-of-order releases correctly
+          PREV_VERSION=""
+          PREV_TAG=""
+
+          # Get all release tags sorted by semantic version (newest first)
+          # Tag format: v0.3.0-3.12.0 (package_version-gdal_version)
+          for tag in $(git tag -l "v*-*" --sort=-version:refname); do
+            tag_gdal=$(echo "$tag" | sed "s/.*-\([0-9.]*\)$/\1/")
+
+            # Version comparison: check if tag_gdal < GDAL_VERSION
+            # sort -V handles semantic versioning
+            if [ "$(printf '%s\n' "$GDAL_VERSION" "$tag_gdal" | sort -V | head -n1)" = "$tag_gdal" ]; then
+              # Found a tag with version < current, use it and stop
+              PREV_TAG="$tag"
+              PREV_VERSION="$tag_gdal"
+              echo "Found most recent previous release: $PREV_TAG (GDAL $PREV_VERSION)"
+              break
+            fi
+          done
+
+          mkdir -p build
+
+          # Default release notes template
+          cat > /tmp/default_release_notes.txt <<'TEMPLATE'
+          Release of gdalcli for GDAL ${{ steps.validate.outputs.gdal_version }}
+
+          ## Details
+          - GDAL Version: ${{ steps.validate.outputs.gdal_version }}
+          - Package Version: ${{ steps.validate.outputs.package_version }}-${{ steps.validate.outputs.gdal_version }}
+          - Release Branch: `${{ steps.validate.outputs.branch_name }}`
+          - Docker Image: `ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest`
+
+          ## Installation
+          Install from release branch:
+          ```r
+          remotes::install_github(
+            "brownag/gdalcli",
+            ref = "${{ steps.validate.outputs.branch_name }}"
+          )
+          ```
+
+          Pull runtime Docker image:
+          ```bash
+          docker pull ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest
+          ```
+          TEMPLATE
+
+          # Check if we can generate detailed notes
+          # Run on the runner (R is available) instead of Docker (scripts aren't in the image)
+          if [ -n "$PREV_VERSION" ] && [ -f "build/compare_gdal_api.R" ] && [ -f "build/generate_release_notes.R" ]; then
+            echo "Comparing GDAL $PREV_VERSION -> $GDAL_VERSION APIs..."
+
+            # Run on runner where build scripts exist
+            if Rscript build/compare_gdal_api.R "$PREV_VERSION" "$GDAL_VERSION" build/api_diff.json 2>/dev/null; then
+              echo "API comparison generated successfully"
+              
+              # Generate release notes from the comparison
+              echo "Generating release notes..."
+              if Rscript build/generate_release_notes.R "$GDAL_VERSION" "$PKG_VERSION" build/api_diff.json 2>&1 | tee /tmp/release_notes.txt; then
+                # Extract the notes (only the section before DONE)
+                if grep -q "^DONE$" /tmp/release_notes.txt; then
+                  sed '/^DONE$/,$d' /tmp/release_notes.txt > /tmp/final_notes.txt
+                  # Remove the first few lines of debug output, keep from the first "Release of gdalcli"
+                  sed -n '/^Release of gdalcli/,$p' /tmp/final_notes.txt > /tmp/release_notes_body.txt
+                else
+                  sed -n '/^Release of gdalcli/,$p' /tmp/release_notes.txt > /tmp/release_notes_body.txt
+                fi
+
+                if [ -s /tmp/release_notes_body.txt ]; then
+                  cp /tmp/release_notes_body.txt /tmp/github_release_notes.txt
+                  echo "✓ Generated detailed release notes"
+                else
+                  cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+                  echo "⚠ Could not generate detailed notes, using default template"
+                fi
+              else
+                echo "⚠ Release notes generation failed, using default template"
+                cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+              fi
+            else
+              echo "⚠ API comparison failed, using default template"
+              cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+            fi
+          else
+            if [ -n "$PREV_VERSION" ]; then
+              echo "⚠ Build scripts not found, using default template"
+            else
+              echo "ℹ No previous version found; using default template"
+            fi
+            cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+          fi
+
+          # Ensure we have a release notes file
+          if [ ! -f /tmp/github_release_notes.txt ]; then
+            cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+          fi
+
+          # Make available as artifact for next step
+          cp /tmp/github_release_notes.txt /tmp/release_notes_artifact.txt
+
+      - name: Upload release notes
+        if: success() && github.event.inputs.dry_run == 'false'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes-${{ steps.validate.outputs.gdal_version }}
+          path: /tmp/github_release_notes.txt
+          retention-days: 1
+          if-no-files-found: ignore
+
+      - name: Download release notes for GitHub release
+        if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main' && github.event.inputs.dry_run == 'false'
+        run: |
+          # Try to use generated notes, fall back to reading directly if artifact unavailable
+          if [ -f /tmp/github_release_notes.txt ]; then
+            cat /tmp/github_release_notes.txt > $GITHUB_WORKSPACE/release_notes_body.md
+          else
+            # Fallback: create default notes
+            cat > $GITHUB_WORKSPACE/release_notes_body.md <<'EOF'
+          Release of gdalcli for GDAL ${{ steps.validate.outputs.gdal_version }}
+
+          ## Details
+          - GDAL Version: ${{ steps.validate.outputs.gdal_version }}
+          - Package Version: ${{ steps.validate.outputs.package_version }}-${{ steps.validate.outputs.gdal_version }}
+          - Release Branch: `${{ steps.validate.outputs.branch_name }}`
+          - Docker Image: `ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest`
+
+          ## Installation
+          Install from release branch:
+          ```r
+          remotes::install_github(
+            "brownag/gdalcli",
+            ref = "${{ steps.validate.outputs.branch_name }}"
+          )
+          ```
+
+          Pull runtime Docker image:
+          ```bash
+          docker pull ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest
+          ```
+          EOF
+          fi
+
       - name: Update version info and commit release
         if: success() && github.event.inputs.dry_run == 'false'
         run: |
-          GDAL_VERSION="${{ needs.validate.outputs.gdal_version }}"
+          GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
           BUILD_DATE="$(date -I)"
           GENERATED_AT="$(date '+%Y-%m-%d %H:%M:%S')"
-          
+
           # Parse version components
           MAJOR=$(echo "$GDAL_VERSION" | cut -d. -f1)
           MINOR=$(echo "$GDAL_VERSION" | cut -d. -f2)
           PATCH=$(echo "$GDAL_VERSION" | cut -d. -f3)
-          
+
           # Get R and package versions from the Docker image
           IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
           R_VERSION=$(docker run --rm "$IMAGE" R --version 2>/dev/null | head -1 | sed 's/R version \([0-9.]*\).*/\1/')
@@ -371,6 +537,7 @@ jobs:
           echo "Staging changes..."
           git add DESCRIPTION
           git add -f inst/GDAL_VERSION_INFO.json
+          git add inst/GDAL_API_*.json 2>/dev/null || true
 
           if [ -d R ]; then
             git add R/
@@ -385,11 +552,11 @@ jobs:
           fi
 
           echo "Staged $(git diff --cached --name-only | wc -l) files"
-          
+
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
             # Force push is safe here because we've reset branch to main and applied generated files
-            git push origin ${{ needs.validate.outputs.branch_name }} --force
+            git push origin ${{ steps.validate.outputs.branch_name }} --force
           else
             echo "No changes to commit"
           fi
@@ -398,33 +565,12 @@ jobs:
         if: success() && github.event.inputs.create_release == 'true' && github.ref == 'refs/heads/main' && github.event.inputs.dry_run == 'false'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ needs.validate.outputs.tag_name }}
-          target_commitish: ${{ needs.validate.outputs.branch_name }}
-          name: gdalcli v${{ needs.validate.outputs.package_version }} for GDAL ${{ needs.validate.outputs.gdal_version }}
+          tag_name: ${{ steps.validate.outputs.tag_name }}
+          target_commitish: ${{ steps.validate.outputs.branch_name }}
+          name: gdalcli v${{ steps.validate.outputs.package_version }} for GDAL ${{ steps.validate.outputs.gdal_version }}
           draft: false
           prerelease: false
-          body: |
-            Release of gdalcli for GDAL ${{ needs.validate.outputs.gdal_version }}
-
-            ## Details
-            - GDAL Version: ${{ needs.validate.outputs.gdal_version }}
-            - Package Version: ${{ needs.validate.outputs.package_version }}-${{ needs.validate.outputs.gdal_version }}
-            - Release Branch: `${{ needs.validate.outputs.branch_name }}`
-            - Docker Image: `ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest`
-
-            ## Installation
-            Install from release branch:
-            ```r
-            remotes::install_github(
-              "brownag/gdalcli",
-              ref = "${{ needs.validate.outputs.branch_name }}"
-            )
-            ```
-
-            Pull runtime Docker image:
-            ```bash
-            docker pull ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest
-            ```
+          body_path: ${{ github.workspace }}/release_notes_body.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -433,7 +579,7 @@ jobs:
         run: |
           RELEASE_INFO="No (not on main branch)"
           if [ "${{ github.ref }}" = "refs/heads/main" ] && [ "${{ github.event.inputs.create_release }}" = "true" ]; then
-            RELEASE_INFO="Yes (${{ needs.validate.outputs.tag_name }})"
+            RELEASE_INFO="Yes (${{ steps.validate.outputs.tag_name }})"
           fi
 
           cat >> $GITHUB_STEP_SUMMARY << 'EOF'
@@ -441,10 +587,10 @@ jobs:
 
           | Item | Value |
           |------|-------|
-          | GDAL Version | ${{ needs.validate.outputs.gdal_version }} |
-          | Package Version | ${{ needs.validate.outputs.package_version }}-${{ needs.validate.outputs.gdal_version }} |
-          | Release Branch | `${{ needs.validate.outputs.branch_name }}` |
-          | Docker Image | `ghcr.io/${{ github.repository }}:gdal-${{ needs.validate.outputs.gdal_version }}-latest` |
+          | GDAL Version | ${{ steps.validate.outputs.gdal_version }} |
+          | Package Version | ${{ steps.validate.outputs.package_version }}-${{ steps.validate.outputs.gdal_version }} |
+          | Release Branch | `${{ steps.validate.outputs.branch_name }}` |
+          | Docker Image | `ghcr.io/${{ github.repository }}:gdal-${{ steps.validate.outputs.gdal_version }}-latest` |
           | Build Status | ${{ job.status }} |
           | GitHub Release | RELEASE_PLACEHOLDER |
           | Dry Run | ${{ github.event.inputs.dry_run }} |
@@ -456,7 +602,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: rcheck-log-gdal-${{ needs.validate.outputs.gdal_version }}
+          name: rcheck-log-gdal-${{ steps.validate.outputs.gdal_version }}
           path: workspace.Rcheck/
           retention-days: 30
           if-no-files-found: ignore

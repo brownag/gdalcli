@@ -226,15 +226,6 @@ print.gdal_job <- function(x, ...) {
       }
     }
 
-    if (length(x$env_vars) > 0) {
-      cat("Environment Variables:\n")
-      for (i in seq_along(x$env_vars)) {
-        var_name <- names(x$env_vars)[i]
-        var_val <- x$env_vars[i]
-        cat(sprintf("  %s=%s\n", var_name, var_val))
-      }
-    }
-
     if (!is.null(x$stream_in)) {
       cat("Input Streaming: Yes (via /vsistdin/)\n")
     }

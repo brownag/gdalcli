@@ -31,9 +31,9 @@ gdal_vector_geom_buffer(
 \arguments{
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
@@ -43,11 +43,11 @@ gdal_vector_geom_buffer(
 
 \item{distance}{Distance to which to extend the geometry. (required)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -61,15 +61,15 @@ gdal_vector_geom_buffer(
 
 \item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
 
-\item{endcap_style}{Endcap style.. Choices: round, flat, square (Default: \code{round})}
+\item{endcap_style}{Endcap style.. Choices: "round", "flat", "square" (Default: \code{round})}
 
-\item{join_style}{Join style.. Choices: round, mitre, bevel (Default: \code{round})}
+\item{join_style}{Join style.. Choices: "round", "mitre", "bevel" (Default: \code{round})}
 
 \item{mitre_limit}{Mitre ratio limit (only affects mitered join style). (Default: \code{5}). Minimum: \code{0}}
 
 \item{quadrant_segments}{Number of line segments used to approximate a quarter circle. (Integer) (Default: \code{8}). Minimum: \code{1}}
 
-\item{side}{Sets whether the computed buffer should be single-sided or not.. Choices: both, left, right (Default: \code{both})}
+\item{side}{Sets whether the computed buffer should be single-sided or not.. Choices: "both", "left", "right" (Default: \code{both})}
 }
 \value{
 A \link{gdal_job} object.

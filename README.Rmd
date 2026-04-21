@@ -145,19 +145,19 @@ gdal_job_run(info_job)
 
 ### Vector Operations
 
-```{r, eval=FALSE}
+```{r}
 # Convert vector format
 vector_job <- gdal_vector_convert(
   input = system.file("extdata/sample_mapunit_polygons.gpkg", package = "gdalcli"),
   output = tempfile(fileext = ".geojson"),
   output_format = "GeoJSON"
 )
-gdal_job_run(vector_job, backend = "processx")
+gdal_job_run(vector_job)
 ```
 
 ### Raster Processing Pipeline
 
-```{r, eval=FALSE}
+```{r}
 # Simple processing pipeline: reproject and convert
 processing_pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
@@ -165,7 +165,7 @@ processing_pipeline <- gdal_raster_reproject(
 ) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"))
 
-gdal_job_run(processing_pipeline, backend = "processx")
+gdal_job_run(processing_pipeline)
 ```
 
 ## Backends
@@ -209,21 +209,7 @@ gdalcli_options(backend = "processx")
 
 ## Pipeline Features
 
-### Native GDAL Pipeline Execution
-
-Execute multi-step workflows as a single GDAL pipeline:
-
-```{r, eval=FALSE}
-pipeline <- gdal_raster_reproject(
-  input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
-  dst_crs = "EPSG:32632"
-) |>
-  gdal_raster_convert(output = tempfile(fileext = ".tif"))
-
-gdal_job_run(pipeline, backend = "processx")
-```
-
-### gdalcli Pipeline Format: Save and Load Pipelines
+### Pipeline Persistence
 
 Persist pipelines as JSON for sharing and version control. gdalcli supports three formats:
 
@@ -231,7 +217,15 @@ Persist pipelines as JSON for sharing and version control. gdalcli supports thre
 - **Pure GDALG Format** (.gdalg.json): RFC 104 compliant GDAL specification for compatibility with other GDAL tools
 - **Legacy Format**: Deprecated (pre-v0.5.0) - no longer recommended
 
-```{r, eval=TRUE}
+```{r}
+# Create a multi-step processing pipeline
+pipeline <- gdal_raster_reproject(
+  input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
+  dst_crs = "EPSG:32632"
+) |>
+  gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
+  gdal_raster_convert(output = tempfile(fileext = ".tif"), output_format = "COG")
+
 # Save pipeline to gdalcli hybrid format (recommended)
 workflow_file <- tempfile(fileext = ".gdalcli.json")
 gdal_save_pipeline(
@@ -246,7 +240,7 @@ loaded <- gdal_load_pipeline(workflow_file)
 
 # Export as pure GDALG for use with other GDAL tools
 gdalg <- as_gdalg(loaded)
-gdalg_write(gdalg, "workflow.gdalg.json")
+gdalg_write(gdalg, tempfile(fileext = ".gdalg.json"))
 ```
 
 ### Shell Script Generation
@@ -254,7 +248,7 @@ gdalg_write(gdalg, "workflow.gdalg.json")
 Generate executable shell scripts from pipelines:
 
 ```{r}
-# Generate bash script
+# Generate bash script from pipeline
 script <- render_shell_script(pipeline, format = "native", shell = "bash")
 cat(script)
 ```

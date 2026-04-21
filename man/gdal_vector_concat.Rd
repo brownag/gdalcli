@@ -12,7 +12,6 @@ gdal_vector_concat(
   source_layer_field_content = NULL,
   output,
   output_format = NULL,
-  output_open_option = NULL,
   output_layer = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -21,8 +20,6 @@ gdal_vector_concat(
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  upsert = FALSE,
-  skip_errors = FALSE,
   mode = NULL,
   field_strategy = NULL,
   src_crs = NULL,
@@ -32,9 +29,9 @@ gdal_vector_concat(
 \arguments{
 \item{input}{Input vector datasets (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{source_layer_field_name}{Name of the new field to add to contain identificoncation of the source layer, with value determined from 'source-layer-field-content'}
 
@@ -44,31 +41,25 @@ gdal_vector_concat(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output_layer}{Name of the output vector layer (single mode), or template to name the output vector layers (stack mode)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
+\item{mode}{Determine the strategy to create output layers from source layers . Choices: "merge-per-layer-name", "stack", "single" (Default: \code{merge-per-layer-name})}
 
-\item{skip_errors}{Skip errors when writing features (Logical)}
-
-\item{mode}{Determine the strategy to create output layers from source layers . Choices: merge-per-layer-name, stack, single (Default: \code{merge-per-layer-name})}
-
-\item{field_strategy}{How to determine target fields from source fields. Choices: union, intersection (Default: \code{union})}
+\item{field_strategy}{How to determine target fields from source fields. Choices: "union", "intersection" (Default: \code{union})}
 
 \item{src_crs}{Source CRS}
 
@@ -80,10 +71,10 @@ A \link{gdal_job} object.
 \description{
 Concatenate vector datasets.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_concat.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_concat.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vector_concat(input = "*.shp", output = "out.gpkg", mode = "stack")
+job <- gdal_vector_concat(input = "out.gpkg")
 \dontrun{
   result <- gdal_job_run(job)
 }
@@ -91,14 +82,9 @@ job <- gdal_vector_concat(input = "*.shp", output = "out.gpkg", mode = "stack")
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
-\code{\link{gdal_vector_check_coverage}()},
-\code{\link{gdal_vector_check_geometry}()},
-\code{\link{gdal_vector_clean_coverage}()},
 \code{\link{gdal_vector_clip}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -118,22 +104,11 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_grid_minimum}()},
 \code{\link{gdal_vector_grid_nearest}()},
 \code{\link{gdal_vector_grid_range}()},
-\code{\link{gdal_vector_index}()},
 \code{\link{gdal_vector_info}()},
-\code{\link{gdal_vector_layer_algebra}()},
-\code{\link{gdal_vector_make_point}()},
-\code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
-\code{\link{gdal_vector_sql}()},
-\code{\link{gdal_vector_swap_xy}()}
+\code{\link{gdal_vector_sql}()}
 }
 \concept{gdal_vector_utilities}

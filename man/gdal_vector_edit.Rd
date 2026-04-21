@@ -10,7 +10,6 @@ gdal_vector_edit(
   input_layer = NULL,
   output,
   output_format = NULL,
-  output_open_option = NULL,
   output_layer = NULL,
   open_option = NULL,
   creation_option = NULL,
@@ -19,50 +18,41 @@ gdal_vector_edit(
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  upsert = FALSE,
-  skip_errors = FALSE,
   active_layer = NULL,
   geometry_type = NULL,
   crs = NULL,
   metadata = NULL,
   unset_metadata = NULL,
   layer_metadata = NULL,
-  unset_layer_metadata = NULL,
-  unset_fid = FALSE
+  unset_layer_metadata = NULL
 )
 }
 \arguments{
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
-
 \item{output_layer}{Output layer name}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
-
-\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
-
-\item{skip_errors}{Skip errors when writing features (Logical)}
 
 \item{active_layer}{Set active layer (if not specified, all)}
 
@@ -70,15 +60,13 @@ gdal_vector_edit(
 
 \item{crs}{Override CRS (without reprojection)}
 
-\item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}. \code{0} to \code{2147483647} value(s)}
+\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}}
 
-\item{layer_metadata}{Add/update layer metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_metadata}{Add/update layer metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{unset_layer_metadata}{Remove layer metadata item (Character vector). Format: \code{KEY}. \code{0} to \code{2147483647} value(s)}
-
-\item{unset_fid}{Unset the identifier of each feature and the FID column name (Logical)}
+\item{unset_layer_metadata}{Remove layer metadata item (Character vector). Format: \code{KEY}}
 }
 \value{
 A \link{gdal_job} object.
@@ -86,7 +74,7 @@ A \link{gdal_job} object.
 \description{
 Edit metadata of a vector dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_edit.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_edit(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 
@@ -98,14 +86,9 @@ job <- gdal_vector_edit(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
-\code{\link{gdal_vector_check_coverage}()},
-\code{\link{gdal_vector_check_geometry}()},
-\code{\link{gdal_vector_clean_coverage}()},
 \code{\link{gdal_vector_clip}()},
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -125,22 +108,11 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_grid_minimum}()},
 \code{\link{gdal_vector_grid_nearest}()},
 \code{\link{gdal_vector_grid_range}()},
-\code{\link{gdal_vector_index}()},
 \code{\link{gdal_vector_info}()},
-\code{\link{gdal_vector_layer_algebra}()},
-\code{\link{gdal_vector_make_point}()},
-\code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
-\code{\link{gdal_vector_sql}()},
-\code{\link{gdal_vector_swap_xy}()}
+\code{\link{gdal_vector_sql}()}
 }
 \concept{gdal_vector_utilities}

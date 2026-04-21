@@ -162,10 +162,8 @@ gdal_job_run.gdal_job <- function(x,
     return(gdal_job_run(x$pipeline, ..., verbose = verbose))
   }
 
-  # Resolve streaming parameters (explicit args override job specs, which override global options)
   stream_in_final <- if (!is.null(stream_in)) stream_in else x$stream_in
-  
-  # Resolve stream_out_format with priority: explicit arg > job spec > global option > NULL
+
   stream_out_final <- if (!is.null(stream_out_format)) {
     stream_out_format
   } else if (!is.null(x$stream_out_format)) {
@@ -173,8 +171,7 @@ gdal_job_run.gdal_job <- function(x,
   } else {
     getOption("gdalcli.stream_out_format", NULL)
   }
-  
-  # Resolve verbose with priority: explicit arg > global option > FALSE
+
   verbose_final <- if (!is.na(verbose) && is.logical(verbose)) {
     verbose
   } else {
@@ -187,14 +184,17 @@ gdal_job_run.gdal_job <- function(x,
   # Merge environment variables
   env_final <- .merge_env_vars(x$env_vars, env, x$config_options)
 
-  # Configure input/output streams
   stdin_arg <- if (!is.null(stream_in_final)) stream_in_final else NULL
-  # For "stdout" format, use TRUE to pipe directly to parent stdout
-  # For other formats, use "|" to capture output
-  stdout_arg <- if (stream_out_final == "stdout") TRUE else if (!is.null(stream_out_final)) "|" else NULL
+  stdout_arg <- if (isTRUE(stream_out_final == "stdout")) TRUE else if (!is.null(stream_out_final)) "|" else NULL
 
   if (verbose_final) {
-    cli::cli_alert_info(sprintf("Executing: gdal %s", paste(args, collapse = " ")))
+    # Extract command path for display (skip "gdal" prefix if present)
+    cmd_display <- if (length(x$command_path) > 0 && x$command_path[1] == "gdal") {
+      x$command_path[-1]
+    } else {
+      x$command_path
+    }
+    cli::cli_alert_info(sprintf("Executing: gdal %s", paste(cmd_display, collapse = " ")))
   }
 
   # Execute the GDAL process using processx
@@ -361,39 +361,6 @@ gdal_job_run.gdal_job <- function(x,
     merged <- c(merged, explicit_env)
   }
 
-  # Harvest legacy global auth environment variables for backward compatibility
-  # These are auth variables that may have been set via set_gdal_auth() using Sys.setenv()
-  legacy_patterns <- c("^AWS_", "^GS_", "^AZURE_", "^OSS_", "^GOOGLE_", "^SWIFT_", "^OS_")
-  legacy_vars <- character()
-  for (pattern in legacy_patterns) {
-    matching <- Sys.getenv()[grep(pattern, names(Sys.getenv()))]
-    if (length(matching) > 0) {
-      legacy_vars <- c(legacy_vars, matching)
-    }
-  }
-
-  # Merge with precedence: explicit_env > legacy_vars > merged
-  if (length(legacy_vars) > 0) {
-    # Add legacy vars that aren't already in merged
-    for (i in seq_along(legacy_vars)) {
-      var_name <- names(legacy_vars)[i]
-      if (!(var_name %in% names(merged))) {
-        merged <- c(merged, legacy_vars[i])
-      }
-    }
-  }
-
-  # Convert config options to environment variable format if needed
-  # GDAL config options can also be passed as --config flags in the CLI,
-  # but they can be environment variables too
-  if (length(config_opts) > 0) {
-    for (i in seq_along(config_opts)) {
-      opt_name <- names(config_opts)[i]
-      opt_val <- config_opts[i]
-      # Could pass via env or CLI flags; CLI is preferred, so skip here
-    }
-  }
-
   merged
 }
 
@@ -489,7 +456,7 @@ gdal_job_run.default <- function(x, ...) {
   remaining_args <- if (length(args_serialized) > 2) args_serialized[-(1:2)] else character()
 
   if (verbose) {
-    cli::cli_alert_info(sprintf("Executing (gdalraster): gdal %s", paste(args_serialized, collapse = " ")))
+    cli::cli_alert_info(sprintf("Executing (gdalraster): gdal %s", paste(cmd, collapse = " ")))
   }
 
   # Use gdalraster::gdal_alg() to execute the command
@@ -527,6 +494,10 @@ gdal_job_run.default <- function(x, ...) {
 
     # Combine: option args first, then positional args
     final_args <- c(option_args, positional_args)
+
+    if (verbose) {
+      cli::cli_alert_info(sprintf("Executing (gdalraster): gdal %s", paste(cmd, collapse = " ")))
+    }
 
     # Instantiate the algorithm with command and all arguments
     # We pass all args to gdal_alg since gdalraster needs positional args

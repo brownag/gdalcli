@@ -191,6 +191,10 @@ Functions are generated from GDAL's JSON API specification in `build/generate_gd
 - **Defaults**: Optional parameters get `NULL` defaults
 - **Type Conversion**: Automatic R type conversion for GDAL parameters
 
+## API Change Tracking
+
+Automated tracking of GDAL API changes across releases. See [docs/api-tracking.md](../docs/api-tracking.md) for workflow, usage, and format details.
+
 ## Code Patterns
 
 ### Creating GDAL Jobs
@@ -211,17 +215,16 @@ gdal_run(job)
 
 ```r
 gdal_raster_convert(...) |>
-  gdal_with_co("COMPRESS=DEFLATE") |>     # Creation options
-  gdal_with_config("GDAL_CACHEMAX" = "512") |>  # GDAL config
-  gdal_with_env(auth) |>                  # Environment variables
+  gdal_with_co("COMPRESS=DEFLATE") |>
+  gdal_with_config("GDAL_CACHEMAX" = "512") |>
+  gdal_with_env(auth) |>
   gdal_run()
 ```
 
 ### Pipeline Composition
 
-**Preferred approach: Use the pipe operator**
 ```r
-# Compose multiple operations naturally with piping
+# Compose with native pipe
 result <- gdal_raster_reproject(
   input = "input.tif",
   dst_crs = "EPSG:32632"
@@ -230,12 +233,6 @@ result <- gdal_raster_reproject(
   gdal_raster_convert(output = "output.tif") |>
   gdal_job_run()
 ```
-
-**For programmatic job lists: Use explicit pipeline functions**
-```r
-# When you have a list of jobs and know the type
-jobs <- build_job_list(config)
-pipeline <- gdal_raster_pipeline(jobs = jobs)
 gdal_job_run(pipeline)
 ```
 

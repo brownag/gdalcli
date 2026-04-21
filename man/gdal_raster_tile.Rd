@@ -33,7 +33,6 @@ gdal_raster_tile(
   kml = FALSE,
   resume = FALSE,
   num_threads = NULL,
-  parallel_method = NULL,
   excluded_values = NULL,
   excluded_values_pct_threshold = NULL,
   nodata_values_pct_threshold = NULL,
@@ -45,19 +44,19 @@ gdal_raster_tile(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output directory (required)}
 
 \item{output_format}{Output format (Default: \code{PNG})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{tiling_scheme}{Tiling scheme. Choices: raster, WebMercatorQuad, WorldCRS84Quad, WorldMercatorWGS84Quad, GoogleCRS84Quad, ... (Default: \code{WebMercatorQuad})}
+\item{tiling_scheme}{Tiling scheme. Choices: "raster", "WebMercatorQuad", "WorldCRS84Quad", "WorldMercatorWGS84Quad", "GoogleCRS84Quad", ... (Default: \code{WebMercatorQuad})}
 
 \item{min_zoom}{Minimum zoom level (Integer). Minimum: \code{0}}
 
@@ -73,11 +72,11 @@ gdal_raster_tile(
 
 \item{no_intersection_ok}{Whether dataset extent not intersecting tile matrix is only a warning (Logical)}
 
-\item{resampling}{Resampling method for max zoom. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ... (Default: \code{cubic})}
+\item{resampling}{Resampling method for max zoom. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{cubic})}
 
-\item{overview_resampling}{Resampling method for overviews. Choices: nearest, bilinear, cubic, cubicspline, lanczos, ...}
+\item{overview_resampling}{Resampling method for overviews. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ...}
 
-\item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: xyz, tms (Default: \code{xyz})}
+\item{convention}{Tile numbering convention: xyz (from top) or tms (from bottom). Choices: "xyz", "tms" (Default: \code{xyz})}
 
 \item{tile_size}{Override default tile size (Integer). Range: (\code{64} to \code{32768})}
 
@@ -89,7 +88,7 @@ gdal_raster_tile(
 
 \item{skip_blank}{Do not generate blank tiles (Logical)}
 
-\item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{metadata}{Add metadata item to output tiles (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{copy_src_metadata}{Whether to copy metadata from source dataset (Logical)}
 
@@ -101,15 +100,13 @@ gdal_raster_tile(
 
 \item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{ALL_CPUS})}
 
-\item{parallel_method}{Parallelization method (thread, spawn, fork). Choices: thread, spawn, fork}
-
 \item{excluded_values}{Tuples of values (e.g. \if{html}{\out{<R>}},\if{html}{\out{<G>}},\if{html}{\out{<B>}} or (\if{html}{\out{<R1>}},\if{html}{\out{<G1>}},\if{html}{\out{<B1>}}),(\if{html}{\out{<R2>}},\if{html}{\out{<G2>}},\if{html}{\out{<B2>}})) that must beignored as contributing source pixels during (average) resampling (Advanced Resampling)}
 
 \item{excluded_values_pct_threshold}{Minimum percentage of source pixels that must be set at one of the --excluded-values to cause the excluded value to be used as the target pixel value (Default: \code{50}). Range: (\code{0} to \code{100}) (Advanced Resampling)}
 
 \item{nodata_values_pct_threshold}{Minimum percentage of source pixels that must be set at one of nodata (or alpha=0 or any other way to express transparent pixelto cause the target pixel value to be transparent (Default: \code{100}). Range: (\code{0} to \code{100}) (Advanced Resampling)}
 
-\item{webviewer}{Web viewer to generate (Character vector). Choices: none, all, leaflet, openlayers, mapml, ... (Default: \code{all}). \code{0} to \code{2147483647} value(s) (Publication)}
+\item{webviewer}{Web viewer to generate (Character vector). Choices: "none", "all", "leaflet", "openlayers", "mapml" (Default: \code{all}) (Publication)}
 
 \item{url}{URL address where the generated tiles are going to be published (Publication)}
 
@@ -125,7 +122,7 @@ A \link{gdal_job} object.
 \description{
 Generate tiles in separate files from a raster dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_tile.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_tile.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom = 2, 
@@ -137,14 +134,11 @@ job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom 
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -155,20 +149,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -179,8 +167,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

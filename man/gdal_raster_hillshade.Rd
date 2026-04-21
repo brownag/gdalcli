@@ -27,15 +27,15 @@ gdal_raster_hillshade(
 \arguments{
 \item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -53,9 +53,9 @@ gdal_raster_hillshade(
 
 \item{altitude}{Altitude of the light, in degrees (Default: \code{45}). Range: (\code{0} to \code{90})}
 
-\item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: Horn, ZevenbergenThorne (Default: \code{Horn})}
+\item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: "Horn", "ZevenbergenThorne" (Default: \code{Horn})}
 
-\item{variant}{Variant of the hillshading algorithm. Choices: regular, combined, multidirectional, Igor (Default: \code{regular})}
+\item{variant}{Variant of the hillshading algorithm. Choices: "regular", "combined", "multidirectional", "Igor" (Default: \code{regular})}
 
 \item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
 }

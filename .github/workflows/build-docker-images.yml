@@ -31,7 +31,7 @@ on:
   workflow_dispatch:
     inputs:
       gdal_version:
-        description: 'GDAL version to build'
+        description: 'GDAL version(s) to build (e.g., 3.12.1 or 3.11.4,3.12.2 for multiple)'
         required: false
         default: ''
         type: string
@@ -73,6 +73,37 @@ on:
         required: false
         default: 'v2'
         type: string
+  workflow_call:
+    inputs:
+      gdal_version:
+        description: 'GDAL version(s) to build (e.g., 3.12.1 or 3.11.4,3.12.2 for multiple)'
+        required: true
+        type: string
+      image_stage:
+        description: 'Image stage to build: deps, full, or both'
+        required: false
+        default: 'deps'
+        type: string
+      push_images:
+        description: 'Push images to GitHub Container Registry?'
+        required: false
+        default: 'true'
+        type: string
+      force_rebuild:
+        description: 'Force rebuild even if images exist?'
+        required: false
+        default: 'false'
+        type: string
+      disable_cache:
+        description: 'Disable Docker layer caching?'
+        required: false
+        default: 'false'
+        type: string
+      cache_version:
+        description: 'Cache version for invalidation'
+        required: false
+        default: 'v2'
+        type: string
 
 permissions:
   contents: read
@@ -90,35 +121,57 @@ jobs:
       - name: Determine versions to build
         id: versions
         run: |
+          # Handle both workflow_dispatch and workflow_call input sources
+          # workflow_dispatch: ${{ github.event.inputs.gdal_version }}
+          # workflow_call: ${{ inputs.gdal_version }}
+          INPUT_SOURCE="${{ inputs.gdal_version || github.event.inputs.gdal_version }}"
+          
           # Read from .github/versions.json
           if [ -f .github/versions.json ]; then
-            if [ -n "${{ github.event.inputs.gdal_version }}" ]; then
-              # If gdal_version provided in workflow_dispatch, use just that version
-              VERSIONS='["${{ github.event.inputs.gdal_version }}"]'
+            if [ -n "$INPUT_SOURCE" ]; then
+              # If gdal_version provided, use that (can be comma-separated)
+              INPUT="$INPUT_SOURCE"
+              
+              # Parse comma-separated versions into JSON array
+              VERSIONS=$(echo "$INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$')
+              JSON_ARRAY=$(echo "$VERSIONS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              MATRIX_JSON='{"version":'$JSON_ARRAY'}'
             else
               # Use supported versions from versions.json for scheduled/push-triggered runs
               VERSIONS=$(jq -c '.supported' .github/versions.json)
+              MATRIX_JSON='{"version":'$VERSIONS'}'
             fi
           else
             # Fallback if versions.json doesn't exist
-            if [ -n "${{ github.event.inputs.gdal_version }}" ]; then
-              VERSIONS='["${{ github.event.inputs.gdal_version }}"]'
+            if [ -n "$INPUT_SOURCE" ]; then
+              INPUT="$INPUT_SOURCE"
+              
+              # Parse comma-separated versions into JSON array
+              VERSIONS=$(echo "$INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$')
+              JSON_ARRAY=$(echo "$VERSIONS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              MATRIX_JSON='{"version":'$JSON_ARRAY'}'
             else
-              VERSIONS='["3.11.4", "3.12.0"]'
+              MATRIX_JSON='{"version":["3.11.4", "3.12.0"]}'
             fi
           fi
           
-          echo "matrix=$VERSIONS" >> $GITHUB_OUTPUT
-          echo "Building for versions: $VERSIONS"
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          echo "Versions to build:"
+          echo "$MATRIX_JSON" | jq -r '.version[]' | nl
 
   build-deps:
     needs: determine-versions
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.image_stage != 'full' }}
+    if: ${{ (inputs.image_stage == 'deps' || inputs.image_stage == 'both' || github.event.inputs.image_stage == 'deps' || github.event.inputs.image_stage == 'both' || github.event_name != 'workflow_dispatch') }}
+    env:
+      # Handle both workflow_dispatch and workflow_call input sources
+      PUSH_IMAGES: ${{ inputs.push_images || github.event.inputs.push_images || 'true' }}
+      FORCE_REBUILD: ${{ inputs.force_rebuild || github.event.inputs.force_rebuild || 'false' }}
+      DISABLE_CACHE: ${{ inputs.disable_cache || github.event.inputs.disable_cache || 'false' }}
+      CACHE_VERSION: ${{ inputs.cache_version || github.event.inputs.cache_version || 'v2' }}
     strategy:
       fail-fast: false
-      matrix:
-        gdal_version: ${{ fromJson(needs.determine-versions.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.determine-versions.outputs.matrix) }}
 
     steps:
       - name: Checkout repository
@@ -128,7 +181,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log in to Container Registry
-        if: github.event.inputs.push_images != 'false'
+        if: env.PUSH_IMAGES != 'false'
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
@@ -138,14 +191,14 @@ jobs:
       - name: Extract GDAL short version
         id: parse
         run: |
-          VERSION="${{ matrix.gdal_version }}"
+          VERSION="${{ matrix.version }}"
           SHORT=$(echo "$VERSION" | cut -d. -f1-2)
           echo "gdal_short=$SHORT" >> $GITHUB_OUTPUT
 
       - name: Check OSGeo GDAL image availability
         id: check-image
         run: |
-          GDAL_VERSION="${{ matrix.gdal_version }}"
+          GDAL_VERSION="${{ matrix.version }}"
 
           TAGS_TO_TRY=(
             "ubuntu-small-${GDAL_VERSION}-amd64"
@@ -178,9 +231,9 @@ jobs:
 
       - name: Check if deps image already exists
         id: check-deps-exists
-        if: github.event.inputs.force_rebuild != 'true'
+        if: env.FORCE_REBUILD != 'true'
         run: |
-          DEPS_IMAGE="ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64"
+          DEPS_IMAGE="ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.version }}-amd64"
           echo "Checking if deps image exists: $DEPS_IMAGE"
           
           if docker buildx imagetools inspect "$DEPS_IMAGE" >/dev/null 2>&1; then
@@ -193,7 +246,7 @@ jobs:
 
       - name: Build and push GDAL deps image
         id: build-deps
-        if: github.event.inputs.force_rebuild == 'true' || steps.check-deps-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
+        if: env.FORCE_REBUILD == 'true' || steps.check-deps-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -201,25 +254,25 @@ jobs:
           target: r-packages
           build-args: |
             GDAL_BUILD_MODE=osgeo
-            GDAL_VERSION=${{ matrix.gdal_version }}
+            GDAL_VERSION=${{ matrix.version }}
             GDAL_RELEASE_TYPE=tagged
             GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
             R_VERSION=latest
             PACKAGE_VERSION=0.2.0
           tags: |
-            ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64
+            ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.version }}-amd64
             ghcr.io/${{ github.repository }}:deps-gdal-${{ steps.parse.outputs.gdal_short }}-amd64
           platforms: linux/amd64
-          cache-from: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,scope=deps-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
-          cache-to: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,mode=max,scope=deps-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
-          push: ${{ github.event.inputs.push_images != 'false' }}
+          cache-from: ${{ env.DISABLE_CACHE == 'false' && format('type=gha,scope=deps-gdal-{0}-{1}', matrix.version, env.CACHE_VERSION) || '' }}
+          cache-to: ${{ env.DISABLE_CACHE == 'false' && format('type=gha,mode=max,scope=deps-gdal-{0}-{1}', matrix.version, env.CACHE_VERSION) || '' }}
+          push: ${{ env.PUSH_IMAGES != 'false' }}
           provenance: false
           sbom: false
 
       - name: Run smoke tests on deps image
         if: steps.build-deps.outcome == 'success'
         run: |
-          docker run --rm ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64 bash -c '
+          docker run --rm ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.version }}-amd64 bash -c '
             set -e
             echo "=== GDAL Smoke Test ==="
             gdal --version
@@ -239,12 +292,12 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| GDAL Version | ${{ matrix.gdal_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| GDAL Version | ${{ matrix.version }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Base Image | ghcr.io/osgeo/gdal:${{ steps.check-image.outputs.selected_gdal_image_tag }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Target Image | ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.gdal_version }}-amd64 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Target Image | ghcr.io/${{ github.repository }}:deps-gdal-${{ matrix.version }}-amd64 |" >> $GITHUB_STEP_SUMMARY
           echo "| Build Status | ${{ steps.build-deps.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Pushed | ${{ github.event.inputs.push_images != 'false' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Cache Disabled | ${{ github.event.inputs.disable_cache }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pushed | ${{ env.PUSH_IMAGES != 'false' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cache Disabled | ${{ env.DISABLE_CACHE }} |" >> $GITHUB_STEP_SUMMARY
 
   build-full:
     runs-on: ubuntu-latest
@@ -252,11 +305,16 @@ jobs:
     if: |
       always() && 
       (needs.build-deps.result == 'success' || needs.build-deps.result == 'skipped') &&
-      github.event.inputs.image_stage != 'deps'
+      (inputs.image_stage == 'full' || inputs.image_stage == 'both' || github.event.inputs.image_stage == 'full' || github.event.inputs.image_stage == 'both' || github.event_name != 'workflow_dispatch')
+    env:
+      # Handle both workflow_dispatch and workflow_call input sources
+      PUSH_IMAGES: ${{ inputs.push_images || github.event.inputs.push_images || 'true' }}
+      FORCE_REBUILD: ${{ inputs.force_rebuild || github.event.inputs.force_rebuild || 'false' }}
+      DISABLE_CACHE: ${{ inputs.disable_cache || github.event.inputs.disable_cache || 'false' }}
+      CACHE_VERSION: ${{ inputs.cache_version || github.event.inputs.cache_version || 'v2' }}
     strategy:
       fail-fast: false
-      matrix:
-        gdal_version: ${{ fromJson(needs.determine-versions.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.determine-versions.outputs.matrix) }}
 
     steps:
       - name: Checkout repository
@@ -266,7 +324,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Log in to Container Registry
-        if: github.event.inputs.push_images != 'false'
+        if: env.PUSH_IMAGES != 'false'
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
@@ -276,14 +334,14 @@ jobs:
       - name: Extract GDAL short version
         id: parse
         run: |
-          VERSION="${{ matrix.gdal_version }}"
+          VERSION="${{ matrix.version }}"
           SHORT=$(echo "$VERSION" | cut -d. -f1-2)
           echo "gdal_short=$SHORT" >> $GITHUB_OUTPUT
 
       - name: Check OSGeo GDAL image availability
         id: check-image
         run: |
-          GDAL_VERSION="${{ matrix.gdal_version }}"
+          GDAL_VERSION="${{ matrix.version }}"
 
           TAGS_TO_TRY=(
             "ubuntu-small-${GDAL_VERSION}-amd64"
@@ -316,9 +374,9 @@ jobs:
 
       - name: Check if runtime image already exists
         id: check-full-exists
-        if: github.event.inputs.force_rebuild != 'true'
+        if: env.FORCE_REBUILD != 'true'
         run: |
-          FULL_IMAGE="ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest"
+          FULL_IMAGE="ghcr.io/${{ github.repository }}:gdal-${{ matrix.version }}-latest"
           echo "Checking if runtime image exists: $FULL_IMAGE"
           
           if docker buildx imagetools inspect "$FULL_IMAGE" >/dev/null 2>&1; then
@@ -331,7 +389,7 @@ jobs:
 
       - name: Build and push GDAL full runtime image
         id: build-full
-        if: github.event.inputs.force_rebuild == 'true' || steps.check-full-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
+        if: env.FORCE_REBUILD == 'true' || steps.check-full-exists.outputs.image_exists != 'true' || github.event_name == 'schedule'
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -339,25 +397,25 @@ jobs:
           target: gdalcli-runtime
           build-args: |
             GDAL_BUILD_MODE=osgeo
-            GDAL_VERSION=${{ matrix.gdal_version }}
+            GDAL_VERSION=${{ matrix.version }}
             GDAL_RELEASE_TYPE=tagged
             GDAL_IMAGE_TAG=${{ steps.check-image.outputs.selected_gdal_image_tag }}
             R_VERSION=latest
             PACKAGE_VERSION=0.2.0
           tags: |
-            ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest
+            ghcr.io/${{ github.repository }}:gdal-${{ matrix.version }}-latest
             ghcr.io/${{ github.repository }}:gdal-${{ steps.parse.outputs.gdal_short }}-latest
           platforms: linux/amd64
-          cache-from: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,scope=full-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
-          cache-to: ${{ github.event.inputs.disable_cache == 'false' && format('type=gha,mode=max,scope=full-gdal-{0}-{1}', matrix.gdal_version, github.event.inputs.cache_version || 'v2') || '' }}
-          push: ${{ github.event.inputs.push_images != 'false' }}
+          cache-from: ${{ env.DISABLE_CACHE == 'false' && format('type=gha,scope=full-gdal-{0}-{1}', matrix.version, env.CACHE_VERSION || 'v2') || '' }}
+          cache-to: ${{ env.DISABLE_CACHE == 'false' && format('type=gha,mode=max,scope=full-gdal-{0}-{1}', matrix.version, env.CACHE_VERSION || 'v2') || '' }}
+          push: ${{ env.PUSH_IMAGES != 'false' }}
           provenance: false
           sbom: false
 
       - name: Run smoke tests on full image
         if: steps.build-full.outcome == 'success'
         run: |
-          docker run --rm ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest bash -c '
+          docker run --rm ghcr.io/${{ github.repository }}:gdal-${{ matrix.version }}-latest bash -c '
             set -e
             echo "=== GDAL Smoke Test ==="
             gdal --version
@@ -379,9 +437,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| GDAL Version | ${{ matrix.gdal_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| GDAL Version | ${{ matrix.version }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Base Image | ghcr.io/osgeo/gdal:${{ steps.check-image.outputs.selected_gdal_image_tag }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Target Image | ghcr.io/${{ github.repository }}:gdal-${{ matrix.gdal_version }}-latest |" >> $GITHUB_STEP_SUMMARY
+          echo "| Target Image | ghcr.io/${{ github.repository }}:gdal-${{ matrix.version }}-latest |" >> $GITHUB_STEP_SUMMARY
           echo "| Build Status | ${{ steps.build-full.outcome }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Pushed | ${{ github.event.inputs.push_images != 'false' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Cache Disabled | ${{ github.event.inputs.disable_cache }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pushed | ${{ env.PUSH_IMAGES != 'false' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cache Disabled | ${{ env.DISABLE_CACHE }} |" >> $GITHUB_STEP_SUMMARY
