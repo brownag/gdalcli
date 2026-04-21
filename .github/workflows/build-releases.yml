@@ -350,7 +350,6 @@ jobs:
           GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
           PKG_VERSION="${{ steps.validate.outputs.package_version }}"
           GDAL_SHORT="${{ steps.validate.outputs.gdal_short }}"
-          IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
 
           # Find the most recent previous release (by semantic version, filtering out >= current)
           # This handles out-of-order releases correctly
@@ -401,41 +400,47 @@ jobs:
           TEMPLATE
 
           # Check if we can generate detailed notes
-          if [ -n "$PREV_VERSION" ]; then
+          # Run on the runner (R is available) instead of Docker (scripts aren't in the image)
+          if [ -n "$PREV_VERSION" ] && [ -f "build/compare_gdal_api.R" ] && [ -f "build/generate_release_notes.R" ]; then
             echo "Comparing GDAL $PREV_VERSION -> $GDAL_VERSION APIs..."
 
-            docker run --rm \
-              -v "$PWD:/workspace" \
-              -w /workspace \
-              "$IMAGE" \
-              Rscript /workspace/build/compare_gdal_api.R "$PREV_VERSION" "$GDAL_VERSION" /workspace/build/api_diff.json
+            # Run on runner where build scripts exist
+            if Rscript build/compare_gdal_api.R "$PREV_VERSION" "$GDAL_VERSION" build/api_diff.json 2>/dev/null; then
+              echo "API comparison generated successfully"
+              
+              # Generate release notes from the comparison
+              echo "Generating release notes..."
+              if Rscript build/generate_release_notes.R "$GDAL_VERSION" "$PKG_VERSION" build/api_diff.json 2>&1 | tee /tmp/release_notes.txt; then
+                # Extract the notes (only the section before DONE)
+                if grep -q "^DONE$" /tmp/release_notes.txt; then
+                  sed '/^DONE$/,$d' /tmp/release_notes.txt > /tmp/final_notes.txt
+                  # Remove the first few lines of debug output, keep from the first "Release of gdalcli"
+                  sed -n '/^Release of gdalcli/,$p' /tmp/final_notes.txt > /tmp/release_notes_body.txt
+                else
+                  sed -n '/^Release of gdalcli/,$p' /tmp/release_notes.txt > /tmp/release_notes_body.txt
+                fi
 
-            # Generate release notes from the comparison
-            echo "Generating release notes..."
-            docker run --rm \
-              -v "$PWD:/workspace" \
-              -w /workspace \
-              "$IMAGE" \
-              Rscript /workspace/build/generate_release_notes.R "$GDAL_VERSION" "$PKG_VERSION" /workspace/build/api_diff.json 2>&1 | tee /tmp/release_notes.txt
-
-            # Extract the notes (only the section before DONE)
-            if grep -q "^DONE$" /tmp/release_notes.txt; then
-              sed '/^DONE$/,$d' /tmp/release_notes.txt > /tmp/final_notes.txt
-              # Remove the first few lines of debug output, keep from the first "Release of gdalcli"
-              sed -n '/^Release of gdalcli/,$p' /tmp/final_notes.txt > /tmp/release_notes_body.txt
+                if [ -s /tmp/release_notes_body.txt ]; then
+                  cp /tmp/release_notes_body.txt /tmp/github_release_notes.txt
+                  echo "✓ Generated detailed release notes"
+                else
+                  cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+                  echo "⚠ Could not generate detailed notes, using default template"
+                fi
+              else
+                echo "⚠ Release notes generation failed, using default template"
+                cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
+              fi
             else
-              sed -n '/^Release of gdalcli/,$p' /tmp/release_notes.txt > /tmp/release_notes_body.txt
-            fi
-
-            if [ -s /tmp/release_notes_body.txt ]; then
-              cp /tmp/release_notes_body.txt /tmp/github_release_notes.txt
-              echo "✓ Generated detailed release notes"
-            else
+              echo "⚠ API comparison failed, using default template"
               cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
-              echo "⚠ Could not generate detailed notes, using default template"
             fi
           else
-            echo "No previous version found; using default template"
+            if [ -n "$PREV_VERSION" ]; then
+              echo "⚠ Build scripts not found, using default template"
+            else
+              echo "ℹ No previous version found; using default template"
+            fi
             cp /tmp/default_release_notes.txt /tmp/github_release_notes.txt
           fi
 
