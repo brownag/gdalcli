@@ -74,7 +74,7 @@ A \link{gdal_job} object.
 \description{
 Modify the type of a field of a vector dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_set-field-type.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_set-field-type.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_set_field_type(input = "input.gpkg", output = "output.gpkg", 

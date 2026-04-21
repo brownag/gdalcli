@@ -50,7 +50,7 @@ A \link{gdal_job} object.
 \description{
 Generate a RGB or RGBA dataset from a single band, using a color map
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 

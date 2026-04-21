@@ -38,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Adding overviews.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

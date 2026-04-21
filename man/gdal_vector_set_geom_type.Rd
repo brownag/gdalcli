@@ -95,7 +95,7 @@ A \link{gdal_job} object.
 \description{
 Modify the geometry type of a vector dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_set-geom-type.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_set-geom-type.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_set_geom_type(input = "in.shp", output = "out.gpkg", overwrite = TRUE, 

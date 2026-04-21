@@ -78,7 +78,7 @@ gdal_raster_viewshed(
 
 \item{invisible_value}{Pixel value to set for invisible areas (Default: \code{0}). Range: (\code{0} to \code{255})}
 
-\item{out_of_range_value}{Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Default: \code{0}). Range: (\code{0} to \code{255})}
+\item{out_of_range_value}{Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Default: \code{0})}
 
 \item{dst_nodata}{The value to be set for the cells in the output raster that have no data.. Range: (\code{0} to \code{255})}
 
@@ -92,7 +92,7 @@ A \link{gdal_job} object.
 \description{
 Compute the viewshed of a raster dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 

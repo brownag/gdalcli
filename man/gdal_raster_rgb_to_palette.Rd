@@ -44,7 +44,7 @@ A \link{gdal_job} object.
 \description{
 Convert a RGB image into a pseudo-color / paletted image.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_rgb-to-palette.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_rgb-to-palette.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_rgb_to_palette(input = "input.tif", output = "output.png")

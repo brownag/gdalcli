@@ -68,7 +68,7 @@ A \link{gdal_job} object.
 \description{
 Swap X and Y coordinates of geometries of a vector dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_swap-xy.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_swap-xy.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_swap_xy(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE)

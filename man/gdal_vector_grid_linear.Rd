@@ -74,7 +74,7 @@ A \link{gdal_job} object.
 \description{
 Create a regular grid from scattered points using linear/barycentric interpolation.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_grid_linear.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_grid_linear.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

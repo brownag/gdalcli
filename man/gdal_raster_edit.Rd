@@ -6,6 +6,7 @@
 \usage{
 gdal_raster_edit(
   dataset,
+  open_option = NULL,
   auxiliary = FALSE,
   crs = NULL,
   bbox = NULL,
@@ -21,6 +22,8 @@ gdal_raster_edit(
 }
 \arguments{
 \item{dataset}{Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{auxiliary}{Ask for an auxiliary .aux.xml file to be edited (Logical)}
 
@@ -50,7 +53,7 @@ A \link{gdal_job} object.
 \description{
 Edit a raster dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")

@@ -71,7 +71,7 @@ A \link{gdal_job} object.
 \description{
 Build a mosaic, either virtual (VRT) or materialized.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", 

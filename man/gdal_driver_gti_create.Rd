@@ -98,7 +98,7 @@ A \link{gdal_job} object.
 \description{
 Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_driver_gti_create.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_driver_gti_create.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_gti_create(input = "*.tif", output = "tile_index.gti.gpkg", 

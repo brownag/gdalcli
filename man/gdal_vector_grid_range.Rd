@@ -92,7 +92,7 @@ A \link{gdal_job} object.
 \description{
 Create a regular grid from scattered points using the difference between the minimum and maximum values in the search ellipse.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_grid_range.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_grid_range.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

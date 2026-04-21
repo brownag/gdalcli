@@ -86,7 +86,7 @@ A \link{gdal_job} object.
 \description{
 Edit metadata of a vector dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_edit.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_edit(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 

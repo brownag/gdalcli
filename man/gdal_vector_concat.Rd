@@ -80,7 +80,7 @@ A \link{gdal_job} object.
 \description{
 Concatenate vector datasets.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_concat.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_concat.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_concat(input = "*.shp", output = "out.gpkg", mode = "stack")

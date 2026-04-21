@@ -77,7 +77,7 @@ A \link{gdal_job} object.
 \description{
 Create a vector index of raster datasets.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_index.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_index.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")

@@ -47,7 +47,7 @@ A \link{gdal_job} object.
 \description{
 Generate a Terrain Ruggedness Index (TRI) map
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_tri.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_tri.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_tri(input = "n43.dt0", output = "out.tif", overwrite = TRUE)

@@ -68,7 +68,7 @@ A \link{gdal_job} object.
 \description{
 Create a new raster dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_create.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_create.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_create(input = "out.tif", size = c(20, 20), band_count = 3, 

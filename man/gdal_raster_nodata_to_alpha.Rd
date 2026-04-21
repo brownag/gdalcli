@@ -41,7 +41,7 @@ A \link{gdal_job} object.
 \description{
 Replace nodata value(s) with an alpha band.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_nodata-to-alpha.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_nodata-to-alpha.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_nodata_to_alpha(input = "input_with_nodata.tif", 

@@ -2143,6 +2143,18 @@
           ]
         },
         {
+          "name":"open-option",
+          "type":"string_list",
+          "description":"Open options",
+          "metavar":"<KEY>=<VALUE>",
+          "required":false,
+          "packed_values_allowed":false,
+          "repeated_arg_allowed":true,
+          "min_count":0,
+          "max_count":2147483647,
+          "category":"Advanced"
+        },
+        {
           "name":"auxiliary",
           "type":"boolean",
           "description":"Ask for an auxiliary .aux.xml file to be edited",
@@ -7854,10 +7866,6 @@
               "type":"real",
               "description":"Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance",
               "default":0.0,
-              "min_value":0.0,
-              "min_value_is_included":true,
-              "max_value":255.0,
-              "max_value_is_included":true,
               "required":false,
               "category":"Base"
             },
@@ -11772,10 +11780,6 @@
           "type":"real",
           "description":"Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance",
           "default":0.0,
-          "min_value":0.0,
-          "min_value_is_included":true,
-          "max_value":255.0,
-          "max_value_is_included":true,
           "required":false,
           "category":"Base"
         },

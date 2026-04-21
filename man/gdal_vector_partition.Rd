@@ -62,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Partition a vector dataset into multiple files.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_partition.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_partition.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_partition(input = "world_cities.gpkg", output = "out_directory", 

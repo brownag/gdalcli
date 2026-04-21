@@ -71,7 +71,7 @@ A \link{gdal_job} object.
 \description{
 Simplify shared boundaries of a polygonal vector dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_simplify-coverage.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_simplify-coverage.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_simplify_coverage(input = "in.gpkg", output = "out.gpkg", 

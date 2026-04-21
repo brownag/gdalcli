@@ -38,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Build a mosaic, either virtual (VRT) or materialized, from multidimensional datasets.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_mdim_mosaic.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_mdim_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_mosaic(input = "slice*.nc", output = "out.vrt")

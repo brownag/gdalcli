@@ -74,7 +74,7 @@ A \link{gdal_job} object.
 \description{
 Select a subset of fields from a vector dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_select.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_select.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

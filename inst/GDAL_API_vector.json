@@ -8636,6 +8636,13 @@
           ],
           "input_arguments":[
             {
+              "name":"output-layer",
+              "type":"string",
+              "description":"Output layer name",
+              "required":false,
+              "category":"Base"
+            },
+            {
               "name":"active-layer",
               "type":"string",
               "description":"Set active layer (if not specified, all)",

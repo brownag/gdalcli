@@ -62,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Perform raster algebra
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_calc.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_calc.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_calc(calc = "A+B+C")

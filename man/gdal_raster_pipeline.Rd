@@ -44,7 +44,7 @@ A \link{gdal_job} object.
 \description{
 Process a raster dataset applying several steps.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_pipeline(

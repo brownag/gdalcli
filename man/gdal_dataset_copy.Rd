@@ -21,7 +21,7 @@ A \link{gdal_job} object.
 \description{
 Copy files of a dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_dataset_copy.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_dataset_copy.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

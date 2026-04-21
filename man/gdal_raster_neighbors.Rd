@@ -56,7 +56,7 @@ A \link{gdal_job} object.
 \description{
 Compute the value of each pixel from its neighbors (focal statistics)
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_neighbors.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_neighbors.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_neighbors(input = "in.tif", output = "uv.tif", kernel = c("u", "v"))

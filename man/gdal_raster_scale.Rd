@@ -62,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Scale the values of the bands of a raster dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_scale.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_scale.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_scale(input = "uint16.tif", output = "byte.tif", overwrite = TRUE, 

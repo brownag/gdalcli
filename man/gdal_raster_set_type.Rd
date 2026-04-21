@@ -41,7 +41,7 @@ A \link{gdal_job} object.
 \description{
 Modify the data type of bands of a raster dataset.
 
-See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_set-type.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_set-type.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_set_type(input = "byte.tif", output = "float32.tif", overwrite = TRUE)
