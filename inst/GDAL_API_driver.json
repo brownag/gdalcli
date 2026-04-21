@@ -28,7 +28,8 @@
           "description":"Repack\/vacuum in-place a GeoPackage dataset",
           "short_url":"\/drivers\/vector\/gpkg.html",
           "url":"https:\/\/gdal.org\/drivers\/vector\/gpkg.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"dataset",
@@ -46,13 +47,18 @@
               ]
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         }
       ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "input_arguments":[
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"gti",
@@ -76,14 +82,15 @@
           "description":"Create an index of raster datasets compatible of the GDAL Tile Index (GTI) driver.",
           "short_url":"\/programs\/gdal_driver_gti_create.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_driver_gti_create.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input",
               "type":"dataset_list",
               "description":"Input raster datasets",
               "required":true,
-              "packed_values_allowed":true,
+              "packed_values_allowed":false,
               "repeated_arg_allowed":true,
               "min_count":0,
               "max_count":2147483647,
@@ -154,7 +161,7 @@
             {
               "name":"overwrite-layer",
               "type":"boolean",
-              "description":"Whether overwriting existing layer is allowed",
+              "description":"Whether overwriting existing output is allowed",
               "default":false,
               "required":false,
               "category":"Base"
@@ -168,9 +175,9 @@
               "category":"Base"
             },
             {
-              "name":"layer",
+              "name":"output-layer",
               "type":"string",
-              "description":"Layer name",
+              "description":"Output layer name",
               "required":false,
               "category":"Base"
             },
@@ -242,6 +249,13 @@
               "repeated_arg_allowed":true,
               "min_count":0,
               "max_count":2147483647,
+              "category":"Base"
+            },
+            {
+              "name":"skip-errors",
+              "type":"boolean",
+              "description":"Skip errors related to input datasets",
+              "required":false,
               "category":"Base"
             },
             {
@@ -364,7 +378,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -386,9 +401,12 @@
           ]
         }
       ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "input_arguments":[
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"openfilegdb",
@@ -412,7 +430,8 @@
           "description":"Repack a FileGeoDatabase dataset",
           "short_url":"\/drivers\/vector\/openfilegdb.html",
           "url":"https:\/\/gdal.org\/drivers\/vector\/openfilegdb.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"dataset",
@@ -430,84 +449,24 @@
               ]
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
-        }
-      ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
-    },
-    {
-      "name":"pdf",
-      "full_path":[
-        "gdal",
-        "driver",
-        "pdf"
-      ],
-      "description":"Command for PDF driver specific operations.",
-      "short_url":"\/drivers\/raster\/pdf.html",
-      "url":"https:\/\/gdal.org\/drivers\/raster\/pdf.html",
-      "sub_algorithms":[
-        {
-          "name":"list-layers",
-          "full_path":[
-            "gdal",
-            "driver",
-            "pdf",
-            "list-layers"
-          ],
-          "description":"List layers of a PDF dataset",
-          "short_url":"\/drivers\/raster\/pdf.html",
-          "url":"https:\/\/gdal.org\/drivers\/raster\/pdf.html",
-          "sub_algorithms":[],
-          "input_arguments":[
-            {
-              "name":"input",
-              "type":"dataset",
-              "description":"Input raster or vector dataset",
-              "required":true,
-              "category":"Base",
-              "dataset_type":[
-                "raster",
-                "vector"
-              ],
-              "input_flags":[
-                "name",
-                "dataset"
-              ]
-            },
-            {
-              "name":"output-format",
-              "type":"string",
-              "description":"Output format",
-              "choices":[
-                "json",
-                "text"
-              ],
-              "default":"json",
-              "required":false,
-              "category":"Base"
-            }
-          ],
           "output_arguments":[
-            {
-              "name":"output-string",
-              "type":"string",
-              "description":"Output string, in which the result is placed",
-              "required":false,
-              "category":"Base"
-            }
           ],
-          "input_output_arguments":[]
+          "input_output_arguments":[
+          ]
         }
       ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "input_arguments":[
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     }
   ],
-  "input_arguments":[],
-  "output_arguments":[],
-  "input_output_arguments":[]
+  "input_arguments":[
+  ],
+  "output_arguments":[
+  ],
+  "input_output_arguments":[
+  ]
 }

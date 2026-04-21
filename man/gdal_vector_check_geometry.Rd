@@ -27,43 +27,43 @@ gdal_vector_check_geometry(
 )
 }
 \arguments{
-\item{input}{Input vector datasets. Format: \code{NA} (Default: \code{NA}) (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NA})}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{output_layer}{Output layer name. Format: \code{NA} (Default: \code{NA})}
+\item{output_layer}{Output layer name}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA} (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA} (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{upsert}{Upsert features (implies 'append') (Logical). Format: \code{NA} (Default: \code{NA}) (Advanced)}
+\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
 
-\item{skip_errors}{Skip errors when writing features (Logical). Format: \code{NA} (Default: \code{NA})}
+\item{skip_errors}{Skip errors when writing features (Logical)}
 
-\item{include_field}{Fields from input layer to include in output (Character vector). Format: \code{NA} (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
+\item{include_field}{Fields from input layer to include in output (Character vector)}
 
-\item{include_valid}{Include valid inputs in output, with empty geometry (Logical). Format: \code{NA} (Default: \code{NA})}
+\item{include_valid}{Include valid inputs in output, with empty geometry (Logical)}
 
-\item{geometry_field}{Name of geometry field to check. Format: \code{NA} (Default: \code{NA})}
+\item{geometry_field}{Name of geometry field to check}
 }
 \value{
 A \link{gdal_job} object.
@@ -71,7 +71,7 @@ A \link{gdal_job} object.
 \description{
 Check a dataset for invalid geometries
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_check-geometry.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_check-geometry.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

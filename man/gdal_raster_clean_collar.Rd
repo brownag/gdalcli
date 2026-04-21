@@ -56,7 +56,7 @@ A \link{gdal_job} object.
 \description{
 Clean the collar of a raster dataset, removing noise.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_clean-collar.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_clean_collar(update = "my.tif")

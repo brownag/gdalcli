@@ -18,7 +18,8 @@
       "description":"Copy files located on GDAL Virtual System Interface (VSI).",
       "short_url":"\/programs\/gdal_vsi_copy.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vsi_copy.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"source",
@@ -49,8 +50,10 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"delete",
@@ -62,7 +65,8 @@
       "description":"Delete files located on GDAL Virtual System Interface (VSI).",
       "short_url":"\/programs\/gdal_vsi_delete.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vsi_delete.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"filename",
@@ -79,8 +83,10 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"list",
@@ -92,7 +98,8 @@
       "description":"List files of one of the GDAL Virtual System Interface (VSI).",
       "short_url":"\/programs\/gdal_vsi_list.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vsi_list.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"filename",
@@ -109,7 +116,6 @@
             "json",
             "text"
           ],
-          "default":"json",
           "required":false,
           "category":"Base"
         },
@@ -149,13 +155,6 @@
           "description":"Use a hierarchical presentation for JSON output",
           "required":false,
           "category":"Base"
-        },
-        {
-          "name":"stdout",
-          "type":"boolean",
-          "description":"Directly output on stdout. If enabled, output-string will be empty",
-          "required":false,
-          "category":"Base"
         }
       ],
       "output_arguments":[
@@ -167,7 +166,8 @@
           "category":"Base"
         }
       ],
-      "input_output_arguments":[]
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"move",
@@ -179,7 +179,8 @@
       "description":"Move\/rename a file\/directory located on GDAL Virtual System Interface (VSI).",
       "short_url":"\/programs\/gdal_vsi_move.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vsi_move.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"source",
@@ -196,8 +197,10 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"sozip",
@@ -221,7 +224,8 @@
           "description":"Create a Seek-optimized ZIP (SOZIP) file.",
           "short_url":"\/programs\/gdal_vsi_sozip.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input",
@@ -300,13 +304,6 @@
               "description":"Store the Content-Type of the file being added.",
               "required":false,
               "category":"Base"
-            },
-            {
-              "name":"stdout",
-              "type":"boolean",
-              "description":"Directly output on stdout. If enabled, output-string will be empty",
-              "required":false,
-              "category":"Base"
             }
           ],
           "output_arguments":[
@@ -318,7 +315,8 @@
               "category":"Base"
             }
           ],
-          "input_output_arguments":[]
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"list",
@@ -331,7 +329,8 @@
           "description":"List content of a ZIP file, with SOZIP related information.",
           "short_url":"\/programs\/gdal_vsi_sozip.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input",
@@ -350,7 +349,8 @@
               "category":"Base"
             }
           ],
-          "input_output_arguments":[]
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"optimize",
@@ -363,7 +363,8 @@
           "description":"Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.",
           "short_url":"\/programs\/gdal_vsi_sozip.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input",
@@ -421,13 +422,6 @@
               "default":"1 MB",
               "required":false,
               "category":"Base"
-            },
-            {
-              "name":"stdout",
-              "type":"boolean",
-              "description":"Directly output on stdout. If enabled, output-string will be empty",
-              "required":false,
-              "category":"Base"
             }
           ],
           "output_arguments":[
@@ -439,7 +433,8 @@
               "category":"Base"
             }
           ],
-          "input_output_arguments":[]
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"validate",
@@ -452,20 +447,14 @@
           "description":"Validate a ZIP file, possibly using SOZIP optimization.",
           "short_url":"\/programs\/gdal_vsi_sozip.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sozip.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input",
               "type":"string",
               "description":"Input ZIP filename",
               "required":true,
-              "category":"Base"
-            },
-            {
-              "name":"stdout",
-              "type":"boolean",
-              "description":"Directly output on stdout. If enabled, output-string will be empty",
-              "required":false,
               "category":"Base"
             }
           ],
@@ -478,12 +467,16 @@
               "category":"Base"
             }
           ],
-          "input_output_arguments":[]
+          "input_output_arguments":[
+          ]
         }
       ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "input_arguments":[
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"sync",
@@ -495,7 +488,8 @@
       "description":"Synchronize source and target file\/directory located on GDAL Virtual System Interface (VSI).",
       "short_url":"\/programs\/gdal_vsi_sync.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vsi_sync.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"source",
@@ -539,11 +533,16 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     }
   ],
-  "input_arguments":[],
-  "output_arguments":[],
-  "input_output_arguments":[]
+  "input_arguments":[
+  ],
+  "output_arguments":[
+  ],
+  "input_output_arguments":[
+  ]
 }

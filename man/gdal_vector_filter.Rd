@@ -37,7 +37,7 @@ gdal_vector_filter(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{output_layer}{Output layer name}
 
@@ -71,7 +71,7 @@ A \link{gdal_job} object.
 \description{
 Filter a vector dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_filter.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_filter.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_filter(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 

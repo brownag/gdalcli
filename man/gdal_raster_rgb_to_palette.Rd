@@ -18,25 +18,25 @@ gdal_raster_rgb_to_palette(
 )
 }
 \arguments{
-\item{input}{Input raster datasets. Format: \code{NA} (Default: \code{NULL}) (required). Range: (\code{NA} to \code{NA}). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). Format: \code{NA} (Default: \code{NULL}). Range: (\code{NA} to \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA} (Default: \code{NULL}). Range: (\code{NA} to \code{NA})}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). Range: (\code{NA} to \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>} (Default: \code{NULL}). Range: (\code{NA} to \code{NA}). \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA} (Default: \code{FALSE}). Range: (\code{NA} to \code{NA})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Append as a subdataset to existing output (Logical). Format: \code{NA} (Default: \code{FALSE}). Range: (\code{NA} to \code{NA})}
+\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
-\item{color_count}{Select the number of colors in the generated color table (Integer). Format: \code{NA} (Default: \code{256}). Range: (\code{2} to \code{256})}
+\item{color_count}{Select the number of colors in the generated color table (Integer) (Default: \code{256}). Range: (\code{2} to \code{256})}
 
-\item{color_map}{Color map filename. Format: \code{NA} (Default: \code{NULL}). Range: (\code{NA} to \code{NA})}
+\item{color_map}{Color map filename}
 }
 \value{
 A \link{gdal_job} object.
@@ -44,7 +44,7 @@ A \link{gdal_job} object.
 \description{
 Convert a RGB image into a pseudo-color / paletted image.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_rgb-to-palette.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_rgb-to-palette.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_rgb_to_palette(input = "input.tif", output = "output.png")

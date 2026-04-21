@@ -38,7 +38,7 @@ gdal_vector_pipeline(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{output_layer}{Output layer name}
 
@@ -68,7 +68,7 @@ A \link{gdal_job} object.
 \description{
 Process a vector dataset applying several steps.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write"), 

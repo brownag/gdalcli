@@ -24,19 +24,19 @@ gdal_raster_neighbors(
 \arguments{
 \item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Float64})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{Float64})}
 
 \item{kernel}{Convolution kernel(s) to apply (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -44,7 +44,7 @@ gdal_raster_neighbors(
 
 \item{band}{Input band (1-based index) (Integer)}
 
-\item{method}{Method to combine weighed source pixels (Character vector). Choices: mean, sum, min, max, stddev, .... \code{0} to \code{2147483647} value(s)}
+\item{method}{Method to combine weighed source pixels (Character vector). Choices: "mean", "sum", "min", "max", "stddev", ...}
 
 \item{size}{Neighborhood size (Integer). Range: (\code{3} to \code{99})}
 
@@ -56,7 +56,7 @@ A \link{gdal_job} object.
 \description{
 Compute the value of each pixel from its neighbors (focal statistics)
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_neighbors.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_neighbors.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_neighbors(input = "in.tif", output = "uv.tif", kernel = c("u", "v"))

@@ -38,7 +38,7 @@ gdal_raster_contour(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{output_layer}{Output layer name}
 
@@ -80,7 +80,7 @@ A \link{gdal_job} object.
 \description{
 Creates a vector contour from a raster elevation model (DEM).
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_contour.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp", interval = 100)

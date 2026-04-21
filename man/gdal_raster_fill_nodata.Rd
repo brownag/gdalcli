@@ -29,7 +29,7 @@ gdal_raster_fill_nodata(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
@@ -53,7 +53,7 @@ A \link{gdal_job} object.
 \description{
 Fill nodata raster regions by interpolation from edges.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_fill_nodata(input = "input.tif", output = "output.tif", 

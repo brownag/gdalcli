@@ -23,35 +23,35 @@ gdal_raster_pansharpen(
 )
 }
 \arguments{
-\item{input}{Input panchromatic raster dataset. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{NA}. Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input panchromatic raster dataset (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format ("GDALG" allowed). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
+\item{output_format}{Output format ("GDALG" allowed)}
 
-\item{spectral}{Input spectral band dataset. Format: \code{NA}. Choices: NULL (Default: \code{NULL}) (required). Minimum: \code{NA}. \code{1} to \code{2147483647} value(s)}
+\item{spectral}{Input spectral band dataset (required). \code{1} to \code{2147483647} value(s)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Append as a subdataset to existing output (Logical). Format: \code{NA}. Choices: NULL (Default: \code{FALSE}). Minimum: \code{NA}}
+\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
-\item{resampling}{Resampling algorithm. Format: \code{NA}. Choices: c("nearest", "bilinear", "cubic", "cubicspline", "lanczos", "average") (Default: \code{cubic}). Minimum: \code{NA}}
+\item{resampling}{Resampling algorithm. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{cubic})}
 
-\item{weights}{Weight for each input spectral band. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
+\item{weights}{Weight for each input spectral band}
 
-\item{nodata}{Override nodata value of input bands. Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{NA}}
+\item{nodata}{Override nodata value of input bands}
 
-\item{bit_depth}{Override bit depth of input bands (Integer). Format: \code{NA}. Choices: NULL (Default: \code{NULL}). Minimum: \code{8}}
+\item{bit_depth}{Override bit depth of input bands (Integer). Minimum: \code{8}}
 
-\item{spatial_extent_adjustment}{Select behavior when bands have not the same extent. Format: \code{NA}. Choices: c("union", "intersection", "none", "none-without-warning") (Default: \code{union}). Minimum: \code{NA}}
+\item{spatial_extent_adjustment}{Select behavior when bands have not the same extent. Choices: "union", "intersection", "none", "none-without-warning" (Default: \code{union})}
 
-\item{num_threads}{Number of jobs (or ALL_CPUS). Format: \code{NA}. Choices: NULL (Default: \code{ALL_CPUS}). Minimum: \code{NA}}
+\item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{ALL_CPUS})}
 }
 \value{
 A \link{gdal_job} object.
@@ -59,7 +59,7 @@ A \link{gdal_job} object.
 \description{
 Perform a pansharpen operation.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_pansharpen.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_pansharpen.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

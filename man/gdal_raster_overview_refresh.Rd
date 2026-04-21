@@ -16,21 +16,21 @@ gdal_raster_overview_refresh(
 )
 }
 \arguments{
-\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path). Format: \code{NA}. Choices: NULL (required). Minimum: \code{NA}. Can also be a \link{gdal_job} object to extend a pipeline}
+\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{external}{Refresh external overviews (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
+\item{external}{Refresh external overviews (Logical)}
 
-\item{resampling}{Resampling method. Format: \code{NA}. Choices: c("nearest", "average", "cubic", "cubicspline", "lanczos", "bilinear", "gauss", "average_magphase", "rms", "mode"). Minimum: \code{NA}}
+\item{resampling}{Resampling method. Choices: "nearest", "average", "cubic", "cubicspline", "lanczos", ...}
 
-\item{levels}{Levels / decimation factors (Integer vector). Format: \code{NA}. Choices: NULL. Minimum: \code{2}. \code{0} to \code{2147483647} value(s)}
+\item{levels}{Levels / decimation factors (Integer vector). Minimum: \code{2}}
 
-\item{bbox}{Bounding box to refresh. Format: \code{NA}. Choices: NULL. Minimum: \code{NA}. Exactly \code{4} value(s)}
+\item{bbox}{Bounding box to refresh. Exactly \code{4} value(s)}
 
-\item{like}{Use extent of dataset(s) (Character vector). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}. \code{0} to \code{2147483647} value(s)}
+\item{like}{Use extent of dataset(s) (Character vector)}
 
-\item{use_source_timestamp}{Use timestamp of VRT or GTI sources as refresh criterion (Logical). Format: \code{NA}. Choices: NULL. Minimum: \code{NA}}
+\item{use_source_timestamp}{Use timestamp of VRT or GTI sources as refresh criterion (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -38,7 +38,7 @@ A \link{gdal_job} object.
 \description{
 Refresh overviews.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_overview_refresh.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_overview_refresh.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

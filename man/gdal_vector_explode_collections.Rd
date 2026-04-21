@@ -30,23 +30,23 @@ gdal_vector_explode_collections(
 \arguments{
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name(s) (Character vector). \code{0} to \code{2147483647} value(s)}
+\item{input_layer}{Input layer name(s) (Character vector)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{output_layer}{Output layer name}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -74,7 +74,7 @@ A \link{gdal_job} object.
 \description{
 Explode geometries of type collection of a vector dataset.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_explode-collections.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_explode-collections.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_explode_collections(input = "in.gpkg", output = "points.shp", 

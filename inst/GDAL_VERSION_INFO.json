@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-14 17:02:53",
-  "gdal_version": "3.12.3",
+  "generated_at": "2026-04-21 15:12:07",
+  "gdal_version": "3.12.2",
   "gdal_version_parsed": {
-    "full": "3.12.3",
+    "full": "3.12.2",
     "major": 3,
     "minor": 12,
-    "patch": 3
+    "patch": 2
   },
-  "generation_date": "2026-04-14",
+  "generation_date": "2026-04-21",
   "r_version": "4.5.3",
   "packages": {
     "processx": "3.8.7",

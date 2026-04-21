@@ -7,7 +7,7 @@
 gdal_dataset_delete(filename, format = NULL)
 }
 \arguments{
-\item{filename}{File or directory name (Character vector) (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{filename}{File or directory name (Character vector) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{format}{Dataset format (Advanced)}
 }
@@ -17,7 +17,7 @@ A \link{gdal_job} object.
 \description{
 Delete dataset(s).
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_dataset_delete.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_dataset_delete.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

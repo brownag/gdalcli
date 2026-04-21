@@ -26,25 +26,25 @@ gdal_vector_partition(
 \arguments{
 \item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output directory (required)}
 
 \item{output_format}{Output format}
 
-\item{field}{Field(s) on which to partition (Character vector) (required). \code{0} to \code{2147483647} value(s)}
+\item{field}{Field(s) on which to partition (Character vector) (required)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{scheme}{Partitioning scheme. Choices: hive, flat (Default: \code{hive})}
+\item{scheme}{Partitioning scheme. Choices: "hive", "flat" (Default: \code{hive})}
 
 \item{pattern}{Filename pattern ('part_\%010d' for scheme=hive, '\{LAYER_NAME\}\emph{\{FIELD_VALUE\}}\%010d' for scheme=flat)}
 
@@ -62,7 +62,7 @@ A \link{gdal_job} object.
 \description{
 Partition a vector dataset into multiple files.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_vector_partition.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_partition.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_partition(input = "world_cities.gpkg", output = "out_directory", 

@@ -18,7 +18,8 @@
       "description":"Convert a multidimensional dataset.",
       "short_url":"\/programs\/gdal_mdim_convert.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_mdim_convert.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -125,7 +126,7 @@
           "description":"Select a single group instead of converting the whole dataset.",
           "metavar":"GROUP-SPEC",
           "required":false,
-          "packed_values_allowed":true,
+          "packed_values_allowed":false,
           "repeated_arg_allowed":true,
           "min_count":0,
           "max_count":2147483647,
@@ -137,7 +138,7 @@
           "description":"Select a subset of the data.",
           "metavar":"SUBSET-SPEC",
           "required":false,
-          "packed_values_allowed":true,
+          "packed_values_allowed":false,
           "repeated_arg_allowed":true,
           "min_count":0,
           "max_count":2147483647,
@@ -149,7 +150,7 @@
           "description":"Applies a integral scale factor to one or several dimensions",
           "metavar":"SCALEAXES-SPEC",
           "required":false,
-          "packed_values_allowed":true,
+          "packed_values_allowed":false,
           "repeated_arg_allowed":true,
           "min_count":0,
           "max_count":2147483647,
@@ -163,7 +164,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -193,7 +195,8 @@
       "description":"Return information on a multidimensional dataset.",
       "short_url":"\/programs\/gdal_mdim_info.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_mdim_info.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"open-option",
@@ -276,13 +279,6 @@
           "description":"Read and display image statistics.",
           "required":false,
           "category":"Base"
-        },
-        {
-          "name":"stdout",
-          "type":"boolean",
-          "description":"Directly output on stdout. If enabled, output-string will be empty",
-          "required":false,
-          "category":"Base"
         }
       ],
       "output_arguments":[
@@ -294,7 +290,131 @@
           "category":"Base"
         }
       ],
-      "input_output_arguments":[]
+      "input_output_arguments":[
+      ]
+    },
+    {
+      "name":"mosaic",
+      "full_path":[
+        "gdal",
+        "mdim",
+        "mosaic"
+      ],
+      "description":"Build a mosaic, either virtual (VRT) or materialized, from multidimensional datasets.",
+      "short_url":"\/programs\/gdal_mdim_mosaic.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_mdim_mosaic.html",
+      "sub_algorithms":[
+      ],
+      "input_arguments":[
+        {
+          "name":"output-format",
+          "type":"string",
+          "description":"Output format",
+          "required":false,
+          "category":"Base",
+          "metadata":{
+            "required_capabilities":[
+              "DCAP_CREATE_MULTIDIMENSIONAL"
+            ]
+          }
+        },
+        {
+          "name":"open-option",
+          "type":"string_list",
+          "description":"Open options",
+          "metavar":"<KEY>=<VALUE>",
+          "required":false,
+          "packed_values_allowed":false,
+          "repeated_arg_allowed":true,
+          "min_count":0,
+          "max_count":2147483647,
+          "category":"Advanced"
+        },
+        {
+          "name":"input-format",
+          "type":"string_list",
+          "description":"Input formats",
+          "required":false,
+          "packed_values_allowed":true,
+          "repeated_arg_allowed":true,
+          "min_count":0,
+          "max_count":2147483647,
+          "category":"Advanced",
+          "metadata":{
+            "required_capabilities":[
+              "raster-or-multidim-raster"
+            ]
+          }
+        },
+        {
+          "name":"input",
+          "type":"dataset_list",
+          "description":"Input multidimensional raster datasets",
+          "required":true,
+          "packed_values_allowed":false,
+          "repeated_arg_allowed":true,
+          "min_count":1,
+          "max_count":2147483647,
+          "category":"Base",
+          "dataset_type":[
+            "multidim_raster"
+          ],
+          "input_flags":[
+            "name"
+          ]
+        },
+        {
+          "name":"creation-option",
+          "type":"string_list",
+          "description":"Creation option",
+          "metavar":"<KEY>=<VALUE>",
+          "required":false,
+          "packed_values_allowed":false,
+          "repeated_arg_allowed":true,
+          "min_count":0,
+          "max_count":2147483647,
+          "category":"Base"
+        },
+        {
+          "name":"overwrite",
+          "type":"boolean",
+          "description":"Whether overwriting existing output is allowed",
+          "default":false,
+          "required":false,
+          "category":"Base"
+        },
+        {
+          "name":"array",
+          "type":"string_list",
+          "description":"Name of array(s) to mosaic.",
+          "required":false,
+          "packed_values_allowed":true,
+          "repeated_arg_allowed":true,
+          "min_count":0,
+          "max_count":2147483647,
+          "category":"Base"
+        }
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+        {
+          "name":"output",
+          "type":"dataset",
+          "description":"Output multidimensional raster dataset",
+          "required":true,
+          "category":"Base",
+          "dataset_type":[
+            "multidim_raster"
+          ],
+          "input_flags":[
+            "name"
+          ],
+          "output_flags":[
+            "dataset"
+          ]
+        }
+      ]
     }
   ],
   "input_arguments":[
@@ -315,5 +435,6 @@
       "category":"Base"
     }
   ],
-  "input_output_arguments":[]
+  "input_output_arguments":[
+  ]
 }

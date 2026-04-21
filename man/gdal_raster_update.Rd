@@ -19,27 +19,27 @@ gdal_raster_update(
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required). Minimum: \code{NA}. Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{geometry}{Clipping geometry (WKT or GeoJSON). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
+\item{geometry}{Clipping geometry (WKT or GeoJSON)}
 
-\item{geometry_crs}{CRS of clipping geometry. Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
+\item{geometry_crs}{CRS of clipping geometry}
 
-\item{resampling}{Resampling method. Format: \code{NA}. Choices: c("nearest", "bilinear", "cubic", "cubicspline", "lanczos", "average", "rms", "mode", "min", "max", "med", "q1", "q3", "sum") (Default: \code{nearest}). Minimum: \code{NA}}
+\item{resampling}{Resampling method. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{nearest})}
 
-\item{warp_option}{Warping option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{warp_option}{Warping option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Advanced)}
 
-\item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Advanced)}
 
-\item{error_threshold}{Error threshold. Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{0} (Advanced)}
+\item{error_threshold}{Error threshold. Minimum: \code{0} (Advanced)}
 
-\item{no_update_overviews}{Do not update existing overviews (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}). Minimum: \code{NA}}
+\item{no_update_overviews}{Do not update existing overviews (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -47,7 +47,7 @@ A \link{gdal_job} object.
 \description{
 Update the destination raster with the content of the input one.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_update.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_update.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

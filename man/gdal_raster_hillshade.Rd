@@ -65,7 +65,7 @@ A \link{gdal_job} object.
 \description{
 Generate a shaded relief map
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 

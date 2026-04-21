@@ -33,55 +33,55 @@ gdal_vector_layer_algebra(
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{input_layer}{Input layer name. Format: \code{NA}. Choices: NULL (Default: \code{NA})}
+\item{input_layer}{Input layer name}
 
-\item{input_prefix}{Prefix for fields corresponding to input layer. Format: \code{NA}. Choices: NULL (Default: \code{NA}) (Advanced)}
+\item{input_prefix}{Prefix for fields corresponding to input layer (Advanced)}
 
-\item{input_field}{Input field(s) to add to output layer (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_field}{Input field(s) to add to output layer (Character vector) (Advanced)}
 
 \item{output}{Output vector dataset (Dataset path) (required)}
 
-\item{output_format}{Output format. Format: \code{NA}. Choices: NULL (Default: \code{NA})}
+\item{output_format}{Output format}
 
-\item{output_layer}{Output layer name. Format: \code{NA}. Choices: NULL (Default: \code{NA})}
+\item{output_layer}{Output layer name}
 
-\item{operation}{Operation to perform. Format: \code{NA}. Choices: c("union", "intersection", "sym-difference", "identity", "update", "clip", "erase") (Default: \code{NA}) (required)}
+\item{operation}{Operation to perform. Choices: "union", "intersection", "sym-difference", "identity", "update", ... (required)}
 
-\item{method}{Method vector dataset (Dataset path). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (required)}
+\item{method}{Method vector dataset (Dataset path) (required)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s)}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical). Format: \code{NA}. Choices: NULL (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{method_layer}{Method layer name. Format: \code{NA}. Choices: NULL (Default: \code{NA})}
+\item{method_layer}{Method layer name}
 
-\item{geometry_type}{Geometry type. Format: \code{NA}. Choices: NULL (Default: \code{NA})}
+\item{geometry_type}{Geometry type}
 
-\item{no_input_field}{Do not add any input field to output layer (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (Advanced)}
+\item{no_input_field}{Do not add any input field to output layer (Logical) (Advanced)}
 
-\item{all_input_field}{Add all input fields to output layer (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (Advanced)}
+\item{all_input_field}{Add all input fields to output layer (Logical) (Advanced)}
 
-\item{method_prefix}{Prefix for fields corresponding to method layer. Format: \code{NA}. Choices: NULL (Default: \code{NA}) (Advanced)}
+\item{method_prefix}{Prefix for fields corresponding to method layer (Advanced)}
 
-\item{method_field}{Method field(s) to add to output layer (Character vector). Format: \code{NA}. Choices: NULL (Default: \code{NA}). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{method_field}{Method field(s) to add to output layer (Character vector) (Advanced)}
 
-\item{no_method_field}{Do not add any method field to output layer (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (Advanced)}
+\item{no_method_field}{Do not add any method field to output layer (Logical) (Advanced)}
 
-\item{all_method_field}{Add all method fields to output layer (Logical). Format: \code{NA}. Choices: NULL (Default: \code{NA}) (Advanced)}
+\item{all_method_field}{Add all method fields to output layer (Logical) (Advanced)}
 }
 \value{
 A \link{gdal_job} object.
@@ -89,7 +89,7 @@ A \link{gdal_job} object.
 \description{
 Perform algebraic operation between 2 layers.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_layer-algebra.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_vector_layer-algebra.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

@@ -7,13 +7,13 @@
 gdal_dataset_rename(source, destination, overwrite = FALSE, format = NULL)
 }
 \arguments{
-\item{source}{Source dataset name (Default: \code{NA}) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{source}{Source dataset name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{destination}{Destination dataset name (Default: \code{NA}) (required)}
+\item{destination}{Destination dataset name (required)}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{format}{Dataset format (Default: \code{NA}) (Advanced)}
+\item{format}{Dataset format (Advanced)}
 }
 \value{
 A \link{gdal_job} object.
@@ -21,7 +21,7 @@ A \link{gdal_job} object.
 \description{
 Rename files of a dataset.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_dataset_rename.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_dataset_rename.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

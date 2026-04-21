@@ -25,19 +25,19 @@ gdal_raster_proximity(
 \arguments{
 \item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{input_format}{Input formats (Character vector). \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_data_type}{Output data type. Choices: Byte, Int8, UInt16, Int16, UInt32, ... (Default: \code{Float32})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{Float32})}
 
-\item{target_values}{Target pixel values. \code{0} to \code{2147483647} value(s)}
+\item{target_values}{Target pixel values}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s) (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
-\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}. \code{0} to \code{2147483647} value(s)}
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
@@ -45,7 +45,7 @@ gdal_raster_proximity(
 
 \item{band}{Input band (1-based index) (Integer)}
 
-\item{distance_units}{Distance units. Choices: pixel, geo (Default: \code{pixel})}
+\item{distance_units}{Distance units. Choices: "pixel", "geo" (Default: \code{pixel})}
 
 \item{max_distance}{Maximum distance. The nodata value will be used for pixels beyond this distance (Default: \code{0})}
 
@@ -59,7 +59,7 @@ A \link{gdal_job} object.
 \description{
 Produces a raster proximity map.
 
-See \url{https://gdal.org/en/3.12.0/programs/gdal_raster_proximity.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_raster_proximity.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_proximity(input = "input.tif", output = "output.tif", max_distance = 3)

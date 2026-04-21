@@ -13,15 +13,15 @@ gdal_dataset_identify(
 )
 }
 \arguments{
-\item{filename}{File or directory name (Character vector). Choices: NULL (required). \code{0} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{filename}{File or directory name (Character vector) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{output_format}{Output format. Choices: c("json", "text")}
+\item{output_format}{Output format. Choices: "json", "text"}
 
-\item{recursive}{Recursively scan files/folders for datasets (Logical). Choices: NULL}
+\item{recursive}{Recursively scan files/folders for datasets (Logical)}
 
-\item{force_recursive}{Recursively scan folders for datasets, forcing recursion in folders recognized as valid formats (Logical). Choices: NULL}
+\item{force_recursive}{Recursively scan folders for datasets, forcing recursion in folders recognized as valid formats (Logical)}
 
-\item{report_failures}{Report failures if file type is unidentified (Logical). Choices: NULL}
+\item{report_failures}{Report failures if file type is unidentified (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -29,7 +29,7 @@ A \link{gdal_job} object.
 \description{
 Identify driver opening dataset(s).
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_dataset_identify.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.2/programs/gdal_dataset_identify.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
