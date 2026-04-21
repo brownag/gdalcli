@@ -18,7 +18,8 @@
       "description":"Generate an aspect map",
       "short_url":"\/programs\/gdal_raster_aspect.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_aspect.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -145,7 +146,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -177,7 +179,8 @@
       "description":"Perform raster algebra",
       "short_url":"\/programs\/gdal_raster_calc.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_calc.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input",
@@ -273,7 +276,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -304,7 +308,8 @@
       "description":"Clean the collar of a raster dataset, removing noise.",
       "short_url":"\/programs\/gdal_raster_clean_collar.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_clean_collar.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"open-option",
@@ -450,7 +455,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -481,7 +487,8 @@
       "description":"Clip a raster dataset.",
       "short_url":"\/programs\/gdal_raster_clip.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_clip.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -657,7 +664,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -689,7 +697,8 @@
       "description":"Generate a RGB or RGBA dataset from a single band, using a color map",
       "short_url":"\/programs\/gdal_raster_color_map.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_color_map.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -802,7 +811,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -834,7 +844,8 @@
       "description":"Creates a vector contour from a raster elevation model (DEM).",
       "short_url":"\/programs\/gdal_raster_contour.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_contour.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -1027,7 +1038,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -1057,7 +1069,8 @@
       "description":"Convert a raster dataset.",
       "short_url":"\/programs\/gdal_raster_convert.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_convert.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -1145,7 +1158,8 @@
           "mutual_exclusion_group":"overwrite-append"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -1175,7 +1189,8 @@
       "description":"Create a new raster dataset.",
       "short_url":"\/programs\/gdal_raster_create.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_create.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -1379,7 +1394,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -1409,7 +1425,8 @@
       "description":"Edit a raster dataset.",
       "short_url":"\/programs\/gdal_raster_edit.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_edit.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"dataset",
@@ -1505,8 +1522,10 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"fill-nodata",
@@ -1518,7 +1537,8 @@
       "description":"Fill nodata raster regions by interpolation from edges.",
       "short_url":"\/programs\/gdal_raster_fill_nodata.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_fill_nodata.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -1638,7 +1658,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -1668,7 +1689,8 @@
       "description":"Compute the footprint of a raster dataset.",
       "short_url":"\/programs\/gdal_raster_footprint.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_footprint.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"open-option",
@@ -1910,7 +1932,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -1940,7 +1963,8 @@
       "description":"Generate a shaded relief map",
       "short_url":"\/programs\/gdal_raster_hillshade.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_hillshade.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -2109,7 +2133,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -2141,7 +2166,8 @@
       "description":"Create a vector index of raster datasets.",
       "short_url":"\/programs\/gdal_raster_index.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_index.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input",
@@ -2331,7 +2357,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -2362,7 +2389,8 @@
       "description":"Return information on a raster dataset.",
       "short_url":"\/programs\/gdal_raster_info.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_info.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -2537,7 +2565,8 @@
           "category":"Base"
         }
       ],
-      "input_output_arguments":[]
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"mosaic",
@@ -2549,7 +2578,8 @@
       "description":"Build a mosaic, either virtual (VRT) or materialized.",
       "short_url":"\/programs\/gdal_raster_mosaic.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_mosaic.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -2672,7 +2702,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -2715,7 +2746,8 @@
           "description":"Adding overviews.",
           "short_url":"\/programs\/gdal_raster_overview_add.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_overview_add.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"open-option",
@@ -2792,8 +2824,10 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"delete",
@@ -2806,7 +2840,8 @@
           "description":"Deleting overviews.",
           "short_url":"\/programs\/gdal_raster_overview_delete.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_overview_delete.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"open-option",
@@ -2842,13 +2877,18 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         }
       ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "input_arguments":[
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"pipeline",
@@ -2860,7 +2900,8 @@
       "description":"Process a raster dataset.",
       "short_url":"\/programs\/gdal_raster_pipeline.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_pipeline.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -2945,7 +2986,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -2969,11 +3011,13 @@
       "pipeline_algorithms":[
         {
           "name":"aspect",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Generate an aspect map",
           "short_url":"\/programs\/gdal_raster_aspect.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_aspect.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3022,16 +3066,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"clip",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Clip a raster dataset.",
           "short_url":"\/programs\/gdal_raster_clip.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_clip.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"bbox",
@@ -3132,16 +3180,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"color-map",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Generate a RGB or RGBA dataset from a single band, using a color map",
           "short_url":"\/programs\/gdal_raster_color_map.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_color_map.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3179,16 +3231,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"edit",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Edit a raster dataset.",
           "short_url":"\/programs\/gdal_raster_edit.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_edit.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"crs",
@@ -3240,16 +3296,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"hillshade",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Generate a shaded relief map",
           "short_url":"\/programs\/gdal_raster_hillshade.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_hillshade.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3340,16 +3400,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"read",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Read a raster dataset.",
           "short_url":"\/programs\/gdal_raster_pipeline.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_pipeline.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -3394,16 +3458,20 @@
               ]
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"reclassify",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Reclassify values in a raster dataset",
           "short_url":"\/programs\/gdal_raster_reclassify.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_reclassify.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"mapping",
@@ -3442,16 +3510,20 @@
               }
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"reproject",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Reproject a raster dataset.",
           "short_url":"\/programs\/gdal_raster_reproject.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_reproject.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"src-crs",
@@ -3607,16 +3679,20 @@
               "category":"Advanced"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"resize",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Resize a raster dataset without changing the georeferenced extents.",
           "short_url":"\/programs\/gdal_raster_resize.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_resize.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"size",
@@ -3650,16 +3726,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"roughness",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Generate a roughness map",
           "short_url":"\/programs\/gdal_raster_roughness.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_roughness.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3677,16 +3757,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"scale",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Scale the values of the bands of a raster dataset.",
           "short_url":"\/programs\/gdal_raster_scale.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_scale.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-data-type",
@@ -3767,16 +3851,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"select",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Select a subset of bands from a raster dataset.",
           "short_url":"\/programs\/gdal_raster_select.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_select.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3797,16 +3885,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"set-type",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Modify the data type of bands of a raster dataset.",
           "short_url":"\/programs\/gdal_raster_set_type.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_set_type.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-data-type",
@@ -3838,16 +3930,20 @@
               }
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"slope",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Generate a slope map",
           "short_url":"\/programs\/gdal_raster_slope.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_slope.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3907,16 +4003,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"tpi",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Generate a Topographic Position Index (TPI) map",
           "short_url":"\/programs\/gdal_raster_tpi.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_tpi.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3934,16 +4034,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"tri",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Generate a Terrain Ruggedness Index (TRI) map",
           "short_url":"\/programs\/gdal_raster_tri.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_tri.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"band",
@@ -3973,16 +4077,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"unscale",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Convert scaled values of a raster dataset into unscaled values.",
           "short_url":"\/programs\/gdal_raster_unscale.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_unscale.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-data-type",
@@ -4014,16 +4122,20 @@
               }
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"write",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Write a raster dataset.",
           "short_url":"\/programs\/gdal_raster_pipeline.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_raster_pipeline.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -4059,7 +4171,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -4092,7 +4205,8 @@
       "description":"Return information on a pixel of a raster dataset.",
       "short_url":"\/programs\/gdal_raster_pixel_info.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_pixel_info.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -4212,7 +4326,8 @@
           "category":"Base"
         }
       ],
-      "input_output_arguments":[]
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"polygonize",
@@ -4224,7 +4339,8 @@
       "description":"Create a polygon feature dataset from a raster band.",
       "short_url":"\/programs\/gdal_raster_polygonize.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_polygonize.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -4370,7 +4486,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -4401,7 +4518,8 @@
       "description":"Reclassify values in a raster dataset",
       "short_url":"\/programs\/gdal_raster_reclassify.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_reclassify.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -4515,7 +4633,8 @@
           }
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -4547,7 +4666,8 @@
       "description":"Reproject a raster dataset.",
       "short_url":"\/programs\/gdal_raster_reproject.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_reproject.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -4778,7 +4898,8 @@
           "category":"Advanced"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -4810,7 +4931,8 @@
       "description":"Resize a raster dataset without changing the georeferenced extents.",
       "short_url":"\/programs\/gdal_raster_resize.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_resize.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -4919,7 +5041,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -4951,7 +5074,8 @@
       "description":"Generate a roughness map",
       "short_url":"\/programs\/gdal_raster_roughness.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_roughness.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -5047,7 +5171,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -5079,7 +5204,8 @@
       "description":"Scale the values of the bands of a raster dataset.",
       "short_url":"\/programs\/gdal_raster_scale.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_scale.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -5235,7 +5361,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -5267,7 +5394,8 @@
       "description":"Select a subset of bands from a raster dataset.",
       "short_url":"\/programs\/gdal_raster_select.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_select.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -5363,7 +5491,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -5395,7 +5524,8 @@
       "description":"Modify the data type of bands of a raster dataset.",
       "short_url":"\/programs\/gdal_raster_set_type.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_set_type.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -5502,7 +5632,8 @@
           }
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -5534,7 +5665,8 @@
       "description":"Remove small polygons from a raster dataset.",
       "short_url":"\/programs\/gdal_raster_sieve.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_sieve.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"open-option",
@@ -5649,7 +5781,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -5679,7 +5812,8 @@
       "description":"Generate a slope map",
       "short_url":"\/programs\/gdal_raster_slope.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_slope.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -5817,7 +5951,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -5849,7 +5984,8 @@
       "description":"Combine together input bands into a multi-band output, either virtual (VRT) or materialized.",
       "short_url":"\/programs\/gdal_raster_stack.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_stack.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -5965,7 +6101,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -5996,7 +6133,8 @@
       "description":"Generate tiles in separate files from a raster dataset.",
       "short_url":"\/programs\/gdal_raster_tile.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_tile.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"open-option",
@@ -6385,8 +6523,10 @@
           "category":"Publication"
         }
       ],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"tpi",
@@ -6398,7 +6538,8 @@
       "description":"Generate a Topographic Position Index (TPI) map",
       "short_url":"\/programs\/gdal_raster_tpi.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_tpi.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -6494,7 +6635,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -6526,7 +6668,8 @@
       "description":"Generate a Terrain Ruggedness Index (TRI) map",
       "short_url":"\/programs\/gdal_raster_tri.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_tri.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -6634,7 +6777,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -6666,7 +6810,8 @@
       "description":"Convert scaled values of a raster dataset into unscaled values.",
       "short_url":"\/programs\/gdal_raster_unscale.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_unscale.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -6773,7 +6918,8 @@
           }
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -6805,7 +6951,8 @@
       "description":"Compute the viewshed of a raster dataset.",
       "short_url":"\/programs\/gdal_raster_viewshed.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_raster_viewshed.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"open-option",
@@ -7008,7 +7155,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -7047,5 +7195,6 @@
       "category":"Base"
     }
   ],
-  "input_output_arguments":[]
+  "input_output_arguments":[
+  ]
 }

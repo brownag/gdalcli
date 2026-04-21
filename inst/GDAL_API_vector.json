@@ -18,7 +18,8 @@
       "description":"Clip a vector dataset.",
       "short_url":"\/programs\/gdal_vector_clip.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_clip.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -238,7 +239,8 @@
           "mutual_exclusion_group":"sql-where"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -270,7 +272,8 @@
       "description":"Concatenate vector datasets.",
       "short_url":"\/programs\/gdal_vector_concat.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_concat.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -459,7 +462,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -491,7 +495,8 @@
       "description":"Convert a vector dataset.",
       "short_url":"\/programs\/gdal_vector_convert.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_convert.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -623,7 +628,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -654,7 +660,8 @@
       "description":"Edit metadata of a vector dataset.",
       "short_url":"\/programs\/gdal_vector_edit.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_edit.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -859,7 +866,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -891,7 +899,8 @@
       "description":"Filter a vector dataset.",
       "short_url":"\/programs\/gdal_vector_filter.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_filter.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -1053,7 +1062,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -1097,7 +1107,8 @@
           "description":"Compute a buffer around geometries of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom_buffer.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_buffer.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -1313,7 +1324,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -1346,7 +1358,8 @@
           "description":"Explode geometries of type collection of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom_explode_collections.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_explode_collections.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -1510,7 +1523,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -1543,7 +1557,8 @@
           "description":"Fix validity of geometries of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom_make_valid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_make_valid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -1712,7 +1727,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -1745,7 +1761,8 @@
           "description":"Segmentize geometries of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom_segmentize.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_segmentize.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -1904,7 +1921,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -1937,7 +1955,8 @@
           "description":"Modify the geometry type of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom_set_type.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_set_type.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -2162,7 +2181,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -2195,7 +2215,8 @@
           "description":"Simplify geometries of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom_simplify.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_simplify.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -2354,7 +2375,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -2387,7 +2409,8 @@
           "description":"Swap X and Y coordinates of geometries of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom_swap_xy.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_swap_xy.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -2537,7 +2560,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -2560,9 +2584,12 @@
           "supports_streamed_output":true
         }
       ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "input_arguments":[
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"grid",
@@ -2586,7 +2613,8 @@
           "description":"Create a regular grid from scattered points using moving average interpolation.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -2865,7 +2893,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -2896,7 +2925,8 @@
           "description":"Create a regular grid from scattered points using the average distance between the grid node (center of the search ellipse) and all of the data points in the search ellipse.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -3167,7 +3197,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -3198,7 +3229,8 @@
           "description":"Create a regular grid from scattered points using the average distance between the data points in the search ellipse.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -3469,7 +3501,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -3500,7 +3533,8 @@
           "description":"Create a regular grid from scattered points using the number of points in the search ellipse.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -3771,7 +3805,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -3802,7 +3837,8 @@
           "description":"Create a regular grid from scattered points using weighted inverse distance interpolation.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -4097,7 +4133,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -4128,7 +4165,8 @@
           "description":"Create a regular grid from scattered points using weighted inverse distance interpolation nearest neighbour.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -4400,7 +4438,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -4431,7 +4470,8 @@
           "description":"Create a regular grid from scattered points using linear\/barycentric interpolation.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -4656,7 +4696,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -4687,7 +4728,8 @@
           "description":"Create a regular grid from scattered points using the maximum value in the search ellipse.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -4958,7 +5000,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -4989,7 +5032,8 @@
           "description":"Create a regular grid from scattered points using the minimum value in the search ellipse.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -5260,7 +5304,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -5291,7 +5336,8 @@
           "description":"Create a regular grid from scattered points using nearest neighbor interpolation.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -5538,7 +5584,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -5569,7 +5616,8 @@
           "description":"Create a regular grid from scattered points using the difference between the minimum and maximum values in the search ellipse.",
           "short_url":"\/programs\/gdal_vector_grid.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_grid.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -5840,7 +5888,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -5861,9 +5910,12 @@
           ]
         }
       ],
-      "input_arguments":[],
-      "output_arguments":[],
-      "input_output_arguments":[]
+      "input_arguments":[
+      ],
+      "output_arguments":[
+      ],
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"info",
@@ -5875,7 +5927,8 @@
       "description":"Return information on a vector dataset.",
       "short_url":"\/programs\/gdal_vector_info.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_info.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -5998,7 +6051,8 @@
           "category":"Base"
         }
       ],
-      "input_output_arguments":[]
+      "input_output_arguments":[
+      ]
     },
     {
       "name":"pipeline",
@@ -6010,7 +6064,8 @@
       "description":"Process a vector dataset.",
       "short_url":"\/programs\/gdal_vector_pipeline.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_pipeline.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -6153,7 +6208,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -6177,11 +6233,13 @@
       "pipeline_algorithms":[
         {
           "name":"clip",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Clip a vector dataset.",
           "short_url":"\/programs\/gdal_vector_clip.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_clip.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"active-layer",
@@ -6268,16 +6326,20 @@
               "mutual_exclusion_group":"sql-where"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"concat",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Concatenate vector datasets.",
           "short_url":"\/programs\/gdal_vector_concat.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_concat.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -6397,16 +6459,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"edit",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Edit metadata of a vector dataset.",
           "short_url":"\/programs\/gdal_vector_edit.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_edit.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"active-layer",
@@ -6478,16 +6544,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"filter",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Filter a vector dataset.",
           "short_url":"\/programs\/gdal_vector_filter.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_filter.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"active-layer",
@@ -6516,12 +6586,15 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"geom",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Geometry operations on a vector dataset.",
           "short_url":"\/programs\/gdal_vector_geom.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom.html",
@@ -6534,7 +6607,8 @@
               "description":"Compute a buffer around geometries of a vector dataset.",
               "short_url":"\/programs\/gdal_vector_geom_buffer.html",
               "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_buffer.html",
-              "sub_algorithms":[],
+              "sub_algorithms":[
+              ],
               "input_arguments":[
                 {
                   "name":"active-layer",
@@ -6617,8 +6691,10 @@
                   "category":"Base"
                 }
               ],
-              "output_arguments":[],
-              "input_output_arguments":[]
+              "output_arguments":[
+              ],
+              "input_output_arguments":[
+              ]
             },
             {
               "name":"explode-collections",
@@ -6628,7 +6704,8 @@
               "description":"Explode geometries of type collection of a vector dataset.",
               "short_url":"\/programs\/gdal_vector_geom_explode_collections.html",
               "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_explode_collections.html",
-              "sub_algorithms":[],
+              "sub_algorithms":[
+              ],
               "input_arguments":[
                 {
                   "name":"active-layer",
@@ -6659,8 +6736,10 @@
                   "category":"Base"
                 }
               ],
-              "output_arguments":[],
-              "input_output_arguments":[]
+              "output_arguments":[
+              ],
+              "input_output_arguments":[
+              ]
             },
             {
               "name":"make-valid",
@@ -6670,7 +6749,8 @@
               "description":"Fix validity of geometries of a vector dataset.",
               "short_url":"\/programs\/gdal_vector_geom_make_valid.html",
               "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_make_valid.html",
-              "sub_algorithms":[],
+              "sub_algorithms":[
+              ],
               "input_arguments":[
                 {
                   "name":"active-layer",
@@ -6706,8 +6786,10 @@
                   "category":"Base"
                 }
               ],
-              "output_arguments":[],
-              "input_output_arguments":[]
+              "output_arguments":[
+              ],
+              "input_output_arguments":[
+              ]
             },
             {
               "name":"segmentize",
@@ -6717,7 +6799,8 @@
               "description":"Segmentize geometries of a vector dataset.",
               "short_url":"\/programs\/gdal_vector_geom_segmentize.html",
               "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_segmentize.html",
-              "sub_algorithms":[],
+              "sub_algorithms":[
+              ],
               "input_arguments":[
                 {
                   "name":"active-layer",
@@ -6743,8 +6826,10 @@
                   "category":"Base"
                 }
               ],
-              "output_arguments":[],
-              "input_output_arguments":[]
+              "output_arguments":[
+              ],
+              "input_output_arguments":[
+              ]
             },
             {
               "name":"set-type",
@@ -6754,7 +6839,8 @@
               "description":"Modify the geometry type of a vector dataset.",
               "short_url":"\/programs\/gdal_vector_geom_set_type.html",
               "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_set_type.html",
-              "sub_algorithms":[],
+              "sub_algorithms":[
+              ],
               "input_arguments":[
                 {
                   "name":"active-layer",
@@ -6846,8 +6932,10 @@
                   "category":"Base"
                 }
               ],
-              "output_arguments":[],
-              "input_output_arguments":[]
+              "output_arguments":[
+              ],
+              "input_output_arguments":[
+              ]
             },
             {
               "name":"simplify",
@@ -6857,7 +6945,8 @@
               "description":"Simplify geometries of a vector dataset.",
               "short_url":"\/programs\/gdal_vector_geom_simplify.html",
               "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_simplify.html",
-              "sub_algorithms":[],
+              "sub_algorithms":[
+              ],
               "input_arguments":[
                 {
                   "name":"active-layer",
@@ -6883,8 +6972,10 @@
                   "category":"Base"
                 }
               ],
-              "output_arguments":[],
-              "input_output_arguments":[]
+              "output_arguments":[
+              ],
+              "input_output_arguments":[
+              ]
             },
             {
               "name":"swap-xy",
@@ -6894,7 +6985,8 @@
               "description":"Swap X and Y coordinates of geometries of a vector dataset.",
               "short_url":"\/programs\/gdal_vector_geom_swap_xy.html",
               "url":"https:\/\/gdal.org\/programs\/gdal_vector_geom_swap_xy.html",
-              "sub_algorithms":[],
+              "sub_algorithms":[
+              ],
               "input_arguments":[
                 {
                   "name":"active-layer",
@@ -6911,21 +7003,28 @@
                   "category":"Base"
                 }
               ],
-              "output_arguments":[],
-              "input_output_arguments":[]
+              "output_arguments":[
+              ],
+              "input_output_arguments":[
+              ]
             }
           ],
-          "input_arguments":[],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "input_arguments":[
+          ],
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"read",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Read a vector dataset.",
           "short_url":"\/programs\/gdal_vector_pipeline.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_pipeline.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"input-format",
@@ -6985,16 +7084,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"reproject",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Reproject a vector dataset.",
           "short_url":"\/programs\/gdal_vector_pipeline.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_pipeline.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"active-layer",
@@ -7018,16 +7121,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"select",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Select a subset of fields from a vector dataset.",
           "short_url":"\/programs\/gdal_vector_select.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_select.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"active-layer",
@@ -7064,16 +7171,20 @@
               "mutual_exclusion_group":"exclude-ignore"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"sql",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Apply SQL statement(s) to a dataset.",
           "short_url":"\/programs\/gdal_vector_sql.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_sql.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"sql",
@@ -7106,16 +7217,20 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
-          "input_output_arguments":[]
+          "output_arguments":[
+          ],
+          "input_output_arguments":[
+          ]
         },
         {
           "name":"write",
-          "full_path":[],
+          "full_path":[
+          ],
           "description":"Write a vector dataset.",
           "short_url":"\/programs\/gdal_vector_pipeline.html",
           "url":"https:\/\/gdal.org\/programs\/gdal_vector_pipeline.html",
-          "sub_algorithms":[],
+          "sub_algorithms":[
+          ],
           "input_arguments":[
             {
               "name":"output-format",
@@ -7194,7 +7309,8 @@
               "category":"Base"
             }
           ],
-          "output_arguments":[],
+          "output_arguments":[
+          ],
           "input_output_arguments":[
             {
               "name":"output",
@@ -7227,7 +7343,8 @@
       "description":"Burns vector geometries into a raster.",
       "short_url":"\/programs\/gdal_vector_rasterize.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_rasterize.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -7529,7 +7646,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -7560,7 +7678,8 @@
       "description":"Reproject a vector dataset.",
       "short_url":"\/programs\/gdal_vector_pipeline.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_pipeline.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -7717,7 +7836,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -7749,7 +7869,8 @@
       "description":"Select a subset of fields from a vector dataset.",
       "short_url":"\/programs\/gdal_vector_select.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_select.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -7919,7 +8040,8 @@
           "mutual_exclusion_group":"exclude-ignore"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -7951,7 +8073,8 @@
       "description":"Apply SQL statement(s) to a dataset.",
       "short_url":"\/programs\/gdal_vector_sql.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_vector_sql.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"input-format",
@@ -8099,7 +8222,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -8140,5 +8264,6 @@
       "category":"Base"
     }
   ],
-  "input_output_arguments":[]
+  "input_output_arguments":[
+  ]
 }

@@ -18,7 +18,8 @@
       "description":"Convert a multidimensional dataset.",
       "short_url":"\/programs\/gdal_mdim_convert.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_mdim_convert.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"output-format",
@@ -163,7 +164,8 @@
           "category":"Base"
         }
       ],
-      "output_arguments":[],
+      "output_arguments":[
+      ],
       "input_output_arguments":[
         {
           "name":"output",
@@ -193,7 +195,8 @@
       "description":"Return information on a multidimensional dataset.",
       "short_url":"\/programs\/gdal_mdim_info.html",
       "url":"https:\/\/gdal.org\/programs\/gdal_mdim_info.html",
-      "sub_algorithms":[],
+      "sub_algorithms":[
+      ],
       "input_arguments":[
         {
           "name":"open-option",
@@ -294,7 +297,8 @@
           "category":"Base"
         }
       ],
-      "input_output_arguments":[]
+      "input_output_arguments":[
+      ]
     }
   ],
   "input_arguments":[
@@ -315,5 +319,6 @@
       "category":"Base"
     }
   ],
-  "input_output_arguments":[]
+  "input_output_arguments":[
+  ]
 }
