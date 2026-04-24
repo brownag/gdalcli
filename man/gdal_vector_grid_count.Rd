@@ -2,7 +2,8 @@
 % Please edit documentation in R/gdal_vector_grid_count.R
 \name{gdal_vector_grid_count}
 \alias{gdal_vector_grid_count}
-\title{count: Create a regular grid from scattered points using the number of points in the...}
+\title{count: Create a regular grid from scattered points using the number of points
+in the...}
 \usage{
 gdal_vector_grid_count(
   input,
@@ -34,7 +35,8 @@ gdal_vector_grid_count(
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a
+\link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -42,33 +44,42 @@ gdal_vector_grid_count(
 
 \item{output_format}{Output format}
 
-\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{Float64})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16",
+"Int16", "UInt32", ... (Default: \code{Float64})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}
+(Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
+\item{extent}{Set the target georeferenced extent. Format:
+\verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
-\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2}
+value(s)}
 
-\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format:
+\verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
 \item{crs}{Override the projection for the output file}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default:
+\code{false})}
 
 \item{layer}{Layer name (Character vector)}
 
 \item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
 
-\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
+\item{bbox}{Select only points contained within the specified bounding box. Exactly
+\code{4} value(s)}
 
 \item{zfield}{Field name from which to get Z values.}
 
-\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply)
+(Default: \code{0})}
 
-\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset)
+(Default: \code{1})}
 
 \item{radius}{Radius of the search circle}
 
@@ -76,13 +87,16 @@ gdal_vector_grid_count(
 
 \item{radius2}{Second axis of the search ellipse}
 
-\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise) (Default: \code{0})}
+\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise)
+(Default: \code{0})}
 
 \item{min_points}{Minimum number of data points to use (Integer) (Default: \code{0})}
 
-\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer) (Default: \code{0})}
+\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant
+(Integer) (Default: \code{0})}
 
-\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
+\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant
+(Integer) (Default: \code{2147483647})}
 
 \item{nodata}{Target nodata value (Default: \code{0})}
 }
@@ -90,14 +104,18 @@ gdal_vector_grid_count(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using the number of points in the search ellipse.
+Create a regular grid from scattered points using the number of points in the
+search ellipse.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_grid_count.html} for detailed GDAL documentation.
+See
+\url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_count.html}
+for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_grid_count.
-# See GDAL documentation: https://gdal.org/programs/gdal-vector-grid-count.html
+# See GDAL documentation:
+https://gdal.org/programs/gdal-vector-grid-count.html
 job <- gdal_vector_grid_count()
 # gdal_job_run(job)
 }

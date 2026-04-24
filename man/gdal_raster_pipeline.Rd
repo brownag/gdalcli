@@ -39,9 +39,9 @@ gdal_raster_pipeline(
 A \link{gdal_job} object.
 }
 \description{
-Process a raster dataset.
+\verb{gdal raster pipeline} can be used to process a raster dataset and perform various processing steps that accept raster and generate raster. For pipelines mixing raster and vector, consult gdal_pipeline. Most steps proceed in on-demand evaluation of raster blocks, unless otherwise stated in their documentation, without "materializing" the resulting dataset of the operation of each step. It may be desirable sometimes for performance purposes to proceed to materializing an intermediate dataset to disk using gdal_raster_materialize.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

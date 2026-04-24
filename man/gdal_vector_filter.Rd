@@ -60,9 +60,9 @@ gdal_vector_filter(
 A \link{gdal_job} object.
 }
 \description{
-Filter a vector dataset.
+\verb{gdal vector filter} can be used to filter a vector dataset from their spatial extent or a SQL WHERE clause. \code{filter} can also be used as a step of gdal_vector_pipeline.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_filter.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_filter.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_filter(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 

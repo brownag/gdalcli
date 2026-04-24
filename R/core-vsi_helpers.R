@@ -86,7 +86,8 @@
 #'
 #' @param path Character string to check
 #'
-#' @return Logical indicating if the path starts with a VSI prefix (e.g., `/vsis3/`, `/vsizip/`)
+#' @return Logical indicating if the path starts with a VSI prefix (e.g., `/vsis3/`,
+#' `/vsizip/`)
 #'
 #' @examples
 #' is_vsi_path("/vsis3/bucket/key")  # TRUE

@@ -12,14 +12,16 @@ gdal_with_co(x, ...)
 \arguments{
 \item{x}{A \link{gdal_job} object.}
 
-\item{...}{One or more creation option strings (e.g., \code{"COMPRESS=LZW"}, \code{"BLOCKXSIZE=256"}).
+\item{...}{One or more creation option strings (e.g., \code{"COMPRESS=LZW"},
+\code{"BLOCKXSIZE=256"}).
 Strings are appended to the \code{x$arguments$creation-option} list.}
 }
 \value{
 A modified \link{gdal_job} object with the creation options added.
 }
 \description{
-\code{gdal_with_co()} is an S3 generic for adding creation options (typically \code{-co} or
+\code{gdal_with_co()} is an S3 generic for adding creation options (typically
+\code{-co} or
 \code{--creation-option} in the GDAL CLI) to a \link{gdal_job} object. Creation options
 control how GDAL creates new datasets.
 

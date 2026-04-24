@@ -72,9 +72,9 @@ gdal_vector_edit(
 A \link{gdal_job} object.
 }
 \description{
-Edit metadata of a vector dataset.
+\verb{gdal vector edit} can be used to edit metadata of a vector dataset: its CRS, the layer geometry type, dataset and layer metadata. \code{edit} can also be used as a step of gdal_vector_pipeline. Features are not modified.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_edit.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_edit(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 

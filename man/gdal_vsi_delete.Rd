@@ -15,9 +15,9 @@ gdal_vsi_delete(filename, recursive = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Delete files located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi delete} delete files and directories located on virtual_file_systems. This is the equivalent of the UNIX \code{rm} command, and \verb{gdal vsi rm} is an alias for \verb{gdal vsi delete}.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

@@ -10,7 +10,8 @@ is_vsi_path(path)
 \item{path}{Character string to check}
 }
 \value{
-Logical indicating if the path starts with a VSI prefix (e.g., \verb{/vsis3/}, \verb{/vsizip/})
+Logical indicating if the path starts with a VSI prefix (e.g., \verb{/vsis3/},
+\verb{/vsizip/})
 }
 \description{
 Check if a path is a GDAL Virtual File System (VSI) path

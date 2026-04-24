@@ -7,11 +7,14 @@
 #' framework.
 #'
 #' @details
-#' **GdalApi** is the top-level object accessible as `gdal.alg` in the namespace.
-#' It contains GdalApiSub instances for each command group (raster, vector, etc.).
+#' **GdalApi** is the top-level object accessible as `gdal.alg` in the
+#' namespace.
+#' It contains GdalApiSub instances for each command group (raster, vector,
+#' etc.).
 #' Each GdalApiSub contains dynamically created functions for GDAL commands.
 #'
-#' This implementation uses environments with custom `$` methods to allow dynamic member
+#' This implementation uses environments with custom `$` methods to allow
+#' dynamic member
 #' addition at runtime, which is not possible with S3 or S7 classes.
 #'
 #' @keywords internal
@@ -20,8 +23,10 @@
 #'
 #' Top-level object for the dynamic GDAL API.
 #'
-#' Provides access to GDAL command groups as dynamic member objects (e.g., `gdal.alg$raster`,
-#' `gdal.alg$vector`). Each group contains dynamically created functions for GDAL commands.
+#' Provides access to GDAL command groups as dynamic member objects (e.g.,
+#' `gdal.alg$raster`,
+#' `gdal.alg$vector`). Each group contains dynamically created functions for
+#' GDAL commands.
 #' The API is cached based on GDAL version for performance.
 #'
 #' @return
@@ -234,7 +239,8 @@ print.GdalApi <- function(x, ...) {
 #'
 #' Intermediate node representing a command group (e.g., `gdal.alg$raster`).
 #'
-#' @param group_name Character string of the command group name (e.g., "raster", "vector").
+#' @param group_name Character string of the command group name (e.g., "raster",
+#' "vector").
 #' @param command_list List of command paths for this group.
 #'
 #' @return

@@ -42,9 +42,9 @@ gdal_raster_edit(
 A \link{gdal_job} object.
 }
 \description{
-Edit a raster dataset.
+\verb{gdal raster edit} can be used to edit a raster dataset. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")

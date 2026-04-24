@@ -39,9 +39,9 @@ gdal_raster_resize(
 A \link{gdal_job} object.
 }
 \description{
-Resize a raster dataset without changing the georeferenced extents.
+\verb{gdal raster resize} can be used to resize a raster dataset without changing the georeferenced extents. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_resize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_resize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

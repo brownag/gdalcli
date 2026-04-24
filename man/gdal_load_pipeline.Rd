@@ -13,7 +13,8 @@ gdal_load_pipeline(path)
 A gdal_pipeline object that can be executed or further modified
 }
 \description{
-Loads a gdal_pipeline from a gdalcli pipeline JSON file. gdalcli pipeline files
+Loads a gdal_pipeline from a gdalcli pipeline JSON file. gdalcli pipeline
+files
 can be created by gdal_save_pipeline() and contain pipeline definitions that
 can be executed.
 }

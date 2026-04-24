@@ -15,9 +15,9 @@ gdal_vsi_move(source, destination)
 A \link{gdal_job} object.
 }
 \description{
-Move/rename a file/directory located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi move} move files and directories located on virtual_file_systems. If the destination path is an existing directory, the file will be moved to it. It can move files and directories between different virtual file systems, but this will involve copying and deletion. Note that for cloud object storage, moving/renaming a directory may involve renaming all files it contains recursively, and is thus not an atomic operation (and could be slow and expensive on directories with many files!) This is implemented by :cppVSIMove. This is an analog of the UNIX \code{mv} command, and \verb{gdal vsi mv} is an alias for \verb{gdal vsi move}.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_move.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_move.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vsi_move(source = "/vsis3/bucket/my.tif", 

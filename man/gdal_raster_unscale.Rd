@@ -36,9 +36,9 @@ gdal_raster_unscale(
 A \link{gdal_job} object.
 }
 \description{
-Convert scaled values of a raster dataset into unscaled values.
+\verb{gdal raster unscale} applies the scale/offset metadata for the bands to convert scaled values to unscaled values. If the input band data type is Byte, Int8, UInt16, Int16, UInt32, Int32, Int64, UInt64, Float16 or Float32, the default output data type will be Float32. If the input band data type is Float64, it will be kept as the default output data type. If the input band data type is CInt16, CFloat16 or CFloat32, the default output data type will be Float32. If the input band data type is CFloat64, it will be kept as the default output data type. The unscaled value is computed from the scaled raw value with the following formula:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_unscale.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_unscale.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_unscale(input = "scaled_byte.tif", output = "unscaled_float32.tif", 

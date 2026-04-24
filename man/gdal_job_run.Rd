@@ -21,8 +21,10 @@ gdal_job_run(x, ..., backend = NULL)
 
 \item{...}{Additional arguments passed to specific methods.}
 
-\item{backend}{Character string specifying the backend to use: \code{"processx"} (subprocess-based,
-always available if GDAL installed), \code{"gdalraster"} (C++ bindings, if gdalraster installed),
+\item{backend}{Character string specifying the backend to use: \code{"processx"}
+(subprocess-based,
+always available if GDAL installed), \code{"gdalraster"} (C++ bindings, if
+gdalraster installed),
 or \code{"reticulate"} (Python osgeo.gdal via reticulate, if available).
 If \code{NULL} (default), auto-selects the best available backend:
 gdalraster if available, otherwise processx.
@@ -43,10 +45,12 @@ If provided, overrides \code{x$stream_out_format}.
 If not provided, uses \code{options(gdalcli.stream_out_format)} if set.}
 
 \item{env}{A named character vector of environment variables for the subprocess.
-These are merged with \code{x$env_vars}, with explicit \code{env} values taking precedence.}
+These are merged with \code{x$env_vars}, with explicit \code{env} values taking
+precedence.}
 
 \item{verbose}{Logical. If \code{TRUE}, prints the command being executed.
-If not provided, uses \code{options(gdalcli.verbose)} if set, otherwise defaults to \code{FALSE}.}
+If not provided, uses \code{options(gdalcli.verbose)} if set, otherwise defaults
+to \code{FALSE}.}
 }
 \value{
 Depends on the streaming configuration:
@@ -60,8 +64,10 @@ Raises an R .error if the GDAL process fails.
 }
 }
 \description{
-\code{gdal_job_run()} is an S3 generic function that executes a GDAL command specification.
-It is the "collector" function in the lazy evaluation framework, taking a \link{gdal_job} object
+\code{gdal_job_run()} is an S3 generic function that executes a GDAL command
+specification.
+It is the "collector" function in the lazy evaluation framework, taking a
+\link{gdal_job} object
 and converting it into a running process.
 
 For \code{gdal_job} objects, the method performs the following steps:

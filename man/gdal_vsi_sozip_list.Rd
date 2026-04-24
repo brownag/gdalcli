@@ -7,7 +7,8 @@
 gdal_vsi_sozip_list(input)
 }
 \arguments{
-\item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to
+extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -15,7 +16,8 @@ A \link{gdal_job} object.
 \description{
 List content of a ZIP file, with SOZIP related information.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_list.html}
+for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

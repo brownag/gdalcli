@@ -36,9 +36,9 @@ gdal_raster_set_type(
 A \link{gdal_job} object.
 }
 \description{
-Modify the data type of bands of a raster dataset.
+\verb{gdal raster set-type} can be used to force the output image bands to have a specific data type. Values may be truncated or rounded if the output data type is "smaller" than the input one. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_set-type.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_set-type.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_set_type(input = "byte.tif", output = "float32.tif", overwrite = TRUE)

@@ -1,8 +1,10 @@
 #' Execute a GDAL Job
 #'
 #' @description
-#' `gdal_job_run()` is an S3 generic function that executes a GDAL command specification.
-#' It is the "collector" function in the lazy evaluation framework, taking a [gdal_job] object
+#' `gdal_job_run()` is an S3 generic function that executes a GDAL command
+#' specification.
+#' It is the "collector" function in the lazy evaluation framework, taking a
+#' [gdal_job] object
 #' and converting it into a running process.
 #'
 #' For `gdal_job` objects, the method performs the following steps:
@@ -14,8 +16,10 @@
 #'
 #' @param x An S3 object to be executed. Typically a [gdal_job].
 #' @param ... Additional arguments passed to specific methods.
-#' @param backend Character string specifying the backend to use: `"processx"` (subprocess-based,
-#'   always available if GDAL installed), `"gdalraster"` (C++ bindings, if gdalraster installed),
+#' @param backend Character string specifying the backend to use: `"processx"`
+#' (subprocess-based,
+#' always available if GDAL installed), `"gdalraster"` (C++ bindings, if
+#' gdalraster installed),
 #'   or `"reticulate"` (Python osgeo.gdal via reticulate, if available).
 #'   If `NULL` (default), auto-selects the best available backend:
 #'   gdalraster if available, otherwise processx.
@@ -33,9 +37,11 @@
 #'   If provided, overrides `x$stream_out_format`.
 #'   If not provided, uses `options(gdalcli.stream_out_format)` if set.
 #' @param env A named character vector of environment variables for the subprocess.
-#'   These are merged with `x$env_vars`, with explicit `env` values taking precedence.
+#' These are merged with `x$env_vars`, with explicit `env` values taking
+#' precedence.
 #' @param verbose Logical. If `TRUE`, prints the command being executed.
-#'   If not provided, uses `options(gdalcli.verbose)` if set, otherwise defaults to `FALSE`.
+#' If not provided, uses `options(gdalcli.verbose)` if set, otherwise defaults
+#' to `FALSE`.
 #'
 #' @return
 #' Depends on the streaming configuration:
@@ -345,7 +351,8 @@ gdal_job_run.gdal_job <- function(x,
 #' Combines environment variables from multiple sources.
 #'
 #' @param job_env Named character vector of env vars from the job.
-#' @param explicit_env Named character vector of explicit env vars passed to gdal_job_run.
+#' @param explicit_env Named character vector of explicit env vars passed to
+#' gdal_job_run.
 #' @param config_opts Named character vector of GDAL config options.
 #'
 #' @return A named character vector of all environment variables to pass to processx.

@@ -7,9 +7,11 @@
 gdal_vsi_sozip_validate(input, stdout = FALSE)
 }
 \arguments{
-\item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to
+extend a pipeline}
 
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty
+(Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -17,12 +19,15 @@ A \link{gdal_job} object.
 \description{
 Validate a ZIP file, possibly using SOZIP optimization.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
+See
+\url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_validate.html}
+for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_sozip_validate.
-# See GDAL documentation: https://gdal.org/programs/gdal-vsi-sozip-validate.html
+# See GDAL documentation:
+https://gdal.org/programs/gdal-vsi-sozip-validate.html
 job <- gdal_vsi_sozip_validate()
 # gdal_job_run(job)
 }

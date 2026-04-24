@@ -13,6 +13,8 @@ gdal_auth_s3(no_sign_request = FALSE)
 Named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
 }
 \description{
-Reads AWS S3 authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
-Set credentials via \verb{~/.Renviron}: \code{AWS_ACCESS_KEY_ID} and \code{AWS_SECRET_ACCESS_KEY}.
+Reads AWS S3 authentication from environment variables for use with
+\code{\link[=gdal_with_env]{gdal_with_env()}}.
+Set credentials via \verb{~/.Renviron}: \code{AWS_ACCESS_KEY_ID} and
+\code{AWS_SECRET_ACCESS_KEY}.
 }

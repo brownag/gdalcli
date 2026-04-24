@@ -66,9 +66,9 @@ gdal_raster_clip(
 A \link{gdal_job} object.
 }
 \description{
-Clip a raster dataset.
+\verb{gdal raster clip} can be used to clip a raster dataset using georeferenced coordinates. Either --bbox or --like must be specified. The output dataset is in the same SRS as the input one, and the original resolution is preserved. Bounds are rounded to match whole pixel locations (i.e. there is no resampling involved) \code{clip} can also be used as a step of gdal_raster_pipeline.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_clip.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_clip.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE, 

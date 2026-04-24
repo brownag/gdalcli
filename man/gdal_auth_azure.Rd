@@ -2,19 +2,23 @@
 % Please edit documentation in R/core-gdal_auth_helpers.R
 \name{gdal_auth_azure}
 \alias{gdal_auth_azure}
-\title{Create Process-Isolated Azure Blob Storage Authentication Environment Variables}
+\title{Create Process-Isolated Azure Blob Storage Authentication Environment
+Variables}
 \usage{
 gdal_auth_azure(no_sign_request = FALSE)
 }
 \arguments{
-\item{no_sign_request}{Logical. If \code{TRUE}, allows public container access without credentials.}
+\item{no_sign_request}{Logical. If \code{TRUE}, allows public container access without
+credentials.}
 }
 \value{
 Named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
 }
 \description{
-Reads Azure Blob Storage authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
-Set credentials via \verb{~/.Renviron}: \code{AZURE_STORAGE_CONNECTION_STRING} or account + key/token.
+Reads Azure Blob Storage authentication from environment variables for use
+with \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Set credentials via \verb{~/.Renviron}: \code{AZURE_STORAGE_CONNECTION_STRING} or
+account + key/token.
 }
 \section{Setting Up Credentials}{
 

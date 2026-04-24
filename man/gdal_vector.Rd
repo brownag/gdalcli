@@ -13,9 +13,9 @@ gdal_vector(drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Vector commands.
+Entry point for vector commands
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

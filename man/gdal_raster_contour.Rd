@@ -75,9 +75,9 @@ gdal_raster_contour(
 A \link{gdal_job} object.
 }
 \description{
-Creates a vector contour from a raster elevation model (DEM).
+\verb{gdal raster contour} creates a vector contour from a raster elevation model (DEM). Since GDAL 3.12, this algorithm can be part of a gdal_pipeline. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_contour.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp", interval = 100)

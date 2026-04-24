@@ -16,11 +16,14 @@ These classes provide the runtime-adaptive interface that mirrors Python's
 framework.
 }
 \details{
-\strong{GdalApi} is the top-level object accessible as \code{gdal.alg} in the namespace.
-It contains GdalApiSub instances for each command group (raster, vector, etc.).
+\strong{GdalApi} is the top-level object accessible as \code{gdal.alg} in the
+namespace.
+It contains GdalApiSub instances for each command group (raster, vector,
+etc.).
 Each GdalApiSub contains dynamically created functions for GDAL commands.
 
-This implementation uses environments with custom \code{$} methods to allow dynamic member
+This implementation uses environments with custom \code{$} methods to allow
+dynamic member
 addition at runtime, which is not possible with S3 or S7 classes.
 }
 \keyword{(e.g.,}

@@ -19,9 +19,9 @@ gdal_vsi_copy(source, destination, recursive = FALSE, skip_errors = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Copy files located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi copy} copy files and directories located on virtual_file_systems. It can copy files and directories between different virtual file systems. This is the equivalent of the UNIX \code{cp} command, and \verb{gdal vsi cp} is an alias for \verb{gdal vsi copy}.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_copy.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_copy.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

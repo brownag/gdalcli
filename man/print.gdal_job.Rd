@@ -15,7 +15,8 @@
 Invisibly returns \code{x}.
 }
 \description{
-Provides a human-readable representation of a \code{gdal_job} object for debugging.
+Provides a human-readable representation of a \code{gdal_job} object for
+debugging.
 Shows the command that would be executed, without actually running it.
 }
 \keyword{internal}

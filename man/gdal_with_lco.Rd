@@ -19,8 +19,10 @@ A modified \link{gdal_job} object with the layer creation options added.
 }
 \description{
 \code{gdal_with_lco()} is an S3 generic for adding layer creation options
-(typically \code{-lco} or \code{--layer-creation-option} in the GDAL CLI) to a \link{gdal_job} object.
-Layer creation options control properties of individual layers in multi-layer datasets.
+(typically \code{-lco} or \code{--layer-creation-option} in the GDAL CLI) to a
+\link{gdal_job} object.
+Layer creation options control properties of individual layers in multi-layer
+datasets.
 
 This function is designed to be used with the native R pipe (\verb{|>}).
 }

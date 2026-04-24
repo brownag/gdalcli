@@ -54,9 +54,9 @@ gdal_vector_sql(
 A \link{gdal_job} object.
 }
 \description{
-Apply SQL statement(s) to a dataset.
+\verb{gdal vector sql} returns one or several layers evaluated from SQL statements. Starting with GDAL 3.12, when using --update, and without an output dataset specified, this can be used to execute statements that modify the input dataset, such as UPDATE, DELETE, etc.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_sql.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_sql.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

@@ -72,9 +72,9 @@ gdal_raster_index(
 A \link{gdal_job} object.
 }
 \description{
-Create a vector index of raster datasets.
+\verb{gdal raster index} creates a vector dataset with a record for each input raster file, an attribute containing the filename, and a polygon geometry outlining the raster. This output is suitable for use with \verb{MapServer <http://mapserver.org/>}__ as a raster tileindex See gdal_driver_gti_create for an extension of this command that create files to be used as input for the GTI <raster.gti> driver. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_index.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_index.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")

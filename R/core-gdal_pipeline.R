@@ -21,7 +21,8 @@
 #' An S3 object of class `gdal_pipeline`.
 #'
 #' @seealso
-#' [gdal_job], [gdal_job_run()], [render_gdal_pipeline()], [render_shell_script()]
+#' [gdal_job], [gdal_job_run()], [render_gdal_pipeline()],
+#' [render_shell_script()]
 #'
 #' @examples
 #' \dontrun{
@@ -189,30 +190,39 @@ str.gdal_pipeline <- function(object, ..., max.level = 1, vec.len = 4) {
 #'
 #' @param x A `gdal_pipeline` object.
 #' @param execution_mode Character string: `"sequential"` (default) to run jobs as
-#'   separate GDAL commands, or `"native"` to run as a single native GDAL pipeline
-#'   command (via `gdal raster/vector pipeline`). Native mode is more efficient for
+#' separate GDAL commands, or `"native"` to run as a single native GDAL pipeline
+#' command (via `gdal raster/vector pipeline`). Native mode is more efficient
+#' for
 #'   large datasets as it avoids intermediate disk I/O.
-#' @param stream_in An R object to be streamed to `/vsistdin/` for the first pipeline step.
+#' @param stream_in An R object to be streamed to `/vsistdin/` for the first pipeline
+#' step.
 #'   Only used in native execution mode. Default `NULL`.
 #' @param stream_out_format Character string: output format for the last pipeline step.
-#'   Options: `NULL` (no streaming), `"text"`, or `"raw"`. Only used in native execution mode.
-#' @param env Environment variables to pass to the GDAL process. Only used in native execution mode.
-#' @param checkpoint Logical. Override global checkpoint setting for this pipeline only.
-#'   If not specified (NULL/missing), respects `getOption("gdalcli.checkpoint", FALSE)`.
-#'   To enable checkpointing by default, use `gdalcli_options(checkpoint = TRUE)`.
-#'   When enabled, saves intermediate results to enable resumption from failures.
+#' Options: `NULL` (no streaming), `"text"`, or `"raw"`. Only used in native
+#' execution mode.
+#' @param env Environment variables to pass to the GDAL process. Only used in native
+#' execution mode.
+#' @param checkpoint Logical. Override global checkpoint setting for this pipeline
+#' only.
+#' If not specified (NULL/missing), respects `getOption("gdalcli.checkpoint",
+#' FALSE)`.
+#' To enable checkpointing by default, use `gdalcli_options(checkpoint = TRUE)`.
+#' When enabled, saves intermediate results to enable resumption from failures.
 #'   Default: `FALSE` (disabled unless configured via `gdalcli_options()`).
 #' @param checkpoint_dir Character. Directory for checkpoint files. If not specified,
-#'   uses `getOption("gdalcli.checkpoint_dir", NULL)` or current working directory
-#'   if checkpointing is enabled. Set via `gdalcli_options(checkpoint_dir = "/path")`.
+#' uses `getOption("gdalcli.checkpoint_dir", NULL)` or current working directory
+#' if checkpointing is enabled. Set via `gdalcli_options(checkpoint_dir =
+#' "/path")`.
 #' @param resume Logical. Resume pipeline execution from the most recent checkpoint.
-#'   If checkpoint is enabled and a checkpoint exists at the checkpoint directory,
-#'   set `resume = TRUE` to continue from where execution stopped. Default: `FALSE`.
+#' If checkpoint is enabled and a checkpoint exists at the checkpoint directory,
+#' set `resume = TRUE` to continue from where execution stopped. Default:
+#' `FALSE`.
 #' @param ... Additional arguments passed to individual job execution.
 #' @param verbose Logical. If `TRUE`, prints progress information. Default `FALSE`.
 #'
 #' @return Invisibly returns `TRUE` on successful completion, or (in native mode with
-#'   streaming output) returns the captured output. When checkpointing is enabled and
+#' streaming output) returns the captured output. When checkpointing is enabled
+#' and
 #'   completes successfully, the checkpoint directory is cleaned up.
 #'
 #' @seealso
@@ -465,7 +475,8 @@ gdal_job_run.gdal_pipeline <- function(x,
 #' @param env Environment variables for the subprocess.
 #' @param verbose Logical. If TRUE, prints execution details.
 #'
-#' @return Invisibly returns TRUE on success, or captured output if stream_out_format is set.
+#' @return Invisibly returns TRUE on success, or captured output if stream_out_format is
+#' set.
 #'
 #' @keywords internal
 #' @noRd
@@ -612,17 +623,20 @@ gdal_job_run.gdal_pipeline <- function(x,
 #' Render GDAL Pipeline as Native GDAL Pipeline String
 #'
 #' @description
-#' Converts a `gdal_pipeline` object into a native GDAL pipeline string that can be
+#' Converts a `gdal_pipeline` object into a native GDAL pipeline string that can
+#' be
 #' executed directly with `gdal raster pipeline` or `gdal vector pipeline`.
 #'
 #' The native pipeline format uses `! step_name args...` syntax:
 #' ```
-#' gdal raster pipeline ! read in.tif ! reproject --dst-crs=EPSG:32632 ! write out.tif
+#' gdal raster pipeline ! read in.tif ! reproject --dst-crs=EPSG:32632 ! write
+#' out.tif
 #' ```
 #'
 #' @param pipeline A `gdal_pipeline` object.
 #'
-#' @return A character string containing the native GDAL pipeline string (without `gdal raster/vector pipeline` prefix).
+#' @return A character string containing the native GDAL pipeline string (without `gdal
+#' raster/vector pipeline` prefix).
 #'
 #' @keywords internal
 #'
@@ -649,14 +663,17 @@ gdal_job_run.gdal_pipeline <- function(x,
 #' Converts a `gdal_pipeline` into a GDAL pipeline command string that can be
 #' executed directly with `gdal raster/vector pipeline`.
 #'
-#' By default, renders as a sequence of separate GDAL commands (`gdal cmd1 && gdal cmd2`).
+#' By default, renders as a sequence of separate GDAL commands (`gdal cmd1 &&
+#' gdal cmd2`).
 #' Set `format = "native"` to generate native GDAL pipeline syntax.
 #'
 #' @param pipeline A `gdal_pipeline` object.
 #' @param format Character string: `"shell_chain"` (default, separate commands with &&)
 #'   or `"native"` (native GDAL pipeline syntax with ! delimiters).
-#' @param wrapper_config A named character vector of config options from the wrapper job. Default empty.
-#' @param wrapper_creation_option A character vector of creation options from the wrapper job. Default `NULL`.
+#' @param wrapper_config A named character vector of config options from the wrapper
+#' job. Default empty.
+#' @param wrapper_creation_option A character vector of creation options from the
+#' wrapper job. Default `NULL`.
 #' @param ... Additional arguments (unused).
 #'
 #' @return A character string containing the GDAL pipeline command.
@@ -779,22 +796,27 @@ render_gdal_pipeline.gdal_pipeline <- function(pipeline, format = c("shell_chain
 #' @description
 #' Converts a `gdal_pipeline` into a shell script that executes the jobs.
 #'
-#' By default, generates separate commands chained with `&&`. Set `format = "native"`
-#' to generate a shell script using a single native GDAL pipeline command instead.
+#' By default, generates separate commands chained with `&&`. Set `format =
+#' "native"`
+#' to generate a shell script using a single native GDAL pipeline command
+#' instead.
 #'
 #' @param pipeline A `gdal_pipeline` object.
 #' @param shell Character string specifying shell type: `"bash"` (default) or `"zsh"`.
 #' @param format Character string: `"commands"` (default, separate commands with &&)
-#'   or `"native"` (single native GDAL pipeline command). Default is `"commands"`.
+#' or `"native"` (single native GDAL pipeline command). Default is `"commands"`.
 #' @param ... Additional arguments (unused).
 #'
 #' @return A character string containing the shell script.
 #'
 #' @details
-#' When `format = "commands"`, the script executes each job as a separate GDAL command,
-#' which is safer for hybrid workflows mixing pipeline and non-pipeline operations.
+#' When `format = "commands"`, the script executes each job as a separate GDAL
+#' command,
+#' which is safer for hybrid workflows mixing pipeline and non-pipeline
+#' operations.
 #'
-#' When `format = "native"`, the script uses a single `gdal raster/vector pipeline`
+#' When `format = "native"`, the script uses a single `gdal raster/vector
+#' pipeline`
 #' command, which is more efficient as it avoids intermediate disk I/O.
 #'
 #' @seealso
@@ -1204,16 +1226,21 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' Compose GDAL Jobs into a Pipeline (Auto-Detecting Raster/Vector)
 #'
 #' @description
-#' **DEPRECATED** - This function is deprecated as of gdalcli 0.4.x and will be removed in 0.5.x.
+#' **DEPRECATED** - This function is deprecated as of gdalcli 0.4.x and will be
+#' removed in 0.5.x.
 #'
-#' Convenience function that automatically detects whether a composition of jobs contains
-#' raster or vector operations and delegates to the appropriate `gdal_raster_pipeline()`
+#' Convenience function that automatically detects whether a composition of jobs
+#' contains
+#' raster or vector operations and delegates to the appropriate
+#' `gdal_raster_pipeline()`
 #' or `gdal_vector_pipeline()` function.
 #'
-#' This function is useful when you want a single unified interface to compose and process
+#' This function is useful when you want a single unified interface to compose
+#' and process
 #' jobs without needing to explicitly choose the raster or vector variant.
 #'
-#' **Migration**: Use the pipe operator (`|>`) to compose jobs instead. This approach is
+#' **Migration**: Use the pipe operator (`|>`) to compose jobs instead. This
+#' approach is
 #' more idiomatic R and handles composition naturally:
 #'
 #' ```r
@@ -1224,8 +1251,10 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' job1 |> job2 |> job3 |> gdal_job_run()
 #' ```
 #'
-#' **Note**: This function was previously named `gdal_pipeline()`. It was renamed to
-#' `gdal_compose()` to avoid conflict with GDAL 3.12+'s native `gdal pipeline` command,
+#' **Note**: This function was previously named `gdal_pipeline()`. It was
+#' renamed to
+#' `gdal_compose()` to avoid conflict with GDAL 3.12+'s native `gdal pipeline`
+#' command,
 #' which is available as an auto-generated function.
 #'
 #' @param jobs A list or vector of `gdal_job` objects to execute in sequence,
@@ -1233,7 +1262,8 @@ extend_gdal_pipeline <- function(job, command_path, arguments) {
 #' @param pipeline A pipeline string (ignored if jobs is provided)
 #' @param input Input dataset path(s)
 #' @param output Output dataset path
-#' @param ... Additional arguments passed to `gdal_raster_pipeline()` or `gdal_vector_pipeline()`
+#' @param ... Additional arguments passed to `gdal_raster_pipeline()` or
+#' `gdal_vector_pipeline()`
 #'
 #' @return A `gdal_job` object representing the pipeline.
 #'

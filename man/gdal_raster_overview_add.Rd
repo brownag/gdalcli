@@ -30,9 +30,9 @@ gdal_raster_overview_add(
 A \link{gdal_job} object.
 }
 \description{
-Adding overviews.
+\verb{gdal raster overview add} can be used to build or rebuild overview images for most supported file formats with one of several downsampling algorithms. Starting with GDAL 3.12, gdal raster overview add can be used as a step of a pipeline. In that case virtual overviews are generated at the output of the step, and can potentially be materialized in the final write step, when writing a GeoTIFF file with the COPY_SRC_OVERVIEWS creation option, or when writing to a COG (Cloud Optimized GeoTIFF) file.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

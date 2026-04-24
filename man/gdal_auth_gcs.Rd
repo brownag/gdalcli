@@ -2,19 +2,23 @@
 % Please edit documentation in R/core-gdal_auth_helpers.R
 \name{gdal_auth_gcs}
 \alias{gdal_auth_gcs}
-\title{Create Process-Isolated Google Cloud Storage Authentication Environment Variables}
+\title{Create Process-Isolated Google Cloud Storage Authentication Environment
+Variables}
 \usage{
 gdal_auth_gcs(no_sign_request = FALSE)
 }
 \arguments{
-\item{no_sign_request}{Logical. If \code{TRUE}, allows public bucket access without credentials.}
+\item{no_sign_request}{Logical. If \code{TRUE}, allows public bucket access without
+credentials.}
 }
 \value{
 Named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
 }
 \description{
-Reads Google Cloud Storage authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
-Set \code{GOOGLE_APPLICATION_CREDENTIALS} environment variable pointing to JSON credentials file.
+Reads Google Cloud Storage authentication from environment variables for use
+with \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Set \code{GOOGLE_APPLICATION_CREDENTIALS} environment variable pointing to JSON
+credentials file.
 }
 \details{
 Design choices:

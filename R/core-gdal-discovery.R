@@ -1,11 +1,14 @@
 #' Discover GDAL CLI Commands and Help
 #'
 #' @description
-#' Utility functions for discovering available GDAL CLI commands and getting help
-#' for specific operations. These functions wrap gdalraster's discovery functions
+#' Utility functions for discovering available GDAL CLI commands and getting
+#' help
+#' for specific operations. These functions wrap gdalraster's discovery
+#' functions
 #' when available.
 #'
-#' `gdal_list_commands()` lists all available GDAL CLI algorithms across modules.
+#' `gdal_list_commands()` lists all available GDAL CLI algorithms across
+#' modules.
 #' This is useful for discovering what operations are available without needing
 #' to refer to external documentation.
 #'
@@ -184,7 +187,8 @@ gdal_command_help <- function(command) {
 #' Check GDAL Version Requirements
 #'
 #' @description
-#' Helper function to check if the installed GDAL version meets minimum requirements.
+#' Helper function to check if the installed GDAL version meets minimum
+#' requirements.
 #' Useful when certain features require specific GDAL versions.
 #'
 #' @param minimum Character string: minimum required GDAL version (e.g., "3.12").

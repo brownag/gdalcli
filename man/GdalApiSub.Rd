@@ -7,7 +7,8 @@
 GdalApiSub(group_name, command_list)
 }
 \arguments{
-\item{group_name}{Character string of the command group name (e.g., "raster", "vector").}
+\item{group_name}{Character string of the command group name (e.g., "raster",
+"vector").}
 
 \item{command_list}{List of command paths for this group.}
 }

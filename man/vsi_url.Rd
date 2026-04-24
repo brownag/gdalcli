@@ -9,43 +9,58 @@ vsi_url(handler, ..., streaming = FALSE, validate = FALSE)
 \arguments{
 \item{handler}{Character string identifying the VSI handler prefix (e.g., "vsis3",
 "vsizip", "vsiaz"). Dispatches to the corresponding handler function.
-Supported handlers are documented via their individual functions (see \strong{See Also} section).}
+Supported handlers are documented via their individual functions (see \strong{See
+Also} section).}
 
-\item{...}{Handler-specific arguments. Passed through to the corresponding \verb{vsi*_url()} function.}
+\item{...}{Handler-specific arguments. Passed through to the corresponding
+\verb{vsi*_url()} function.}
 
 \item{streaming}{Logical. If \code{TRUE}, appends \verb{_streaming} to the handler prefix
 (e.g., \verb{/vsis3_streaming/} instead of \verb{/vsis3/}). Streaming handlers are
-optimized for sequential-only access and should be used only when random-access
-efficiency is not required. Default is \code{FALSE} (random-access, recommended for
+optimized for sequential-only access and should be used only when
+random-access
+efficiency is not required. Default is \code{FALSE} (random-access, recommended
+for
 Cloud Optimized GeoTIFF and similar formats).}
 
 \item{validate}{Logical. If \code{TRUE}, performs strict validation on path components:
-checks for empty strings, illegal characters, and other constraints. Default is
-\code{FALSE}, which preserves maximum flexibility for composing URLs to non-existent,
+checks for empty strings, illegal characters, and other constraints. Default
+is
+\code{FALSE}, which preserves maximum flexibility for composing URLs to
+non-existent,
 remote, or future paths.}
 }
 \value{
 A character string representing the composed VSI path, suitable for use with
-GDAL-aware functions (e.g., \code{sf::read_sf()}, \code{stars::read_stars()}, \code{raster::brick()}).
+GDAL-aware functions (e.g., \code{sf::read_sf()}, \code{stars::read_stars()},
+\code{raster::brick()}).
 }
 \description{
 \code{vsi_url()} composes GDAL Virtual File System (VSI) URLs across 30+ handlers
-including cloud storage (S3, GCS, Azure, OSS, Swift), archive formats (ZIP, TAR, 7z, RAR),
+including cloud storage (S3, GCS, Azure, OSS, Swift), archive formats (ZIP,
+TAR, 7z, RAR),
 and utility handlers (memory, subfile, encryption).
 
-The function supports recursive composition of VSI paths, enabling complex nested
-scenarios such as accessing a shapefile within a ZIP archive stored on an S3 bucket.
-Authentication is decoupled from URL composition and managed through environment
+The function supports recursive composition of VSI paths, enabling complex
+nested
+scenarios such as accessing a shapefile within a ZIP archive stored on an S3
+bucket.
+Authentication is decoupled from URL composition and managed through
+environment
 variables via \code{\link[=set_gdal_auth]{set_gdal_auth()}}.
 }
 \details{
-\code{vsi_url()} dispatches to handler-specific functions based on the \code{handler} parameter:
+\code{vsi_url()} dispatches to handler-specific functions based on the \code{handler}
+parameter:
 
-\strong{Path-based handlers:} \code{\link[=vsis3_url]{vsis3_url()}}, \code{\link[=vsigs_url]{vsigs_url()}}, \code{\link[=vsiaz_url]{vsiaz_url()}}, \code{\link[=vsiadls_url]{vsiadls_url()}},
-\code{\link[=vsioss_url]{vsioss_url()}}, \code{\link[=vsiswift_url]{vsiswift_url()}}, \code{\link[=vsicurl_url]{vsicurl_url()}}, \code{\link[=vsigzip_url]{vsigzip_url()}}, \code{\link[=vsimem_url]{vsimem_url()}},
+\strong{Path-based handlers:} \code{\link[=vsis3_url]{vsis3_url()}}, \code{\link[=vsigs_url]{vsigs_url()}}, \code{\link[=vsiaz_url]{vsiaz_url()}},
+\code{\link[=vsiadls_url]{vsiadls_url()}},
+\code{\link[=vsioss_url]{vsioss_url()}}, \code{\link[=vsiswift_url]{vsiswift_url()}}, \code{\link[=vsicurl_url]{vsicurl_url()}}, \code{\link[=vsigzip_url]{vsigzip_url()}},
+\code{\link[=vsimem_url]{vsimem_url()}},
 \code{\link[=vsihdfs_url]{vsihdfs_url()}}, \code{\link[=vsiwebhdfs_url]{vsiwebhdfs_url()}}
 
-\strong{Wrapper/archive handlers:} \code{\link[=vsizip_url]{vsizip_url()}}, \code{\link[=vsitar_url]{vsitar_url()}}, \code{\link[=vsi7z_url]{vsi7z_url()}}, \code{\link[=vsirar_url]{vsirar_url()}},
+\strong{Wrapper/archive handlers:} \code{\link[=vsizip_url]{vsizip_url()}}, \code{\link[=vsitar_url]{vsitar_url()}}, \code{\link[=vsi7z_url]{vsi7z_url()}},
+\code{\link[=vsirar_url]{vsirar_url()}},
 \code{\link[=vsisubfile_url]{vsisubfile_url()}}, \code{\link[=vsicrypt_url]{vsicrypt_url()}}, \code{\link[=vsicached_url]{vsicached_url()}}, \code{\link[=vsisparse_url]{vsisparse_url()}}
 }
 \section{GDAL Version Support}{
@@ -55,17 +70,20 @@ variables via \code{\link[=set_gdal_auth]{set_gdal_auth()}}.
 
 Handler availability across GDAL versions:
 
-Cloud handlers (S3, GCS, Azure, OSS, Swift) are available across all GDAL 3.x versions.
+Cloud handlers (S3, GCS, Azure, OSS, Swift) are available across all GDAL 3.x
+versions.
 Archive handlers (ZIP, TAR, GZip) are available across all versions.
 Archive handlers (7z, RAR) require GDAL 3.7.0 or later (with libarchive).
-Utility handlers (mem, subfile, crypt, cached, sparse) are available across all versions.
+Utility handlers (mem, subfile, crypt, cached, sparse) are available across
+all versions.
 Network handlers (curl, HDFS, WebHDFS) are available across all versions.
 }
 
 \section{Authentication}{
 
 
-Credentials for cloud storage handlers must be configured via environment variables.
+Credentials for cloud storage handlers must be configured via environment
+variables.
 Use \code{\link[=set_gdal_auth]{set_gdal_auth()}} to set these variables securely:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{# Set AWS S3 credentials
@@ -83,10 +101,12 @@ url <- vsi_url("vsis3", bucket = "my-bucket", key = "path/to/file.tif")
 
 \itemize{
 \item \strong{Random-access (default)}: Use \code{streaming = FALSE} (default) for formats like
-Cloud Optimized GeoTIFF (COG), which benefit from efficient HTTP Range requests
+Cloud Optimized GeoTIFF (COG), which benefit from efficient HTTP Range
+requests
 to read small data windows.
 \item \strong{Streaming}: Use \code{streaming = TRUE} only for sequential-only workflows (e.g.,
-reading an entire compressed file from start to finish). Streaming through remote
+reading an entire compressed file from start to finish). Streaming through
+remote
 data can be slower due to lack of seek efficiency.
 }
 }
@@ -111,7 +131,9 @@ vsi_url("vsizip", archive_path = "data.zip", file_in_archive = "layer.shp")
 }
 \seealso{
 \code{\link[=vsis3_url]{vsis3_url()}}, \code{\link[=vsigs_url]{vsigs_url()}}, \code{\link[=vsiaz_url]{vsiaz_url()}}, \code{\link[=vsiadls_url]{vsiadls_url()}}, \code{\link[=vsioss_url]{vsioss_url()}},
-\code{\link[=vsiswift_url]{vsiswift_url()}}, \code{\link[=vsicurl_url]{vsicurl_url()}}, \code{\link[=vsigzip_url]{vsigzip_url()}}, \code{\link[=vsimem_url]{vsimem_url()}}, \code{\link[=vsihdfs_url]{vsihdfs_url()}},
-\code{\link[=vsiwebhdfs_url]{vsiwebhdfs_url()}}, \code{\link[=vsizip_url]{vsizip_url()}}, \code{\link[=vsitar_url]{vsitar_url()}}, \code{\link[=vsi7z_url]{vsi7z_url()}}, \code{\link[=vsirar_url]{vsirar_url()}},
+\code{\link[=vsiswift_url]{vsiswift_url()}}, \code{\link[=vsicurl_url]{vsicurl_url()}}, \code{\link[=vsigzip_url]{vsigzip_url()}}, \code{\link[=vsimem_url]{vsimem_url()}},
+\code{\link[=vsihdfs_url]{vsihdfs_url()}},
+\code{\link[=vsiwebhdfs_url]{vsiwebhdfs_url()}}, \code{\link[=vsizip_url]{vsizip_url()}}, \code{\link[=vsitar_url]{vsitar_url()}}, \code{\link[=vsi7z_url]{vsi7z_url()}},
+\code{\link[=vsirar_url]{vsirar_url()}},
 \code{\link[=vsisubfile_url]{vsisubfile_url()}}, \code{\link[=vsicrypt_url]{vsicrypt_url()}}, \code{\link[=vsicached_url]{vsicached_url()}}, \code{\link[=vsisparse_url]{vsisparse_url()}}
 }

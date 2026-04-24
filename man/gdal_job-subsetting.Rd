@@ -49,7 +49,8 @@ Provides subsetting operators for \code{gdal_job} objects.
 }
 \examples{
 \dontrun{
-pipeline <- gdal_raster_reproject(input = "input.tif", dst_crs = "EPSG:32632") |>
+pipeline <- gdal_raster_reproject(input = "input.tif", dst_crs =
+"EPSG:32632") |>
   gdal_raster_scale(src_min = 0, src_max = 100) |>
   gdal_raster_convert(output = "output.tif")
 

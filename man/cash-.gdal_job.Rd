@@ -15,7 +15,8 @@
 The slot value or the result of calling the convenience method.
 }
 \description{
-Provides access to \code{gdal_job} slots and convenience methods using the \code{$} operator.
+Provides access to \code{gdal_job} slots and convenience methods using the \code{$}
+operator.
 This enables a fluent API for job manipulation.
 }
 \examples{

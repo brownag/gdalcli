@@ -2,7 +2,8 @@
 % Please edit documentation in R/gdal_vector_grid_linear.R
 \name{gdal_vector_grid_linear}
 \alias{gdal_vector_grid_linear}
-\title{linear: Create a regular grid from scattered points using linear/barycentric...}
+\title{linear: Create a regular grid from scattered points using
+linear/barycentric...}
 \usage{
 gdal_vector_grid_linear(
   input,
@@ -28,7 +29,8 @@ gdal_vector_grid_linear(
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a
+\link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -36,33 +38,42 @@ gdal_vector_grid_linear(
 
 \item{output_format}{Output format}
 
-\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{Float64})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16",
+"Int16", "UInt32", ... (Default: \code{Float64})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}
+(Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
+\item{extent}{Set the target georeferenced extent. Format:
+\verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
-\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2}
+value(s)}
 
-\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format:
+\verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
 \item{crs}{Override the projection for the output file}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default:
+\code{false})}
 
 \item{layer}{Layer name (Character vector)}
 
 \item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
 
-\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
+\item{bbox}{Select only points contained within the specified bounding box. Exactly
+\code{4} value(s)}
 
 \item{zfield}{Field name from which to get Z values.}
 
-\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply)
+(Default: \code{0})}
 
-\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset)
+(Default: \code{1})}
 
 \item{radius}{Radius of the search circle (Default: \code{Inf})}
 
@@ -72,14 +83,18 @@ gdal_vector_grid_linear(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using linear/barycentric interpolation.
+Create a regular grid from scattered points using linear/barycentric
+interpolation.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_grid_linear.html} for detailed GDAL documentation.
+See
+\url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_linear.html}
+for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_grid_linear.
-# See GDAL documentation: https://gdal.org/programs/gdal-vector-grid-linear.html
+# See GDAL documentation:
+https://gdal.org/programs/gdal-vector-grid-linear.html
 job <- gdal_vector_grid_linear()
 # gdal_job_run(job)
 }

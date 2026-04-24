@@ -36,9 +36,9 @@ gdal_raster_convert(
 A \link{gdal_job} object.
 }
 \description{
-Convert a raster dataset.
+\verb{gdal raster convert} can be used to convert raster data between different formats. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_convert.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_convert.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

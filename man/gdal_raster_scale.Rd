@@ -57,9 +57,9 @@ gdal_raster_scale(
 A \link{gdal_job} object.
 }
 \description{
-Scale the values of the bands of a raster dataset.
+\verb{gdal raster scale} can be used to rescale the input pixels values from the range --src-min to --src-max to the range --dst-min to --dst-max. It is also often necessary to reset the output datatype with the --ot switch. If omitted the output range is from the minimum value to the maximum value allowed for integer data types (for example from 0 to 255 for Byte output) or from 0 to 1 for floating-point data types. If omitted the input range is automatically computed from the source dataset. This may be a slow operation on a large source dataset, and if using it multiple times for several gdal_translate invocation, it might be beneficial to call \verb{gdal raster edit --stats \\\{source_dataset\\\}} priorly to precompute statistics, for formats that support serializing statistics computations (GeoTIFF, VRT...) Source values are clipped to the range defined by \code{srcmin} and \code{srcmax}, unless --no-clip is set. By default, the scaling is applied to all bands. It is possible to restrict it to a single band with --band and leave values of other bands unmodified. This command is the reverse operation of gdal_raster_unscale. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_scale.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_scale.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_scale(input = "uint16.tif", output = "byte.tif", overwrite = TRUE, 

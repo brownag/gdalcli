@@ -217,7 +217,8 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 #' accessed with `attr(result, "audit_trail")`.
 #'
 #' Audit logging is controlled by `options(gdalcli.audit_logging = TRUE/FALSE)`.
-#' When FALSE (default), no audit trail is created even if this function is called.
+#' When FALSE (default), no audit trail is created even if this function is
+#' called.
 #'
 #' @examples
 #' \dontrun{

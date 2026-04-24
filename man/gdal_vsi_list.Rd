@@ -36,9 +36,9 @@ gdal_vsi_list(
 A \link{gdal_job} object.
 }
 \description{
-List files of one of the GDAL Virtual System Interface (VSI).
+\verb{gdal vsi list} list files of virtual_file_systems. This is the equivalent of the UNIX \code{ls} command, and \verb{gdal vsi ls} is an alias for \verb{gdal vsi list}. By default, it outputs file names, at the immediate level, without details, and in JSON format.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_list.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_list.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

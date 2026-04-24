@@ -1,6 +1,7 @@
 #' Wrapper-Based VSI Handler Functions
 #'
-#' Internal functions for wrapper/archive VSI handlers that support recursive composition.
+#' Internal functions for wrapper/archive VSI handlers that support recursive
+#' composition.
 #' These handlers can accept the output of other `vsi_url()` calls as their
 #' `archive_path` argument, enabling complex nested scenarios like accessing a
 #' shapefile within a ZIP on S3.
@@ -23,7 +24,8 @@
 #' **Recognized Extensions:** .zip, .kmz, .ods, .xlsx
 #'
 #' **Chaining:** Can accept output of other `vsi_url()` calls as `archive_path`.
-#' If a VSI path is detected, automatic explicit chaining syntax with `{...}` and `//`
+#' If a VSI path is detected, automatic explicit chaining syntax with `{...}`
+#' and `//`
 #' is applied.
 #'
 #' **Parameters:**
@@ -75,7 +77,8 @@ vsizip_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FA
 #' **Recognized Extensions:** .tar, .tgz, .tar.gz, .tar.bz2, .tar.xz, .tar.zst
 #'
 #' **Chaining:** Can accept output of other `vsi_url()` calls as `archive_path`.
-#' If a VSI path is detected, automatic explicit chaining syntax with `{...}` and `//`
+#' If a VSI path is detected, automatic explicit chaining syntax with `{...}`
+#' and `//`
 #' is applied.
 #'
 #' **Parameters:**
@@ -87,7 +90,8 @@ vsizip_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FA
 #'
 #' @examples
 #' # Simple local TAR.GZ
-#' vsi_url("vsitar", archive_path = "data.tar.gz", file_in_archive = "layer.shp")
+#' vsi_url("vsitar", archive_path = "data.tar.gz", file_in_archive =
+#' "layer.shp")
 #'
 #' # TAR.GZ on HTTP(S)
 #' tar_url <- vsi_url("vsicurl", url = "https://example.com/data.tar.gz")
@@ -213,7 +217,8 @@ vsirar_url <- function(archive_path, file_in_archive = NULL, ..., streaming = FA
 #' - `size`: Integer or NULL. Number of bytes to read. If NULL, reads to end of file.
 #' - `filename`: Character string. File path (local, VSI, or HTTP(S) URL).
 #'
-#' **Validation:** `offset` and `size` (if specified) must be non-negative integers.
+#' **Validation:** `offset` and `size` (if specified) must be non-negative
+#' integers.
 #' Size of 0 or negative with non-zero offset is invalid.
 #'
 #' @examples
@@ -293,7 +298,8 @@ vsisubfile_url <- function(offset = 0L, size = NULL, filename, ..., streaming = 
 #'         filename = "encrypted.bin")
 #'
 #' # Direct function call
-#' vsicrypt_url(key = "mypassword", alg = "AES_256_GCM", filename = "encrypted.bin")
+#' vsicrypt_url(key = "mypassword", alg = "AES_256_GCM", filename =
+#' "encrypted.bin")
 vsicrypt_url <- function(key, filename, key_format = "plaintext", ..., streaming = FALSE, validate = FALSE) {
   if (validate) {
     key <- .validate_path_component(key, "key", allow_empty = FALSE)
@@ -345,7 +351,8 @@ vsicrypt_url <- function(key, filename, key_format = "plaintext", ..., streaming
 #'
 #' @examples
 #' # Cache remote GeoTIFF from S3
-#' vsi_url("vsicached", filename = vsi_url("vsis3", bucket = "data", key = "dem.tif"))
+#' vsi_url("vsicached", filename = vsi_url("vsis3", bucket = "data", key =
+#' "dem.tif"))
 #'
 #' # Cache from HTTP(S)
 #' http_url <- vsi_url("vsicurl", url = "https://example.com/data.tif")
@@ -383,7 +390,8 @@ vsicached_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
 #' - Example: `/vsisparse/{/vsis3/bucket/sparse_data.bin}`
 #'
 #' **Use Cases:** Efficiently handle files with "holes" or unallocated regions.
-#' Useful for large binary files where most of the space is uninitialized or sparse.
+#' Useful for large binary files where most of the space is uninitialized or
+#' sparse.
 #'
 #' **Behavior:** Detects and handles sparse regions within files, potentially
 #' reducing memory footprint and I/O operations for files with significant
@@ -398,7 +406,8 @@ vsicached_url <- function(filename, ..., streaming = FALSE, validate = FALSE) {
 #' vsi_url("vsisparse", filename = "sparse_data.bin")
 #'
 #' # Access sparse file from S3
-#' vsi_url("vsisparse", filename = vsi_url("vsis3", bucket = "data", key = "sparse.bin"))
+#' vsi_url("vsisparse", filename = vsi_url("vsis3", bucket = "data", key =
+#' "sparse.bin"))
 #'
 #' # Direct function call
 #' vsisparse_url(filename = "sparse_data.bin")

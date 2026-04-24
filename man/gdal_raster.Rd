@@ -13,9 +13,9 @@ gdal_raster(drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Raster commands.
+Entry point for raster commands
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

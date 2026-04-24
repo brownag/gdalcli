@@ -10,7 +10,8 @@
 #' Quote a String for Shell Execution
 #'
 #' Implements robust shell-style quoting using single quotes with proper
-#' escaping of single quotes via '"'"' technique (close quote, escaped quote, open quote).
+#' escaping of single quotes via '"'"' technique (close quote, escaped quote,
+#' open quote).
 #' This is safe for both POSIX and Windows shells.
 #'
 #' @param str Character string to quote.
@@ -48,19 +49,24 @@
 
 #' Format an Argument Value for RFC 104 CLI
 #'
-#' Converts an R value (character, numeric, logical, vector) into the appropriate
+#' Converts an R value (character, numeric, logical, vector) into the
+#' appropriate
 #' RFC 104 CLI format, handling type conversion, quoting, and repetition logic.
 #'
 #' @param value The R value to format (character, numeric, logical, or vector)
 #' @param arg_name Character string naming the argument, for context
-#' @param arg_mapping List containing metadata about the argument (min_count, max_count, etc.)
-#'   from the job's arg_mapping attribute. Used to determine if vectors should be
+#' @param arg_mapping List containing metadata about the argument (min_count,
+#' max_count, etc.)
+#' from the job's arg_mapping attribute. Used to determine if vectors should be
 #'   comma-separated (composite) or repeated flags.
 #'
 #' @return Character vector of the formatted argument and value(s), ready to append
-#'   to a command line. For logical TRUE, returns just the flag; for logical FALSE,
-#'   returns character(0) (nothing). For values, returns a vector with the flag and
-#'   value(s), either as individual elements or comma-separated depending on composite mode.
+#' to a command line. For logical TRUE, returns just the flag; for logical
+#' FALSE,
+#' returns character(0) (nothing). For values, returns a vector with the flag
+#' and
+#' value(s), either as individual elements or comma-separated depending on
+#' composite mode.
 #'
 #' @keywords internal
 #' @noRd
@@ -208,7 +214,8 @@
 #'
 #' @param pipeline A gdal_pipeline object
 #'
-#' @return Character string: RFC 104 command (e.g. "gdal raster pipeline ! step1 ! step2 ! ...")
+#' @return Character string: RFC 104 command (e.g. "gdal raster pipeline ! step1 ! step2
+#' ! ...")
 #'
 #' @keywords internal
 #' @noRd
@@ -262,7 +269,8 @@
 #' @param pipeline A gdal_pipeline object
 #'
 #' @return List suitable for JSON encoding via yyjsonr::write_json_str():
-#'   list(type = "gdal_streamed_alg", command_line = "...", relative_paths_relative_to_this_file = TRUE)
+#' list(type = "gdal_streamed_alg", command_line = "...",
+#' relative_paths_relative_to_this_file = TRUE)
 #'
 #' @keywords internal
 #' @noRd
@@ -366,11 +374,14 @@
 #' This is used when loading a GDALG file: we parse the command_line,
 #' extract individual steps, and reconstruct the original job specs.
 #'
-#' @param step_tokens Character vector of tokens (e.g., c("reproject", "--dst-crs", "EPSG:4326"))
+#' @param step_tokens Character vector of tokens (e.g., c("reproject", "--dst-crs",
+#' "EPSG:4326"))
 #' @param pipeline_type Character: "raster" or "vector"
-#' @param step_position Numeric: position in pipeline (1 = first step, typically "read")
+#' @param step_position Numeric: position in pipeline (1 = first step, typically
+#' "read")
 #'
-#' @return A gdal_job object with command_path, arguments, and arg_mapping reconstructed.
+#' @return A gdal_job object with command_path, arguments, and arg_mapping
+#' reconstructed.
 #'
 #' @details
 #' This function attempts a best-effort reconstruction. Some information is lost
@@ -539,7 +550,8 @@
 #' @return List representing the complete hybrid spec with components:
 #'   gdalg (type, command_line, relative_paths_relative_to_this_file),
 #'   metadata (gdalcli_version, gdal_version_required, pipeline_name, etc),
-#'   r_job_specs (array of job specs with command_path, arguments, arg_mapping, etc)
+#' r_job_specs (array of job specs with command_path, arguments, arg_mapping,
+#' etc)
 #'
 #' @keywords internal
 #' @noRd
@@ -615,7 +627,7 @@
 #'
 #' @return A gdal_pipeline object. If r_job_specs present, full fidelity
 #'   reconstruction with all job attributes preserved. Otherwise, best-effort
-#'   from GDALG command_line parsing (may lack arg_mapping, config, env details).
+#' from GDALG command_line parsing (may lack arg_mapping, config, env details).
 #'
 #' @keywords internal
 #' @noRd

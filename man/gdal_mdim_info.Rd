@@ -39,9 +39,9 @@ gdal_mdim_info(
 A \link{gdal_job} object.
 }
 \description{
-Return information on a multidimensional dataset.
+\verb{gdal mdim info} lists various information about a GDAL supported multidimensional dataset. The following items will be reported (when known) as JSON: - The format driver used to access the file. - Hierarchy of groups - Group attributes - Arrays: * Name * Dimension name, sizes, indexing variable * Data type * Attributes * SRS * Nodata value * Units * Statistics (if requested) The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_info(input = "netcdf-4d.nc")

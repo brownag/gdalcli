@@ -13,7 +13,8 @@
 #' Check gdalraster Version
 #'
 #' @description
-#' Determines if gdalraster is installed and meets a minimum version requirement.
+#' Determines if gdalraster is installed and meets a minimum version
+#' requirement.
 #'
 #' @param min_version Character string specifying minimum required version
 #'   (e.g., "2.2.0", "2.3.0")
