@@ -66,6 +66,8 @@ regen-clean:
 # ============================================================================
 
 docs:
+	@echo "Reflowing roxygen comments..."
+	@$(R) build/reflow_roxygen.R
 	@echo "Building roxygen2 documentation..."
 	@$(R) --quiet --slave -e "roxygen2::roxygenise()"
 	@echo "[OK] Documentation built successfully"

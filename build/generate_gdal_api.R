@@ -281,9 +281,10 @@ construct_doc_url <- function(full_path, base_url = NULL, gdal_version = NULL) {
   # Use version-aware base URL if version provided
   if (is.null(base_url)) {
     if (!is.null(gdal_version)) {
-      # Use version tag for documentation
-      version_str <- gdal_version$full
-      base_url <- sprintf("https://gdal.org/en/%s/programs", version_str)
+      # Use release-X.Y format (major.minor only, no patch)
+      # GDAL docs don't change for patch versions
+      release_version <- sprintf("release-%d.%d", gdal_version$major, gdal_version$minor)
+      base_url <- sprintf("https://gdal.org/en/%s/programs", release_version)
     } else {
       # Fallback to stable docs
       base_url <- "https://gdal.org/en/stable/programs"
@@ -471,6 +472,109 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
   }
   
   return(examples)
+}
+
+#' Extract description from RST content
+#'
+#' Extracts the Description section from GDAL RST documentation.
+#' Falls back to the summary line from the "only:: html" block if Description
+#' section is not detailed enough.
+#'
+#' @param rst_content Character string with the complete RST content.
+#'
+#' @return Character string with the extracted description, or empty string if not found.
+#'
+.extract_description_from_rst <- function(rst_content) {
+  tryCatch({
+    lines <- strsplit(rst_content, "\n", fixed = TRUE)[[1]]
+    
+    # Look for Description section heading (with dashes below it in RST style)
+    # Pattern: "Description" on one line and "-------..." on the next
+    description_lines <- character(0)
+    
+    for (i in seq_along(lines)) {
+      # Check if this line matches "Description" with RST underline on next line
+      if (grepl("^Description\\s*$", lines[i], ignore.case = TRUE)) {
+        if (i < length(lines) && grepl("^-+\\s*$", lines[i + 1])) {
+          # Found the Description section
+          # Start collecting from line i+2 (after the underline)
+          start_idx <- i + 2
+          
+          # Collect lines until we hit a new section or directive
+          for (j in start_idx:length(lines)) {
+            line <- lines[j]
+            
+            # Stop if we hit RST directives or code blocks
+            if (grepl("^\\s*\\.\\.\\s+", line) || grepl("^\\s*::", line)) {
+              break
+            }
+            
+            # Check if this is the start of a new section:
+            # A new section is marked by a line with content followed by an RST underline
+            if (j < length(lines)) {
+              next_line <- lines[j + 1]
+              # Check if current line looks like a section heading (not blank) and next line is an underline
+              current_is_heading <- nzchar(trimws(line)) && grepl("^[A-Za-z]", line)
+              # Check for RST underline characters (need at least 3)
+              # Characters can be: + - * = ~ ` ^ _ #
+              # Need to put - at the end or escape it to avoid character range issues
+              next_is_underline <- grepl("^[+*=~`^_#-]{3,}\\s*$", next_line)
+              
+              if (current_is_heading && next_is_underline) {
+                # This is a new section heading, stop collecting
+                break
+              }
+            }
+            
+            # Skip empty lines at the beginning
+            if (length(description_lines) == 0 && !nzchar(trimws(line))) {
+              next
+            }
+            
+            # Add line to description (including empty lines after content has started)
+            description_lines <- c(description_lines, line)
+          }
+          
+          break
+        }
+      }
+    }
+    
+    if (length(description_lines) == 0) {
+      # Fallback: try to get the summary from "only:: html" block
+      for (i in seq_along(lines)) {
+        if (grepl("^\\s*\\.\\. only::\\s+html\\s*$", lines[i])) {
+          # Next non-empty line should be the summary
+          for (j in (i + 1):length(lines)) {
+            if (nzchar(trimws(lines[j]))) {
+              return(trimws(lines[j]))
+            }
+          }
+        }
+      }
+      return("")
+    }
+    
+    # Collapse and clean up description
+    # Remove trailing empty lines
+    while (length(description_lines) > 0 && !nzchar(trimws(description_lines[length(description_lines)]))) {
+      description_lines <- description_lines[-length(description_lines)]
+    }
+    
+    # Join lines and clean up whitespace
+    description <- paste(description_lines, collapse = " ")
+    description <- gsub("\\s+", " ", description)  # Normalize whitespace
+    description <- trimws(description)
+    
+    # Remove RST markup: :role:`content` -> content
+    # This handles :program:, :option:, :ref:, etc.
+    description <- gsub(":[a-z_]+:`([^`]+)`", "\\1", description)
+    
+    return(description)
+  }, error = function(e) {
+    cat(sprintf("  [ERROR in .extract_description_from_rst] %s\n", e$message))
+    return("")
+  })
 }
 
 
@@ -1204,9 +1308,13 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
 
+
+
   # Construct version-aware base path for URL normalization
+  # Use release-X.Y format (major.minor only, no patch)
+  # GDAL docs don't change for patch versions
   version_path <- if (!is.null(gdal_version)) {
-    gdal_version$full
+    sprintf("release-%d.%d", gdal_version$major, gdal_version$minor)
   } else {
     "stable"
   }
@@ -1262,45 +1370,86 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     raw_html = NA
   )
 
-  # STRATEGY: Use RST extraction only (more reliable and doesn't require external dependencies)
+  # STRATEGY: Use RST extraction (more reliable and doesn't require external dependencies)
   # Build command name for RST lookup (e.g., c("gdal", "raster", "info") -> "gdal_raster_info")
   command_name_for_rst <- paste(full_path, collapse = "_")
 
   if (verbose) {
-    cat(sprintf("  [*] Fetching RST examples: %s\n", command_name_for_rst))
+    cat(sprintf("  [*] Fetching RST data: %s\n", command_name_for_rst))
   }
 
-  # Attempt to fetch examples from RST only
-  rst_result <- fetch_examples_from_rst(command_name_for_rst, verbose = verbose, gdal_version = gdal_version, repo_dir = repo_dir)
+  # Try to load RST file directly
+  rst_file <- NULL
+  if (!is.null(repo_dir) && dir.exists(repo_dir)) {
+    rst_filename <- paste0(gsub("-", "_", command_name_for_rst), ".rst")
+    local_rst_file <- file.path(repo_dir, "doc", "source", "programs", rst_filename)
+    
+    if (file.exists(local_rst_file)) {
+      rst_file <- local_rst_file
+    }
+  }
   
-  if (rst_result$status == 200 && length(rst_result$examples) > 0) {
-    if (verbose) {
-      cat(sprintf("  [OK] Got %d examples from RST\n", length(rst_result$examples)))
-    }
-    # Use RST examples
-    result$examples <- rst_result$examples
-    result$status <- 200
-    result$source_examples <- "rst"
-    
-    # Cache the result
-    if (!is.null(cache)) {
-      cache$set(primary_url, result)
-    }
-    return(result)
-  } else {
-    # RST didn't have examples or failed - return empty result
-    if (verbose) {
-      cat(sprintf("  [WARN] No RST examples found for %s\n", command_name_for_rst))
-    }
-    result$status <- 404
-    result$source_examples <- "none"
-    
-    # Cache the empty result to avoid repeated attempts
-    if (!is.null(cache)) {
-      cache$set(primary_url, result)
-    }
+  # If we found an RST file, extract both description and examples
+  if (!is.null(rst_file)) {
+    tryCatch(
+      {
+        lines <- readLines(rst_file, warn = FALSE)
+        rst_content <- paste(lines, collapse = "\n")
+        
+        # Extract description
+        description <- .extract_description_from_rst(rst_content)
+        if (nzchar(description)) {
+          result$description <- description
+          if (verbose) {
+            cat(sprintf("  [OK] Extracted description (%d chars)\n", nchar(description)))
+          }
+        }
+        
+        # Extract examples
+        examples <- .extract_examples_from_rst(rst_content)
+        if (length(examples) > 0) {
+          result$examples <- examples
+          if (verbose) {
+            cat(sprintf("  [OK] Found %d examples in RST\n", length(examples)))
+          }
+        }
+        
+        # Mark as successful if either description or examples were found
+        if (!is.na(result$description) && nzchar(result$description)) {
+          result$status <- 200
+          result$source <- "rst"
+        } else if (length(examples) > 0) {
+          result$status <- 200
+          result$source <- "rst"
+        }
+      },
+      error = function(e) {
+        if (verbose) {
+          cat(sprintf("  [ERROR] Failed to read RST file: %s\n", e$message))
+        }
+      }
+    )
+  }
+  
+  # Cache the result if we found anything
+  if (!is.null(cache) && result$status == 200) {
+    cache$set(primary_url, result)
     return(result)
   }
+  
+  # If RST didn't provide useful data, set status to 404
+  if (is.na(result$status)) {
+    if (verbose) {
+      cat(sprintf("  [WARN] No RST data found for %s\n", command_name_for_rst))
+    }
+    result$status <- 404
+  }
+  
+  # Cache the empty result to avoid repeated attempts
+  if (!is.null(cache)) {
+    cache$set(primary_url, result)
+  }
+  return(result)
 }
 
 
