@@ -67,8 +67,6 @@
 #' [gdal_job_run()], [gdal_with_co()], [gdal_with_config()], [gdal_with_env()]
 #'
 #' @examples
-#' # Low-level constructor (typically used internally by auto-generated
-#' functions)
 #' job <- new_gdal_job(
 #'   command_path = c("vector", "convert"),
 #'   arguments = list(input = "/path/to/input.shp", output_layer = "output")
