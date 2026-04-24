@@ -2110,6 +2110,11 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
         escaped_desc <- safe_gsub("\\{", "\\\\{", escaped_desc, func_name = func_name, linenum = 1224)  # Escape {
         if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub } on desc for %s\n", func_name))
         escaped_desc <- safe_gsub("\\}", "\\\\}", escaped_desc, func_name = func_name, linenum = 1225)  # Escape }
+        # Escape square brackets to prevent roxygen from interpreting RST citations as links
+        if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub [ on desc for %s\n", func_name))
+        escaped_desc <- safe_gsub("\\[", "\\\\[", escaped_desc, func_name = func_name, linenum = 1226)  # Escape [
+        if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub ] on desc for %s\n", func_name))
+        escaped_desc <- safe_gsub("\\]", "\\\\]", escaped_desc, func_name = func_name, linenum = 1227)  # Escape ]
       }, error = function(e) {
         stop(sprintf("Error escaping description for %s: %s", func_name, e$message))
       })
