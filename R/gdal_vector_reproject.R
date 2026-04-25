@@ -7,14 +7,7 @@
 
 #' @title reproject: Reproject a vector dataset
 #' @description
-#' gdal vector pipeline can be used to process a vector dataset and perform
-#' various processing steps that accept vector and generate vector. For
-#' pipelines mixing raster and vector, consult gdal_pipeline. Most steps proceed
-#' in on-demand evaluation of features, unless otherwise stated in their
-#' documentation, without "materializing" the resulting dataset of the operation
-#' of each step. It may be desirable sometimes for performance purposes to
-#' proceed to materializing an intermediate dataset to disk using
-#' gdal_vector_materialize.
+#' gdal vector pipeline can be used to process a vector dataset and perform various processing steps that accept vector and generate vector. For pipelines mixing raster and vector, consult gdal_pipeline. Most steps proceed in on-demand evaluation of features, unless otherwise stated in their documentation, without "materializing" the resulting dataset of the operation of each step. It may be desirable sometimes for performance purposes to proceed to materializing an intermediate dataset to disk using gdal_vector_materialize.
 #' 
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
 #' @param input Input vector datasets (required). Exactly `1` value(s). Can also be a [gdal_job] object to extend a pipeline
@@ -38,7 +31,7 @@
 #' @examples
 #' \dontrun{
 #' # TODO: No examples available for gdal_vector_reproject.
-#' # See GDAL documentation: https://gdal.org/programs/gdal-vector-reproject.html
+#' # See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html
 #' job <- gdal_vector_reproject()
 #' # gdal_job_run(job)
 #' }

@@ -21,7 +21,7 @@
 #' @examples
 #' \dontrun{
 #' # TODO: No examples available for gdal_raster_overview_add.
-#' # See GDAL documentation: https://gdal.org/programs/gdal-raster-overview-add.html
+#' # See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_raster_overview_add.html
 #' job <- gdal_raster_overview_add()
 #' # gdal_job_run(job)
 #' }

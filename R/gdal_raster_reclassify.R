@@ -24,7 +24,7 @@
 #' @examples
 #' \dontrun{
 #' # TODO: No examples available for gdal_raster_reclassify.
-#' # See GDAL documentation: https://gdal.org/programs/gdal-raster-reclassify.html
+#' # See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_raster_reclassify.html
 #' job <- gdal_raster_reclassify()
 #' # gdal_job_run(job)
 #' }

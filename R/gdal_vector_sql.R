@@ -29,7 +29,7 @@
 #' @examples
 #' \dontrun{
 #' # TODO: No examples available for gdal_vector_sql.
-#' # See GDAL documentation: https://gdal.org/programs/gdal-vector-sql.html
+#' # See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_vector_sql.html
 #' job <- gdal_vector_sql()
 #' # gdal_job_run(job)
 #' }

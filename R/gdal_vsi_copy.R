@@ -19,7 +19,7 @@
 #' @examples
 #' \dontrun{
 #' # TODO: No examples available for gdal_vsi_copy.
-#' # See GDAL documentation: https://gdal.org/programs/gdal-vsi-copy.html
+#' # See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_vsi_copy.html
 #' job <- gdal_vsi_copy()
 #' # gdal_job_run(job)
 #' }

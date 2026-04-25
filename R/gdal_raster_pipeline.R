@@ -24,7 +24,7 @@
 #' @examples
 #' \dontrun{
 #' # TODO: No examples available for gdal_raster_pipeline.
-#' # See GDAL documentation: https://gdal.org/programs/gdal-raster-pipeline.html
+#' # See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_raster_pipeline.html
 #' job <- gdal_raster_pipeline()
 #' # gdal_job_run(job)
 #' }

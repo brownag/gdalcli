@@ -2440,10 +2440,11 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
 
   # If we didn't add any examples, add an informative placeholder
   if (examples_added == 0) {
+    # Construct proper documentation URL using the same logic as main docs
+    doc_url <- construct_doc_url(full_path, gdal_version = gdal_version)
     doc <- paste0(doc, "#' \\dontrun{\n")
     doc <- paste0(doc, sprintf("#' # TODO: No examples available for %s.\n", func_name))
-    doc <- paste0(doc, sprintf("#' # See GDAL documentation: https://gdal.org/programs/%s.html\n",
-                                tolower(gsub("_", "-", func_name))))
+    doc <- paste0(doc, sprintf("#' # See GDAL documentation: %s\n", doc_url))
     doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
     doc <- paste0(doc, "#' # gdal_job_run(job)\n")
     doc <- paste0(doc, "#' }\n")

@@ -44,7 +44,7 @@
 #' @examples
 #' \dontrun{
 #' # TODO: No examples available for gdal_vector_rasterize.
-#' # See GDAL documentation: https://gdal.org/programs/gdal-vector-rasterize.html
+#' # See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_vector_rasterize.html
 #' job <- gdal_vector_rasterize()
 #' # gdal_job_run(job)
 #' }

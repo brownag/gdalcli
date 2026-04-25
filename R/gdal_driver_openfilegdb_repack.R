@@ -7,8 +7,7 @@
 
 #' @title repack: Repack a FileGeoDatabase dataset
 #' @description
-#' Runs the a repack operation on a FileGeodatabase dataset to recover lost
-#' space due to updates or deletions.
+#' Runs the a repack operation on a FileGeodatabase dataset to recover lost space due to updates or deletions.
 #' 
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
 #' @param dataset FileGeoDatabase dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
