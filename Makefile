@@ -1,4 +1,4 @@
-.PHONY: help regen docs docs-web check check-man vignettes install build test clean all
+.PHONY: help regen docs docs-web check check-man vignettes install build test clean all deps deps-build
 
 # Variables
 R := Rscript
@@ -35,6 +35,10 @@ help:
 	@echo "CONVENIENCE:"
 	@echo "  all                regen + docs + check (full development build)"
 	@echo "  dev                regen + docs + check-man (quick dev iteration)"
+	@echo ""
+	@echo "DEPENDENCIES:"
+	@echo "  deps               Install dev dependencies (devtools, roxygen2, testthat, covr)"
+	@echo "  deps-build         Install build script dependencies (glue, processx, yyjsonr)"
 	@echo ""
 	@echo "ENVIRONMENT VARIABLES:"
 	@echo "  SKIP_ENRICHMENT    Set to 'true' to skip web doc enrichment (default: false)"
@@ -145,3 +149,17 @@ dev: regen docs check-man
 	@echo "[OK] Quick dev build complete!"
 	@echo "============================================"
 	@echo ""
+
+# ============================================================================
+# DEPENDENCY INSTALLATION TARGETS
+# ============================================================================
+
+deps:
+	@echo "Installing dev dependencies..."
+	@$(R) --quiet --slave -e "install.packages(c('devtools', 'roxygen2', 'testthat', 'covr'), repos = 'https://cloud.r-project.org/')"
+	@echo "[OK] Dev dependencies installed"
+
+deps-build: deps
+	@echo "Installing build script dependencies..."
+	@$(R) --quiet --slave -e "install.packages(c('glue', 'processx', 'yyjsonr'), repos = 'https://cloud.r-project.org/')"
+	@echo "[OK] Build dependencies installed"
