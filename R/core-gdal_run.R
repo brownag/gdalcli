@@ -226,7 +226,7 @@ gdal_job_run.gdal_job <- function(x,
       # Try to parse as JSON
       tryCatch({
         return(yyjsonr::read_json_str(result$stdout))
-      }, .error = function(e) {
+      }, error = function(e) {
         cli::cli_warn(
           c(
             "Failed to parse output as JSON",
@@ -363,7 +363,12 @@ gdal_job_run.gdal_job <- function(x,
   # Start with job environment variables
   merged <- job_env
 
-  # Add explicit environment variables (override job env)
+  # Inject config options as environment variables (GDAL reads most as env vars)
+  if (!is.null(config_opts) && length(config_opts) > 0) {
+    merged <- c(merged, config_opts)
+  }
+
+  # Add explicit environment variables (override job env and config opts)
   if (!is.null(explicit_env)) {
     merged <- c(merged, explicit_env)
   }
@@ -502,16 +507,12 @@ gdal_job_run.default <- function(x, ...) {
     # Combine: option args first, then positional args
     final_args <- c(option_args, positional_args)
 
-    if (verbose) {
-      cli::cli_alert_info(sprintf("Executing (gdalraster): gdal %s", paste(cmd, collapse = " ")))
-    }
-
     # Instantiate the algorithm with command and all arguments
     # We pass all args to gdal_alg since gdalraster needs positional args
     # to be specified together with the command
     alg <- tryCatch({
       gdalraster::gdal_alg(cmd = cmd, args = final_args)
-    }, .error = function(alg_e) {
+    }, error = function(alg_e) {
       # Check if this is a GDAL error from the constructor
       alg_msg <- conditionMessage(alg_e)
       if (grepl("GDAL FAILURE", alg_msg)) {
@@ -524,6 +525,10 @@ gdal_job_run.default <- function(x, ...) {
       # Re-throw if not a GDAL error
       stop(alg_e)
     })
+    on.exit({
+      tryCatch(alg$close(), error = identity)
+      tryCatch(alg$release(), error = identity)
+    }, add = TRUE)
 
     # Capture execution start time for audit trail
     exec_start <- Sys.time()
@@ -531,7 +536,7 @@ gdal_job_run.default <- function(x, ...) {
     # Run the algorithm
     tryCatch({
       alg$run()
-    }, .error = function(run_e) {
+    }, error = function(run_e) {
       # Check if this is a GDAL error
       run_msg <- conditionMessage(run_e)
       if (grepl("GDAL FAILURE", run_msg)) {
@@ -565,7 +570,7 @@ gdal_job_run.default <- function(x, ...) {
         # Try to parse as JSON
         tryCatch({
           result <- yyjsonr::read_json_str(output_text)
-        }, .error = function(e) {
+        }, error = function(e) {
           cli::cli_warn(
             c(
               "Failed to parse output as JSON",
@@ -596,7 +601,7 @@ gdal_job_run.default <- function(x, ...) {
     }
 
     invisible(TRUE)
-  }, .error = function(e) {
+  }, error = function(e) {
     # Try to extract GDAL error from the error message
     error_msg <- conditionMessage(e)
     
@@ -676,6 +681,11 @@ gdal_job_run.default <- function(x, ...) {
     }
   }
 
+  # Inject config options as environment variables (after job env, before explicit)
+  if (length(config_opts) > 0) {
+    env_final <- c(env_final, config_opts)
+  }
+
   # Merge with explicit env (explicit takes precedence)
   if (!is.null(env)) {
     env_final <- c(env_final, env)
@@ -699,8 +709,12 @@ gdal_job_run.default <- function(x, ...) {
 
   tryCatch({
     # Create and run algorithm
-    alg <- gdalraster::gdal_alg(args, config_options = config_opts)
-    
+    alg <- gdalraster::gdal_alg(args)
+    on.exit({
+      tryCatch(alg$close(), error = identity)
+      tryCatch(alg$release(), error = identity)
+    }, add = TRUE)
+
     # Parse for argv[0] (gdalraster may need it)
     result <- alg$run()
 
@@ -717,7 +731,7 @@ gdal_job_run.default <- function(x, ...) {
       } else if (stream_out_format == "json") {
         tryCatch({
           return(yyjsonr::read_json_str(output_text))
-        }, .error = function(e) {
+        }, error = function(e) {
           cli::cli_warn(
             c(
               "Failed to parse pipeline output as JSON",
@@ -731,7 +745,7 @@ gdal_job_run.default <- function(x, ...) {
     }
 
     invisible(TRUE)
-  }, .error = function(e) {
+  }, error = function(e) {
     cli::cli_abort(
       c(
         "Native GDAL pipeline execution failed via gdalraster",
