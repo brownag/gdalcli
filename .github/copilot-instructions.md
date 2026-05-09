@@ -248,6 +248,45 @@ auth <- gdal_auth_gcs()  # GOOGLE_APPLICATION_CREDENTIALS
 job |> gdal_with_env(auth) |> gdal_run()
 ```
 
+### Programmatic Command Invocation
+
+`gdal_call()` enables dynamic command invocation by name or function reference, supporting metaprogramming and serialization patterns:
+
+```r
+# Dynamic command selection
+cmd_name <- paste0("gdal_", input_type, "_", operation)
+job <- gdal_call(cmd_name, list(input = "in.tif", output = "out.tif"))
+
+# With modifiers
+job <- gdal_call(
+  "gdal_raster_convert",
+  list(input = "in.tif", output = "out.tif"),
+  modifiers = list(
+    function(x) gdal_with_co(x, "COMPRESS=DEFLATE"),
+    function(x) gdal_with_config(x, "GDAL_CACHEMAX=512")
+  )
+) |>
+  gdal_job_run()
+
+# Batch processing
+commands <- list(
+  list("gdal_raster_clip", list(input = "a.tif", output = "a_clipped.tif")),
+  list("gdal_raster_clip", list(input = "b.tif", output = "b_clipped.tif"))
+)
+results <- lapply(commands, function(x) {
+  gdal_call(x[[1]], x[[2]]) |> gdal_job_run()
+})
+
+# Discover available commands
+all_commands <- gdal_list_callable_commands()  # All wrapped commands
+raster_only <- gdal_list_callable_commands(type = "raster")  # Type filter
+cmd_details <- gdal_list_callable_commands(simplify = FALSE)  # Include metadata
+```
+
+**Key Functions:**
+- `gdal_call(what, args = list(), modifiers = NULL)` — Invoke command by name or reference with optional modifiers
+- `gdal_list_callable_commands(type = NULL, simplify = TRUE)` — Discover available wrapped GDAL commands; filter by type (raster/vector/vsi/driver/mdim/pipeline)
+
 ### Package Options
 
 The package provides an options system via `gdalcli_options()` for controlling default behaviors.
