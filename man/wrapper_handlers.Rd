@@ -67,7 +67,8 @@ vsicached_url(filename, ..., streaming = FALSE, validate = FALSE)
 vsisparse_url(filename, ..., streaming = FALSE, validate = FALSE)
 }
 \description{
-Internal functions for wrapper/archive VSI handlers that support recursive composition.
+Internal functions for wrapper/archive VSI handlers that support recursive
+composition.
 These handlers can accept the output of other \code{vsi_url()} calls as their
 \code{archive_path} argument, enabling complex nested scenarios like accessing a
 shapefile within a ZIP on S3.
@@ -86,7 +87,8 @@ shapefile within a ZIP on S3.
 \strong{Recognized Extensions:} .zip, .kmz, .ods, .xlsx
 
 \strong{Chaining:} Can accept output of other \code{vsi_url()} calls as \code{archive_path}.
-If a VSI path is detected, automatic explicit chaining syntax with \code{{...}} and \verb{//}
+If a VSI path is detected, automatic explicit chaining syntax with \code{{...}}
+and \verb{//}
 is applied.
 
 \strong{Parameters:}
@@ -113,7 +115,8 @@ Default FALSE (allows flexibility for extensionless URLs).
 \strong{Recognized Extensions:} .tar, .tgz, .tar.gz, .tar.bz2, .tar.xz, .tar.zst
 
 \strong{Chaining:} Can accept output of other \code{vsi_url()} calls as \code{archive_path}.
-If a VSI path is detected, automatic explicit chaining syntax with \code{{...}} and \verb{//}
+If a VSI path is detected, automatic explicit chaining syntax with \code{{...}}
+and \verb{//}
 is applied.
 
 \strong{Parameters:}
@@ -198,7 +201,8 @@ or binary data without copying entire file.
 \item \code{filename}: Character string. File path (local, VSI, or HTTP(S) URL).
 }
 
-\strong{Validation:} \code{offset} and \code{size} (if specified) must be non-negative integers.
+\strong{Validation:} \code{offset} and \code{size} (if specified) must be non-negative
+integers.
 Size of 0 or negative with non-zero offset is invalid.
 }
 
@@ -264,7 +268,8 @@ Note: Most useful with remote sources (not local files).
 }
 
 \strong{Use Cases:} Efficiently handle files with "holes" or unallocated regions.
-Useful for large binary files where most of the space is uninitialized or sparse.
+Useful for large binary files where most of the space is uninitialized or
+sparse.
 
 \strong{Behavior:} Detects and handles sparse regions within files, potentially
 reducing memory footprint and I/O operations for files with significant
@@ -292,7 +297,8 @@ vsi_url("vsizip", archive_path = s3_zip, file_in_archive = "layer.shp")
 # Direct function call
 vsizip_url(archive_path = "data.zip", file_in_archive = "layer.shp")
 # Simple local TAR.GZ
-vsi_url("vsitar", archive_path = "data.tar.gz", file_in_archive = "layer.shp")
+vsi_url("vsitar", archive_path = "data.tar.gz", file_in_archive =
+"layer.shp")
 
 # TAR.GZ on HTTP(S)
 tar_url <- vsi_url("vsicurl", url = "https://example.com/data.tar.gz")
@@ -331,9 +337,11 @@ vsi_url("vsicrypt", key = "bXlwYXNzd29yZA==", key_format = "base64",
         filename = "encrypted.bin")
 
 # Direct function call
-vsicrypt_url(key = "mypassword", alg = "AES_256_GCM", filename = "encrypted.bin")
+vsicrypt_url(key = "mypassword", alg = "AES_256_GCM", filename =
+"encrypted.bin")
 # Cache remote GeoTIFF from S3
-vsi_url("vsicached", filename = vsi_url("vsis3", bucket = "data", key = "dem.tif"))
+vsi_url("vsicached", filename = vsi_url("vsis3", bucket = "data", key =
+"dem.tif"))
 
 # Cache from HTTP(S)
 http_url <- vsi_url("vsicurl", url = "https://example.com/data.tif")
@@ -345,7 +353,8 @@ vsicached_url(filename = vsi_url("vsis3", bucket = "data", key = "dem.tif"))
 vsi_url("vsisparse", filename = "sparse_data.bin")
 
 # Access sparse file from S3
-vsi_url("vsisparse", filename = vsi_url("vsis3", bucket = "data", key = "sparse.bin"))
+vsi_url("vsisparse", filename = vsi_url("vsis3", bucket = "data", key =
+"sparse.bin"))
 
 # Direct function call
 vsisparse_url(filename = "sparse_data.bin")

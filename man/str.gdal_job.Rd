@@ -19,7 +19,8 @@
 Invisibly returns \code{object}.
 }
 \description{
-Provides a compact string representation of a \code{gdal_job} object for debugging.
+Provides a compact string representation of a \code{gdal_job} object for
+debugging.
 Avoids recursive printing that can cause C stack overflow.
 }
 \keyword{internal}

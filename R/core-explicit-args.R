@@ -119,7 +119,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
     # Get explicit args from GDALAlg object
     # GDALAlg$getExplicitlySetArgs() returns a named list
     alg$getExplicitlySetArgs()
-  }, .error = function(e) {
+  }, error = function(e) {
     # Silently return empty args on error rather than warn
     # This is consistent with graceful degradation for unavailable features
     character(0)
@@ -178,7 +178,7 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 .create_audit_entry <- function(job, status = "pending", error_msg = NULL) {
   explicit_args <- tryCatch(
     gdal_job_get_explicit_args(job),
-    .error = function(e) character(0)
+    error = function(e) character(0)
   )
 
   list(
@@ -217,7 +217,8 @@ gdal_job_get_explicit_args <- function(job, system_only = FALSE) {
 #' accessed with `attr(result, "audit_trail")`.
 #'
 #' Audit logging is controlled by `options(gdalcli.audit_logging = TRUE/FALSE)`.
-#' When FALSE (default), no audit trail is created even if this function is called.
+#' When FALSE (default), no audit trail is created even if this function is
+#' called.
 #'
 #' @examples
 #' \dontrun{
@@ -244,7 +245,7 @@ gdal_job_run_with_audit <- function(job, ..., audit_log = getOption("gdalcli.aud
   # Execute job
   result <- tryCatch({
     gdal_job_run(job, ...)
-  }, .error = function(e) {
+  }, error = function(e) {
     # Update audit entry with error
     audit_entry$status <<- "error"
     audit_entry$error <<- conditionMessage(e)

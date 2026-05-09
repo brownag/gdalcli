@@ -13,9 +13,9 @@ gdal_mdim(drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Multidimensional commands.
+Entry point for multidimensional commands
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_mdim.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_mdim.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -28,7 +28,6 @@ job <- gdal_mdim()
 \seealso{
 Other gdal_mdim_utilities: 
 \code{\link{gdal_mdim_convert}()},
-\code{\link{gdal_mdim_info}()},
-\code{\link{gdal_mdim_mosaic}()}
+\code{\link{gdal_mdim_info}()}
 }
 \concept{gdal_mdim_utilities}

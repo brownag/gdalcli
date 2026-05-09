@@ -46,5 +46,6 @@ gdal_job_run(pipeline)
 
 }
 \seealso{
-\link{gdal_job}, \code{\link[=gdal_job_run]{gdal_job_run()}}, \code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}}, \code{\link[=render_shell_script]{render_shell_script()}}
+\link{gdal_job}, \code{\link[=gdal_job_run]{gdal_job_run()}}, \code{\link[=render_gdal_pipeline]{render_gdal_pipeline()}},
+\code{\link[=render_shell_script]{render_shell_script()}}
 }

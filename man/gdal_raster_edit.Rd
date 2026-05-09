@@ -6,15 +6,12 @@
 \usage{
 gdal_raster_edit(
   dataset,
-  open_option = NULL,
   auxiliary = FALSE,
   crs = NULL,
   bbox = NULL,
   nodata = NULL,
   metadata = NULL,
   unset_metadata = NULL,
-  unset_metadata_domain = NULL,
-  gcp = NULL,
   stats = FALSE,
   approx_stats = FALSE,
   hist = FALSE
@@ -22,8 +19,6 @@ gdal_raster_edit(
 }
 \arguments{
 \item{dataset}{Dataset (to be updated in-place, unless --auxiliary) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
-
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{auxiliary}{Ask for an auxiliary .aux.xml file to be edited (Logical)}
 
@@ -35,11 +30,7 @@ gdal_raster_edit(
 
 \item{metadata}{Add/update dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{unset_metadata}{Remove dataset metadata item(s) (Character vector). Format: \code{KEY}}
-
-\item{unset_metadata_domain}{Remove dataset metadata domain(s) (Character vector). Format: \code{DOMAIN}}
-
-\item{gcp}{Add ground control point, formatted as pixel,line,easting,northing[,elevation], or @filename (Character vector)}
+\item{unset_metadata}{Remove dataset metadata item (Character vector). Format: \code{KEY}}
 
 \item{stats}{Compute statistics, using all pixels (Logical)}
 
@@ -51,9 +42,9 @@ gdal_raster_edit(
 A \link{gdal_job} object.
 }
 \description{
-Edit a raster dataset.
+\verb{gdal raster edit} can be used to edit a raster dataset. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_edit.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_edit.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
@@ -64,14 +55,11 @@ job <- gdal_raster_edit(dataset = "my.tif", crs = "EPSG:32632")
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -81,20 +69,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -106,8 +88,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

@@ -2,19 +2,23 @@
 % Please edit documentation in R/core-gdal_auth_helpers.R
 \name{gdal_auth_oss}
 \alias{gdal_auth_oss}
-\title{Create Process-Isolated Alibaba Cloud OSS Authentication Environment Variables}
+\title{Create Process-Isolated Alibaba Cloud OSS Authentication Environment
+Variables}
 \usage{
 gdal_auth_oss(no_sign_request = FALSE)
 }
 \arguments{
-\item{no_sign_request}{Logical. If \code{TRUE}, allows public bucket access without credentials.}
+\item{no_sign_request}{Logical. If \code{TRUE}, allows public bucket access without
+credentials.}
 }
 \value{
 Named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
 }
 \description{
-Reads Alibaba Cloud OSS authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
-Set \code{OSS_ENDPOINT}, \code{OSS_ACCESS_KEY_ID}, and \code{OSS_SECRET_ACCESS_KEY} in \verb{~/.Renviron}.
+Reads Alibaba Cloud OSS authentication from environment variables for use
+with \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Set \code{OSS_ENDPOINT}, \code{OSS_ACCESS_KEY_ID}, and \code{OSS_SECRET_ACCESS_KEY} in
+\verb{~/.Renviron}.
 }
 \details{
 Credentials are \strong{intentionally not accepted as function arguments} because:

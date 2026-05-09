@@ -17,7 +17,8 @@ Logical \code{TRUE} if version requirement is met, \code{FALSE} otherwise.
 Raises an .error if the version check fails.
 }
 \description{
-Helper function to check if the installed GDAL version meets minimum requirements.
+Helper function to check if the installed GDAL version meets minimum
+requirements.
 Useful when certain features require specific GDAL versions.
 }
 \examples{

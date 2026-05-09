@@ -38,9 +38,12 @@ vsihdfs_url(path, ..., streaming = FALSE, validate = FALSE)
 vsiwebhdfs_url(url, ..., streaming = FALSE, validate = FALSE)
 }
 \description{
-Internal functions for simple path-based VSI handlers (cloud storage, network, utilities).
-Each handler corresponds to a GDAL VSI prefix and composes URLs by concatenating
-path components. These handlers support the \code{streaming} parameter to toggle between
+Internal functions for simple path-based VSI handlers (cloud storage,
+network, utilities).
+Each handler corresponds to a GDAL VSI prefix and composes URLs by
+concatenating
+path components. These handlers support the \code{streaming} parameter to toggle
+between
 random-access (default, efficient) and streaming-only variants.
 }
 \details{
@@ -118,7 +121,8 @@ random-access (default, efficient) and streaming-only variants.
 
 \strong{Syntax:} \verb{/vsiadls/filesystem/path/to/file}
 
-\strong{Authentication:} Identical to \verb{/vsiaz/} (uses same AZURE_STORAGE_* environment variables)
+\strong{Authentication:} Identical to \verb{/vsiaz/} (uses same AZURE_STORAGE_*
+environment variables)
 
 \strong{Parameters:}
 \itemize{
@@ -178,7 +182,8 @@ random-access (default, efficient) and streaming-only variants.
 
 \strong{GDAL Version:} \eqn{\ge} Pre-3.0 (mature in all 3.x versions)
 
-\strong{Syntax:} \verb{/vsicurl/http://...} or \verb{/vsicurl/https://...} or \verb{/vsicurl/ftp://...}
+\strong{Syntax:} \verb{/vsicurl/http://...} or \verb{/vsicurl/https://...} or
+\verb{/vsicurl/ftp://...}
 
 \strong{Authentication:} Set via environment variables (see \code{\link[=set_gdal_auth]{set_gdal_auth()}}):
 \itemize{
@@ -202,8 +207,10 @@ random-access (default, efficient) and streaming-only variants.
 
 \strong{Syntax:} \verb{/vsigzip/path/to/file.gz}
 
-\strong{Important:} This handler decompresses a single GZip file, exposing the decompressed
-data stream. It is NOT for reading archives (use \verb{/vsitar/} for TAR.GZ files).
+\strong{Important:} This handler decompresses a single GZip file, exposing the
+decompressed
+data stream. It is NOT for reading archives (use \verb{/vsitar/} for TAR.GZ
+files).
 
 \strong{Parameters:}
 \itemize{
@@ -219,7 +226,8 @@ data stream. It is NOT for reading archives (use \verb{/vsitar/} for TAR.GZ file
 
 \strong{Syntax:} \verb{/vsimem/filename}
 
-\strong{Use Case:} For temporary files, VRTs, or conversions that benefit from memory storage
+\strong{Use Case:} For temporary files, VRTs, or conversions that benefit from
+memory storage
 instead of disk I/O.
 
 \strong{Parameters:}

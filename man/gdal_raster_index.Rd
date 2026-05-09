@@ -10,13 +10,13 @@ gdal_raster_index(
   source_crs_format = NULL,
   output,
   output_format = NULL,
-  output_layer = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
+  layer = NULL,
   recursive = FALSE,
   filename_filter = NULL,
   min_pixel_size = NULL,
@@ -24,8 +24,7 @@ gdal_raster_index(
   location_name = NULL,
   absolute_path = FALSE,
   dst_crs = NULL,
-  metadata = NULL,
-  skip_errors = FALSE
+  metadata = NULL
 )
 }
 \arguments{
@@ -39,8 +38,6 @@ gdal_raster_index(
 
 \item{output_format}{Output format}
 
-\item{output_layer}{Output layer name}
-
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
@@ -49,9 +46,11 @@ gdal_raster_index(
 
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+
+\item{layer}{Layer name}
 
 \item{recursive}{Whether input directories should be explored recursively. (Logical)}
 
@@ -68,16 +67,14 @@ gdal_raster_index(
 \item{dst_crs}{Destination CRS}
 
 \item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
-
-\item{skip_errors}{Skip errors related to input datasets (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Create a vector index of raster datasets.
+\verb{gdal raster index} creates a vector dataset with a record for each input raster file, an attribute containing the filename, and a polygon geometry outlining the raster. This output is suitable for use with \verb{MapServer <http://mapserver.org/>}__ as a raster tileindex See gdal_driver_gti_create for an extension of this command that create files to be used as input for the GTI <raster.gti> driver. The following options are available:
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_index.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_index.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")
@@ -88,14 +85,11 @@ job <- gdal_raster_index(input = "doq/*.tif", output = "doq_index.gpkg")
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -105,20 +99,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_hillshade}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -130,8 +118,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

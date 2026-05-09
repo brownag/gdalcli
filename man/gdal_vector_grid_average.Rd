@@ -2,12 +2,12 @@
 % Please edit documentation in R/gdal_vector_grid_average.R
 \name{gdal_vector_grid_average}
 \alias{gdal_vector_grid_average}
-\title{average: Create a regular grid from scattered points using moving average interpolation}
+\title{average: Create a regular grid from scattered points using moving average
+interpolation}
 \usage{
 gdal_vector_grid_average(
   input,
   input_format = NULL,
-  input_layer = NULL,
   output,
   output_format = NULL,
   output_data_type = NULL,
@@ -18,6 +18,7 @@ gdal_vector_grid_average(
   size = NULL,
   crs = NULL,
   overwrite = FALSE,
+  layer = NULL,
   sql = NULL,
   bbox = NULL,
   zfield = NULL,
@@ -35,41 +36,51 @@ gdal_vector_grid_average(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector dataset (Dataset path) (required). Can also be a
+\link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
-
-\item{input_layer}{Input layer name (Character vector)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format}
 
-\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ... (Default: \code{Float64})}
+\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16",
+"Int16", "UInt32", ... (Default: \code{Float64})}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}
+(Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{extent}{Set the target georeferenced extent. Format: \verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
+\item{extent}{Set the target georeferenced extent. Format:
+\verb{<xmin>,<ymin>,<xmax>,<ymax>}. Exactly \code{4} value(s)}
 
-\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2} value(s)}
+\item{resolution}{Set the target resolution. Format: \verb{<xres>,<yres>}. Exactly \code{2}
+value(s)}
 
-\item{size}{Set the target size in pixels and lines (Integer vector). Format: \verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
+\item{size}{Set the target size in pixels and lines (Integer vector). Format:
+\verb{<xsize>,<ysize>}. Exactly \code{2} value(s)}
 
 \item{crs}{Override the projection for the output file}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default:
+\code{false})}
+
+\item{layer}{Layer name (Character vector)}
 
 \item{sql}{SQL statement. Format: \verb{<statement>|@<filename>}}
 
-\item{bbox}{Select only points contained within the specified bounding box. Exactly \code{4} value(s)}
+\item{bbox}{Select only points contained within the specified bounding box. Exactly
+\code{4} value(s)}
 
 \item{zfield}{Field name from which to get Z values.}
 
-\item{zoffset}{Value to add to the Z field value (applied before zmultiply) (Default: \code{0})}
+\item{zoffset}{Value to add to the Z field value (applied before zmultiply)
+(Default: \code{0})}
 
-\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset) (Default: \code{1})}
+\item{zmultiply}{Multiplication factor for the Z field value (applied after zoffset)
+(Default: \code{1})}
 
 \item{radius}{Radius of the search circle}
 
@@ -77,15 +88,19 @@ gdal_vector_grid_average(
 
 \item{radius2}{Second axis of the search ellipse}
 
-\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise) (Default: \code{0})}
+\item{angle}{Angle of search ellipse rotation in degrees (counter clockwise)
+(Default: \code{0})}
 
 \item{min_points}{Minimum number of data points to use (Integer) (Default: \code{0})}
 
-\item{max_points}{Maximum number of data points to use (Integer) (Default: \code{2147483647})}
+\item{max_points}{Maximum number of data points to use (Integer) (Default:
+\code{2147483647})}
 
-\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant (Integer) (Default: \code{0})}
+\item{min_points_per_quadrant}{Minimum number of data points to use per quadrant
+(Integer) (Default: \code{0})}
 
-\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
+\item{max_points_per_quadrant}{Maximum number of data points to use per quadrant
+(Integer) (Default: \code{2147483647})}
 
 \item{nodata}{Target nodata value (Default: \code{0})}
 }
@@ -93,14 +108,18 @@ gdal_vector_grid_average(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using moving average interpolation.
+Create a regular grid from scattered points using moving average
+interpolation.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_grid_average.html} for detailed GDAL documentation.
+See
+\url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_average.html}
+for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_grid_average.
-# See GDAL documentation: https://gdal.org/programs/gdal-vector-grid-average.html
+# See GDAL documentation:
+https://gdal.org/programs/gdal-vector-grid-average.html
 job <- gdal_vector_grid_average()
 # gdal_job_run(job)
 }
@@ -108,15 +127,10 @@ job <- gdal_vector_grid_average()
 \seealso{
 Other gdal_vector_utilities: 
 \code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
-\code{\link{gdal_vector_check_coverage}()},
-\code{\link{gdal_vector_check_geometry}()},
-\code{\link{gdal_vector_clean_coverage}()},
 \code{\link{gdal_vector_clip}()},
 \code{\link{gdal_vector_concat}()},
 \code{\link{gdal_vector_convert}()},
 \code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
 \code{\link{gdal_vector_filter}()},
 \code{\link{gdal_vector_geom_buffer}()},
 \code{\link{gdal_vector_geom_explode_collections}()},
@@ -135,22 +149,11 @@ Other gdal_vector_utilities:
 \code{\link{gdal_vector_grid_minimum}()},
 \code{\link{gdal_vector_grid_nearest}()},
 \code{\link{gdal_vector_grid_range}()},
-\code{\link{gdal_vector_index}()},
 \code{\link{gdal_vector_info}()},
-\code{\link{gdal_vector_layer_algebra}()},
-\code{\link{gdal_vector_make_point}()},
-\code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
 \code{\link{gdal_vector_pipeline}()},
 \code{\link{gdal_vector_rasterize}()},
 \code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
 \code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
-\code{\link{gdal_vector_sql}()},
-\code{\link{gdal_vector_swap_xy}()}
+\code{\link{gdal_vector_sql}()}
 }
 \concept{gdal_vector_utilities}

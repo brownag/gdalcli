@@ -39,9 +39,9 @@ gdal_raster_pixel_info(
 A \link{gdal_job} object.
 }
 \description{
-Return information on a pixel of a raster dataset.
+\verb{gdal raster pixel-info} provide a mechanism to query information about a pixel given its location in one of a variety of coordinate systems. It supports outputting either as GeoJSON or CSV. The following items will be reported (when known): - Input coordinates - Input coordinates converted to column, line - Pixel value per selected band(s), with unscaled value - For VRT files, which file(s) contribute to the pixel value. The following options are available:
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -54,14 +54,11 @@ job <- gdal_raster_pixel_info()
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -72,19 +69,13 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -96,8 +87,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

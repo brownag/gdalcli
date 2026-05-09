@@ -1,8 +1,10 @@
 #' Create Process-Isolated AWS S3 Authentication Environment Variables
 #'
 #' @description
-#' Reads AWS S3 authentication from environment variables for use with [gdal_with_env()].
-#' Set credentials via `~/.Renviron`: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
+#' Reads AWS S3 authentication from environment variables for use with
+#' [gdal_with_env()].
+#' Set credentials via `~/.Renviron`: `AWS_ACCESS_KEY_ID` and
+#' `AWS_SECRET_ACCESS_KEY`.
 #'
 #' @param no_sign_request Logical. If `TRUE`, allows unsigned (public) bucket access.
 #'
@@ -61,13 +63,17 @@ gdal_auth_s3 <- function(no_sign_request = FALSE) {
 }
 
 
-#' Create Process-Isolated Azure Blob Storage Authentication Environment Variables
+#' Create Process-Isolated Azure Blob Storage Authentication Environment
+#' Variables
 #'
 #' @description
-#' Reads Azure Blob Storage authentication from environment variables for use with [gdal_with_env()].
-#' Set credentials via `~/.Renviron`: `AZURE_STORAGE_CONNECTION_STRING` or account + key/token.
+#' Reads Azure Blob Storage authentication from environment variables for use
+#' with [gdal_with_env()].
+#' Set credentials via `~/.Renviron`: `AZURE_STORAGE_CONNECTION_STRING` or
+#' account + key/token.
 #'
-#' @param no_sign_request Logical. If `TRUE`, allows public container access without credentials.
+#' @param no_sign_request Logical. If `TRUE`, allows public container access without
+#' credentials.
 #'
 #' @return Named character vector of environment variables for [gdal_with_env()].
 #'
@@ -190,13 +196,17 @@ gdal_auth_azure <- function(no_sign_request = FALSE) {
 }
 
 
-#' Create Process-Isolated Google Cloud Storage Authentication Environment Variables
+#' Create Process-Isolated Google Cloud Storage Authentication Environment
+#' Variables
 #'
 #' @description
-#' Reads Google Cloud Storage authentication from environment variables for use with [gdal_with_env()].
-#' Set `GOOGLE_APPLICATION_CREDENTIALS` environment variable pointing to JSON credentials file.
+#' Reads Google Cloud Storage authentication from environment variables for use
+#' with [gdal_with_env()].
+#' Set `GOOGLE_APPLICATION_CREDENTIALS` environment variable pointing to JSON
+#' credentials file.
 #'
-#' @param no_sign_request Logical. If `TRUE`, allows public bucket access without credentials.
+#' @param no_sign_request Logical. If `TRUE`, allows public bucket access without
+#' credentials.
 #'
 #' @return Named character vector of environment variables for [gdal_with_env()].
 #'
@@ -259,13 +269,17 @@ gdal_auth_gcs <- function(no_sign_request = FALSE) {
 }
 
 
-#' Create Process-Isolated Alibaba Cloud OSS Authentication Environment Variables
+#' Create Process-Isolated Alibaba Cloud OSS Authentication Environment
+#' Variables
 #'
 #' @description
-#' Reads Alibaba Cloud OSS authentication from environment variables for use with [gdal_with_env()].
-#' Set `OSS_ENDPOINT`, `OSS_ACCESS_KEY_ID`, and `OSS_SECRET_ACCESS_KEY` in `~/.Renviron`.
+#' Reads Alibaba Cloud OSS authentication from environment variables for use
+#' with [gdal_with_env()].
+#' Set `OSS_ENDPOINT`, `OSS_ACCESS_KEY_ID`, and `OSS_SECRET_ACCESS_KEY` in
+#' `~/.Renviron`.
 #'
-#' @param no_sign_request Logical. If `TRUE`, allows public bucket access without credentials.
+#' @param no_sign_request Logical. If `TRUE`, allows public bucket access without
+#' credentials.
 #'
 #' @return Named character vector of environment variables for [gdal_with_env()].
 #'
@@ -325,10 +339,12 @@ gdal_auth_oss <- function(no_sign_request = FALSE) {
 #' Create Process-Isolated OpenStack Swift Authentication Environment Variables
 #'
 #' @description
-#' Reads OpenStack Swift authentication from environment variables for use with [gdal_with_env()].
+#' Reads OpenStack Swift authentication from environment variables for use with
+#' [gdal_with_env()].
 #' Supports Auth V1 and Keystone V3. Set appropriate variables in `~/.Renviron`.
 #'
-#' @param auth_version Character string. Either `"1"` for Auth V1 or `"3"` for Keystone V3.
+#' @param auth_version Character string. Either `"1"` for Auth V1 or `"3"` for Keystone
+#' V3.
 #'
 #' @return Named character vector of environment variables for [gdal_with_env()].
 #'

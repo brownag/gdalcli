@@ -11,13 +11,14 @@ gdal_vsi_list(
   recursive = FALSE,
   depth = NULL,
   absolute_path = FALSE,
-  tree = FALSE
+  tree = FALSE,
+  stdout = FALSE
 )
 }
 \arguments{
 \item{filename}{File or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
-\item{output_format}{Output format. Choices: "json", "text"}
+\item{output_format}{Output format. Choices: "json", "text" (Default: \code{json})}
 
 \item{long_listing}{Use a long listing format (Logical)}
 
@@ -28,19 +29,23 @@ gdal_vsi_list(
 \item{absolute_path}{Display absolute path (Logical)}
 
 \item{tree}{Use a hierarchical presentation for JSON output (Logical)}
+
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-List files of one of the GDAL Virtual System Interface (VSI).
+\verb{gdal vsi list} list files of virtual_file_systems. This is the equivalent of the UNIX \code{ls} command, and \verb{gdal vsi ls} is an alias for \verb{gdal vsi list}. By default, it outputs file names, at the immediate level, without details, and in JSON format.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_vsi_list.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_list.html} for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vsi_list()
 \dontrun{
-  result <- gdal_job_run(job)
+# TODO: No examples available for gdal_vsi_list.
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-list.html
+job <- gdal_vsi_list()
+# gdal_job_run(job)
 }
 }
 \seealso{

@@ -40,7 +40,8 @@ Audit trails are stored as attributes on the result object and can be
 accessed with \code{attr(result, "audit_trail")}.
 
 Audit logging is controlled by \code{options(gdalcli.audit_logging = TRUE/FALSE)}.
-When FALSE (default), no audit trail is created even if this function is called.
+When FALSE (default), no audit trail is created even if this function is
+called.
 }
 \examples{
 \dontrun{

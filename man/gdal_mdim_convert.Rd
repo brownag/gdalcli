@@ -51,9 +51,9 @@ gdal_mdim_convert(
 A \link{gdal_job} object.
 }
 \description{
-Convert a multidimensional dataset.
+\verb{gdal mdim convert} can be used to convert multidimensional data between different formats. The following options are available:
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_mdim_convert.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")
@@ -64,7 +64,6 @@ job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")
 \seealso{
 Other gdal_mdim_utilities: 
 \code{\link{gdal_mdim}()},
-\code{\link{gdal_mdim_info}()},
-\code{\link{gdal_mdim_mosaic}()}
+\code{\link{gdal_mdim_info}()}
 }
 \concept{gdal_mdim_utilities}

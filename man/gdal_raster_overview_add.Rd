@@ -5,22 +5,18 @@
 \title{add: Adding overviews}
 \usage{
 gdal_raster_overview_add(
-  input,
+  dataset,
   open_option = NULL,
-  overview_src = NULL,
   external = FALSE,
   resampling = NULL,
   levels = NULL,
-  min_size = NULL,
-  creation_option = NULL
+  min_size = NULL
 )
 }
 \arguments{
-\item{input}{Dataset (to be updated in-place, unless --external) (required). \code{0} to \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{dataset}{Dataset (to be updated in-place, unless --external) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
-
-\item{overview_src}{Source overview dataset}
 
 \item{external}{Add external overviews (Logical)}
 
@@ -29,16 +25,14 @@ gdal_raster_overview_add(
 \item{levels}{Levels / decimation factors (Integer vector). Minimum: \code{2}}
 
 \item{min_size}{Maximum width or height of the smallest overview level. (Integer). Minimum: \code{1}}
-
-\item{creation_option}{Overview creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Adding overviews.
+\verb{gdal raster overview add} can be used to build or rebuild overview images for most supported file formats with one of several downsampling algorithms. Starting with GDAL 3.12, gdal raster overview add can be used as a step of a pipeline. In that case virtual overviews are generated at the output of the step, and can potentially be materialized in the final write step, when writing a GeoTIFF file with the COPY_SRC_OVERVIEWS creation option, or when writing to a COG (Cloud Optimized GeoTIFF) file.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_overview_add.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
@@ -51,14 +45,11 @@ job <- gdal_raster_overview_add()
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -69,19 +60,13 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -93,8 +78,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

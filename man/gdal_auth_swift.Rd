@@ -7,12 +7,14 @@
 gdal_auth_swift(auth_version = "3")
 }
 \arguments{
-\item{auth_version}{Character string. Either \code{"1"} for Auth V1 or \code{"3"} for Keystone V3.}
+\item{auth_version}{Character string. Either \code{"1"} for Auth V1 or \code{"3"} for Keystone
+V3.}
 }
 \value{
 Named character vector of environment variables for \code{\link[=gdal_with_env]{gdal_with_env()}}.
 }
 \description{
-Reads OpenStack Swift authentication from environment variables for use with \code{\link[=gdal_with_env]{gdal_with_env()}}.
+Reads OpenStack Swift authentication from environment variables for use with
+\code{\link[=gdal_with_env]{gdal_with_env()}}.
 Supports Auth V1 and Keystone V3. Set appropriate variables in \verb{~/.Renviron}.
 }

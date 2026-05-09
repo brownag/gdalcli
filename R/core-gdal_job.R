@@ -1,12 +1,16 @@
 #' Define and Create a GDAL Job Specification
 #'
 #' @description
-#' The `gdal_job` S3 class is the central data structure that encapsulates a GDAL command
-#' specification. It implements the lazy evaluation framework, where commands are constructed
+#' The `gdal_job` S3 class is the central data structure that encapsulates a
+#' GDAL command
+#' specification. It implements the lazy evaluation framework, where commands
+#' are constructed
 #' as objects and only executed when passed to [gdal_job_run()].
 #'
-#' The class follows the S3 object system and is designed to be composable with the native
-#' R pipe (`|>`). Helper functions like [gdal_with_co()], [gdal_with_config()], etc., all
+#' The class follows the S3 object system and is designed to be composable with
+#' the native
+#' R pipe (`|>`). Helper functions like [gdal_with_co()], [gdal_with_config()],
+#' etc., all
 #' accept and return `gdal_job` objects, enabling fluent command building.
 #'
 #' @aliases gdal_job
@@ -24,27 +28,37 @@
 #' - **stream_in** (`ANY`): An R object to be streamed to `/vsistdin/`. Can be `NULL`,
 #'   a character string, or raw vector.
 #' - **stream_out_format** (`character(1)`): Specifies output streaming format:
-#'   `NULL` (default, no output streaming), `"text"` (capture stdout as character string),
+#' `NULL` (default, no output streaming), `"text"` (capture stdout as character
+#' string),
 #'   or `"raw"` (capture as raw bytes).
 #' - **pipeline** (`gdal_pipeline` or `NULL`): A pipeline object containing the sequence
-#'   of jobs that were executed prior to this job, or `NULL` if this is a standalone job.
+#' of jobs that were executed prior to this job, or `NULL` if this is a
+#' standalone job.
 #'
 #' @section Constructor:
 #'
-#' The `new_gdal_job()` function creates a new `gdal_job` object. This is typically used
-#' internally by auto-generated wrapper functions (e.g., [gdal_vector_convert()]).
-#' End users typically interact with high-level constructor functions, not `new_gdal_job()` directly.
+#' The `new_gdal_job()` function creates a new `gdal_job` object. This is
+#' typically used
+#' internally by auto-generated wrapper functions (e.g.,
+#' [gdal_vector_convert()]).
+#' End users typically interact with high-level constructor functions, not
+#' `new_gdal_job()` directly.
 #'
 #' @param command_path A character vector specifying the command hierarchy.
 #'   Example: `c("vector", "convert")` for the `gdal vector convert` command.
 #' @param arguments A named list of validated arguments. Keys are argument names
-#'   (e.g., `"input"`, `"output"`, `"dst-crs"`). Values are the corresponding arguments.
+#' (e.g., `"input"`, `"output"`, `"dst-crs"`). Values are the corresponding
+#' arguments.
 #' @param config_options A named character vector of config options. Default empty.
 #' @param env_vars A named character vector of environment variables. Default empty.
 #' @param stream_in An R object for input streaming. Default `NULL`.
-#' @param stream_out_format Character string specifying output format or `NULL`. Default `NULL`.
-#' @param pipeline A `gdal_pipeline` object containing the sequence of jobs that led to this job, or `NULL`. Default `NULL`.
-#' @param arg_mapping A named list mapping argument names to their validation rules (min_count, max_count). Used internally for argument validation. Default `NULL`.
+#' @param stream_out_format Character string specifying output format or `NULL`.
+#' Default `NULL`.
+#' @param pipeline A `gdal_pipeline` object containing the sequence of jobs that led to
+#' this job, or `NULL`. Default `NULL`.
+#' @param arg_mapping A named list mapping argument names to their validation rules
+#' (min_count, max_count). Used internally for argument validation. Default
+#' `NULL`.
 #'
 #' @return
 #' An S3 object of class `gdal_job`.
@@ -53,7 +67,6 @@
 #' [gdal_job_run()], [gdal_with_co()], [gdal_with_config()], [gdal_with_env()]
 #'
 #' @examples
-#' # Low-level constructor (typically used internally by auto-generated functions)
 #' job <- new_gdal_job(
 #'   command_path = c("vector", "convert"),
 #'   arguments = list(input = "/path/to/input.shp", output_layer = "output")
@@ -115,7 +128,8 @@ new_gdal_job <- function(command_path,
 #' Print Method for GDAL Jobs
 #'
 #' @description
-#' Provides a human-readable representation of a `gdal_job` object for debugging.
+#' Provides a human-readable representation of a `gdal_job` object for
+#' debugging.
 #' Shows the command that would be executed, without actually running it.
 #'
 #' @param x A `gdal_job` object.
@@ -242,7 +256,8 @@ print.gdal_job <- function(x, ...) {
 #' Str Method for GDAL Jobs
 #'
 #' @description
-#' Provides a compact string representation of a `gdal_job` object for debugging.
+#' Provides a compact string representation of a `gdal_job` object for
+#' debugging.
 #' Avoids recursive printing that can cause C stack overflow.
 #'
 #' @param object A `gdal_job` object.
@@ -297,7 +312,8 @@ str.gdal_job <- function(object, ..., max.level = 1, vec.len = 4) {
 #'
 #' @examples
 #' \dontrun{
-#' pipeline <- gdal_raster_reproject(input = "input.tif", dst_crs = "EPSG:32632") |>
+#' pipeline <- gdal_raster_reproject(input = "input.tif", dst_crs =
+#' "EPSG:32632") |>
 #'   gdal_raster_scale(src_min = 0, src_max = 100) |>
 #'   gdal_raster_convert(output = "output.tif")
 #'
@@ -699,7 +715,8 @@ names.gdal_job <- function(x) {
 
 #' Dollar Operator for GDAL Job Objects
 #'
-#' Provides access to `gdal_job` slots and convenience methods using the `$` operator.
+#' Provides access to `gdal_job` slots and convenience methods using the `$`
+#' operator.
 #' This enables a fluent API for job manipulation.
 #'
 #' @param x A `gdal_job` object.

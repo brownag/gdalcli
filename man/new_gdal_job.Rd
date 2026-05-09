@@ -21,7 +21,8 @@ new_gdal_job(
 Example: \code{c("vector", "convert")} for the \verb{gdal vector convert} command.}
 
 \item{arguments}{A named list of validated arguments. Keys are argument names
-(e.g., \code{"input"}, \code{"output"}, \code{"dst-crs"}). Values are the corresponding arguments.}
+(e.g., \code{"input"}, \code{"output"}, \code{"dst-crs"}). Values are the corresponding
+arguments.}
 
 \item{config_options}{A named character vector of config options. Default empty.}
 
@@ -29,22 +30,30 @@ Example: \code{c("vector", "convert")} for the \verb{gdal vector convert} comman
 
 \item{stream_in}{An R object for input streaming. Default \code{NULL}.}
 
-\item{stream_out_format}{Character string specifying output format or \code{NULL}. Default \code{NULL}.}
+\item{stream_out_format}{Character string specifying output format or \code{NULL}.
+Default \code{NULL}.}
 
-\item{pipeline}{A \code{gdal_pipeline} object containing the sequence of jobs that led to this job, or \code{NULL}. Default \code{NULL}.}
+\item{pipeline}{A \code{gdal_pipeline} object containing the sequence of jobs that led to
+this job, or \code{NULL}. Default \code{NULL}.}
 
-\item{arg_mapping}{A named list mapping argument names to their validation rules (min_count, max_count). Used internally for argument validation. Default \code{NULL}.}
+\item{arg_mapping}{A named list mapping argument names to their validation rules
+(min_count, max_count). Used internally for argument validation. Default
+\code{NULL}.}
 }
 \value{
 An S3 object of class \code{gdal_job}.
 }
 \description{
-The \code{gdal_job} S3 class is the central data structure that encapsulates a GDAL command
-specification. It implements the lazy evaluation framework, where commands are constructed
+The \code{gdal_job} S3 class is the central data structure that encapsulates a
+GDAL command
+specification. It implements the lazy evaluation framework, where commands
+are constructed
 as objects and only executed when passed to \code{\link[=gdal_job_run]{gdal_job_run()}}.
 
-The class follows the S3 object system and is designed to be composable with the native
-R pipe (\verb{|>}). Helper functions like \code{\link[=gdal_with_co]{gdal_with_co()}}, \code{\link[=gdal_with_config]{gdal_with_config()}}, etc., all
+The class follows the S3 object system and is designed to be composable with
+the native
+R pipe (\verb{|>}). Helper functions like \code{\link[=gdal_with_co]{gdal_with_co()}}, \code{\link[=gdal_with_config]{gdal_with_config()}},
+etc., all
 accept and return \code{gdal_job} objects, enabling fluent command building.
 }
 \section{Class Structure}{
@@ -61,23 +70,27 @@ final CLI flags and values.
 \item \strong{stream_in} (\code{ANY}): An R object to be streamed to \verb{/vsistdin/}. Can be \code{NULL},
 a character string, or raw vector.
 \item \strong{stream_out_format} (\code{character(1)}): Specifies output streaming format:
-\code{NULL} (default, no output streaming), \code{"text"} (capture stdout as character string),
+\code{NULL} (default, no output streaming), \code{"text"} (capture stdout as character
+string),
 or \code{"raw"} (capture as raw bytes).
 \item \strong{pipeline} (\code{gdal_pipeline} or \code{NULL}): A pipeline object containing the sequence
-of jobs that were executed prior to this job, or \code{NULL} if this is a standalone job.
+of jobs that were executed prior to this job, or \code{NULL} if this is a
+standalone job.
 }
 }
 
 \section{Constructor}{
 
 
-The \code{new_gdal_job()} function creates a new \code{gdal_job} object. This is typically used
-internally by auto-generated wrapper functions (e.g., \code{\link[=gdal_vector_convert]{gdal_vector_convert()}}).
-End users typically interact with high-level constructor functions, not \code{new_gdal_job()} directly.
+The \code{new_gdal_job()} function creates a new \code{gdal_job} object. This is
+typically used
+internally by auto-generated wrapper functions (e.g.,
+\code{\link[=gdal_vector_convert]{gdal_vector_convert()}}).
+End users typically interact with high-level constructor functions, not
+\code{new_gdal_job()} directly.
 }
 
 \examples{
-# Low-level constructor (typically used internally by auto-generated functions)
 job <- new_gdal_job(
   command_path = c("vector", "convert"),
   arguments = list(input = "/path/to/input.shp", output_layer = "output")

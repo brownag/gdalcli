@@ -12,7 +12,6 @@ gdal_raster_hillshade(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   band = NULL,
   zfactor = NULL,
   xscale = NULL,
@@ -25,7 +24,7 @@ gdal_raster_hillshade(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -38,8 +37,6 @@ gdal_raster_hillshade(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
@@ -63,9 +60,9 @@ gdal_raster_hillshade(
 A \link{gdal_job} object.
 }
 \description{
-Generate a shaded relief map
+\verb{gdal raster hillshade} generates a shaded relief map, from any GDAL-supported elevation raster. This subcommand is also available as a potential step of gdal_raster_pipeline It generates an 8-bit raster with a nice shaded relief effect. It is very useful for visualizing the terrain. You can optionally specify the azimuth and altitude of the light source, a vertical exaggeration factor and scaling factors to account for differences between vertical and horizontal units. The value 0 is used as the output nodata value. A nodata value in the target dataset will be emitted if at least one pixel set to the nodata value is found in the 3x3 window centered around each source pixel. By default, the algorithm will compute values at image edges or if a nodata value is found in the 3x3 window, by interpolating missing values, unless --no-edges is specified, in which case a 1-pixel border around the image will be set with the nodata value. In general, it assumes that x, y and z units are identical. However, if none of --xscale and --yscale are specified, and the CRS is a geographic or projected CRS, it will automatically determine the appropriate ratio from the units of the CRS, as well as the potential value of the units of the raster band (as returned by :cppGDALRasterBand::GetUnitType, if it is metre, foot international or US survey foot). Note that for geographic CRS, the result for source datasets at high latitudes may be incorrect, and prior reprojection to a polar projection might be needed using gdal_raster_reproject. If x (east-west) and y (north-south) units are identical, but z (elevation) units are different, the --xscale and --yscale can be used to set the ratio of vertical units to horizontal. For geographic CRS near the equator, where units of latitude and units of longitude are similar, elevation (z) units can be converted to be compatible by using scale=370400 (if elevation is in feet) or scale=111120 (if elevation is in meters). For locations not near the equator, the --xscale value can be taken as the --yscale value multiplied by the cosine of the mean latitude of the raster.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_hillshade.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 
@@ -77,14 +74,11 @@ job <- gdal_raster_hillshade(input = "n43.dt0", output = "out.tif", overwrite = 
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -94,20 +88,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -119,8 +107,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

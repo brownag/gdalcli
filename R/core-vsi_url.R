@@ -2,41 +2,56 @@
 #'
 #' @description
 #' `vsi_url()` composes GDAL Virtual File System (VSI) URLs across 30+ handlers
-#' including cloud storage (S3, GCS, Azure, OSS, Swift), archive formats (ZIP, TAR, 7z, RAR),
+#' including cloud storage (S3, GCS, Azure, OSS, Swift), archive formats (ZIP,
+#' TAR, 7z, RAR),
 #' and utility handlers (memory, subfile, encryption).
 #'
-#' The function supports recursive composition of VSI paths, enabling complex nested
-#' scenarios such as accessing a shapefile within a ZIP archive stored on an S3 bucket.
-#' Authentication is decoupled from URL composition and managed through environment
+#' The function supports recursive composition of VSI paths, enabling complex
+#' nested
+#' scenarios such as accessing a shapefile within a ZIP archive stored on an S3
+#' bucket.
+#' Authentication is decoupled from URL composition and managed through
+#' environment
 #' variables via [set_gdal_auth()].
 #'
 #' @param handler Character string identifying the VSI handler prefix (e.g., "vsis3",
 #'   "vsizip", "vsiaz"). Dispatches to the corresponding handler function.
-#'   Supported handlers are documented via their individual functions (see **See Also** section).
-#' @param ... Handler-specific arguments. Passed through to the corresponding `vsi*_url()` function.
+#' Supported handlers are documented via their individual functions (see **See
+#' Also** section).
+#' @param ... Handler-specific arguments. Passed through to the corresponding
+#' `vsi*_url()` function.
 #' @param streaming Logical. If `TRUE`, appends `_streaming` to the handler prefix
 #'   (e.g., `/vsis3_streaming/` instead of `/vsis3/`). Streaming handlers are
-#'   optimized for sequential-only access and should be used only when random-access
-#'   efficiency is not required. Default is `FALSE` (random-access, recommended for
+#' optimized for sequential-only access and should be used only when
+#' random-access
+#' efficiency is not required. Default is `FALSE` (random-access, recommended
+#' for
 #'   Cloud Optimized GeoTIFF and similar formats).
 #' @param validate Logical. If `TRUE`, performs strict validation on path components:
-#'   checks for empty strings, illegal characters, and other constraints. Default is
-#'   `FALSE`, which preserves maximum flexibility for composing URLs to non-existent,
+#' checks for empty strings, illegal characters, and other constraints. Default
+#' is
+#' `FALSE`, which preserves maximum flexibility for composing URLs to
+#' non-existent,
 #'   remote, or future paths.
 #'
 #' @return
 #' A character string representing the composed VSI path, suitable for use with
-#' GDAL-aware functions (e.g., `sf::read_sf()`, `stars::read_stars()`, `raster::brick()`).
+#' GDAL-aware functions (e.g., `sf::read_sf()`, `stars::read_stars()`,
+#' `raster::brick()`).
 #'
 #' @details
 #'
-#' `vsi_url()` dispatches to handler-specific functions based on the `handler` parameter:
+#' `vsi_url()` dispatches to handler-specific functions based on the `handler`
+#' parameter:
 #'
-#' **Path-based handlers:** [vsis3_url()], [vsigs_url()], [vsiaz_url()], [vsiadls_url()],
-#' [vsioss_url()], [vsiswift_url()], [vsicurl_url()], [vsigzip_url()], [vsimem_url()],
+#' **Path-based handlers:** [vsis3_url()], [vsigs_url()], [vsiaz_url()],
+#' [vsiadls_url()],
+#' [vsioss_url()], [vsiswift_url()], [vsicurl_url()], [vsigzip_url()],
+#' [vsimem_url()],
 #' [vsihdfs_url()], [vsiwebhdfs_url()]
 #'
-#' **Wrapper/archive handlers:** [vsizip_url()], [vsitar_url()], [vsi7z_url()], [vsirar_url()],
+#' **Wrapper/archive handlers:** [vsizip_url()], [vsitar_url()], [vsi7z_url()],
+#' [vsirar_url()],
 #' [vsisubfile_url()], [vsicrypt_url()], [vsicached_url()], [vsisparse_url()]
 #'
 #' @section GDAL Version Support:
@@ -45,15 +60,18 @@
 #'
 #' Handler availability across GDAL versions:
 #'
-#' Cloud handlers (S3, GCS, Azure, OSS, Swift) are available across all GDAL 3.x versions.
+#' Cloud handlers (S3, GCS, Azure, OSS, Swift) are available across all GDAL 3.x
+#' versions.
 #' Archive handlers (ZIP, TAR, GZip) are available across all versions.
 #' Archive handlers (7z, RAR) require GDAL 3.7.0 or later (with libarchive).
-#' Utility handlers (mem, subfile, crypt, cached, sparse) are available across all versions.
+#' Utility handlers (mem, subfile, crypt, cached, sparse) are available across
+#' all versions.
 #' Network handlers (curl, HDFS, WebHDFS) are available across all versions.
 #'
 #' @section Authentication:
 #'
-#' Credentials for cloud storage handlers must be configured via environment variables.
+#' Credentials for cloud storage handlers must be configured via environment
+#' variables.
 #' Use [set_gdal_auth()] to set these variables securely:
 #'
 #' ```r
@@ -70,10 +88,12 @@
 #' @section Performance Considerations:
 #'
 #' - **Random-access (default)**: Use `streaming = FALSE` (default) for formats like
-#'   Cloud Optimized GeoTIFF (COG), which benefit from efficient HTTP Range requests
+#' Cloud Optimized GeoTIFF (COG), which benefit from efficient HTTP Range
+#' requests
 #'   to read small data windows.
 #' - **Streaming**: Use `streaming = TRUE` only for sequential-only workflows (e.g.,
-#'   reading an entire compressed file from start to finish). Streaming through remote
+#' reading an entire compressed file from start to finish). Streaming through
+#' remote
 #'   data can be slower due to lack of seek efficiency.
 #'
 #' @references
@@ -93,8 +113,10 @@
 #'
 #' @seealso
 #' [vsis3_url()], [vsigs_url()], [vsiaz_url()], [vsiadls_url()], [vsioss_url()],
-#' [vsiswift_url()], [vsicurl_url()], [vsigzip_url()], [vsimem_url()], [vsihdfs_url()],
-#' [vsiwebhdfs_url()], [vsizip_url()], [vsitar_url()], [vsi7z_url()], [vsirar_url()],
+#' [vsiswift_url()], [vsicurl_url()], [vsigzip_url()], [vsimem_url()],
+#' [vsihdfs_url()],
+#' [vsiwebhdfs_url()], [vsizip_url()], [vsitar_url()], [vsi7z_url()],
+#' [vsirar_url()],
 #' [vsisubfile_url()], [vsicrypt_url()], [vsicached_url()], [vsisparse_url()]
 #'
 #' @export

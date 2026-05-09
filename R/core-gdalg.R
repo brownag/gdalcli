@@ -17,7 +17,8 @@
 #' Check GDALG Format Driver Availability
 #'
 #' @description
-#' Checks if the GDALG format driver is available in the current GDAL installation.
+#' Checks if the GDALG format driver is available in the current GDAL
+#' installation.
 #' This is required for using `gdal_save_pipeline_native()`.
 #'
 #' @return Logical TRUE if GDALG driver is available, FALSE otherwise
@@ -77,7 +78,8 @@ gdal_has_gdalg_driver <- function() {
 #'
 #' @description
 #' Saves a gdal_pipeline using the native GDALG format. This method produces
-#' pure GDALG JSON that is compatible with GDAL's GDALG driver (read-only in GDAL 3.11+).
+#' pure GDALG JSON that is compatible with GDAL's GDALG driver (read-only in
+#' GDAL 3.11+).
 #'
 #' @param pipeline A gdal_pipeline or gdal_job object with pipeline
 #' @param path Character string specifying output path (typically .gdalg.json)
@@ -140,23 +142,28 @@ gdal_save_pipeline_native <- function(pipeline,
 #' Save GDAL Pipeline to gdalcli Pipeline Format
 #'
 #' @description
-#' Saves a gdal_pipeline object to a gdalcli pipeline JSON file. The gdalcli pipeline
-#' format is a JSON-based pipeline definition that can be saved to disk and loaded later
+#' Saves a gdal_pipeline object to a gdalcli pipeline JSON file. The gdalcli
+#' pipeline
+#' format is a JSON-based pipeline definition that can be saved to disk and
+#' loaded later
 #' for execution.
 #'
 #' @param pipeline A gdal_pipeline or gdal_job object with pipeline
-#' @param path Character string specifying the path to save to (typically .gdalcli.json)
+#' @param path Character string specifying the path to save to (typically
+#' .gdalcli.json)
 #' @param name Character string. Optional name for the pipeline
 #' @param description Character string. Optional description of the pipeline
 #' @param custom_tags List. Optional user-defined metadata to include
-#' @param pretty Logical. If TRUE (default), formats JSON with indentation for readability
+#' @param pretty Logical. If TRUE (default), formats JSON with indentation for
+#' readability
 #' @param overwrite Logical. If TRUE, overwrites existing file
 #' @param verbose Logical. If TRUE, prints diagnostic information
 #'
 #' @return Invisibly returns the path where the pipeline was saved
 #'
 #' @details
-#' This function saves the pipeline in gdalcli's hybrid JSON format, which combines:
+#' This function saves the pipeline in gdalcli's hybrid JSON format, which
+#' combines:
 #' - A pure GDALG specification (RFC 104) for GDAL compatibility
 #' - R-specific metadata/tags for gdalcli features
 #' - Full job specifications for lossless round-tripping
@@ -168,13 +175,15 @@ gdal_save_pipeline_native <- function(pipeline,
 #' - Used in other gdalcli-compatible tools
 #'
 #' **Note on File Formats:**
-#' This function produces `.gdalcli.json` (hybrid) files. For pure GDALG (RFC 104)
+#' This function produces `.gdalcli.json` (hybrid) files. For pure GDALG (RFC
+#' 104)
 #' output suitable for `gdal raster pipeline`, use [gdal_save_pipeline_native()]
 #' or [gdalg_write()], which typically use the `.gdalg.json` extension.
 #'
 #' @examples
 #' \dontrun{
-#' pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
+#' pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632")
+#' |>
 #'   gdal_raster_convert(output = "out.tif")
 #'
 #' # Save to gdalcli format (.gdalcli.json)
@@ -210,7 +219,8 @@ gdal_save_pipeline <- function(pipeline,
 #' Load GDAL Pipeline from gdalcli Pipeline Format
 #'
 #' @description
-#' Loads a gdal_pipeline from a gdalcli pipeline JSON file. gdalcli pipeline files
+#' Loads a gdal_pipeline from a gdalcli pipeline JSON file. gdalcli pipeline
+#' files
 #' can be created by gdal_save_pipeline() and contain pipeline definitions that
 #' can be executed.
 #'

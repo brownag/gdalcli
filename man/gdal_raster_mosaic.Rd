@@ -5,31 +5,23 @@
 \title{mosaic: Build a mosaic, either virtual (VRT) or materialized}
 \usage{
 gdal_raster_mosaic(
-  input,
-  input_format = NULL,
+  input = NULL,
   output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
-  open_option = NULL,
   creation_option = NULL,
-  overwrite = FALSE,
-  append = FALSE,
   band = NULL,
-  absolute_path = FALSE,
+  overwrite = FALSE,
   resolution = NULL,
   bbox = NULL,
   src_nodata = NULL,
   dst_nodata = NULL,
   hide_nodata = FALSE,
-  add_alpha = FALSE,
-  pixel_function = NULL,
-  pixel_function_arg = NULL
+  add_alpha = FALSE
 )
 }
 \arguments{
-\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames) (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
-
-\item{input_format}{Input formats (Character vector) (Advanced)}
+\item{input}{Input raster datasets (or specify a @\if{html}{\out{<filename>}} to point to a file containing filenames). Format: \code{INPUTS}. \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
@@ -37,17 +29,11 @@ gdal_raster_mosaic(
 
 \item{target_aligned_pixels}{Round target extent to target resolution (Logical)}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
-
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
-
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{band}{Input band(s) (1-based index) (Integer vector)}
 
-\item{absolute_path}{Whether the path to the input datasets should be stored as an absolute path (Logical)}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{resolution}{Target resolution (in destination CRS units). Format: \verb{<xres>,<yres>|same|average|common|highest|lowest} (Default: \code{same})}
 
@@ -60,18 +46,14 @@ gdal_raster_mosaic(
 \item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
 
 \item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical)}
-
-\item{pixel_function}{Specify a pixel function to calculate output value from overlapping inputs. Choices: "argmax", "argmin", "cmul", "complex", "conj", ...}
-
-\item{pixel_function_arg}{Specify argument(s) to pass to the pixel function (Character vector). Format: \verb{<NAME>=<VALUE>}}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Build a mosaic, either virtual (VRT) or materialized.
+This program builds a mosaic of a list of input GDAL datasets, that can be either a virtual mosaic in the VRT (Virtual Dataset) <raster.vrt> format, or in a more conventional raster format such as GeoTIFF. Wildcards '*', '?' or '['] of :cppVSIGlob can be used for input dataset names, even on files located on network file systems such as /vsis3/, /vsigs/, /vsiaz/, etc. Alternatively if a input dataset name is prefixed by the \code{@} character, it will be assumed to contain the list of actual dataset names (one per line) to use as input datasets. gdal raster mosaic does some checks to ensure that all files that will be put in the resulting file have similar characteristics: number of bands, projection, color interpretation, etc. If not, files that do not match the common characteristics will be skipped. Starting with GDAL 3.12, a function (e.g., \code{min}, \code{mean}, \code{median}) can be specified (--pixel-function) to calculate pixel values from overlapping inputs. If no function is specified, or in earlier versions, the order of the input list is used to determine priority. Files that are listed at the end are the ones from which the content will be fetched. Note that nodata will be taken into account to potentially fetch data from lower-priority datasets, but currently, alpha channel is not taken into account to do alpha compositing (so a source with alpha=0 appearing on top of another source will override its content). This might be changed in later versions. Stating with GDAL 3.12, this command can also be used as the first step of gdal_raster_pipeline.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", 
@@ -83,14 +65,11 @@ job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt",
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -100,20 +79,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_hillshade}()},
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -125,8 +98,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

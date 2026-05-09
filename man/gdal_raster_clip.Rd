@@ -12,10 +12,8 @@ gdal_raster_clip(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   bbox = NULL,
   bbox_crs = NULL,
-  window = NULL,
   geometry = NULL,
   geometry_crs = NULL,
   like = NULL,
@@ -28,7 +26,7 @@ gdal_raster_clip(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -42,13 +40,9 @@ gdal_raster_clip(
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
-
 \item{bbox}{Clipping bounding box as xmin,ymin,xmax,ymax. Exactly \code{4} value(s)}
 
 \item{bbox_crs}{CRS of clipping bounding box}
-
-\item{window}{Raster window as col,line,width,height in pixels (Integer vector). Exactly \code{4} value(s)}
 
 \item{geometry}{Clipping geometry (WKT or GeoJSON)}
 
@@ -72,9 +66,9 @@ gdal_raster_clip(
 A \link{gdal_job} object.
 }
 \description{
-Clip a raster dataset.
+\verb{gdal raster clip} can be used to clip a raster dataset using georeferenced coordinates. Either --bbox or --like must be specified. The output dataset is in the same SRS as the input one, and the original resolution is preserved. Bounds are rounded to match whole pixel locations (i.e. there is no resampling involved) \code{clip} can also be used as a step of gdal_raster_pipeline.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_clip.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_clip.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE, 
@@ -86,13 +80,10 @@ job <- gdal_raster_clip(input = "in.tif", output = "out.tif", overwrite = TRUE,
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -103,20 +94,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -128,8 +113,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

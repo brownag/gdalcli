@@ -12,14 +12,13 @@ gdal_raster_tri(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   band = NULL,
   algorithm = NULL,
   no_edges = FALSE
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -33,8 +32,6 @@ gdal_raster_tri(
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
-
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
 \item{algorithm}{Algorithm to compute TRI. Choices: "Riley", "Wilson" (Default: \code{Riley})}
@@ -45,9 +42,9 @@ gdal_raster_tri(
 A \link{gdal_job} object.
 }
 \description{
-Generate a Terrain Ruggedness Index (TRI) map
+\verb{gdal raster tri} generates a single-band raster with values computed from the elevation. TRI stands for Terrain Ruggedness Index, which measures the difference between a central pixel and its surrounding cells. This subcommand is also available as a potential step of gdal_raster_pipeline Value -9999 is used as the nodata value. A nodata value in the target dataset will also be emitted if at least one pixel set to the nodata value is found in the 3x3 window centered around each source pixel. By default, the algorithm will compute values at image edges or if a nodata value is found in the 3x3 window, by interpolating missing values, unless --no-edges is specified, in which case a 1-pixel border around the image will be set with the nodata value.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_tri.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_tri.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_tri(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
@@ -58,14 +55,11 @@ job <- gdal_raster_tri(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -76,20 +70,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -100,8 +88,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tile}()},
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

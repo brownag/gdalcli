@@ -1,11 +1,14 @@
 #' Discover GDAL CLI Commands and Help
 #'
 #' @description
-#' Utility functions for discovering available GDAL CLI commands and getting help
-#' for specific operations. These functions wrap gdalraster's discovery functions
+#' Utility functions for discovering available GDAL CLI commands and getting
+#' help
+#' for specific operations. These functions wrap gdalraster's discovery
+#' functions
 #' when available.
 #'
-#' `gdal_list_commands()` lists all available GDAL CLI algorithms across modules.
+#' `gdal_list_commands()` lists all available GDAL CLI algorithms across
+#' modules.
 #' This is useful for discovering what operations are available without needing
 #' to refer to external documentation.
 #'
@@ -107,7 +110,7 @@ gdal_list_commands <- function(command = NULL, output = "data.frame") {
     } else {
       cli::cli_abort("output must be 'data.frame' or 'list'")
     }
-  }, .error = function(e) {
+  }, error = function(e) {
     cli::cli_abort(
       c(
         "Failed to retrieve GDAL commands",
@@ -169,7 +172,7 @@ gdal_command_help <- function(command) {
     # Call gdalraster::gdal_usage() to get help for this command
     help_text <- gdalraster::gdal_usage(cmd_parts)
     invisible(help_text)
-  }, .error = function(e) {
+  }, error = function(e) {
     cli::cli_abort(
       c(
         "Failed to retrieve help for command: {command}",
@@ -184,7 +187,8 @@ gdal_command_help <- function(command) {
 #' Check GDAL Version Requirements
 #'
 #' @description
-#' Helper function to check if the installed GDAL version meets minimum requirements.
+#' Helper function to check if the installed GDAL version meets minimum
+#' requirements.
 #' Useful when certain features require specific GDAL versions.
 #'
 #' @param minimum Character string: minimum required GDAL version (e.g., "3.12").
@@ -251,7 +255,7 @@ gdal_check_version <- function(minimum = "3.11", op = ">=") {
       # Fallback: try to get from gdal command-line
       result <- tryCatch(
         processx::run("gdal", c("--version"), error_on_status = FALSE),
-        .error = function(e) NULL
+        error = function(e) NULL
       )
 
       if (!is.null(result) && result$status == 0) {
@@ -275,7 +279,7 @@ gdal_check_version <- function(minimum = "3.11", op = ">=") {
         )
       }
     }
-  }, .error = function(e) {
+  }, error = function(e) {
     cli::cli_abort(
       c(
         "Failed to get GDAL version",

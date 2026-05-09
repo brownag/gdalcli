@@ -7,11 +7,14 @@
 #' framework.
 #'
 #' @details
-#' **GdalApi** is the top-level object accessible as `gdal.alg` in the namespace.
-#' It contains GdalApiSub instances for each command group (raster, vector, etc.).
+#' **GdalApi** is the top-level object accessible as `gdal.alg` in the
+#' namespace.
+#' It contains GdalApiSub instances for each command group (raster, vector,
+#' etc.).
 #' Each GdalApiSub contains dynamically created functions for GDAL commands.
 #'
-#' This implementation uses environments with custom `$` methods to allow dynamic member
+#' This implementation uses environments with custom `$` methods to allow
+#' dynamic member
 #' addition at runtime, which is not possible with S3 or S7 classes.
 #'
 #' @keywords internal
@@ -20,8 +23,10 @@
 #'
 #' Top-level object for the dynamic GDAL API.
 #'
-#' Provides access to GDAL command groups as dynamic member objects (e.g., `gdal.alg$raster`,
-#' `gdal.alg$vector`). Each group contains dynamically created functions for GDAL commands.
+#' Provides access to GDAL command groups as dynamic member objects (e.g.,
+#' `gdal.alg$raster`,
+#' `gdal.alg$vector`). Each group contains dynamically created functions for
+#' GDAL commands.
 #' The API is cached based on GDAL version for performance.
 #'
 #' @return
@@ -164,7 +169,7 @@ print.GdalApi <- function(x, ...) {
         "Dynamic GDAL API built successfully (GDAL {api_env$gdal_version})"
       )
     },
-    .error = function(e) {
+    error = function(e) {
       cli::cli_abort(
         c(
           "Failed to build dynamic API structure",
@@ -193,7 +198,7 @@ print.GdalApi <- function(x, ...) {
         "Dynamic GDAL API loaded from cache (GDAL {api_env$gdal_version})"
       )
     },
-    .error = function(e) {
+    error = function(e) {
       cli::cli_warn("Cache load failed, rebuilding...")
       .build_api_structure(api_env)
       .save_to_cache(api_env)
@@ -224,7 +229,7 @@ print.GdalApi <- function(x, ...) {
 
       cli::cli_inform("API structure cached to {.file {api_env$cache_file}}")
     },
-    .error = function(e) {
+    error = function(e) {
       cli::cli_warn("Failed to save cache: {conditionMessage(e)}")
     }
   )
@@ -234,7 +239,8 @@ print.GdalApi <- function(x, ...) {
 #'
 #' Intermediate node representing a command group (e.g., `gdal.alg$raster`).
 #'
-#' @param group_name Character string of the command group name (e.g., "raster", "vector").
+#' @param group_name Character string of the command group name (e.g., "raster",
+#' "vector").
 #' @param command_list List of command paths for this group.
 #'
 #' @return
@@ -271,7 +277,7 @@ GdalApiSub <- function(group_name, command_list) {
         # Store directly in the environment
         sub_env[[cmd_name]] <- func
       },
-      .error = function(e) {
+      error = function(e) {
         cli::cli_warn("Failed to create function for {paste(cmd_path, collapse=' ')}: {conditionMessage(e)}")
       }
     )

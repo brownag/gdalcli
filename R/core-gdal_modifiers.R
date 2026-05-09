@@ -1,14 +1,16 @@
 #' Add Creation Options to a GDAL Job
 #'
 #' @description
-#' `gdal_with_co()` is an S3 generic for adding creation options (typically `-co` or
+#' `gdal_with_co()` is an S3 generic for adding creation options (typically
+#' `-co` or
 #' `--creation-option` in the GDAL CLI) to a [gdal_job] object. Creation options
 #' control how GDAL creates new datasets.
 #'
 #' This function is designed to be used with the native R pipe (`|>`).
 #'
 #' @param x A [gdal_job] object.
-#' @param ... One or more creation option strings (e.g., `"COMPRESS=LZW"`, `"BLOCKXSIZE=256"`).
+#' @param ... One or more creation option strings (e.g., `"COMPRESS=LZW"`,
+#' `"BLOCKXSIZE=256"`).
 #'   Strings are appended to the `x$arguments$creation-option` list.
 #'
 #' @return
@@ -66,8 +68,10 @@ gdal_with_co.default <- function(x, ...) {
 #'
 #' @description
 #' `gdal_with_lco()` is an S3 generic for adding layer creation options
-#' (typically `-lco` or `--layer-creation-option` in the GDAL CLI) to a [gdal_job] object.
-#' Layer creation options control properties of individual layers in multi-layer datasets.
+#' (typically `-lco` or `--layer-creation-option` in the GDAL CLI) to a
+#' [gdal_job] object.
+#' Layer creation options control properties of individual layers in multi-layer
+#' datasets.
 #'
 #' This function is designed to be used with the native R pipe (`|>`).
 #'
@@ -268,8 +272,10 @@ gdal_with_config.default <- function(x, ...) {
 #' [gdal_job] object. Environment variables are passed to the subprocess
 #' and affect GDAL's behavior.
 #'
-#' This is the modern, recommended way to set authentication credentials and other
-#' environment-specific state. It is process-isolated and reproducible, unlike the
+#' This is the modern, recommended way to set authentication credentials and
+#' other
+#' environment-specific state. It is process-isolated and reproducible, unlike
+#' the
 #' legacy [set_gdal_auth()] approach of using `Sys.setenv()`.
 #'
 #' This function is designed to be used with the native R pipe (`|>`).

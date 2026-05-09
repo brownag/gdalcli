@@ -13,7 +13,6 @@ gdal_raster_reproject(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   src_crs = NULL,
   dst_crs = NULL,
   resampling = NULL,
@@ -26,12 +25,11 @@ gdal_raster_reproject(
   add_alpha = FALSE,
   warp_option = NULL,
   transform_option = NULL,
-  error_threshold = NULL,
-  num_threads = NULL
+  error_threshold = NULL
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -46,8 +44,6 @@ gdal_raster_reproject(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{src_crs}{Source CRS}
 
@@ -73,17 +69,15 @@ gdal_raster_reproject(
 
 \item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Advanced)}
 
-\item{error_threshold}{Error threshold. Minimum: \code{0} (Advanced)}
-
-\item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{ALL_CPUS})}
+\item{error_threshold}{Error threshold (Advanced)}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-Reproject a raster dataset.
+\verb{gdal raster reproject} can be used to reproject a raster dataset. The program can reproject to any supported projection. First, gdal raster reproject must determine the extent and resolution of the output, if these have not been specified using --bbox and --resolution. These are determined by transforming a sample of points from the source CRS to the destination CRS. Details of the procedure can be found in the documentation for :cppGDALSuggestedWarpOutput. If multiple inputs are provided to gdal raster reproject, the output extent will be calculated to cover all of them, at a resolution consistent with the highest-resolution input. Once the dimensions of the output image have been determined, gdal raster reproject divides the output image into chunks that can be processed independently. gdal raster reproject then iterates over scanlines in these chunks, and for each output pixel determines a rectangular region of source pixels that contribute to the value of the output pixel. The dimensions of this rectangular region are typically determined by estimating the relative scales of the source and destination raster, but can be manually specified (see documentation of the \code{XSCALE} parameter in :cppGDALWarpOptions::papszWarpOptions). Because the source region is a simple rectangle, it is not possible for an output pixel to be associated with source pixels from both sides of the antimeridian or pole (when transforming from geographic coordinates). The rectangular region of source pixels is then provided to a function that performs the resampling algorithm selected with --resampling. Depending on the resampling algorithm and relative scales of the source and destination rasters, source pixels may be weighted either according to the approximate fraction of the source pixel that is covered by the destination pixel (e.g., "mean" and "sum" resampling), or by horizontal and vertical Cartesian distances between the center of the source pixel and the center of the target pixel (e.g., bilinear or cubic spline resampling). In the latter case, the relative weight of an individual source pixel is determined by the product of the weights determined for its row and column; the diagonal Cartesian distance is not calculated. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_reproject.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = TRUE, 
@@ -95,14 +89,11 @@ job <- gdal_raster_reproject(input = "in.tif", output = "out.tif", overwrite = T
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
 \code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -113,19 +104,13 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -137,8 +122,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}

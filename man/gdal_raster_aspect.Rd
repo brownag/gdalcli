@@ -12,7 +12,6 @@ gdal_raster_aspect(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  append = FALSE,
   band = NULL,
   convention = NULL,
   gradient_alg = NULL,
@@ -21,7 +20,7 @@ gdal_raster_aspect(
 )
 }
 \arguments{
-\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -34,8 +33,6 @@ gdal_raster_aspect(
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
-
-\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
@@ -51,9 +48,9 @@ gdal_raster_aspect(
 A \link{gdal_job} object.
 }
 \description{
-Generate an aspect map
+\verb{gdal raster aspect} generates an aspect map, from any GDAL-supported elevation raster. This subcommand is also available as a potential step of gdal_raster_pipeline It outputs a 32-bit float raster with values between 0° and 360° representing the azimuth that slopes are facing. The definition of the azimuth is such that: - 0° means that the slope is facing the North, - 90° it's facing the East, - 180° it's facing the South - and 270° it's facing the West (provided that the top of your input raster is north oriented). The aspect value -9999 is used as the nodata value to indicate undefined aspect in flat areas with slope=0. A nodata value in the target dataset will also be emitted if at least one pixel set to the nodata value is found in the 3x3 window centered around each source pixel. By default, the algorithm will compute values at image edges or if a nodata value is found in the 3x3 window, by interpolating missing values, unless --no-edges is specified, in which case a 1-pixel border around the image will be set with the nodata value.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_raster_aspect.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_aspect.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_aspect(input = "n43.dt0", output = "out.tif", overwrite = TRUE)
@@ -64,13 +61,10 @@ job <- gdal_raster_aspect(input = "n43.dt0", output = "out.tif", overwrite = TRU
 \seealso{
 Other gdal_raster_utilities: 
 \code{\link{gdal_raster}()},
-\code{\link{gdal_raster_as_features}()},
-\code{\link{gdal_raster_blend}()},
 \code{\link{gdal_raster_calc}()},
 \code{\link{gdal_raster_clean_collar}()},
 \code{\link{gdal_raster_clip}()},
 \code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_compare}()},
 \code{\link{gdal_raster_contour}()},
 \code{\link{gdal_raster_convert}()},
 \code{\link{gdal_raster_create}()},
@@ -81,20 +75,14 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_index}()},
 \code{\link{gdal_raster_info}()},
 \code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_neighbors}()},
-\code{\link{gdal_raster_nodata_to_alpha}()},
 \code{\link{gdal_raster_overview_add}()},
 \code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_overview_refresh}()},
-\code{\link{gdal_raster_pansharpen}()},
 \code{\link{gdal_raster_pipeline}()},
 \code{\link{gdal_raster_pixel_info}()},
 \code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_proximity}()},
 \code{\link{gdal_raster_reclassify}()},
 \code{\link{gdal_raster_reproject}()},
 \code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_rgb_to_palette}()},
 \code{\link{gdal_raster_roughness}()},
 \code{\link{gdal_raster_scale}()},
 \code{\link{gdal_raster_select}()},
@@ -106,8 +94,6 @@ Other gdal_raster_utilities:
 \code{\link{gdal_raster_tpi}()},
 \code{\link{gdal_raster_tri}()},
 \code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_update}()},
-\code{\link{gdal_raster_viewshed}()},
-\code{\link{gdal_raster_zonal_stats}()}
+\code{\link{gdal_raster_viewshed}()}
 }
 \concept{gdal_raster_utilities}
