@@ -6,7 +6,7 @@
 \alias{gdalcli-package}
 \title{gdalcli: Frontend for the GDAL (>= 3.11) CLI}
 \description{
-An auto-generated R wrapper for the GDAL CLI (RFC 104; \url{https://github.com/OSGeo/gdal/blob/v3.11.0/doc/source/development/rfc/rfc104_gdal_cli.rst}). Combines lazy evaluation with process-isolated state management to deliver a composable, pipe-aware interface for raster and vector processing. Supports file-less I/O streaming via VSI handlers and includes helpers for GDAL Virtual File System URL composition across 30+ cloud, archive, and utility handlers. (WARNING) the 'gdal' command is provisionally provided as an alternative interface to GDAL and OGR command line utilities. The project reserves the right to modify, rename, reorganize, and change the behavior of the utility until it is frozen in a future feature release of GDAL. Use tagged versions of the package to pin a specific version of the GDAL CLI.
+An auto-generated R wrapper for the GDAL CLI (RFC 104; \url{https://github.com/OSGeo/gdal/blob/v3.11.0/doc/source/development/rfc/rfc104_gdal_cli.rst}). Combines lazy evaluation with process-isolated state management to deliver a composable, pipe-aware interface for raster and vector processing. Supports file-less I/O streaming via VSI handlers and includes helpers for GDAL Virtual File System URL composition across 30+ cloud, archive, and utility handlers. (WARNING) the 'gdal' command is provisionally provided as an alternative interface to GDAL and OGR command line utilities. The project reserves the right to modify, rename, reorganize, and change the behavior of the utility until it is frozen in a future feature release of GDAL. Use tagged versions of the package to pin a specific version of the GDAL CLI. This package includes auto-generated wrapper functions and documentation from GDAL (Copyright 1998-2026 Frank Warmerdam, Even Rouault, and others). See COPYRIGHTS file for details.
 }
 \seealso{
 Useful links:
@@ -18,6 +18,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Andrew Brown \email{brown.andrewg@gmail.com} (\href{https://orcid.org/0000-0002-4565-533X}{ORCID})
+
+Authors:
+\itemize{
+  \item Andrew Brown \email{brown.andrewg@gmail.com} (\href{https://orcid.org/0000-0002-4565-533X}{ORCID})
+}
 
 }
 \keyword{internal}

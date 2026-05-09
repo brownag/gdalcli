@@ -69,64 +69,64 @@ gdal_vector_check_coverage(
 A \link{gdal_job} object.
 }
 \description{
-Check a polygon coverage for validity
+\verb{gdal vector check-coverage} checks whether a polygon dataset forms a valid coverage, meaning: - no polygons overlap - all shared edges have nodes at the same locations - any gaps between polygons are larger than a specified width For each polygon not satisfying these criteria, a linear feature with the geometry of the invalid edge is output. If the coverage is valid, the output dataset will be empty unless --include-valid is used. It is assumed that the individual polygons are themselves valid according to the OGC Simple Features standard. This can be checked by gdal_vector_check_geometry.
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_vector_check-coverage.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_vector_check-coverage.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_check_coverage.
-# See GDAL documentation: https://gdal.org/programs/gdal-vector-check-coverage.html
+# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_vector_check-coverage.html
 job <- gdal_vector_check_coverage()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vector_utilities: 
-\code{\link{gdal_vector}()},
-\code{\link{gdal_vector_buffer}()},
-\code{\link{gdal_vector_check_geometry}()},
-\code{\link{gdal_vector_clean_coverage}()},
-\code{\link{gdal_vector_clip}()},
-\code{\link{gdal_vector_concat}()},
-\code{\link{gdal_vector_convert}()},
-\code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_explode_collections}()},
-\code{\link{gdal_vector_filter}()},
-\code{\link{gdal_vector_geom_buffer}()},
-\code{\link{gdal_vector_geom_explode_collections}()},
-\code{\link{gdal_vector_geom_make_valid}()},
-\code{\link{gdal_vector_geom_segmentize}()},
-\code{\link{gdal_vector_geom_set_type}()},
-\code{\link{gdal_vector_geom_simplify}()},
-\code{\link{gdal_vector_geom_swap_xy}()},
-\code{\link{gdal_vector_grid_average}()},
-\code{\link{gdal_vector_grid_average_distance}()},
-\code{\link{gdal_vector_grid_average_distance_points}()},
-\code{\link{gdal_vector_grid_count}()},
-\code{\link{gdal_vector_grid_invdist}()},
-\code{\link{gdal_vector_grid_invdistnn}()},
-\code{\link{gdal_vector_grid_linear}()},
-\code{\link{gdal_vector_grid_maximum}()},
-\code{\link{gdal_vector_grid_minimum}()},
-\code{\link{gdal_vector_grid_nearest}()},
-\code{\link{gdal_vector_grid_range}()},
-\code{\link{gdal_vector_index}()},
-\code{\link{gdal_vector_info}()},
-\code{\link{gdal_vector_layer_algebra}()},
-\code{\link{gdal_vector_make_point}()},
-\code{\link{gdal_vector_make_valid}()},
-\code{\link{gdal_vector_partition}()},
-\code{\link{gdal_vector_pipeline}()},
-\code{\link{gdal_vector_rasterize}()},
-\code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_segmentize}()},
-\code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_set_field_type}()},
-\code{\link{gdal_vector_set_geom_type}()},
-\code{\link{gdal_vector_simplify}()},
-\code{\link{gdal_vector_simplify_coverage}()},
-\code{\link{gdal_vector_sql}()},
-\code{\link{gdal_vector_swap_xy}()}
+Other gdal_vector_utilities:
+\code{\link[=gdal_vector]{gdal_vector()}},
+\code{\link[=gdal_vector_buffer]{gdal_vector_buffer()}},
+\code{\link[=gdal_vector_check_geometry]{gdal_vector_check_geometry()}},
+\code{\link[=gdal_vector_clean_coverage]{gdal_vector_clean_coverage()}},
+\code{\link[=gdal_vector_clip]{gdal_vector_clip()}},
+\code{\link[=gdal_vector_concat]{gdal_vector_concat()}},
+\code{\link[=gdal_vector_convert]{gdal_vector_convert()}},
+\code{\link[=gdal_vector_edit]{gdal_vector_edit()}},
+\code{\link[=gdal_vector_explode_collections]{gdal_vector_explode_collections()}},
+\code{\link[=gdal_vector_filter]{gdal_vector_filter()}},
+\code{\link[=gdal_vector_geom_buffer]{gdal_vector_geom_buffer()}},
+\code{\link[=gdal_vector_geom_explode_collections]{gdal_vector_geom_explode_collections()}},
+\code{\link[=gdal_vector_geom_make_valid]{gdal_vector_geom_make_valid()}},
+\code{\link[=gdal_vector_geom_segmentize]{gdal_vector_geom_segmentize()}},
+\code{\link[=gdal_vector_geom_set_type]{gdal_vector_geom_set_type()}},
+\code{\link[=gdal_vector_geom_simplify]{gdal_vector_geom_simplify()}},
+\code{\link[=gdal_vector_geom_swap_xy]{gdal_vector_geom_swap_xy()}},
+\code{\link[=gdal_vector_grid_average]{gdal_vector_grid_average()}},
+\code{\link[=gdal_vector_grid_average_distance]{gdal_vector_grid_average_distance()}},
+\code{\link[=gdal_vector_grid_average_distance_points]{gdal_vector_grid_average_distance_points()}},
+\code{\link[=gdal_vector_grid_count]{gdal_vector_grid_count()}},
+\code{\link[=gdal_vector_grid_invdist]{gdal_vector_grid_invdist()}},
+\code{\link[=gdal_vector_grid_invdistnn]{gdal_vector_grid_invdistnn()}},
+\code{\link[=gdal_vector_grid_linear]{gdal_vector_grid_linear()}},
+\code{\link[=gdal_vector_grid_maximum]{gdal_vector_grid_maximum()}},
+\code{\link[=gdal_vector_grid_minimum]{gdal_vector_grid_minimum()}},
+\code{\link[=gdal_vector_grid_nearest]{gdal_vector_grid_nearest()}},
+\code{\link[=gdal_vector_grid_range]{gdal_vector_grid_range()}},
+\code{\link[=gdal_vector_index]{gdal_vector_index()}},
+\code{\link[=gdal_vector_info]{gdal_vector_info()}},
+\code{\link[=gdal_vector_layer_algebra]{gdal_vector_layer_algebra()}},
+\code{\link[=gdal_vector_make_point]{gdal_vector_make_point()}},
+\code{\link[=gdal_vector_make_valid]{gdal_vector_make_valid()}},
+\code{\link[=gdal_vector_partition]{gdal_vector_partition()}},
+\code{\link[=gdal_vector_pipeline]{gdal_vector_pipeline()}},
+\code{\link[=gdal_vector_rasterize]{gdal_vector_rasterize()}},
+\code{\link[=gdal_vector_reproject]{gdal_vector_reproject()}},
+\code{\link[=gdal_vector_segmentize]{gdal_vector_segmentize()}},
+\code{\link[=gdal_vector_select]{gdal_vector_select()}},
+\code{\link[=gdal_vector_set_field_type]{gdal_vector_set_field_type()}},
+\code{\link[=gdal_vector_set_geom_type]{gdal_vector_set_geom_type()}},
+\code{\link[=gdal_vector_simplify]{gdal_vector_simplify()}},
+\code{\link[=gdal_vector_simplify_coverage]{gdal_vector_simplify_coverage()}},
+\code{\link[=gdal_vector_sql]{gdal_vector_sql()}},
+\code{\link[=gdal_vector_swap_xy]{gdal_vector_swap_xy()}}
 }
 \concept{gdal_vector_utilities}

@@ -17,20 +17,20 @@ A \link{gdal_job} object.
 \description{
 Delete dataset(s).
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_dataset_delete.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_dataset_delete.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_dataset_delete.
-# See GDAL documentation: https://gdal.org/programs/gdal-dataset-delete.html
+# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_dataset_delete.html
 job <- gdal_dataset_delete()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_dataset_utilities: 
-\code{\link{gdal_dataset_copy}()},
-\code{\link{gdal_dataset_identify}()},
-\code{\link{gdal_dataset_rename}()}
+Other gdal_dataset_utilities:
+\code{\link[=gdal_dataset_copy]{gdal_dataset_copy()}},
+\code{\link[=gdal_dataset_identify]{gdal_dataset_identify()}},
+\code{\link[=gdal_dataset_rename]{gdal_dataset_rename()}}
 }
 \concept{gdal_dataset_utilities}

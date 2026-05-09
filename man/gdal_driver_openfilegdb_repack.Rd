@@ -13,10 +13,9 @@ gdal_driver_openfilegdb_repack(dataset)
 A \link{gdal_job} object.
 }
 \description{
-Runs the a repack operation on a FileGeodatabase dataset to recover lost
-space due to updates or deletions.
+Runs the a repack operation on a FileGeodatabase dataset to recover lost space due to updates or deletions.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
@@ -25,9 +24,9 @@ job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
 }
 }
 \seealso{
-Other gdal_driver_utilities: 
-\code{\link{gdal_driver_gpkg_repack}()},
-\code{\link{gdal_driver_gti_create}()},
-\code{\link{gdal_driver_pdf_list_layers}()}
+Other gdal_driver_utilities:
+\code{\link[=gdal_driver_gpkg_repack]{gdal_driver_gpkg_repack()}},
+\code{\link[=gdal_driver_gti_create]{gdal_driver_gti_create()}},
+\code{\link[=gdal_driver_pdf_list_layers]{gdal_driver_pdf_list_layers()}}
 }
 \concept{gdal_driver_utilities}

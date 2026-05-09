@@ -19,22 +19,22 @@ gdal_dataset_rename(source, destination, overwrite = FALSE, format = NULL)
 A \link{gdal_job} object.
 }
 \description{
-Rename files of a dataset.
+Rename files of a dataset
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_dataset_rename.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_dataset_rename.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_dataset_rename.
-# See GDAL documentation: https://gdal.org/programs/gdal-dataset-rename.html
+# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_dataset_rename.html
 job <- gdal_dataset_rename()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_dataset_utilities: 
-\code{\link{gdal_dataset_copy}()},
-\code{\link{gdal_dataset_delete}()},
-\code{\link{gdal_dataset_identify}()}
+Other gdal_dataset_utilities:
+\code{\link[=gdal_dataset_copy]{gdal_dataset_copy()}},
+\code{\link[=gdal_dataset_delete]{gdal_dataset_delete()}},
+\code{\link[=gdal_dataset_identify]{gdal_dataset_identify()}}
 }
 \concept{gdal_dataset_utilities}

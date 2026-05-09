@@ -17,7 +17,7 @@ A \link{gdal_job} object.
 \description{
 \verb{gdal vsi move} move files and directories located on virtual_file_systems. If the destination path is an existing directory, the file will be moved to it. It can move files and directories between different virtual file systems, but this will involve copying and deletion. Note that for cloud object storage, moving/renaming a directory may involve renaming all files it contains recursively, and is thus not an atomic operation (and could be slow and expensive on directories with many files!) This is implemented by :cppVSIMove. This is an analog of the UNIX \code{mv} command, and \verb{gdal vsi mv} is an alias for \verb{gdal vsi move}.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_move.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_vsi_move.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vsi_move(source = "/vsis3/bucket/my.tif", 
@@ -27,14 +27,14 @@ job <- gdal_vsi_move(source = "/vsis3/bucket/my.tif",
 }
 }
 \seealso{
-Other gdal_vsi_utilities: 
-\code{\link{gdal_vsi_copy}()},
-\code{\link{gdal_vsi_delete}()},
-\code{\link{gdal_vsi_list}()},
-\code{\link{gdal_vsi_sozip_create}()},
-\code{\link{gdal_vsi_sozip_list}()},
-\code{\link{gdal_vsi_sozip_optimize}()},
-\code{\link{gdal_vsi_sozip_validate}()},
-\code{\link{gdal_vsi_sync}()}
+Other gdal_vsi_utilities:
+\code{\link[=gdal_vsi_copy]{gdal_vsi_copy()}},
+\code{\link[=gdal_vsi_delete]{gdal_vsi_delete()}},
+\code{\link[=gdal_vsi_list]{gdal_vsi_list()}},
+\code{\link[=gdal_vsi_sozip_create]{gdal_vsi_sozip_create()}},
+\code{\link[=gdal_vsi_sozip_list]{gdal_vsi_sozip_list()}},
+\code{\link[=gdal_vsi_sozip_optimize]{gdal_vsi_sozip_optimize()}},
+\code{\link[=gdal_vsi_sozip_validate]{gdal_vsi_sozip_validate()}},
+\code{\link[=gdal_vsi_sync]{gdal_vsi_sync()}}
 }
 \concept{gdal_vsi_utilities}

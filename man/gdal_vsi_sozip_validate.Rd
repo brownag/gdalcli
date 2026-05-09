@@ -4,14 +4,10 @@
 \alias{gdal_vsi_sozip_validate}
 \title{validate: Validate a ZIP file, possibly using SOZIP optimization}
 \usage{
-gdal_vsi_sozip_validate(input, stdout = FALSE)
+gdal_vsi_sozip_validate(input)
 }
 \arguments{
-\item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to
-extend a pipeline}
-
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty
-(Logical)}
+\item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to extend a pipeline}
 }
 \value{
 A \link{gdal_job} object.
@@ -19,28 +15,25 @@ A \link{gdal_job} object.
 \description{
 Validate a ZIP file, possibly using SOZIP optimization.
 
-See
-\url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_validate.html}
-for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.12.3/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_sozip_validate.
-# See GDAL documentation:
-https://gdal.org/programs/gdal-vsi-sozip-validate.html
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-sozip-validate.html
 job <- gdal_vsi_sozip_validate()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vsi_utilities: 
-\code{\link{gdal_vsi_copy}()},
-\code{\link{gdal_vsi_delete}()},
-\code{\link{gdal_vsi_list}()},
-\code{\link{gdal_vsi_move}()},
-\code{\link{gdal_vsi_sozip_create}()},
-\code{\link{gdal_vsi_sozip_list}()},
-\code{\link{gdal_vsi_sozip_optimize}()},
-\code{\link{gdal_vsi_sync}()}
+Other gdal_vsi_utilities:
+\code{\link[=gdal_vsi_copy]{gdal_vsi_copy()}},
+\code{\link[=gdal_vsi_delete]{gdal_vsi_delete()}},
+\code{\link[=gdal_vsi_list]{gdal_vsi_list()}},
+\code{\link[=gdal_vsi_move]{gdal_vsi_move()}},
+\code{\link[=gdal_vsi_sozip_create]{gdal_vsi_sozip_create()}},
+\code{\link[=gdal_vsi_sozip_list]{gdal_vsi_sozip_list()}},
+\code{\link[=gdal_vsi_sozip_optimize]{gdal_vsi_sozip_optimize()}},
+\code{\link[=gdal_vsi_sync]{gdal_vsi_sync()}}
 }
 \concept{gdal_vsi_utilities}

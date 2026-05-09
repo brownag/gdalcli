@@ -36,9 +36,9 @@ gdal_mdim_mosaic(
 A \link{gdal_job} object.
 }
 \description{
-Build a mosaic, either virtual (VRT) or materialized, from multidimensional datasets.
+\verb{gdal mdim mosaic} builds a mosaic of multidimensional array(s), from a list of input GDAL multidimensional datasets, that can be either a virtual mosaic in the Multidimensional VRT (Virtual Dataset) <vrt_multidimensional> format, or in a more conventional multidimensional format such as raster.netcdf or raster.zarr. Wildcards '*', '?' or '['] of :cppVSIGlob can be used for input dataset names, even on files located on network file systems such as /vsis3/, /vsigs/, /vsiaz/, etc. Alternatively if a input dataset name is prefixed by the \code{@} character, it will be assumed to contain the list of actual dataset names (one per line) to use as input datasets. To create a mosaic from an array, certain structural constraints apply to all contributing arrays from the input datasets: - All contributing arrays must have the same array name and path (e.g. "/measurements/pressure") - They must have the same data type and nodata value - They must share the same number of dimensions, in the same order, and with the same names. - each dimension of the array must have an associated one-dimensional numeric indexing variable. A typical use case is when a multidimensional array is sliced into several files, and it is desired to reconstruct the full array. The program can support mosaicing along several axes. There might be "holes" among the source datasets along the mosaiced dimensions, and possibly overlaps (but only when regularly spacing along a mosaiced dimension). Holes are filled with the nodata value, if defined in the source arrays, or zero-initialized otherwise. In case of overlap, the order of the input list is used to determine priority. Files that are listed at the end are the ones from which the content will be fetched. Different typical use cases that can be addressed by this program are: - a 3D array is sliced along a single dimension (for example a temporal one) into several files with each slice having a sample along that dimension. In that use case, the timestamps of the slices do not need to be regularly spaced. - a 2D array is chunked/tiled along X and Y dimensions, with a regular spacing along those X and Y dimensions, and where the coordinate values are aligned on the same grid among chunks. By default, a target array is created for each array with two or more dimensions. This behavior can be restricted to specific arrays using the --array option. The following options are available:
 
-See \url{https://gdal.org/en/3.12.3/programs/gdal_mdim_mosaic.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_mdim_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_mosaic(input = "slice*.nc", output = "out.vrt")
@@ -47,9 +47,9 @@ job <- gdal_mdim_mosaic(input = "slice*.nc", output = "out.vrt")
 }
 }
 \seealso{
-Other gdal_mdim_utilities: 
-\code{\link{gdal_mdim}()},
-\code{\link{gdal_mdim_convert}()},
-\code{\link{gdal_mdim_info}()}
+Other gdal_mdim_utilities:
+\code{\link[=gdal_mdim]{gdal_mdim()}},
+\code{\link[=gdal_mdim_convert]{gdal_mdim_convert()}},
+\code{\link[=gdal_mdim_info]{gdal_mdim_info()}}
 }
 \concept{gdal_mdim_utilities}
