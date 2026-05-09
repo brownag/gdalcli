@@ -1786,8 +1786,7 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
   if (!is.null(gdal_version)) {
     header_lines <- c(
       header_lines,
-      sprintf("# Generated for GDAL %s", gdal_version$full),
-      sprintf("# Generation date: %s", Sys.Date())
+      sprintf("# Generated for GDAL %s", gdal_version$full)
     )
   }
 
@@ -2763,7 +2762,7 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
 
   if (is_pipeline) {
     # Special handling for pipeline functions
-    body_lines <- c(body_lines, "  # If jobs is provided, build pipeline string from job sequence")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  if (!is.null(jobs)) {")
     body_lines <- c(body_lines, "    if (!is.list(jobs) && !is.vector(jobs)) {")
     body_lines <- c(body_lines, "      rlang::abort('jobs must be a list or vector of gdal_job objects')")
@@ -2776,7 +2775,7 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
     body_lines <- c(body_lines, "    pipeline <- .build_pipeline_from_jobs(jobs)")
     body_lines <- c(body_lines, "  }")
     body_lines <- c(body_lines, "")
-    body_lines <- c(body_lines, "  # Collect arguments")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  args <- list()")
 
     if (length(arg_names) > 0) {
@@ -2789,7 +2788,7 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
     }
   } else if (is_base_gdal) {
     # Special handling for base gdal function with shortcuts
-    body_lines <- c(body_lines, "  # Handle shortcuts for base gdal function")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  if (!is.null(x)) {")
     body_lines <- c(body_lines, "    # Check if x is a piped gdal_job")
     body_lines <- c(body_lines, "    if (inherits(x, 'gdal_job')) {")
@@ -2881,7 +2880,7 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
     body_lines <- c(body_lines, "    rlang::abort('x must be a filename string, pipeline string, command vector, or gdal_job object')")
     body_lines <- c(body_lines, "  }")
     body_lines <- c(body_lines, "  ")
-    body_lines <- c(body_lines, "  # No shortcut - handle as regular command")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  merged_args <- list()")
 
     if (length(arg_names) > 0) {
@@ -2912,7 +2911,7 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
     # Handle the new pattern: first argument can be gdal_job OR data
     if (!is.null(first_arg_name)) {
       body_lines <- c(body_lines, "")
-      body_lines <- c(body_lines, sprintf("  # Check if first argument is a piped gdal_job or actual data"))
+      body_lines <- c(body_lines, "")
       body_lines <- c(body_lines, sprintf("  if (!missing(%s) && inherits(%s, 'gdal_job')) {", first_arg_name, first_arg_name))
       body_lines <- c(body_lines, sprintf("    # First argument is a piped job - extend the pipeline"))
       body_lines <- c(body_lines, sprintf("    # Remove first_arg from new_args since it's the job, not data"))
@@ -2922,7 +2921,7 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
       body_lines <- c(body_lines, sprintf("    return(extend_gdal_pipeline(piped_job, %s, new_args))", path_json))
       body_lines <- c(body_lines, "  }")
       body_lines <- c(body_lines, "")
-      body_lines <- c(body_lines, sprintf("  # First argument is actual data or missing - create new job"))
+      body_lines <- c(body_lines, "")
       body_lines <- c(body_lines, sprintf("  merged_args <- new_args"))
     } else {
       # No arguments at all
