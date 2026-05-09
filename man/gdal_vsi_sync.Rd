@@ -27,9 +27,9 @@ gdal_vsi_sync(
 A \link{gdal_job} object.
 }
 \description{
-Synchronize source and target file/directory located on GDAL Virtual System Interface (VSI).
+\verb{gdal vsi sync} synchronize files and directories located on virtual_file_systems. This is an analog to the UNIX rsync command. In the current implementation, rsync would be more efficient for local file copying, but gdal vsi sync main interest is when the source or target is a remote file system like /vsis3/ or /vsigs/, in which case it can take into account the timestamps of the files (or optionally the ETag/MD5Sum) to avoid unneeded copy operations. This is implemented efficiently for: - local filesystem <--> remote filesystem. - remote filesystem <--> remote filesystem, where the source and target remote filesystems are the same and one of /vsis3/, /vsigs/ or /vsiaz/. Or when the target is /vsiaz/ and the source is /vsis3/, /vsigs/, /vsiadls/ or /vsicurl/ Similarly to rsync behavior, if the source filename ends with a slash, it means that the content of the directory must be copied, but not the directory name. For example, assuming \verb{/home/even/foo} contains a file \code{bar}, \verb{gdal vsi sync -r /home/even/foo/ /mnt/media} will create a \verb{/mnt/media/bar} file. Whereas \verb{gdal vsi sync -r /home/even/foo /mnt/media} will create a \verb{/mnt/media/foo} directory which contains a \code{bar} file. This is implemented by :cppVSISync.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

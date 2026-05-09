@@ -39,9 +39,9 @@ gdal_raster_pixel_info(
 A \link{gdal_job} object.
 }
 \description{
-Return information on a pixel of a raster dataset.
+\verb{gdal raster pixel-info} provide a mechanism to query information about a pixel given its location in one of a variety of coordinate systems. It supports outputting either as GeoJSON or CSV. The following items will be reported (when known): - Input coordinates - Input coordinates converted to column, line - Pixel value per selected band(s), with unscaled value - For VRT files, which file(s) contribute to the pixel value. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

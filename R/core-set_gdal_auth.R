@@ -1,21 +1,26 @@
 #' Set GDAL VSI Handler Authentication
 #'
 #' @description
-#' `set_gdal_auth()` is an S3 generic method for setting up authentication credentials
-#' for GDAL VSI handlers. Rather than embedding credentials in `vsi_url()` calls,
+#' `set_gdal_auth()` is an S3 generic method for setting up authentication
+#' credentials
+#' for GDAL VSI handlers. Rather than embedding credentials in `vsi_url()`
+#' calls,
 #' this function configures environment variables that GDAL reads automatically.
 #'
-#' This design improves security (credentials are not hardcoded in scripts) and follows
-#' GDAL's native architecture. Call this function once per R session before composing
+#' This design improves security (credentials are not hardcoded in scripts) and
+#' follows
+#' GDAL's native architecture. Call this function once per R session before
+#' composing
 #' or using VSI URLs.
 #'
 #' @param handler Character string identifying the authentication handler (e.g., "s3",
-#'   "azure", "gs"). Dispatches to an S3 method that sets appropriate environment
+#' "azure", "gs"). Dispatches to an S3 method that sets appropriate environment
 #'   variables.
 #' @param ... Handler-specific authentication arguments. See method documentation.
 #'
 #' @return
-#' Invisibly returns `TRUE` on success. Raises an .error if authentication setup fails
+#' Invisibly returns `TRUE` on success. Raises an .error if authentication setup
+#' fails
 #' or required parameters are missing.
 #'
 #' @section Supported Handlers:
@@ -47,7 +52,8 @@
 #' url <- vsi_url("vsis3", bucket = "my-bucket", key = "data.tif")
 #'
 #' # Set Azure credentials
-#' set_gdal_auth("azure", connection_string = "DefaultEndpointsProtocol=https;...")
+#' set_gdal_auth("azure", connection_string =
+#' "DefaultEndpointsProtocol=https;...")
 #'
 #' # Set GCS credentials from service account file
 #' set_gdal_auth("gs", credentials_file = "~/credentials.json")
@@ -166,7 +172,8 @@ set_gdal_auth.s3 <- function(handler, access_key_id = NULL, secret_access_key = 
 #'
 #' 1. **Connection String** (simplest):
 #'    ```r
-#'    set_gdal_auth("azure", connection_string = "DefaultEndpointsProtocol=https;...")
+#' set_gdal_auth("azure", connection_string =
+#' "DefaultEndpointsProtocol=https;...")
 #'    ```
 #'
 #' 2. **Account + Access Key**:
@@ -264,7 +271,8 @@ set_gdal_auth.azure <- function(handler, connection_string = NULL, account = NUL
 #'
 #' **Recommended Method: Service Account JSON File**
 #'
-#' The simplest and most standard way to authenticate is to use a service account
+#' The simplest and most standard way to authenticate is to use a service
+#' account
 #' credentials file (downloaded from Google Cloud Console).
 #'
 #' **Parameters:**

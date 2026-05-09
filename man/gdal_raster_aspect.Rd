@@ -48,9 +48,9 @@ gdal_raster_aspect(
 A \link{gdal_job} object.
 }
 \description{
-Generate an aspect map
+\verb{gdal raster aspect} generates an aspect map, from any GDAL-supported elevation raster. This subcommand is also available as a potential step of gdal_raster_pipeline It outputs a 32-bit float raster with values between 0° and 360° representing the azimuth that slopes are facing. The definition of the azimuth is such that: - 0° means that the slope is facing the North, - 90° it's facing the East, - 180° it's facing the South - and 270° it's facing the West (provided that the top of your input raster is north oriented). The aspect value -9999 is used as the nodata value to indicate undefined aspect in flat areas with slope=0. A nodata value in the target dataset will also be emitted if at least one pixel set to the nodata value is found in the 3x3 window centered around each source pixel. By default, the algorithm will compute values at image edges or if a nodata value is found in the 3x3 window, by interpolating missing values, unless --no-edges is specified, in which case a 1-pixel border around the image will be set with the nodata value.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_aspect.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_aspect.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_aspect(input = "n43.dt0", output = "out.tif", overwrite = TRUE)

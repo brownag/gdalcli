@@ -57,9 +57,9 @@ gdal_raster_polygonize(
 A \link{gdal_job} object.
 }
 \description{
-Create a polygon feature dataset from a raster band.
+\verb{gdal raster polygonize} creates vector polygons for all connected regions of pixels in the raster sharing a common pixel value. Each polygon is created with an attribute indicating the pixel value of that polygon. Pixels that are set to the NoData value, or masked using an external mask band, are not included in processing. The utility can create the output vector dataset if it does not already exist, otherwise it may append to an existing one. The utility is based on the ::cppGDALPolygonize function which has additional details on the algorithm. Since GDAL 3.12, this algorithm can be part of a gdal_pipeline.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_polygonize.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_polygonize(input = "input.tif", output = "polygonize.shp")

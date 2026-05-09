@@ -39,9 +39,9 @@ gdal_raster_select(
 A \link{gdal_job} object.
 }
 \description{
-Select a subset of bands from a raster dataset.
+\verb{gdal raster select} can be used to select and re-order a subset of raster bands from a raster dataset. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_select.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_select.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_select(input = "bgr.tif", output = "rgb.tif", overwrite = TRUE, 

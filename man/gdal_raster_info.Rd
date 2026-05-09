@@ -69,9 +69,9 @@ gdal_raster_info(
 A \link{gdal_job} object.
 }
 \description{
-Return information on a raster dataset.
+\verb{gdal raster info} lists various information about a GDAL supported raster dataset. The following items will be reported (when known): - The format driver used to access the file. - Raster size (in pixels and lines). - The coordinate system for the file (in OGC WKT). - The geotransform associated with the file (rotational coefficients are currently not reported). - Corner coordinates in georeferenced, and if possible lat/long based on the full geotransform (but not GCPs). - Ground control points. - File wide (including subdatasets) metadata. - Band data types. - Band color interpretations. - Band block size. - Band descriptions. - Band min/max values (internally known and possibly computed). - Band checksum (if computation asked). - Band NODATA value. - Band overview resolutions available. - Band unit type (i.e.. "meters" or "feet" for elevation bands). - Band pseudo-color tables. Starting with GDAL 3.12, gdal raster info can be used as the last step of a pipeline. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_info(input = "utmsmall.tif")

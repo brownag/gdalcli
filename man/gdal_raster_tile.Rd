@@ -120,9 +120,9 @@ gdal_raster_tile(
 A \link{gdal_job} object.
 }
 \description{
-Generate tiles in separate files from a raster dataset.
+\verb{gdal raster tile} generates a directory with small tiles and metadata, following the OGC WMTS Specification. Simple web pages with viewers based on OpenLayers and Leaflet are generated as well - so anybody can comfortably explore your maps on-line and you do not need to install or configure any special software (like MapServer) and the map displays very fast in the web browser. You only need to upload the generated directory onto a web server. It generates PNG files by default, but other output formats can be selected (JPEG, WEBP, GTiff, etc.). Note that not all formats support non-Byte data types. JPEG and WEBP only support Byte. PNG supports Byte and UInt16. GeoTiff can support all data types. It can also use a tiling scheme fully adapted to the input raster, in terms of origin and resolution, when using the \code{raster} tiling scheme. In that scheme, tiles at the maximum zoom level will have the same resolution as the raster. Starting with GDAL 3.12, gdal raster tile can be used as the last step of a pipeline.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_tile.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_tile.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom = 2, 

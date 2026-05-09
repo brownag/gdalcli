@@ -9,8 +9,10 @@
 #' @description
 #' List content of a ZIP file, with SOZIP related information.
 #' 
-#' See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
-#' @param input Input ZIP filename (required). Can also be a [gdal_job] object to extend a pipeline
+#' See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_list.html}
+#' for detailed GDAL documentation.
+#' @param input Input ZIP filename (required). Can also be a [gdal_job] object to
+#' extend a pipeline
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples

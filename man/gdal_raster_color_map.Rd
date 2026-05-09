@@ -45,9 +45,9 @@ gdal_raster_color_map(
 A \link{gdal_job} object.
 }
 \description{
-Generate a RGB or RGBA dataset from a single band, using a color map
+\verb{gdal raster color-map} generates a RGB or RGBA dataset from a single band, using a color map, either attached directly to a raster band, or from an external text file. It is typically used to create hypsometric maps from a DEM. This subcommand is also available as a potential step of gdal_raster_pipeline
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_color-map.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_color_map(input = "n43.dt0", output = "out.tif", overwrite = TRUE, 

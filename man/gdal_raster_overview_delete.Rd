@@ -17,9 +17,9 @@ gdal_raster_overview_delete(dataset, open_option = NULL, external = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Deleting overviews.
+\verb{gdal raster overview delete} can be used to delete all existing overviews of a dataset.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_overview_delete.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_overview_delete(dataset = "my.tif")

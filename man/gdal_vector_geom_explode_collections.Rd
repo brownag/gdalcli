@@ -2,7 +2,8 @@
 % Please edit documentation in R/gdal_vector_geom_explode_collections.R
 \name{gdal_vector_geom_explode_collections}
 \alias{gdal_vector_geom_explode_collections}
-\title{explode-collections: Explode geometries of type collection of a vector dataset}
+\title{explode-collections: Explode geometries of type collection of a vector
+dataset}
 \usage{
 gdal_vector_geom_explode_collections(
   input,
@@ -25,7 +26,8 @@ gdal_vector_geom_explode_collections(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a
+\link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -37,27 +39,35 @@ gdal_vector_geom_explode_collections(
 
 \item{output_layer}{Output layer name}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}
+(Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
+\item{layer_creation_option}{Layer creation option (Character vector). Format:
+\verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default:
+\code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default:
+\code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical)
+(Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default:
+\code{false})}
 
 \item{active_layer}{Set active layer (if not specified, all)}
 
-\item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
+\item{active_geometry}{Geometry field name to which to restrict the processing (if
+not specified, all)}
 
 \item{geometry_type}{Geometry type}
 
-\item{skip_on_type_mismatch}{Skip feature when change of feature geometry type failed (Logical)}
+\item{skip_on_type_mismatch}{Skip feature when change of feature geometry type
+failed (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -65,13 +75,17 @@ A \link{gdal_job} object.
 \description{
 Explode geometries of type collection of a vector dataset.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_explode-collections.html} for detailed GDAL documentation.
+See
+\url{https://gdal.org/en/release-3.11/programs/gdal_vector_geom_explode-collections.html}
+for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vector_geom_explode_collections(input = "in.gpkg", output = "points.shp", 
-    skip_on_type_mismatch = TRUE, overwrite = TRUE, geometry_type = "POINT")
 \dontrun{
-  result <- gdal_job_run(job)
+# TODO: No examples available for gdal_vector_geom_explode_collections.
+# See GDAL documentation:
+https://gdal.org/programs/gdal-vector-geom-explode-collections.html
+job <- gdal_vector_geom_explode_collections()
+# gdal_job_run(job)
 }
 }
 \seealso{

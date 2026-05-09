@@ -87,9 +87,9 @@ gdal_raster_footprint(
 A \link{gdal_job} object.
 }
 \description{
-Compute the footprint of a raster dataset.
+\verb{gdal raster footprint} computes the footprint of a raster file, taking into account nodata values (or more generally the mask band attached to the raster bands), and generating polygons/multipolygons corresponding to areas where pixels are valid, and write to an output vector file. Since GDAL 3.12, this algorithm can be part of a gdal_pipeline. The gdal raster clean-collar utility may be run as a pre-processing step to generate proper mask bands.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_footprint.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_footprint(input = "my_raster.tif", output = "footprint.geojson")

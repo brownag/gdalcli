@@ -45,9 +45,9 @@ gdal_raster_sieve(
 A \link{gdal_job} object.
 }
 \description{
-Remove small polygons from a raster dataset.
+\verb{gdal raster sieve} removes raster polygons smaller than a provided threshold size (in pixels) and replaces them with the pixel value of the largest neighbour polygon. The input dataset is read as integer data which means that floating point values are rounded to integers. Re-scaling source data may be necessary in some cases (e.g. 32-bit floating point data with min=0 and max=1). This subcommand is also available as a potential step of gdal_raster_pipeline (since GDAL 3.12)
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_sieve.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_sieve.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_sieve(input = "input.tif", output = "output.tif")

@@ -45,9 +45,9 @@ gdal_vector_info(
 A \link{gdal_job} object.
 }
 \description{
-Return information on a vector dataset.
+\verb{gdal vector info} lists various information about a GDAL supported vector dataset. Starting with GDAL 3.12, gdal vector info can be used as the last step of a pipeline. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_info(output_format = "text", features = "poly.gpkg")

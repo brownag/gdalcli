@@ -15,9 +15,9 @@ gdal(x = NULL, drivers = FALSE)
 A \link{gdal_job} object.
 }
 \description{
-Main gdal entry point.
+Main "gdal" entry point.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

@@ -45,9 +45,9 @@ gdal_raster_fill_nodata(
 A \link{gdal_job} object.
 }
 \description{
-Fill nodata raster regions by interpolation from edges.
+\verb{gdal raster fill-nodata} fills nodata areas by interpolating from valid pixels around the edges of the area. This subcommand is also available as a potential step of gdal_raster_pipeline (since GDAL 3.12)
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_fill-nodata.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_fill_nodata(input = "input.tif", output = "output.tif", 

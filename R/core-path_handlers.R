@@ -1,8 +1,11 @@
 #' Path-Based VSI Handler Functions
 #'
-#' Internal functions for simple path-based VSI handlers (cloud storage, network, utilities).
-#' Each handler corresponds to a GDAL VSI prefix and composes URLs by concatenating
-#' path components. These handlers support the `streaming` parameter to toggle between
+#' Internal functions for simple path-based VSI handlers (cloud storage,
+#' network, utilities).
+#' Each handler corresponds to a GDAL VSI prefix and composes URLs by
+#' concatenating
+#' path components. These handlers support the `streaming` parameter to toggle
+#' between
 #' random-access (default, efficient) and streaming-only variants.
 #'
 #' @keywords internal
@@ -141,7 +144,8 @@ vsiaz_url <- function(container, key, ..., streaming = FALSE, validate = FALSE) 
 #'
 #' **Syntax:** `/vsiadls/filesystem/path/to/file`
 #'
-#' **Authentication:** Identical to `/vsiaz/` (uses same AZURE_STORAGE_* environment variables)
+#' **Authentication:** Identical to `/vsiaz/` (uses same AZURE_STORAGE_*
+#' environment variables)
 #'
 #' **Parameters:**
 #' - `filesystem`: ADLS Gen2 filesystem name
@@ -251,7 +255,8 @@ vsiswift_url <- function(bucket, key, ..., streaming = FALSE, validate = FALSE) 
 #'
 #' **GDAL Version:** \eqn{\ge} Pre-3.0 (mature in all 3.x versions)
 #'
-#' **Syntax:** `/vsicurl/http://...` or `/vsicurl/https://...` or `/vsicurl/ftp://...`
+#' **Syntax:** `/vsicurl/http://...` or `/vsicurl/https://...` or
+#' `/vsicurl/ftp://...`
 #'
 #' **Authentication:** Set via environment variables (see [set_gdal_auth()]):
 #' - **FTP Basic Auth:** Embed in URL or use environment variables
@@ -290,8 +295,10 @@ vsicurl_url <- function(url, ..., streaming = FALSE, validate = FALSE) {
 #'
 #' **Syntax:** `/vsigzip/path/to/file.gz`
 #'
-#' **Important:** This handler decompresses a single GZip file, exposing the decompressed
-#' data stream. It is NOT for reading archives (use `/vsitar/` for TAR.GZ files).
+#' **Important:** This handler decompresses a single GZip file, exposing the
+#' decompressed
+#' data stream. It is NOT for reading archives (use `/vsitar/` for TAR.GZ
+#' files).
 #'
 #' **Parameters:**
 #' - `path`: Path to the .gz file (local or VSI path)
@@ -327,7 +334,8 @@ vsigzip_url <- function(path, ..., streaming = FALSE, validate = FALSE) {
 #'
 #' **Syntax:** `/vsimem/filename`
 #'
-#' **Use Case:** For temporary files, VRTs, or conversions that benefit from memory storage
+#' **Use Case:** For temporary files, VRTs, or conversions that benefit from
+#' memory storage
 #' instead of disk I/O.
 #'
 #' **Parameters:**

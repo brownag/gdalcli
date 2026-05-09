@@ -39,9 +39,9 @@ gdal_raster_calc(
 A \link{gdal_job} object.
 }
 \description{
-Perform raster algebra
+\verb{gdal raster calc} performs pixel-wise calculations on one or more input GDAL datasets. Calculations can be performed eagerly, writing results to a conventional raster format, or lazily, written as a set of derived bands in a VRT (Virtual Dataset) <raster.vrt>. The list of input GDAL datasets can be specified at the end of the command line or put in a text file (one input per line) for very long lists. If more than one input dataset is used, it should be prefixed with a name by which it will be referenced in the calculation, e.g. \code{A=my_data.tif}. (If a single dataset is used, it will be referred to with the variable \code{X} in formulas.) Starting with GDAL 3.12, it is also possible to use a VRT C++ pixel function <builtin_pixel_functions> (such a \code{sum}, \code{mean}, \code{min}, \code{max}) by specifying --dialect to \code{builtin}. The inputs should have the same spatial reference system and should cover the same spatial extent but are not required to have the same spatial resolution. The spatial extent check can be disabled with --no-check-extent, in which case the inputs must have the same dimensions. The spatial reference system check can be disabled with --no-check-srs. Since GDAL 3.12, this algorithm can be part of a gdal_pipeline or gdal_raster_pipeline. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_calc.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_calc.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_calc(calc = "A+B+C")

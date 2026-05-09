@@ -32,7 +32,8 @@ gdal_vector_geom_set_type(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a
+\link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -44,23 +45,30 @@ gdal_vector_geom_set_type(
 
 \item{output_layer}{Output layer name}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}
+(Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
+\item{layer_creation_option}{Layer creation option (Character vector). Format:
+\verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default:
+\code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default:
+\code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical)
+(Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default:
+\code{false})}
 
 \item{active_layer}{Set active layer (if not specified, all)}
 
-\item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
+\item{active_geometry}{Geometry field name to which to restrict the processing (if
+not specified, all)}
 
 \item{layer_only}{Only modify the layer geometry type (Logical)}
 
@@ -76,7 +84,8 @@ gdal_vector_geom_set_type(
 
 \item{curve}{Convert linear geometries to curve types (Logical)}
 
-\item{dim}{Force geometries to the specified dimension. Choices: "XY", "XYZ", "XYM", "XYZM"}
+\item{dim}{Force geometries to the specified dimension. Choices: "XY", "XYZ", "XYM",
+"XYZM"}
 
 \item{skip}{Skip feature when change of feature geometry type failed (Logical)}
 }
@@ -86,13 +95,17 @@ A \link{gdal_job} object.
 \description{
 Modify the geometry type of a vector dataset.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_geom_set-type.html} for detailed GDAL documentation.
+See
+\url{https://gdal.org/en/release-3.11/programs/gdal_vector_geom_set-type.html}
+for detailed GDAL documentation.
 }
 \examples{
-job <- gdal_vector_geom_set_type(input = "in.shp", output = "out.gpkg", overwrite = TRUE, 
-    geometry_type = "MULTIPOLYGON")
 \dontrun{
-  result <- gdal_job_run(job)
+# TODO: No examples available for gdal_vector_geom_set_type.
+# See GDAL documentation:
+https://gdal.org/programs/gdal-vector-geom-set-type.html
+job <- gdal_vector_geom_set_type()
+# gdal_job_run(job)
 }
 }
 \seealso{

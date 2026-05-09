@@ -26,13 +26,15 @@
 #' Options control behavior of pipeline execution, checkpointing, and output.
 #'
 #' @param checkpoint Logical. Enable/disable automatic checkpointing for pipelines.
-#'   When TRUE, pipelines automatically save intermediate results to enable resumption
+#' When TRUE, pipelines automatically save intermediate results to enable
+#' resumption
 #'   from failures. Default: FALSE (disabled).
 #' @param checkpoint_dir Character. Directory for saving checkpoint files.
-#'   Defaults to current working directory if checkpointing enabled and this is NULL.
+#' Defaults to current working directory if checkpointing enabled and this is
+#' NULL.
 #'   Example: `"~/gdalcli_checkpoints"`. Ignored if checkpoint = FALSE.
 #' @param backend Character. Default execution backend: "processx" (subprocess),
-#'   "gdalraster" (C++ bindings), "reticulate" (Python), or "auto" (auto-select).
+#' "gdalraster" (C++ bindings), "reticulate" (Python), or "auto" (auto-select).
 #'   Default: "auto".
 #' @param verbose Logical. Print execution details by default. Default: FALSE.
 #' @param audit_logging Logical. Log all job executions. Default: FALSE.
@@ -45,7 +47,8 @@
 #' @details
 #' # Checkpoint Configuration
 #'
-#' Checkpoints are **disabled by default** for backward compatibility. Enable them
+#' Checkpoints are **disabled by default** for backward compatibility. Enable
+#' them
 #' explicitly when you need fault tolerance for long-running pipelines:
 #'
 #' ```r

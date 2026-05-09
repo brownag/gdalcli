@@ -42,9 +42,9 @@ gdal_raster_tri(
 A \link{gdal_job} object.
 }
 \description{
-Generate a Terrain Ruggedness Index (TRI) map
+\verb{gdal raster tri} generates a single-band raster with values computed from the elevation. TRI stands for Terrain Ruggedness Index, which measures the difference between a central pixel and its surrounding cells. This subcommand is also available as a potential step of gdal_raster_pipeline Value -9999 is used as the nodata value. A nodata value in the target dataset will also be emitted if at least one pixel set to the nodata value is found in the 3x3 window centered around each source pixel. By default, the algorithm will compute values at image edges or if a nodata value is found in the 3x3 window, by interpolating missing values, unless --no-edges is specified, in which case a 1-pixel border around the image will be set with the nodata value.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_tri.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_tri.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_tri(input = "n43.dt0", output = "out.tif", overwrite = TRUE)

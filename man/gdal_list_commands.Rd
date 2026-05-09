@@ -30,11 +30,14 @@ For \code{gdal_command_help()}:
 }
 }
 \description{
-Utility functions for discovering available GDAL CLI commands and getting help
-for specific operations. These functions wrap gdalraster's discovery functions
+Utility functions for discovering available GDAL CLI commands and getting
+help
+for specific operations. These functions wrap gdalraster's discovery
+functions
 when available.
 
-\code{gdal_list_commands()} lists all available GDAL CLI algorithms across modules.
+\code{gdal_list_commands()} lists all available GDAL CLI algorithms across
+modules.
 This is useful for discovering what operations are available without needing
 to refer to external documentation.
 

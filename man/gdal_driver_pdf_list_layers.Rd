@@ -15,9 +15,9 @@ gdal_driver_pdf_list_layers(input, output_format = NULL)
 A \link{gdal_job} object.
 }
 \description{
-List layers of a PDF dataset
+Return the list of layers of a PDF file, as a JSON array or a text list.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_pdf_list_layers(

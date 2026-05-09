@@ -27,8 +27,10 @@ A modified \link{gdal_job} object with the environment variables added.
 \link{gdal_job} object. Environment variables are passed to the subprocess
 and affect GDAL's behavior.
 
-This is the modern, recommended way to set authentication credentials and other
-environment-specific state. It is process-isolated and reproducible, unlike the
+This is the modern, recommended way to set authentication credentials and
+other
+environment-specific state. It is process-isolated and reproducible, unlike
+the
 legacy \code{\link[=set_gdal_auth]{set_gdal_auth()}} approach of using \code{Sys.setenv()}.
 
 This function is designed to be used with the native R pipe (\verb{|>}).

@@ -44,11 +44,14 @@ A character string containing the shell script.
 Converts a \code{gdal_pipeline} into a shell script that executes the jobs.
 
 By default, generates separate commands chained with \code{&&}. Set \code{format = "native"}
-to generate a shell script using a single native GDAL pipeline command instead.
+to generate a shell script using a single native GDAL pipeline command
+instead.
 }
 \details{
-When \code{format = "commands"}, the script executes each job as a separate GDAL command,
-which is safer for hybrid workflows mixing pipeline and non-pipeline operations.
+When \code{format = "commands"}, the script executes each job as a separate GDAL
+command,
+which is safer for hybrid workflows mixing pipeline and non-pipeline
+operations.
 
 When \code{format = "native"}, the script uses a single \verb{gdal raster/vector pipeline}
 command, which is more efficient as it avoids intermediate disk I/O.

@@ -99,9 +99,9 @@ gdal_vector_rasterize(
 A \link{gdal_job} object.
 }
 \description{
-Burns vector geometries into a raster.
+\verb{gdal vector rasterize} burns vector geometries into a raster. Since GDAL 3.12, this algorithm can be part of a gdal_pipeline.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

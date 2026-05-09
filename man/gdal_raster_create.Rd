@@ -66,9 +66,9 @@ gdal_raster_create(
 A \link{gdal_job} object.
 }
 \description{
-Create a new raster dataset.
+\verb{gdal raster create} can be used to initialize a new raster file, from its dimensions, band count, CRS, geotransform, nodata value and metadata. The new file can also be initialized from a model input file with the optional --like option, copying its properties but not its pixel values. By default, metadata and the overview structure are not copied from the model input file, unless --copy-metadata and --copy-overviews are specified. Options --size, --band-count, --datatype, --nodata, --crs, --bbox, --metadata can be used to override the values inherited from the model input file. For GeoTIFF output, setting the \code{SPARSE_OK} creation option to \code{YES} can be useful to create a file of minimum size.` gdal raster create can be used also in special cases, like creating a PDF file from a XML composition file.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_create.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_create.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_create(input = "out.tif", size = c(20, 20), band_count = 3, 

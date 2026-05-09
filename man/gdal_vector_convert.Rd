@@ -51,9 +51,9 @@ gdal_vector_convert(
 A \link{gdal_job} object.
 }
 \description{
-Convert a vector dataset.
+\verb{gdal vector convert} can be used to convert data data between different formats. The following options are available:
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_convert.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_convert.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_convert(input = "poly.shp", output = "output.gpkg")

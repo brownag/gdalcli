@@ -48,9 +48,9 @@ gdal_raster_stack(
 A \link{gdal_job} object.
 }
 \description{
-Combine together input bands into a multi-band output, either virtual (VRT) or materialized.
+This program combine together input bands from GDAL datasets into a dataset, that can be either a virtual stack in the VRT (Virtual Dataset) <raster.vrt> format, or in a more conventional raster format such as GeoTIFF. All bands of each input file are added as separate output bands, unless -b is specified to select a subset of them. The list of input GDAL datasets can be specified at the end of the command line or put in a text file (one filename per line) for very long lists. Wildcards '*', '?' or '['] of :cppVSIGlob can be used, even on files located on network file systems such as /vsis3/, /vsigs/, /vsiaz/, etc. Stating with GDAL 3.12, this command can also be used as the first step of gdal_raster_pipeline.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_stack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_stack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_stack(input = c("red.tif", "green.tif", "blue.tif"), output = "rgb.tif")

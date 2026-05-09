@@ -23,18 +23,23 @@ Execute a GDAL Pipeline}
 
 \item{execution_mode}{Character string: \code{"sequential"} (default) to run jobs as
 separate GDAL commands, or \code{"native"} to run as a single native GDAL pipeline
-command (via \verb{gdal raster/vector pipeline}). Native mode is more efficient for
+command (via \verb{gdal raster/vector pipeline}). Native mode is more efficient
+for
 large datasets as it avoids intermediate disk I/O.}
 
-\item{stream_in}{An R object to be streamed to \verb{/vsistdin/} for the first pipeline step.
+\item{stream_in}{An R object to be streamed to \verb{/vsistdin/} for the first pipeline
+step.
 Only used in native execution mode. Default \code{NULL}.}
 
 \item{stream_out_format}{Character string: output format for the last pipeline step.
-Options: \code{NULL} (no streaming), \code{"text"}, or \code{"raw"}. Only used in native execution mode.}
+Options: \code{NULL} (no streaming), \code{"text"}, or \code{"raw"}. Only used in native
+execution mode.}
 
-\item{env}{Environment variables to pass to the GDAL process. Only used in native execution mode.}
+\item{env}{Environment variables to pass to the GDAL process. Only used in native
+execution mode.}
 
-\item{checkpoint}{Logical. Override global checkpoint setting for this pipeline only.
+\item{checkpoint}{Logical. Override global checkpoint setting for this pipeline
+only.
 If not specified (NULL/missing), respects \code{getOption("gdalcli.checkpoint", FALSE)}.
 To enable checkpointing by default, use \code{gdalcli_options(checkpoint = TRUE)}.
 When enabled, saves intermediate results to enable resumption from failures.
@@ -46,7 +51,8 @@ if checkpointing is enabled. Set via \code{gdalcli_options(checkpoint_dir = "/pa
 
 \item{resume}{Logical. Resume pipeline execution from the most recent checkpoint.
 If checkpoint is enabled and a checkpoint exists at the checkpoint directory,
-set \code{resume = TRUE} to continue from where execution stopped. Default: \code{FALSE}.}
+set \code{resume = TRUE} to continue from where execution stopped. Default:
+\code{FALSE}.}
 
 \item{...}{Additional arguments passed to individual job execution.}
 
@@ -54,7 +60,8 @@ set \code{resume = TRUE} to continue from where execution stopped. Default: \cod
 }
 \value{
 Invisibly returns \code{TRUE} on successful completion, or (in native mode with
-streaming output) returns the captured output. When checkpointing is enabled and
+streaming output) returns the captured output. When checkpointing is enabled
+and
 completes successfully, the checkpoint directory is cleaned up.
 }
 \description{

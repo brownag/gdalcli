@@ -69,9 +69,9 @@ gdal_raster_viewshed(
 A \link{gdal_job} object.
 }
 \description{
-Compute the viewshed of a raster dataset.
+\verb{gdal raster viewshed} creates a binary visibility raster from one band of the input raster elevation model (DEM). The output raster will be of type Byte. Using the \code{DEM} or \code{ground} values of --mode can also create a minimum visible height raster of type Float64. It uses the method defined in [Wang2000]_ for a user defined point. This subcommand is also available as a potential step of gdal_raster_pipeline (since GDAL 3.12)
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 

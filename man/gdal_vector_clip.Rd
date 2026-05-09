@@ -78,9 +78,9 @@ gdal_vector_clip(
 A \link{gdal_job} object.
 }
 \description{
-Clip a vector dataset.
+\verb{gdal vector clip} can be used to clip a vector dataset using georeferenced coordinates. Either --bbox, --geometry or --like must be specified. \code{clip} can also be used as a step of gdal_vector_pipeline. Clipping sometimes results in geometries that are of a type not compatible with the geometry type. This program splits multi-geometries or geometry collections into their parts for layers that are of a single geometry type (such as point, linestring, polygon) and only keeps the parts that are of that type. It also promotes single geometry types (e.g. polygons) to multi geometry types (e.g. multi-polygons). If the user needs to preserve any type of intersection, the layer must use the \code{wkbUnknown} (any geometry) type.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_clip.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_clip.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_clip(input = "in.gpkg", output = "out.gpkg", overwrite = TRUE, 

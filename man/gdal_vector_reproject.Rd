@@ -60,9 +60,16 @@ gdal_vector_reproject(
 A \link{gdal_job} object.
 }
 \description{
-Reproject a vector dataset.
+gdal vector pipeline can be used to process a vector dataset and perform
+various processing steps that accept vector and generate vector. For
+pipelines mixing raster and vector, consult gdal_pipeline. Most steps proceed
+in on-demand evaluation of features, unless otherwise stated in their
+documentation, without "materializing" the resulting dataset of the operation
+of each step. It may be desirable sometimes for performance purposes to
+proceed to materializing an intermediate dataset to disk using
+gdal_vector_materialize.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{

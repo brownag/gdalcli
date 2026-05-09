@@ -13,7 +13,8 @@
 #' Check gdalraster Version
 #'
 #' @description
-#' Determines if gdalraster is installed and meets a minimum version requirement.
+#' Determines if gdalraster is installed and meets a minimum version
+#' requirement.
 #'
 #' @param min_version Character string specifying minimum required version
 #'   (e.g., "2.2.0", "2.3.0")
@@ -52,7 +53,7 @@
   # Try to get gdalraster version
   current_version <- tryCatch({
     packageVersion("gdalraster")
-  }, .error = function(e) {
+  }, error = function(e) {
     if (!quietly) {
       cli::cli_warn("Could not determine gdalraster version: {e$message}")
     }
@@ -122,7 +123,7 @@
 
   tryCatch({
     as.character(packageVersion("gdalraster"))
-  }, .error = function(e) NULL)
+  }, error = function(e) NULL)
 }
 
 

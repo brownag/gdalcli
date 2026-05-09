@@ -20,7 +20,8 @@ Invisibly returns the path where pipeline was saved
 }
 \description{
 Saves a gdal_pipeline using the native GDALG format. This method produces
-pure GDALG JSON that is compatible with GDAL's GDALG driver (read-only in GDAL 3.11+).
+pure GDALG JSON that is compatible with GDAL's GDALG driver (read-only in
+GDAL 3.11+).
 }
 \details{
 This function:

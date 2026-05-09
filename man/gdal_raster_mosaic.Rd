@@ -51,9 +51,9 @@ gdal_raster_mosaic(
 A \link{gdal_job} object.
 }
 \description{
-Build a mosaic, either virtual (VRT) or materialized.
+This program builds a mosaic of a list of input GDAL datasets, that can be either a virtual mosaic in the VRT (Virtual Dataset) <raster.vrt> format, or in a more conventional raster format such as GeoTIFF. Wildcards '*', '?' or '['] of :cppVSIGlob can be used for input dataset names, even on files located on network file systems such as /vsis3/, /vsigs/, /vsiaz/, etc. Alternatively if a input dataset name is prefixed by the \code{@} character, it will be assumed to contain the list of actual dataset names (one per line) to use as input datasets. gdal raster mosaic does some checks to ensure that all files that will be put in the resulting file have similar characteristics: number of bands, projection, color interpretation, etc. If not, files that do not match the common characteristics will be skipped. Starting with GDAL 3.12, a function (e.g., \code{min}, \code{mean}, \code{median}) can be specified (--pixel-function) to calculate pixel values from overlapping inputs. If no function is specified, or in earlier versions, the order of the input list is used to determine priority. Files that are listed at the end are the ones from which the content will be fetched. Note that nodata will be taken into account to potentially fetch data from lower-priority datasets, but currently, alpha channel is not taken into account to do alpha compositing (so a source with alpha=0 appearing on top of another source will override its content). This might be changed in later versions. Stating with GDAL 3.12, this command can also be used as the first step of gdal_raster_pipeline.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt", 

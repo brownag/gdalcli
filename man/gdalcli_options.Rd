@@ -16,11 +16,13 @@ gdalcli_options(
 }
 \arguments{
 \item{checkpoint}{Logical. Enable/disable automatic checkpointing for pipelines.
-When TRUE, pipelines automatically save intermediate results to enable resumption
+When TRUE, pipelines automatically save intermediate results to enable
+resumption
 from failures. Default: FALSE (disabled).}
 
 \item{checkpoint_dir}{Character. Directory for saving checkpoint files.
-Defaults to current working directory if checkpointing enabled and this is NULL.
+Defaults to current working directory if checkpointing enabled and this is
+NULL.
 Example: \code{"~/gdalcli_checkpoints"}. Ignored if checkpoint = FALSE.}
 
 \item{backend}{Character. Default execution backend: "processx" (subprocess),
@@ -44,7 +46,8 @@ Provides a convenient interface for setting gdalcli configuration options.
 Options control behavior of pipeline execution, checkpointing, and output.
 }
 \section{Checkpoint Configuration}{
-Checkpoints are \strong{disabled by default} for backward compatibility. Enable them
+Checkpoints are \strong{disabled by default} for backward compatibility. Enable
+them
 explicitly when you need fault tolerance for long-running pipelines:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{# Enable checkpoints globally, use current working directory

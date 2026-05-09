@@ -13,9 +13,9 @@ gdal_driver_gpkg_repack(dataset)
 A \link{gdal_job} object.
 }
 \description{
-Repack/vacuum in-place a GeoPackage dataset
+Runs the \code{VACUUM} SQLite3 operation on a GeoPackage dataset to recover lost space due to updates or deletions.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")

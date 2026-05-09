@@ -54,7 +54,7 @@
   # Check if gdalraster version supports explicit args (2.2.0+)
   pkg_version <- tryCatch(
     utils::packageVersion("gdalraster"),
-    .error = function(e) "0.0.0"
+    error = function(e) "0.0.0"
   )
 
   as.numeric_version(pkg_version) >= as.numeric_version("2.2.0")
@@ -235,7 +235,7 @@
     } else {
       "unknown"
     }
-  }, .error = function(e) "unknown")
+  }, error = function(e) "unknown")
 }
 
 #' Get Detailed Capabilities Report

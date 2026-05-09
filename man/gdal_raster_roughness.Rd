@@ -39,9 +39,9 @@ gdal_raster_roughness(
 A \link{gdal_job} object.
 }
 \description{
-Generate a roughness map
+\verb{gdal raster roughness} generates a single-band raster with values computed from the elevation. Roughness is the largest inter-cell difference of a central pixel and its surrounding cell, as defined in Wilson et al. (2007, Marine Geodesy 30:3-35). This subcommand is also available as a potential step of gdal_raster_pipeline The roughness value -9999 is used as the nodata value. A nodata value in the target dataset will also be emitted if at least one pixel set to the nodata value is found in the 3x3 window centered around each source pixel. By default, the algorithm will compute values at image edges or if a nodata value is found in the 3x3 window, by interpolating missing values, unless --no-edges is specified, in which case a 1-pixel border around the image will be set with the nodata value.
 
-See \url{https://gdal.org/en/3.11.4/programs/gdal_raster_roughness.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_roughness.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_roughness(input = "n43.dt0", output = "out.tif", overwrite = TRUE)

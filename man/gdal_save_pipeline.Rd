@@ -18,7 +18,8 @@ gdal_save_pipeline(
 \arguments{
 \item{pipeline}{A gdal_pipeline or gdal_job object with pipeline}
 
-\item{path}{Character string specifying the path to save to (typically .gdalcli.json)}
+\item{path}{Character string specifying the path to save to (typically
+.gdalcli.json)}
 
 \item{name}{Character string. Optional name for the pipeline}
 
@@ -26,7 +27,8 @@ gdal_save_pipeline(
 
 \item{custom_tags}{List. Optional user-defined metadata to include}
 
-\item{pretty}{Logical. If TRUE (default), formats JSON with indentation for readability}
+\item{pretty}{Logical. If TRUE (default), formats JSON with indentation for
+readability}
 
 \item{overwrite}{Logical. If TRUE, overwrites existing file}
 
@@ -36,12 +38,15 @@ gdal_save_pipeline(
 Invisibly returns the path where the pipeline was saved
 }
 \description{
-Saves a gdal_pipeline object to a gdalcli pipeline JSON file. The gdalcli pipeline
-format is a JSON-based pipeline definition that can be saved to disk and loaded later
+Saves a gdal_pipeline object to a gdalcli pipeline JSON file. The gdalcli
+pipeline
+format is a JSON-based pipeline definition that can be saved to disk and
+loaded later
 for execution.
 }
 \details{
-This function saves the pipeline in gdalcli's hybrid JSON format, which combines:
+This function saves the pipeline in gdalcli's hybrid JSON format, which
+combines:
 \itemize{
 \item A pure GDALG specification (RFC 104) for GDAL compatibility
 \item R-specific metadata/tags for gdalcli features
@@ -57,13 +62,15 @@ The saved gdalcli pipeline file can be:
 }
 
 \strong{Note on File Formats:}
-This function produces \code{.gdalcli.json} (hybrid) files. For pure GDALG (RFC 104)
+This function produces \code{.gdalcli.json} (hybrid) files. For pure GDALG (RFC
+104)
 output suitable for \verb{gdal raster pipeline}, use \code{\link[=gdal_save_pipeline_native]{gdal_save_pipeline_native()}}
 or \code{\link[=gdalg_write]{gdalg_write()}}, which typically use the \code{.gdalg.json} extension.
 }
 \examples{
 \dontrun{
-pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632") |>
+pipeline <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:32632")
+|>
   gdal_raster_convert(output = "out.tif")
 
 # Save to gdalcli format (.gdalcli.json)

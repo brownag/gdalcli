@@ -105,16 +105,21 @@ variables.}
 \item{key}{For Swift V1 method, API key}
 }
 \value{
-Invisibly returns \code{TRUE} on success. Raises an .error if authentication setup fails
+Invisibly returns \code{TRUE} on success. Raises an .error if authentication setup
+fails
 or required parameters are missing.
 }
 \description{
-\code{set_gdal_auth()} is an S3 generic method for setting up authentication credentials
-for GDAL VSI handlers. Rather than embedding credentials in \code{vsi_url()} calls,
+\code{set_gdal_auth()} is an S3 generic method for setting up authentication
+credentials
+for GDAL VSI handlers. Rather than embedding credentials in \code{vsi_url()}
+calls,
 this function configures environment variables that GDAL reads automatically.
 
-This design improves security (credentials are not hardcoded in scripts) and follows
-GDAL's native architecture. Call this function once per R session before composing
+This design improves security (credentials are not hardcoded in scripts) and
+follows
+GDAL's native architecture. Call this function once per R session before
+composing
 or using VSI URLs.
 }
 \details{
@@ -126,12 +131,18 @@ or using VSI URLs.
 \enumerate{
 \item \strong{Connection String} (simplest):
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{set_gdal_auth("azure", connection_string = "DefaultEndpointsProtocol=https;...")
-}\if{html}{\out{</div>}}
-\item \strong{Account + Access Key}:
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{}\if{html}{\out{</div>}}
+}
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{set_gdal_auth("azure", account = "myaccount", access_key = "...")
+set_gdal_auth("azure", connection_string =
+"DefaultEndpointsProtocol=https;...")
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{
+2. **Account + Access Key**:
+```r
+set_gdal_auth("azure", account = "myaccount", access_key = "...")
 }\if{html}{\out{</div>}}
+\enumerate{
 \item \strong{Account + SAS Token}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{set_gdal_auth("azure", account = "myaccount", sas_token = "st=2019...")
@@ -160,7 +171,8 @@ Note: Leading \verb{?} or \code{&} and trailing \code{&} are automatically strip
 
 \strong{Recommended Method: Service Account JSON File}
 
-The simplest and most standard way to authenticate is to use a service account
+The simplest and most standard way to authenticate is to use a service
+account
 credentials file (downloaded from Google Cloud Console).
 
 \strong{Parameters:}
@@ -278,7 +290,8 @@ set_gdal_auth("s3",
 url <- vsi_url("vsis3", bucket = "my-bucket", key = "data.tif")
 
 # Set Azure credentials
-set_gdal_auth("azure", connection_string = "DefaultEndpointsProtocol=https;...")
+set_gdal_auth("azure", connection_string =
+"DefaultEndpointsProtocol=https;...")
 
 # Set GCS credentials from service account file
 set_gdal_auth("gs", credentials_file = "~/credentials.json")
