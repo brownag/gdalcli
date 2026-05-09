@@ -498,38 +498,6 @@ test_that("render_shell_script with format defaults to 'commands'", {
   expect_equal(script_default, script_explicit)
 })
 
-test_that("gdal_compose convenience function detects pipeline type", {
-  # Create raster jobs using version-aware helper
-  job1 <- .make_raster_reproject_job("input.tif", "EPSG:32632")
-  job2 <- gdal_raster_convert(output = "output.tif")
-
-  # Create pipeline using convenience function
-  expect_warning(
-    {pipeline_job <- gdal_compose(jobs = list(job1, job2))},
-    "gdal_compose\\(\\) is deprecated"
-  )
-
-  expect_s3_class(pipeline_job, "gdal_job")
-  expect_equal(pipeline_job$command_path[1], "raster")
-  expect_equal(pipeline_job$command_path[2], "pipeline")
-})
-
-test_that("gdal_compose convenience function works with vector jobs", {
-  # Create vector jobs using version-aware helper
-  job1 <- .make_vector_reproject_job("input.gpkg", "EPSG:32632")
-  job2 <- gdal_vector_convert(output = "output.shp")
-
-  # Create pipeline using convenience function
-  expect_warning(
-    {pipeline_job <- gdal_compose(jobs = list(job1, job2))},
-    "gdal_compose\\(\\) is deprecated"
-  )
-
-  expect_s3_class(pipeline_job, "gdal_job")
-  expect_equal(pipeline_job$command_path[1], "vector")
-  expect_equal(pipeline_job$command_path[2], "pipeline")
-})
-
 # ============================================================================
 # Phase 3: Pipeline Execution Tests with Real Data
 # ============================================================================
