@@ -1,3 +1,29 @@
+# ====== Version-Aware Helper Functions for GDAL 3.13+ Compatibility ======
+# GDAL 3.13.0 renamed --dst-crs to --output-crs (and similar for dst-* params)
+# These helpers ensure tests work with both 3.11/3.12 (dst_crs) and 3.13+ (output_crs)
+
+.make_raster_reproject_job <- function(input, crs, output = NULL) {
+  if (is.null(output)) output <- tempfile(fileext = ".tif")
+  
+  if (gdal_check_version("3.13", op = ">=")) {
+    gdal_raster_reproject(input = input, output_crs = crs, output = output)
+  } else {
+    gdal_raster_reproject(input = input, dst_crs = crs, output = output)
+  }
+}
+
+.make_vector_reproject_job <- function(input, crs, output = NULL) {
+  if (is.null(output)) output <- tempfile(fileext = ".shp")
+  
+  if (gdal_check_version("3.13", op = ">=")) {
+    gdal_vector_reproject(input = input, output_crs = crs, output = output)
+  } else {
+    gdal_vector_reproject(input = input, dst_crs = crs, output = output)
+  }
+}
+
+# ========================================================================
+
 test_that("pipeline creation and basic execution works", {
   # Create a simple pipeline
   job1 <- gdal_raster_info(input = "test.tif")
@@ -494,11 +520,8 @@ test_that("render_shell_script with format defaults to 'commands'", {
 })
 
 test_that("gdal_compose convenience function detects pipeline type", {
-  # Create raster jobs
-  job1 <- gdal_raster_reproject(
-    input = "input.tif",
-    dst_crs = "EPSG:32632"
-  )
+  # Create raster jobs using version-aware helper
+  job1 <- .make_raster_reproject_job("input.tif", "EPSG:32632")
   job2 <- gdal_raster_convert(output = "output.tif")
 
   # Create pipeline using convenience function
@@ -513,11 +536,8 @@ test_that("gdal_compose convenience function detects pipeline type", {
 })
 
 test_that("gdal_compose convenience function works with vector jobs", {
-  # Create vector jobs
-  job1 <- gdal_vector_reproject(
-    input = "input.gpkg",
-    dst_crs = "EPSG:32632"
-  )
+  # Create vector jobs using version-aware helper
+  job1 <- .make_vector_reproject_job("input.gpkg", "EPSG:32632")
   job2 <- gdal_vector_convert(output = "output.shp")
 
   # Create pipeline using convenience function
