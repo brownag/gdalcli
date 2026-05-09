@@ -33,20 +33,14 @@ UNDER NO CIRCUMSTANCES SHOULD YOU EVER PUSH TO A REMOTE GIT REPOSITORY
 ### GDAL Version Conflicts and API Evolution
 
 **GDAL 3.12+ Native Commands:**
-- GDAL 3.12.0+ introduced native `gdal pipeline` command
-- This conflicts with gdalcli's original `gdal_pipeline()` convenience wrapper function
-- **Resolution**: Renamed function to `gdal_compose()`, marked deprecated for 0.5.x removal
-- **Rationale**: 
-  - Piping with `|>` is more idiomatic R for composition
-  - Explicit type specification (`gdal_raster_pipeline()` vs `gdal_vector_pipeline()`) is clearer than type auto-detection
-  - Function added minimal value over direct function calls
-  - Users can still pass lists directly: `gdal_raster_pipeline(jobs = list(j1, j2, j3))`
+- GDAL 3.12.0+ introduced native `gdal pipeline` command, available as auto-generated `gdal_pipeline()` function
+- Earlier versions of gdalcli had a convenience wrapper `gdal_compose()` (removed in 0.7.0)
+- **Recommended approach**: Use pipe operator (`|>`) for composable, idiomatic R pipelines
+- **Alternative**: Use explicit type specification with `gdal_raster_pipeline()` or `gdal_vector_pipeline()`
 
-**Deprecated Functions:**
-- `gdal_compose()` - Deprecated as of 0.4.x, removal planned for 0.5.x
-  - Issues warning via `.Deprecated()` on use
-  - Docs recommend pipe approach instead
-  - Will remove unless real-world use cases emerge
+**Deprecated Features (0.7.0+):**
+- `gdal_compose()` function - removed (use pipe operator instead)
+- Backend `"auto"` mode - specify explicit backend
 
 ## CI/CD Workflows
 
