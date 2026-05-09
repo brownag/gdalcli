@@ -24,8 +24,7 @@ gdal_vector_geom_simplify(
 )
 }
 \arguments{
-\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a
-\link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
@@ -39,30 +38,23 @@ gdal_vector_geom_simplify(
 
 \item{tolerance}{Distance tolerance for simplification. (required). Minimum: \code{0}}
 
-\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>}
-(Advanced)}
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{layer_creation_option}{Layer creation option (Character vector). Format:
-\verb{<KEY>=<VALUE>}}
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default:
-\code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default:
-\code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical)
-(Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
-\item{append}{Whether appending to existing layer is allowed (Logical) (Default:
-\code{false})}
+\item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{active_layer}{Set active layer (if not specified, all)}
 
-\item{active_geometry}{Geometry field name to which to restrict the processing (if
-not specified, all)}
+\item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
 }
 \value{
 A \link{gdal_job} object.
@@ -70,15 +62,13 @@ A \link{gdal_job} object.
 \description{
 Simplify geometries of a vector dataset.
 
-See
-\url{https://gdal.org/en/release-3.11/programs/gdal_vector_geom_simplify.html}
-for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_geom_simplify.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_geom_simplify.
-# See GDAL documentation:
-https://gdal.org/programs/gdal-vector-geom-simplify.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_vector_geom_simplify.html
 job <- gdal_vector_geom_simplify()
 # gdal_job_run(job)
 }

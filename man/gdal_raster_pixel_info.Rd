@@ -46,7 +46,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_pixel-info.html} 
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_pixel_info.
-# See GDAL documentation: https://gdal.org/programs/gdal-raster-pixel-info.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_raster_pixel-info.html
 job <- gdal_raster_pixel_info()
 # gdal_job_run(job)
 }

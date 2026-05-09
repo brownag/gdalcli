@@ -20,7 +20,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_mdim.html} for detailed 
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_mdim.
-# See GDAL documentation: https://gdal.org/programs/gdal-mdim.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_mdim.html
 job <- gdal_mdim()
 # gdal_job_run(job)
 }

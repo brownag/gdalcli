@@ -1,64 +1,60 @@
-#' Infer command intent for a GDAL job.
+#' Infer update intent for a GDAL command.
 #'
-#' This function maps commands to an update intent model:
-#' - "MUTATIVE": Commands that modify existing data (e.g., gdal_raster_edit)
-#' - "DESTRUCTIVE": Commands that overwrite or delete data
-#' - "SAFE": Normal pipeline operations with distinct inputs/outputs (default)
-#' - "READ_ONLY": Non-mutating analysis operations
+#' @description
+#' Determines whether a GDAL command opens a dataset for in-place update
+#' vs. creation based on RFC 104 open_for_update semantics.
+#'
+#' This enables pipeline steps to be correctly classified:
+#' - `TRUE`: Command opens file for in-place modification (gdal_raster_edit, etc.)
+#' - `FALSE`: Command creates new dataset or reads only (default)
 #'
 #' @keywords internal
 #'
-#' @param func_name Name of the R function (e.g., "gdal_raster_clip").
-#' @param merged_args Named list of merged function arguments.
-#' @param intent_mapping Optional list containing update intent rules for this command.
-#'   Expected fields: `opens_for_update` (logical).
+#' @param func_name Character. Name of the R function (e.g., "gdal_raster_overview_add").
+#' @param merged_args List. Merged function arguments.
+#' @param update_intent_mapping List. Per-algorithm update intent rules from GDAL_INTENT_MAPPINGS.json.
+#'   Expected fields:
+#'   - `by_default`: Logical, default update intent
+#'   - `if_any_of`: Character vector of argument names that enable update
+#'   - `unless_any_of`: Character vector of argument names that disable update
 #'
-#' @return A list with:
-#'   - `opens_for_update`: Logical indicating if the command modifies input data.
-#'   - `intent`: Character string describing the update intent ("MUTATIVE", "DESTRUCTIVE", "SAFE", or "READ_ONLY").
+#' @return List with `opens_for_update` boolean field indicating update intent.
 #'
 #' @details
-#' The function infers intent by checking:
-#' 1. The command's known intent from the mapping (most reliable)
-#' 2. Argument-based overrides ("update" = TRUE makes it MUTATIVE, "overwrite" = FALSE makes it SAFE)
-#' 3. Defaults to "SAFE" for unknown commands
+#' Update intent inference follows this logic:
+#' 1. Start with default from mapping (by_default field)
+#' 2. Apply if_any_of: if any listed arguments are present, enable update
+#' 3. Apply unless_any_of: if any listed arguments are present, disable update
+#' 4. Default to FALSE if no mapping provided
+#'
+#' This function implements RFC 104 open_for_update semantics for accurate
+#' pipeline classification and behavior prediction.
 #'
 #' @export
-infer_command_intent <- function(func_name, merged_args, intent_mapping = NULL) {
-  # Default: read-only, does not modify input
+infer_update_intent <- function(func_name, merged_args, update_intent_mapping = NULL) {
+  # Default: dataset is not opened for update
   opens_for_update <- FALSE
-  intent <- "SAFE"
   
-  # Check if intent mapping specifies this command opens for update
-  if (!is.null(intent_mapping) && is.list(intent_mapping)) {
-    if (isTRUE(intent_mapping$opens_for_update)) {
+  # Apply by_default rule from mapping
+  if (!is.null(update_intent_mapping) && is.list(update_intent_mapping)) {
+    if (isTRUE(update_intent_mapping$by_default)) {
       opens_for_update <- TRUE
-      intent <- "MUTATIVE"
     }
   }
   
-  # Argument-based overrides (applied after mapping to allow flexibility)
-  if (!is.null(merged_args) && is.list(merged_args)) {
-    # If "update" argument is TRUE, this is explicitly a mutative operation
-    if (isTRUE(merged_args$update)) {
+  # Apply if_any_of triggers (enable update if any of these args are present)
+  if (!is.null(update_intent_mapping$if_any_of)) {
+    if (any(names(merged_args) %in% update_intent_mapping$if_any_of)) {
       opens_for_update <- TRUE
-      intent <- "MUTATIVE"
     }
-    
-    # If "overwrite" argument is TRUE and opening for update was set, escalate to DESTRUCTIVE
-    if (isTRUE(merged_args$overwrite) && opens_for_update) {
-      intent <- "DESTRUCTIVE"
-    }
-    
-    # If "overwrite" is FALSE, it's definitely SAFE (not destructive)
-    if (isFALSE(merged_args$overwrite)) {
+  }
+  
+  # Apply unless_any_of exclusions (disable update if any of these args are present)
+  if (!is.null(update_intent_mapping$unless_any_of)) {
+    if (any(names(merged_args) %in% update_intent_mapping$unless_any_of)) {
       opens_for_update <- FALSE
-      intent <- "SAFE"
     }
   }
   
-  return(list(
-    opens_for_update = opens_for_update,
-    intent = intent
-  ))
+  return(list(opens_for_update = opens_for_update))
 }
