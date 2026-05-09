@@ -278,7 +278,6 @@ gdal_job_run.gdal_pipeline <- function(x,
     return(invisible(TRUE))
   }
 
-  # Get backend from args if provided
   backend_arg <- if (length(list(...)) > 0 && "backend" %in% names(list(...))) {
     list(...)$backend
   } else {
@@ -286,9 +285,10 @@ gdal_job_run.gdal_pipeline <- function(x,
   }
 
   # Determine if we should try gdalraster native pipeline
+  # Only use native pipeline if backend is explicitly set to "gdalraster" or not specified
   use_gdalraster_native <- FALSE
-  if (execution_mode == "native" || is.null(execution_mode)) {
-    # Try native execution if available
+  if ((is.null(backend_arg) || backend_arg == "gdalraster") && 
+      (execution_mode == "native" || is.null(execution_mode))) {
     if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
       use_gdalraster_native <- TRUE
       if (verbose) {
@@ -317,21 +317,16 @@ gdal_job_run.gdal_pipeline <- function(x,
     ))
   }
 
-  # Sequential execution: run jobs separately (original behavior)
+  # Sequential execution: run jobs separately
   if (verbose) {
     cli::cli_alert_info(sprintf("Executing pipeline with %d jobs (sequential mode)", length(x$jobs)))
   }
 
-  # Determine backend for individual jobs
   backend <- if (length(list(...)) > 0 && "backend" %in% names(list(...))) {
     list(...)$backend
   } else {
-    # Auto-select backend
-    if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
-      "gdalraster"
-    } else {
-      "processx"
-    }
+    # Default to processx backend - require explicit specification for gdalraster
+    "processx"
   }
 
   # Handle checkpoint/resume

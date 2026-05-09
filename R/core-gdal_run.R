@@ -80,28 +80,29 @@
 #'
 #' @export
 gdal_job_run <- function(x, ..., backend = NULL) {
-  # If this is a pipeline object, delegate to pipeline method
   if (inherits(x, "gdal_pipeline")) {
     return(gdal_job_run.gdal_pipeline(x, ...))
   }
 
-  # If this job has a pipeline history, run the pipeline instead
   if (inherits(x, "gdal_job") && !is.null(x$pipeline)) {
     return(gdal_job_run(x$pipeline, ...))
   }
 
   # Handle backend selection
   if (is.null(backend)) {
-    # Auto-select backend based on availability and user preference
-    backend <- getOption("gdalcli.backend", "auto")
+    backend <- getOption("gdalcli.backend", "processx")
 
+    # Deprecate "auto" mode - require explicit backend specification
     if (backend == "auto") {
-      # Auto-select: prefer gdalraster if available and functional
-      if (.check_gdalraster_version("2.2.0", quietly = TRUE)) {
-        backend <- "gdalraster"
-      } else {
-        backend <- "processx"  # fallback
-      }
+      cli::cli_warn(
+        c(
+          "Backend 'auto' mode is deprecated",
+          "i" = "Silent fallback behavior causes unexpected differences between environments",
+          "i" = "Set explicit backend: options(gdalcli.backend = 'processx') or 'gdalraster'",
+          "i" = "Defaulting to 'processx' for this execution"
+        )
+      )
+      backend <- "processx"
     }
   }
 
@@ -135,7 +136,7 @@ gdal_job_run <- function(x, ..., backend = NULL) {
       c(
         "Unknown backend: {backend}",
         "i" = "Supported backends: 'processx', 'gdalraster', 'reticulate'",
-        "i" = "Set option: options(gdalcli.backend = 'gdalraster')"
+        "i" = "Set option: options(gdalcli.backend = 'processx') [default], 'gdalraster', or 'reticulate'"
       )
     )
   }
