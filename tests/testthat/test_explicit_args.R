@@ -95,35 +95,54 @@ test_that(".create_audit_entry captures error status", {
   expect_equal(audit$error, error_msg)
 })
 
-test_that("gdal_job_run_with_audit returns result", {
+test_that("gdal_job_run_with_audit executes job and returns result", {
   skip_if_not(gdal_check_version("3.11.3", op = ">="))
 
-  # Create a simple job that will fail due to nonexistent input
+  test_file <- system.file("extdata", "sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
+
   job <- new_gdal_job(
     command_path = c("raster", "info"),
-    arguments = list(input = "nonexistent.tif")
+    arguments = list(input = test_file)
   )
 
-  # With audit_log = FALSE, should fail with GDAL error
-  expect_error(
-    gdal_job_run_with_audit(job, audit_log = FALSE),
-    "failed to parse arguments and set their values"
-  )
+  result <- gdal_job_run_with_audit(job, audit_log = FALSE, backend = "processx", stream_out_format = "text")
+  expect_true(is.character(result))
 })
 
-test_that("gdal_job_run_with_audit respects audit_log parameter", {
+test_that("gdal_job_run_with_audit attaches audit trail when audit_log=TRUE", {
   skip_if_not(gdal_check_version("3.11.3", op = ">="))
+
+  test_file <- system.file("extdata", "sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
 
   job <- new_gdal_job(
     command_path = c("raster", "info"),
-    arguments = list(input = "nonexistent.tif")
+    arguments = list(input = test_file)
   )
 
-  # With audit_log = TRUE, should still fail with GDAL error
-  expect_error(
-    gdal_job_run_with_audit(job, audit_log = TRUE),
-    "failed to parse arguments and set their values"
+  result <- gdal_job_run_with_audit(job, audit_log = TRUE, backend = "processx", stream_out_format = "text")
+  
+  expect_true(hasName(attributes(result), "audit_trail"))
+  audit <- attr(result, "audit_trail")
+  expect_equal(audit$status, "success")
+  expect_null(audit$error)
+})
+
+test_that("gdal_job_run_with_audit does not attach trail when audit_log=FALSE", {
+  skip_if_not(gdal_check_version("3.11.3", op = ">="))
+
+  test_file <- system.file("extdata", "sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
+
+  job <- new_gdal_job(
+    command_path = c("raster", "info"),
+    arguments = list(input = test_file)
   )
+
+  result <- gdal_job_run_with_audit(job, audit_log = FALSE, backend = "processx", stream_out_format = "text")
+  
+  expect_false(hasName(attributes(result), "audit_trail"))
 })
 
 test_that("gdal_job_get_explicit_args handles missing options pointer", {
