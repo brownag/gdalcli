@@ -146,24 +146,16 @@ test_that("backend dispatch respects explicit backend parameter", {
 test_that("gdalraster backend uses gdal_alg correctly", {
   skip_if_not_installed("gdalraster")
   
-  # Create a simple info job
+  # Create a simple info job with nonexistent file
   job <- new_gdal_job(
     command_path = c("gdal", "raster", "info"),
     arguments = list(input = "nonexistent.tif")
   )
   
-  # Backend should attempt to use gdal_alg
-  # (Will fail if file doesn't exist, but tests dispatch mechanism)
-  result <- tryCatch(
-    gdal_job_run(job, backend = "gdalraster"),
-    error = function(e) {
-      # Expected error from GDAL not finding file
-      conditionMessage(e)
-    }
+  # gdalraster backend must raise error for nonexistent file
+  expect_error(
+    gdal_job_run(job, backend = "gdalraster")
   )
-  
-  # Should get GDAL error, not backend dispatch error
-  expect_true(is.character(result) || inherits(result, "condition"))
 })
 
 test_that("with_co modifier works with both backends", {
@@ -261,7 +253,7 @@ test_that("serialization preserves all modifiers", {
   # They're handled separately by merge_env_vars
 })
 
-test_that("backend fallback works gracefully", {
+test_that("gdalraster backend errors on unknown command", {
   skip_if_not_installed("gdalraster")
   
   job <- new_gdal_job(
@@ -269,14 +261,10 @@ test_that("backend fallback works gracefully", {
     arguments = list(input = "nonexistent.tif")
   )
   
-  # Backend should attempt gdalraster then fall back (or error appropriately)
-  result <- tryCatch(
-    gdal_job_run(job, backend = "gdalraster"),
-    error = function(e) "error"
+  # Unknown command must raise error (not crash or silently succeed)
+  expect_error(
+    gdal_job_run(job, backend = "gdalraster")
   )
-  
-  # Should result in some form of error (not crash)
-  expect_true(result == "error" || is.character(result))
 })
 
 test_that("job serialization consistency check", {
@@ -419,14 +407,10 @@ test_that("reticulate backend can execute simple commands", {
     arguments = list(input = "nonexistent.tif")
   )
   
-  # Should attempt to run (may fail if file doesn't exist, but that's OK)
-  result <- tryCatch(
-    gdal_job_run(job, backend = "reticulate", verbose = FALSE),
-    error = function(e) "error"
+  # reticulate backend must raise error for nonexistent file
+  expect_error(
+    gdal_job_run(job, backend = "reticulate", verbose = FALSE)
   )
-  
-  # Should have attempted execution
-  expect_true(result == "error" || is.logical(result))
 })
 
 test_that("reticulate backend preserves job modifiers", {
@@ -570,8 +554,8 @@ test_that("gdalraster backend handles creation options", {
     unlink(temp_output)
   }
   
-  # Result should either succeed (logical) or be an error
-  expect_true(is.logical(result) || inherits(result, "error"))
+  # Result must be logical (TRUE for successful execution, not error)
+  expect_true(is.logical(result))
 })
 
 test_that("gdalraster backend can list available commands", {
@@ -584,13 +568,8 @@ test_that("gdalraster backend can list available commands", {
     NULL
   })
   
-  # Should either return results or be NULL (graceful failure)
-  if (!is.null(commands)) {
-    expect_true(is.list(commands) || is.character(commands) || length(commands) > 0)
-  } else {
-    # Graceful failure is acceptable
-    expect_true(TRUE)
-  }
+  # Should return list of commands or NULL (graceful failure)
+  expect_true(is.null(commands) || is.list(commands))
 })
 
 # =============================================================================
@@ -990,11 +969,18 @@ test_that("backends handle environment variables properly", {
 })
 
 test_that("backends maintain job state through modifiers", {
-  skip_if_not_installed("gdalraster")
+  # Test core processx functionality with modifiers
   
-  # Build a job with multiple modifiers
-  job <- gdal_raster_info(
-    input = system.file("extdata/sample_clay_content.tif", package = "gdalcli")
+  test_file <- system.file("extdata/sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
+  
+  output_file <- tempfile(fileext = ".tif")
+  on.exit(unlink(output_file), add = TRUE)
+  
+  # Build a conversion job with multiple modifiers
+  job <- gdal_raster_convert(
+    input = test_file,
+    output = output_file
   ) |>
     gdal_with_co("COMPRESS=LZW") |>
     gdal_with_config("GDAL_CACHEMAX=256") |>
@@ -1003,7 +989,7 @@ test_that("backends maintain job state through modifiers", {
   # Verify creation options are preserved
   expect_true("COMPRESS=LZW" %in% job$arguments$`creation-option`)
   
-  # Verify config options are present (structure may vary)
+  # Verify config options are present
   expect_true(length(job$config_options) > 0)
   expect_true("GDAL_CACHEMAX" %in% names(job$config_options))
   
@@ -1011,11 +997,9 @@ test_that("backends maintain job state through modifiers", {
   expect_true(length(job$env_vars) > 0)
   expect_equal(job$env_vars[["TEST_VAR"]], "test_value")
   
-  # Try to execute
-  result <- tryCatch({
-    gdal_job_run(job, backend = "gdalraster", stream_out_format = "text")
-  }, error = function(e) NULL)
+  # Execute the job with processx backend
+  result <- gdal_job_run(job, backend = "processx")
   
-  # Should succeed or provide meaningful error (not crash)
-  expect_true(is.character(result) || is.null(result))
+  # Should succeed without error
+  expect_true(TRUE)
 })
