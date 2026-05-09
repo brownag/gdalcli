@@ -20,14 +20,14 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_mdim.html} for detailed 
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_mdim.
-# See GDAL documentation: https://gdal.org/programs/gdal-mdim.html
+# See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_mdim.html
 job <- gdal_mdim()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_mdim_utilities: 
-\code{\link{gdal_mdim_convert}()},
-\code{\link{gdal_mdim_info}()}
+Other gdal_mdim_utilities:
+\code{\link[=gdal_mdim_convert]{gdal_mdim_convert()}},
+\code{\link[=gdal_mdim_info]{gdal_mdim_info()}}
 }
 \concept{gdal_mdim_utilities}

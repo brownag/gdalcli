@@ -51,7 +51,7 @@ gdal_raster_mosaic(
 A \link{gdal_job} object.
 }
 \description{
-This program builds a mosaic of a list of input GDAL datasets, that can be either a virtual mosaic in the VRT (Virtual Dataset) <raster.vrt> format, or in a more conventional raster format such as GeoTIFF. Wildcards '*', '?' or '['] of :cppVSIGlob can be used for input dataset names, even on files located on network file systems such as /vsis3/, /vsigs/, /vsiaz/, etc. Alternatively if a input dataset name is prefixed by the \code{@} character, it will be assumed to contain the list of actual dataset names (one per line) to use as input datasets. gdal raster mosaic does some checks to ensure that all files that will be put in the resulting file have similar characteristics: number of bands, projection, color interpretation, etc. If not, files that do not match the common characteristics will be skipped. Starting with GDAL 3.12, a function (e.g., \code{min}, \code{mean}, \code{median}) can be specified (--pixel-function) to calculate pixel values from overlapping inputs. If no function is specified, or in earlier versions, the order of the input list is used to determine priority. Files that are listed at the end are the ones from which the content will be fetched. Note that nodata will be taken into account to potentially fetch data from lower-priority datasets, but currently, alpha channel is not taken into account to do alpha compositing (so a source with alpha=0 appearing on top of another source will override its content). This might be changed in later versions. Stating with GDAL 3.12, this command can also be used as the first step of gdal_raster_pipeline.
+This program builds a mosaic of a list of input GDAL datasets, that can be either a virtual mosaic in the VRT (Virtual Dataset) <raster.vrt> format, or in a more conventional raster format such as GeoTIFF. The list of input GDAL datasets can be specified at the end of the command line or put in a text file (one filename per line) for very long lists. Wildcards '*', '?' or '['] of :cppVSIGlob can be used, even on files located on network file systems such as /vsis3/, /vsigs/, /vsiaz/, etc. gdal raster mosaic does some checks to ensure that all files that will be put in the resulting file have similar characteristics: number of bands, projection, color interpretation, etc. If not, files that do not match the common characteristics will be skipped. If the inputs spatially overlap, the order of the input list is used to determine priority. Files that are listed at the end are the ones from which the content will be fetched. Note that nodata will be taken into account to potentially fetch data from lower-priority datasets, but currently, alpha channel is not taken into account to do alpha compositing (so a source with alpha=0 appearing on top of another source will override its content). This might be changed in later versions. The following options are available:
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_mosaic.html} for detailed GDAL documentation.
 }
@@ -63,41 +63,41 @@ job <- gdal_raster_mosaic(input = "doq/*.tif", output = "doq_index.vrt",
 }
 }
 \seealso{
-Other gdal_raster_utilities: 
-\code{\link{gdal_raster}()},
-\code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_calc}()},
-\code{\link{gdal_raster_clean_collar}()},
-\code{\link{gdal_raster_clip}()},
-\code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_contour}()},
-\code{\link{gdal_raster_convert}()},
-\code{\link{gdal_raster_create}()},
-\code{\link{gdal_raster_edit}()},
-\code{\link{gdal_raster_fill_nodata}()},
-\code{\link{gdal_raster_footprint}()},
-\code{\link{gdal_raster_hillshade}()},
-\code{\link{gdal_raster_index}()},
-\code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_overview_add}()},
-\code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_pipeline}()},
-\code{\link{gdal_raster_pixel_info}()},
-\code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_reclassify}()},
-\code{\link{gdal_raster_reproject}()},
-\code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_roughness}()},
-\code{\link{gdal_raster_scale}()},
-\code{\link{gdal_raster_select}()},
-\code{\link{gdal_raster_set_type}()},
-\code{\link{gdal_raster_sieve}()},
-\code{\link{gdal_raster_slope}()},
-\code{\link{gdal_raster_stack}()},
-\code{\link{gdal_raster_tile}()},
-\code{\link{gdal_raster_tpi}()},
-\code{\link{gdal_raster_tri}()},
-\code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_viewshed}()}
+Other gdal_raster_utilities:
+\code{\link[=gdal_raster]{gdal_raster()}},
+\code{\link[=gdal_raster_aspect]{gdal_raster_aspect()}},
+\code{\link[=gdal_raster_calc]{gdal_raster_calc()}},
+\code{\link[=gdal_raster_clean_collar]{gdal_raster_clean_collar()}},
+\code{\link[=gdal_raster_clip]{gdal_raster_clip()}},
+\code{\link[=gdal_raster_color_map]{gdal_raster_color_map()}},
+\code{\link[=gdal_raster_contour]{gdal_raster_contour()}},
+\code{\link[=gdal_raster_convert]{gdal_raster_convert()}},
+\code{\link[=gdal_raster_create]{gdal_raster_create()}},
+\code{\link[=gdal_raster_edit]{gdal_raster_edit()}},
+\code{\link[=gdal_raster_fill_nodata]{gdal_raster_fill_nodata()}},
+\code{\link[=gdal_raster_footprint]{gdal_raster_footprint()}},
+\code{\link[=gdal_raster_hillshade]{gdal_raster_hillshade()}},
+\code{\link[=gdal_raster_index]{gdal_raster_index()}},
+\code{\link[=gdal_raster_info]{gdal_raster_info()}},
+\code{\link[=gdal_raster_overview_add]{gdal_raster_overview_add()}},
+\code{\link[=gdal_raster_overview_delete]{gdal_raster_overview_delete()}},
+\code{\link[=gdal_raster_pipeline]{gdal_raster_pipeline()}},
+\code{\link[=gdal_raster_pixel_info]{gdal_raster_pixel_info()}},
+\code{\link[=gdal_raster_polygonize]{gdal_raster_polygonize()}},
+\code{\link[=gdal_raster_reclassify]{gdal_raster_reclassify()}},
+\code{\link[=gdal_raster_reproject]{gdal_raster_reproject()}},
+\code{\link[=gdal_raster_resize]{gdal_raster_resize()}},
+\code{\link[=gdal_raster_roughness]{gdal_raster_roughness()}},
+\code{\link[=gdal_raster_scale]{gdal_raster_scale()}},
+\code{\link[=gdal_raster_select]{gdal_raster_select()}},
+\code{\link[=gdal_raster_set_type]{gdal_raster_set_type()}},
+\code{\link[=gdal_raster_sieve]{gdal_raster_sieve()}},
+\code{\link[=gdal_raster_slope]{gdal_raster_slope()}},
+\code{\link[=gdal_raster_stack]{gdal_raster_stack()}},
+\code{\link[=gdal_raster_tile]{gdal_raster_tile()}},
+\code{\link[=gdal_raster_tpi]{gdal_raster_tpi()}},
+\code{\link[=gdal_raster_tri]{gdal_raster_tri()}},
+\code{\link[=gdal_raster_unscale]{gdal_raster_unscale()}},
+\code{\link[=gdal_raster_viewshed]{gdal_raster_viewshed()}}
 }
 \concept{gdal_raster_utilities}

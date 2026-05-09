@@ -62,8 +62,8 @@ job <- gdal_mdim_convert(input = "in.nc", output = "out.vrt")
 }
 }
 \seealso{
-Other gdal_mdim_utilities: 
-\code{\link{gdal_mdim}()},
-\code{\link{gdal_mdim_info}()}
+Other gdal_mdim_utilities:
+\code{\link[=gdal_mdim]{gdal_mdim()}},
+\code{\link[=gdal_mdim_info]{gdal_mdim_info()}}
 }
 \concept{gdal_mdim_utilities}

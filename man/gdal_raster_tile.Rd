@@ -120,7 +120,7 @@ gdal_raster_tile(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster tile} generates a directory with small tiles and metadata, following the OGC WMTS Specification. Simple web pages with viewers based on OpenLayers and Leaflet are generated as well - so anybody can comfortably explore your maps on-line and you do not need to install or configure any special software (like MapServer) and the map displays very fast in the web browser. You only need to upload the generated directory onto a web server. It generates PNG files by default, but other output formats can be selected (JPEG, WEBP, GTiff, etc.). Note that not all formats support non-Byte data types. JPEG and WEBP only support Byte. PNG supports Byte and UInt16. GeoTiff can support all data types. It can also use a tiling scheme fully adapted to the input raster, in terms of origin and resolution, when using the \code{raster} tiling scheme. In that scheme, tiles at the maximum zoom level will have the same resolution as the raster. Starting with GDAL 3.12, gdal raster tile can be used as the last step of a pipeline.
+\verb{gdal raster tile} generates a directory with small tiles and metadata, following the OGC WMTS Specification. Simple web pages with viewers based on OpenLayers and Leaflet are generated as well - so anybody can comfortably explore your maps on-line and you do not need to install or configure any special software (like MapServer) and the map displays very fast in the web browser. You only need to upload the generated directory onto a web server. It generates PNG files by default, but other output formats can be selected (JPEG, WEBP, GTiff, etc.). Note that not all formats support non-Byte data types. JPEG and WEBP only support Byte. PNG supports Byte and UInt16. GeoTiff can support all data types. It can also use a tiling scheme fully adapted to the input raster, in terms of origin and resolution, when using the \code{raster} tiling scheme. In that scheme, tiles at the maximum zoom level will have the same resolution as the raster.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_tile.html} for detailed GDAL documentation.
 }
@@ -132,41 +132,41 @@ job <- gdal_raster_tile(input = "input.tif", output = "output_folder", min_zoom 
 }
 }
 \seealso{
-Other gdal_raster_utilities: 
-\code{\link{gdal_raster}()},
-\code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_calc}()},
-\code{\link{gdal_raster_clean_collar}()},
-\code{\link{gdal_raster_clip}()},
-\code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_contour}()},
-\code{\link{gdal_raster_convert}()},
-\code{\link{gdal_raster_create}()},
-\code{\link{gdal_raster_edit}()},
-\code{\link{gdal_raster_fill_nodata}()},
-\code{\link{gdal_raster_footprint}()},
-\code{\link{gdal_raster_hillshade}()},
-\code{\link{gdal_raster_index}()},
-\code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_overview_add}()},
-\code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_pipeline}()},
-\code{\link{gdal_raster_pixel_info}()},
-\code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_reclassify}()},
-\code{\link{gdal_raster_reproject}()},
-\code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_roughness}()},
-\code{\link{gdal_raster_scale}()},
-\code{\link{gdal_raster_select}()},
-\code{\link{gdal_raster_set_type}()},
-\code{\link{gdal_raster_sieve}()},
-\code{\link{gdal_raster_slope}()},
-\code{\link{gdal_raster_stack}()},
-\code{\link{gdal_raster_tpi}()},
-\code{\link{gdal_raster_tri}()},
-\code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_viewshed}()}
+Other gdal_raster_utilities:
+\code{\link[=gdal_raster]{gdal_raster()}},
+\code{\link[=gdal_raster_aspect]{gdal_raster_aspect()}},
+\code{\link[=gdal_raster_calc]{gdal_raster_calc()}},
+\code{\link[=gdal_raster_clean_collar]{gdal_raster_clean_collar()}},
+\code{\link[=gdal_raster_clip]{gdal_raster_clip()}},
+\code{\link[=gdal_raster_color_map]{gdal_raster_color_map()}},
+\code{\link[=gdal_raster_contour]{gdal_raster_contour()}},
+\code{\link[=gdal_raster_convert]{gdal_raster_convert()}},
+\code{\link[=gdal_raster_create]{gdal_raster_create()}},
+\code{\link[=gdal_raster_edit]{gdal_raster_edit()}},
+\code{\link[=gdal_raster_fill_nodata]{gdal_raster_fill_nodata()}},
+\code{\link[=gdal_raster_footprint]{gdal_raster_footprint()}},
+\code{\link[=gdal_raster_hillshade]{gdal_raster_hillshade()}},
+\code{\link[=gdal_raster_index]{gdal_raster_index()}},
+\code{\link[=gdal_raster_info]{gdal_raster_info()}},
+\code{\link[=gdal_raster_mosaic]{gdal_raster_mosaic()}},
+\code{\link[=gdal_raster_overview_add]{gdal_raster_overview_add()}},
+\code{\link[=gdal_raster_overview_delete]{gdal_raster_overview_delete()}},
+\code{\link[=gdal_raster_pipeline]{gdal_raster_pipeline()}},
+\code{\link[=gdal_raster_pixel_info]{gdal_raster_pixel_info()}},
+\code{\link[=gdal_raster_polygonize]{gdal_raster_polygonize()}},
+\code{\link[=gdal_raster_reclassify]{gdal_raster_reclassify()}},
+\code{\link[=gdal_raster_reproject]{gdal_raster_reproject()}},
+\code{\link[=gdal_raster_resize]{gdal_raster_resize()}},
+\code{\link[=gdal_raster_roughness]{gdal_raster_roughness()}},
+\code{\link[=gdal_raster_scale]{gdal_raster_scale()}},
+\code{\link[=gdal_raster_select]{gdal_raster_select()}},
+\code{\link[=gdal_raster_set_type]{gdal_raster_set_type()}},
+\code{\link[=gdal_raster_sieve]{gdal_raster_sieve()}},
+\code{\link[=gdal_raster_slope]{gdal_raster_slope()}},
+\code{\link[=gdal_raster_stack]{gdal_raster_stack()}},
+\code{\link[=gdal_raster_tpi]{gdal_raster_tpi()}},
+\code{\link[=gdal_raster_tri]{gdal_raster_tri()}},
+\code{\link[=gdal_raster_unscale]{gdal_raster_unscale()}},
+\code{\link[=gdal_raster_viewshed]{gdal_raster_viewshed()}}
 }
 \concept{gdal_raster_utilities}

@@ -24,9 +24,9 @@ job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")
 }
 }
 \seealso{
-Other gdal_driver_utilities: 
-\code{\link{gdal_driver_gti_create}()},
-\code{\link{gdal_driver_openfilegdb_repack}()},
-\code{\link{gdal_driver_pdf_list_layers}()}
+Other gdal_driver_utilities:
+\code{\link[=gdal_driver_gti_create]{gdal_driver_gti_create()}},
+\code{\link[=gdal_driver_openfilegdb_repack]{gdal_driver_openfilegdb_repack()}},
+\code{\link[=gdal_driver_pdf_list_layers]{gdal_driver_pdf_list_layers()}}
 }
 \concept{gdal_driver_utilities}

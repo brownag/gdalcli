@@ -45,7 +45,7 @@ gdal_vector_info(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal vector info} lists various information about a GDAL supported vector dataset. Starting with GDAL 3.12, gdal vector info can be used as the last step of a pipeline. The following options are available:
+\verb{gdal vector info} lists various information about a GDAL supported vector dataset. The following options are available:
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_info.html} for detailed GDAL documentation.
 }
@@ -56,35 +56,35 @@ job <- gdal_vector_info(output_format = "text", features = "poly.gpkg")
 }
 }
 \seealso{
-Other gdal_vector_utilities: 
-\code{\link{gdal_vector}()},
-\code{\link{gdal_vector_clip}()},
-\code{\link{gdal_vector_concat}()},
-\code{\link{gdal_vector_convert}()},
-\code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_filter}()},
-\code{\link{gdal_vector_geom_buffer}()},
-\code{\link{gdal_vector_geom_explode_collections}()},
-\code{\link{gdal_vector_geom_make_valid}()},
-\code{\link{gdal_vector_geom_segmentize}()},
-\code{\link{gdal_vector_geom_set_type}()},
-\code{\link{gdal_vector_geom_simplify}()},
-\code{\link{gdal_vector_geom_swap_xy}()},
-\code{\link{gdal_vector_grid_average}()},
-\code{\link{gdal_vector_grid_average_distance}()},
-\code{\link{gdal_vector_grid_average_distance_points}()},
-\code{\link{gdal_vector_grid_count}()},
-\code{\link{gdal_vector_grid_invdist}()},
-\code{\link{gdal_vector_grid_invdistnn}()},
-\code{\link{gdal_vector_grid_linear}()},
-\code{\link{gdal_vector_grid_maximum}()},
-\code{\link{gdal_vector_grid_minimum}()},
-\code{\link{gdal_vector_grid_nearest}()},
-\code{\link{gdal_vector_grid_range}()},
-\code{\link{gdal_vector_pipeline}()},
-\code{\link{gdal_vector_rasterize}()},
-\code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_sql}()}
+Other gdal_vector_utilities:
+\code{\link[=gdal_vector]{gdal_vector()}},
+\code{\link[=gdal_vector_clip]{gdal_vector_clip()}},
+\code{\link[=gdal_vector_concat]{gdal_vector_concat()}},
+\code{\link[=gdal_vector_convert]{gdal_vector_convert()}},
+\code{\link[=gdal_vector_edit]{gdal_vector_edit()}},
+\code{\link[=gdal_vector_filter]{gdal_vector_filter()}},
+\code{\link[=gdal_vector_geom_buffer]{gdal_vector_geom_buffer()}},
+\code{\link[=gdal_vector_geom_explode_collections]{gdal_vector_geom_explode_collections()}},
+\code{\link[=gdal_vector_geom_make_valid]{gdal_vector_geom_make_valid()}},
+\code{\link[=gdal_vector_geom_segmentize]{gdal_vector_geom_segmentize()}},
+\code{\link[=gdal_vector_geom_set_type]{gdal_vector_geom_set_type()}},
+\code{\link[=gdal_vector_geom_simplify]{gdal_vector_geom_simplify()}},
+\code{\link[=gdal_vector_geom_swap_xy]{gdal_vector_geom_swap_xy()}},
+\code{\link[=gdal_vector_grid_average]{gdal_vector_grid_average()}},
+\code{\link[=gdal_vector_grid_average_distance]{gdal_vector_grid_average_distance()}},
+\code{\link[=gdal_vector_grid_average_distance_points]{gdal_vector_grid_average_distance_points()}},
+\code{\link[=gdal_vector_grid_count]{gdal_vector_grid_count()}},
+\code{\link[=gdal_vector_grid_invdist]{gdal_vector_grid_invdist()}},
+\code{\link[=gdal_vector_grid_invdistnn]{gdal_vector_grid_invdistnn()}},
+\code{\link[=gdal_vector_grid_linear]{gdal_vector_grid_linear()}},
+\code{\link[=gdal_vector_grid_maximum]{gdal_vector_grid_maximum()}},
+\code{\link[=gdal_vector_grid_minimum]{gdal_vector_grid_minimum()}},
+\code{\link[=gdal_vector_grid_nearest]{gdal_vector_grid_nearest()}},
+\code{\link[=gdal_vector_grid_range]{gdal_vector_grid_range()}},
+\code{\link[=gdal_vector_pipeline]{gdal_vector_pipeline()}},
+\code{\link[=gdal_vector_rasterize]{gdal_vector_rasterize()}},
+\code{\link[=gdal_vector_reproject]{gdal_vector_reproject()}},
+\code{\link[=gdal_vector_select]{gdal_vector_select()}},
+\code{\link[=gdal_vector_sql]{gdal_vector_sql()}}
 }
 \concept{gdal_vector_utilities}

@@ -105,9 +105,9 @@ job <- gdal_driver_gti_create(input = "*.tif", output = "tile_index.gti.gpkg",
 }
 }
 \seealso{
-Other gdal_driver_utilities: 
-\code{\link{gdal_driver_gpkg_repack}()},
-\code{\link{gdal_driver_openfilegdb_repack}()},
-\code{\link{gdal_driver_pdf_list_layers}()}
+Other gdal_driver_utilities:
+\code{\link[=gdal_driver_gpkg_repack]{gdal_driver_gpkg_repack()}},
+\code{\link[=gdal_driver_openfilegdb_repack]{gdal_driver_openfilegdb_repack()}},
+\code{\link[=gdal_driver_pdf_list_layers]{gdal_driver_pdf_list_layers()}}
 }
 \concept{gdal_driver_utilities}

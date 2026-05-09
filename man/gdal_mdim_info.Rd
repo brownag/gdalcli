@@ -50,8 +50,8 @@ job <- gdal_mdim_info(input = "netcdf-4d.nc")
 }
 }
 \seealso{
-Other gdal_mdim_utilities: 
-\code{\link{gdal_mdim}()},
-\code{\link{gdal_mdim_convert}()}
+Other gdal_mdim_utilities:
+\code{\link[=gdal_mdim]{gdal_mdim()}},
+\code{\link[=gdal_mdim_convert]{gdal_mdim_convert()}}
 }
 \concept{gdal_mdim_utilities}

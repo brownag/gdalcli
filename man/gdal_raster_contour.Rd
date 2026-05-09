@@ -75,7 +75,7 @@ gdal_raster_contour(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster contour} creates a vector contour from a raster elevation model (DEM). Since GDAL 3.12, this algorithm can be part of a gdal_pipeline. The following options are available:
+\verb{gdal raster contour} creates a vector contour from a raster elevation model (DEM). The following options are available:
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_contour.html} for detailed GDAL documentation.
 }
@@ -86,41 +86,41 @@ job <- gdal_raster_contour(input = "elevation.tif", output = "contour.shp", inte
 }
 }
 \seealso{
-Other gdal_raster_utilities: 
-\code{\link{gdal_raster}()},
-\code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_calc}()},
-\code{\link{gdal_raster_clean_collar}()},
-\code{\link{gdal_raster_clip}()},
-\code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_convert}()},
-\code{\link{gdal_raster_create}()},
-\code{\link{gdal_raster_edit}()},
-\code{\link{gdal_raster_fill_nodata}()},
-\code{\link{gdal_raster_footprint}()},
-\code{\link{gdal_raster_hillshade}()},
-\code{\link{gdal_raster_index}()},
-\code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_overview_add}()},
-\code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_pipeline}()},
-\code{\link{gdal_raster_pixel_info}()},
-\code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_reclassify}()},
-\code{\link{gdal_raster_reproject}()},
-\code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_roughness}()},
-\code{\link{gdal_raster_scale}()},
-\code{\link{gdal_raster_select}()},
-\code{\link{gdal_raster_set_type}()},
-\code{\link{gdal_raster_sieve}()},
-\code{\link{gdal_raster_slope}()},
-\code{\link{gdal_raster_stack}()},
-\code{\link{gdal_raster_tile}()},
-\code{\link{gdal_raster_tpi}()},
-\code{\link{gdal_raster_tri}()},
-\code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_viewshed}()}
+Other gdal_raster_utilities:
+\code{\link[=gdal_raster]{gdal_raster()}},
+\code{\link[=gdal_raster_aspect]{gdal_raster_aspect()}},
+\code{\link[=gdal_raster_calc]{gdal_raster_calc()}},
+\code{\link[=gdal_raster_clean_collar]{gdal_raster_clean_collar()}},
+\code{\link[=gdal_raster_clip]{gdal_raster_clip()}},
+\code{\link[=gdal_raster_color_map]{gdal_raster_color_map()}},
+\code{\link[=gdal_raster_convert]{gdal_raster_convert()}},
+\code{\link[=gdal_raster_create]{gdal_raster_create()}},
+\code{\link[=gdal_raster_edit]{gdal_raster_edit()}},
+\code{\link[=gdal_raster_fill_nodata]{gdal_raster_fill_nodata()}},
+\code{\link[=gdal_raster_footprint]{gdal_raster_footprint()}},
+\code{\link[=gdal_raster_hillshade]{gdal_raster_hillshade()}},
+\code{\link[=gdal_raster_index]{gdal_raster_index()}},
+\code{\link[=gdal_raster_info]{gdal_raster_info()}},
+\code{\link[=gdal_raster_mosaic]{gdal_raster_mosaic()}},
+\code{\link[=gdal_raster_overview_add]{gdal_raster_overview_add()}},
+\code{\link[=gdal_raster_overview_delete]{gdal_raster_overview_delete()}},
+\code{\link[=gdal_raster_pipeline]{gdal_raster_pipeline()}},
+\code{\link[=gdal_raster_pixel_info]{gdal_raster_pixel_info()}},
+\code{\link[=gdal_raster_polygonize]{gdal_raster_polygonize()}},
+\code{\link[=gdal_raster_reclassify]{gdal_raster_reclassify()}},
+\code{\link[=gdal_raster_reproject]{gdal_raster_reproject()}},
+\code{\link[=gdal_raster_resize]{gdal_raster_resize()}},
+\code{\link[=gdal_raster_roughness]{gdal_raster_roughness()}},
+\code{\link[=gdal_raster_scale]{gdal_raster_scale()}},
+\code{\link[=gdal_raster_select]{gdal_raster_select()}},
+\code{\link[=gdal_raster_set_type]{gdal_raster_set_type()}},
+\code{\link[=gdal_raster_sieve]{gdal_raster_sieve()}},
+\code{\link[=gdal_raster_slope]{gdal_raster_slope()}},
+\code{\link[=gdal_raster_stack]{gdal_raster_stack()}},
+\code{\link[=gdal_raster_tile]{gdal_raster_tile()}},
+\code{\link[=gdal_raster_tpi]{gdal_raster_tpi()}},
+\code{\link[=gdal_raster_tri]{gdal_raster_tri()}},
+\code{\link[=gdal_raster_unscale]{gdal_raster_unscale()}},
+\code{\link[=gdal_raster_viewshed]{gdal_raster_viewshed()}}
 }
 \concept{gdal_raster_utilities}

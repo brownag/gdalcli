@@ -15,24 +15,19 @@ gdal_vsi_sozip_optimize(
 )
 }
 \arguments{
-\item{input}{Input ZIP filename (Character vector) (required). \code{0} to \code{1} value(s).
-Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input ZIP filename (Character vector) (required). \code{0} to \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output}{Output ZIP filename (required)}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default:
-\code{false})}
+\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
-\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP
-optimization. Choices: "auto", "yes", "no" (Default: \code{auto})}
+\item{enable_sozip}{Whether to automatically/systematically/never apply the SOZIP optimization. Choices: "auto", "yes", "no" (Default: \code{auto})}
 
 \item{sozip_chunk_size}{Chunk size for a seek-optimized file. Format: \verb{value in bytes or with K/M suffix} (Default: \code{32768})}
 
-\item{sozip_min_file_size}{Minimum file size to decide if a file should be
-seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
+\item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
 
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty
-(Logical)}
+\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
 }
 \value{
 A \link{gdal_job} object.
@@ -40,28 +35,25 @@ A \link{gdal_job} object.
 \description{
 Create a Seek-optimized ZIP (SOZIP) file from a regular ZIP file.
 
-See
-\url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_optimize.html}
-for detailed GDAL documentation.
+See \url{https://gdal.org/en/3.11.4/programs/gdal_vsi_sozip_optimize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_sozip_optimize.
-# See GDAL documentation:
-https://gdal.org/programs/gdal-vsi-sozip-optimize.html
+# See GDAL documentation: https://gdal.org/programs/gdal-vsi-sozip-optimize.html
 job <- gdal_vsi_sozip_optimize()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vsi_utilities: 
-\code{\link{gdal_vsi_copy}()},
-\code{\link{gdal_vsi_delete}()},
-\code{\link{gdal_vsi_list}()},
-\code{\link{gdal_vsi_move}()},
-\code{\link{gdal_vsi_sozip_create}()},
-\code{\link{gdal_vsi_sozip_list}()},
-\code{\link{gdal_vsi_sozip_validate}()},
-\code{\link{gdal_vsi_sync}()}
+Other gdal_vsi_utilities:
+\code{\link[=gdal_vsi_copy]{gdal_vsi_copy()}},
+\code{\link[=gdal_vsi_delete]{gdal_vsi_delete()}},
+\code{\link[=gdal_vsi_list]{gdal_vsi_list()}},
+\code{\link[=gdal_vsi_move]{gdal_vsi_move()}},
+\code{\link[=gdal_vsi_sozip_create]{gdal_vsi_sozip_create()}},
+\code{\link[=gdal_vsi_sozip_list]{gdal_vsi_sozip_list()}},
+\code{\link[=gdal_vsi_sozip_validate]{gdal_vsi_sozip_validate()}},
+\code{\link[=gdal_vsi_sync]{gdal_vsi_sync()}}
 }
 \concept{gdal_vsi_utilities}
