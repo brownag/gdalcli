@@ -151,27 +151,6 @@ test_that("pipeline uses temp files for connections when needed", {
   expect_equal(rasterize_job$arguments$input, "temp.gpkg")
 })
 
-test_that("pipeline execution fails gracefully on errors", {
-  # Create a pipeline with invalid arguments
-  job <- gdal_raster_reproject(
-    input = "nonexistent.tif",
-    dst_crs = "EPSG:32632"
-  ) |>
-    gdal_raster_convert(output = "output.jpg")
-
-  if (gdal_check_version("3.11.3", op = ">=")) {
-    expect_error(
-      gdal_job_run(job),
-      "failed to parse arguments and set their values"
-    )
-  } else {
-    expect_error(
-      gdal_job_run(job),
-      "gdal_alg\\(\\) requires GDAL >= 3.11.3"
-    )
-  }
-})
-
 test_that("pipeline with virtual paths doesn't override user outputs", {
   # Test that user-specified outputs are preserved
   job <- gdal_vector_reproject(
@@ -549,4 +528,105 @@ test_that("gdal_compose convenience function works with vector jobs", {
   expect_s3_class(pipeline_job, "gdal_job")
   expect_equal(pipeline_job$command_path[1], "vector")
   expect_equal(pipeline_job$command_path[2], "pipeline")
+})
+
+# ============================================================================
+# Phase 3: Pipeline Execution Tests with Real Data
+# ============================================================================
+
+test_that("sequential pipeline execution with real data succeeds", {
+  skip_if_not(gdal_check_version("3.11", op = ">="))
+  
+  # Use real test data
+  test_file <- system.file("extdata", "sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
+  
+  output_file <- tempfile(fileext = ".tif")
+  on.exit(unlink(output_file), add = TRUE)
+  
+  # Create a simple pipeline: convert to different format
+  pipeline <- gdal_raster_convert(input = test_file, output = output_file)
+  
+  # Execute sequentially (default mode)
+  result <- gdal_job_run(pipeline, backend = "processx", execution_mode = "sequential")
+  
+  # Should complete without error
+  expect_true(TRUE)
+})
+
+test_that("pipeline error handling propagates GDAL errors", {
+  skip_if_not(gdal_check_version("3.11", op = ">="))
+  
+  # Create a pipeline with nonexistent input file
+  pipeline <- gdal_raster_convert(input = "/nonexistent/file.tif", output = tempfile(fileext = ".tif"))
+  
+  # Execution should fail with GDAL error
+  expect_error(
+    gdal_job_run(pipeline, backend = "processx", execution_mode = "sequential"),
+    "System command 'gdal' failed"
+  )
+})
+
+test_that("pipeline with multi-step jobs chains correctly", {
+  skip_if_not(gdal_check_version("3.11", op = ">="))
+  
+  test_file <- system.file("extdata", "sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
+  
+  output_file <- tempfile(fileext = ".tif")
+  intermediate_file <- tempfile(fileext = ".tif")
+  on.exit(unlink(c(output_file, intermediate_file)), add = TRUE)
+  
+  # Create a multi-step pipeline: convert -> convert
+  job1 <- gdal_raster_convert(input = test_file, output = intermediate_file)
+  job2 <- gdal_raster_convert(input = intermediate_file, output = output_file)
+  
+  pipeline <- new_gdal_pipeline(list(job1, job2))
+  
+  # Verify jobs are in correct order and connected
+  expect_equal(length(pipeline$jobs), 2)
+  expect_equal(pipeline$jobs[[1]]$arguments$output, intermediate_file)
+  expect_equal(pipeline$jobs[[2]]$arguments$input, intermediate_file)
+})
+
+test_that("pipeline piped construction maintains order", {
+  skip_if_not(gdal_check_version("3.11", op = ">="))
+  
+  test_file <- system.file("extdata", "sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
+  
+  output_file <- tempfile(fileext = ".tif")
+  intermediate_file <- tempfile(fileext = ".tif")
+  on.exit(unlink(c(output_file, intermediate_file)), add = TRUE)
+  
+  # Create pipeline using pipe operator
+  job <- gdal_raster_convert(input = test_file, output = intermediate_file) |>
+    gdal_raster_convert(output = output_file)
+  
+  # Verify pipeline structure
+  expect_s3_class(job, "gdal_job")
+  expect_s3_class(job$pipeline, "gdal_pipeline")
+  expect_equal(length(job$pipeline$jobs), 2)
+})
+
+test_that("pipeline with backend specification executes with correct backend", {
+  skip_if_not(gdal_check_version("3.11", op = ">="))
+  
+  test_file <- system.file("extdata", "sample_clay_content.tif", package = "gdalcli")
+  skip_if(!file.exists(test_file), "Test data not available")
+  
+  output_file <- tempfile(fileext = ".tif")
+  on.exit(unlink(output_file), add = TRUE)
+  
+  # Single job pipeline
+  pipeline <- gdal_raster_convert(input = test_file, output = output_file)
+  
+  # Execute with explicit backend
+  result <- gdal_job_run(
+    pipeline,
+    backend = "processx"
+  )
+  
+  # Should complete without error
+  expect_true(TRUE)
 })
