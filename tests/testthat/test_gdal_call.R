@@ -105,13 +105,18 @@ test_that("gdal_call works with NULL modifiers (default)", {
   expect_s3_class(job, "gdal_job")
 })
 
-test_that("gdal_call with vector arguments", {
-  job <- gdal_call("gdal_raster_overview_add",
-    list(
-      dataset = "test.tif",
-      levels = c(2, 4, 8)
-    )
-  )
+# ===== Tests =====
+
+test_that("gdal_call invokes function by character name", {
+  # Build args based on GDAL version
+  args <- list(levels = c(2, 4, 8))
+  if (gdal_check_version("3.13", op = ">=")) {
+    args$input <- "test.tif"
+  } else {
+    args$dataset <- "test.tif"
+  }
+  
+  job <- gdal_call("gdal_raster_overview_add", args)
   expect_s3_class(job, "gdal_job")
   expect_identical(job$arguments$levels, c(2, 4, 8))
 })
