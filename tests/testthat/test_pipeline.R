@@ -1,25 +1,14 @@
-# ====== Version-Aware Helper Functions for GDAL 3.12.2+ Compatibility ======
-# GDAL 3.12.2 renamed --dst-crs to --output-crs (and similar for dst-* params)
-# These helpers ensure tests work with both 3.11/3.12.0 (dst_crs) and 3.12.2+ (output_crs)
+# Version-agnostic helper functions
+# Modern parameter names work on all GDAL versions via automatic routing
 
 .make_raster_reproject_job <- function(input, crs, output = NULL) {
   if (is.null(output)) output <- tempfile(fileext = ".tif")
-  
-  if (gdal_check_version("3.12.2", op = ">=")) {
-    gdal_raster_reproject(input = input, output_crs = crs, output = output)
-  } else {
-    gdal_raster_reproject(input = input, dst_crs = crs, output = output)
-  }
+  gdal_raster_reproject(input = input, output_crs = crs, output = output)
 }
 
 .make_vector_reproject_job <- function(input, crs, output = NULL) {
   if (is.null(output)) output <- tempfile(fileext = ".shp")
-  
-  if (gdal_check_version("3.12.2", op = ">=")) {
-    gdal_vector_reproject(input = input, output_crs = crs, output = output)
-  } else {
-    gdal_vector_reproject(input = input, dst_crs = crs, output = output)
-  }
+  gdal_vector_reproject(input = input, output_crs = crs, output = output)
 }
 
 # ========================================================================
