@@ -17,6 +17,7 @@
 #' @param absolute_path Display absolute path (Logical)
 #' @param tree Use a hierarchical presentation for JSON output (Logical)
 #' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -35,7 +36,8 @@ gdal_vsi_list <- function(filename,
   depth = NULL,
   absolute_path = FALSE,
   tree = FALSE,
-  stdout = FALSE) {
+  stdout = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(filename)) new_args[["filename"]] <- filename
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
@@ -57,7 +59,7 @@ gdal_vsi_list <- function(filename,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_list", merged_args, .update_intent_mapping)
 

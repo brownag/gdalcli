@@ -30,6 +30,7 @@
 #' @param zmultiply Multiplication factor for the Z field value (applied after zoffset) (Default: `1`)
 #' @param radius Radius of the search circle (Default: `Inf`)
 #' @param nodata Target nodata value (Default: `0`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -60,7 +61,8 @@ gdal_vector_grid_linear <- function(input,
   zoffset = NULL,
   zmultiply = NULL,
   radius = NULL,
-  nodata = NULL) {
+  nodata = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -94,7 +96,7 @@ gdal_vector_grid_linear <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_grid_linear", merged_args, .update_intent_mapping)
 

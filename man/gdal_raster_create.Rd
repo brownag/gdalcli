@@ -22,7 +22,8 @@ gdal_raster_create(
   bbox = NULL,
   metadata = NULL,
   copy_metadata = FALSE,
-  copy_overviews = FALSE
+  copy_overviews = FALSE,
+  ...
 )
 }
 \arguments{
@@ -61,6 +62,8 @@ gdal_raster_create(
 \item{copy_metadata}{Copy metadata from input dataset (Logical)}
 
 \item{copy_overviews}{Create same overview levels as input dataset (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

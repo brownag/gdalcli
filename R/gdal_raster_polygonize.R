@@ -24,6 +24,7 @@
 #' @param layer Layer name (Default: `polygonize`)
 #' @param attribute_name Name of the field with the pixel value (Default: `DN`)
 #' @param connect_diagonal_pixels Consider diagonal pixels as connected (Logical) (Default: `false`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -47,7 +48,8 @@ gdal_raster_polygonize <- function(input,
   band = NULL,
   layer = NULL,
   attribute_name = NULL,
-  connect_diagonal_pixels = FALSE) {
+  connect_diagonal_pixels = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -76,7 +78,7 @@ gdal_raster_polygonize <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_polygonize", merged_args, .update_intent_mapping)
 

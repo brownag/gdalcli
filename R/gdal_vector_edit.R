@@ -29,6 +29,7 @@
 #' @param unset_metadata Remove dataset metadata item (Character vector). Format: `KEY`
 #' @param layer_metadata Add/update layer metadata item (Character vector). Format: `<KEY>=<VALUE>`
 #' @param unset_layer_metadata Remove layer metadata item (Character vector). Format: `KEY`
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -58,7 +59,8 @@ gdal_vector_edit <- function(input,
   metadata = NULL,
   unset_metadata = NULL,
   layer_metadata = NULL,
-  unset_layer_metadata = NULL) {
+  unset_layer_metadata = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -92,7 +94,7 @@ gdal_vector_edit <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- list(dataset = list(by_default = FALSE, if_any_of = "update"))
   .update_intent <- infer_update_intent("gdal_vector_edit", merged_args, .update_intent_mapping)
 

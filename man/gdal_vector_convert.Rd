@@ -17,7 +17,8 @@ gdal_vector_convert(
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
-  append = FALSE
+  append = FALSE,
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ gdal_vector_convert(
 \item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

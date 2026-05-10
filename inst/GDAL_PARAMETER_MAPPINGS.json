@@ -1,0 +1,28 @@
+{
+  "parameter_aliases": {
+    "dst_crs": {
+      "new_name": "output_crs",
+      "version_introduced": "3.12.2",
+      "description": "Renamed to output_crs for consistency"
+    },
+    "dataset": {
+      "new_name": "input",
+      "version_introduced": "3.12.2",
+      "description": "Renamed to input for consistency"
+    }
+  },
+  "command_deprecations": {
+    "gdal_raster_reproject": {
+      "affected_parameters": ["dst_crs"],
+      "version_changed": "3.12.2"
+    },
+    "gdal_vector_reproject": {
+      "affected_parameters": ["dst_crs"],
+      "version_changed": "3.12.2"
+    },
+    "gdal_raster_overview_add": {
+      "affected_parameters": ["dataset"],
+      "version_changed": "3.12.2"
+    }
+  }
+}

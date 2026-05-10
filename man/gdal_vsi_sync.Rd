@@ -9,7 +9,8 @@ gdal_vsi_sync(
   destination,
   recursive = FALSE,
   strategy = NULL,
-  num_threads = NULL
+  num_threads = NULL,
+  ...
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ gdal_vsi_sync(
 \item{strategy}{Synchronization strategy. Choices: "timestamp", "ETag", "overwrite" (Default: \code{timestamp})}
 
 \item{num_threads}{Number of jobs (or ALL_CPUS)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

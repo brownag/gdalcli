@@ -20,6 +20,7 @@
 #' @param color_map Color map filename
 #' @param add_alpha Adds an alpha mask band to the destination. (Logical)
 #' @param color_selection How to compute output colors from input values. Choices: "interpolate", "exact", "nearest" (Default: `interpolate`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -40,7 +41,8 @@ gdal_raster_color_map <- function(input,
   band = NULL,
   color_map = NULL,
   add_alpha = FALSE,
-  color_selection = NULL) {
+  color_selection = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -65,7 +67,7 @@ gdal_raster_color_map <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_color_map", merged_args, .update_intent_mapping)
 

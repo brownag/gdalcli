@@ -20,6 +20,7 @@
 #' @param dialect SQL dialect
 #' @param update Open the dataset in update mode (Logical)
 #' @param stdout Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -39,7 +40,8 @@ gdal_vector_info <- function(input,
   where = NULL,
   dialect = NULL,
   update = FALSE,
-  stdout = FALSE) {
+  stdout = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -64,7 +66,7 @@ gdal_vector_info <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_info", merged_args, .update_intent_mapping)
 

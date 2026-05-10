@@ -110,7 +110,7 @@ test_that("gdal_call works with NULL modifiers (default)", {
 test_that("gdal_call invokes function by character name", {
   # Build args based on GDAL version
   args <- list(levels = c(2, 4, 8))
-  if (gdal_check_version("3.13", op = ">=")) {
+  if (gdal_check_version("3.12.2", op = ">=")) {
     args$input <- "test.tif"
   } else {
     args$dataset <- "test.tif"

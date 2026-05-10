@@ -4,10 +4,12 @@
 \alias{gdal_vector}
 \title{vector: Vector commands}
 \usage{
-gdal_vector(drivers = FALSE)
+gdal_vector(drivers = FALSE, ...)
 }
 \arguments{
 \item{drivers}{Display vector driver list as JSON document and exit (Logical). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

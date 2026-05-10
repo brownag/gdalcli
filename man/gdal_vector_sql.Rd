@@ -18,7 +18,8 @@ gdal_vector_sql(
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
-  dialect = NULL
+  dialect = NULL,
+  ...
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ gdal_vector_sql(
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
 
 \item{dialect}{SQL dialect (e.g. OGRSQL, SQLITE)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

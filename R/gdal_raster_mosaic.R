@@ -22,6 +22,7 @@
 #' @param dst_nodata Set nodata values at the destination band level.. `1` to `2147483647` value(s)
 #' @param hide_nodata Makes the destination band not report the NoData. (Logical)
 #' @param add_alpha Adds an alpha mask band to the destination when the source raster have none. (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -44,7 +45,8 @@ gdal_raster_mosaic <- function(input = NULL,
   src_nodata = NULL,
   dst_nodata = NULL,
   hide_nodata = FALSE,
-  add_alpha = FALSE) {
+  add_alpha = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output)) new_args[["output"]] <- output
@@ -71,7 +73,7 @@ gdal_raster_mosaic <- function(input = NULL,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_mosaic", merged_args, .update_intent_mapping)
 

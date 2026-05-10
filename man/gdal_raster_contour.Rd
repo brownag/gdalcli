@@ -25,7 +25,8 @@ gdal_raster_contour(
   offset = NULL,
   polygonize = FALSE,
   group_transactions = NULL,
-  overwrite = FALSE
+  overwrite = FALSE,
+  ...
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ gdal_raster_contour(
 \item{group_transactions}{Group n features per transaction (default 100 000) (Integer). Minimum: \code{0}}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

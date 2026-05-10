@@ -13,7 +13,8 @@ gdal_raster_resize(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  resampling = NULL
+  resampling = NULL,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gdal_raster_resize(
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{resampling}{Resampling method. Choices: "nearest", "bilinear", "cubic", "cubicspline", "lanczos", ... (Default: \code{nearest})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

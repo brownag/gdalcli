@@ -30,6 +30,7 @@
 #' @param warp_option Warping option(s) (Character vector). Format: `<NAME>=<VALUE>` (Advanced)
 #' @param transform_option Transform option(s) (Character vector). Format: `<NAME>=<VALUE>` (Advanced)
 #' @param error_threshold Error threshold (Advanced)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -60,7 +61,8 @@ gdal_raster_reproject <- function(input,
   add_alpha = FALSE,
   warp_option = NULL,
   transform_option = NULL,
-  error_threshold = NULL) {
+  error_threshold = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -95,7 +97,7 @@ gdal_raster_reproject <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_reproject", merged_args, .update_intent_mapping)
 

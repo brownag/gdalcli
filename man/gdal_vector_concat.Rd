@@ -23,7 +23,8 @@ gdal_vector_concat(
   mode = NULL,
   field_strategy = NULL,
   src_crs = NULL,
-  dst_crs = NULL
+  dst_crs = NULL,
+  ...
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ gdal_vector_concat(
 \item{src_crs}{Source CRS}
 
 \item{dst_crs}{Destination CRS}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

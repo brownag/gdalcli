@@ -21,7 +21,8 @@ gdal_vector_select(
   append = FALSE,
   active_layer = NULL,
   exclude = FALSE,
-  ignore_missing_fields = FALSE
+  ignore_missing_fields = FALSE,
+  ...
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ gdal_vector_select(
 \item{exclude}{Exclude specified fields (Logical)}
 
 \item{ignore_missing_fields}{Ignore missing fields (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

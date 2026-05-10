@@ -26,7 +26,8 @@ gdal_vector_clip(
   like = NULL,
   like_sql = NULL,
   like_layer = NULL,
-  like_where = NULL
+  like_where = NULL,
+  ...
 )
 }
 \arguments{
@@ -73,6 +74,8 @@ gdal_vector_clip(
 \item{like_layer}{Name of the layer of the 'like' dataset. Format: \code{LAYER-NAME}}
 
 \item{like_where}{WHERE SQL clause to run on the 'like' dataset. Format: \code{WHERE-EXPRESSION}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

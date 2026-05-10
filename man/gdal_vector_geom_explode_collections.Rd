@@ -21,7 +21,8 @@ gdal_vector_geom_explode_collections(
   active_layer = NULL,
   active_geometry = NULL,
   geometry_type = NULL,
-  skip_on_type_mismatch = FALSE
+  skip_on_type_mismatch = FALSE,
+  ...
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ gdal_vector_geom_explode_collections(
 \item{geometry_type}{Geometry type}
 
 \item{skip_on_type_mismatch}{Skip feature when change of feature geometry type failed (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

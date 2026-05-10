@@ -11,6 +11,7 @@
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_move.html} for detailed GDAL documentation.
 #' @param source Source file or directory name (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param destination Destination file or directory name (required)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -22,7 +23,8 @@
 #' }
 #' @export
 gdal_vsi_move <- function(source,
-  destination) {
+  destination,
+  ...) {
   new_args <- list()
   if (!missing(source)) new_args[["source"]] <- source
   if (!missing(destination)) new_args[["destination"]] <- destination
@@ -38,7 +40,7 @@ gdal_vsi_move <- function(source,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_move", merged_args, .update_intent_mapping)
 

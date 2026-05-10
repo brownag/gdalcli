@@ -4,7 +4,7 @@
 \alias{gdal_vsi_copy}
 \title{copy: Copy files located on GDAL Virtual System Interface (VSI)}
 \usage{
-gdal_vsi_copy(source, destination, recursive = FALSE, skip_errors = FALSE)
+gdal_vsi_copy(source, destination, recursive = FALSE, skip_errors = FALSE, ...)
 }
 \arguments{
 \item{source}{Source file or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
@@ -14,6 +14,8 @@ gdal_vsi_copy(source, destination, recursive = FALSE, skip_errors = FALSE)
 \item{recursive}{Copy subdirectories recursively (Logical)}
 
 \item{skip_errors}{Skip errors (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -14,7 +14,8 @@ gdal_vsi_sozip_create(
   sozip_chunk_size = NULL,
   sozip_min_file_size = NULL,
   content_type = NULL,
-  stdout = FALSE
+  stdout = FALSE,
+  ...
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ gdal_vsi_sozip_create(
 \item{content_type}{Store the Content-Type of the file being added.}
 
 \item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

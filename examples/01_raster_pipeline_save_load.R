@@ -28,7 +28,7 @@ cat("   Output directory:", output_dir, "\n\n")
 
 # Create a realistic raster processing pipeline
 # Reproject to UTM -> Scale values -> Convert to COG
-if (gdal_check_version("3.13", op = ">=")) {
+if (gdal_check_version("3.12.2", op = ">=")) {
   pipeline <- gdal_raster_reproject(
     input = sample_raster,
     output = file.path(output_dir, "reprojected.tif"),

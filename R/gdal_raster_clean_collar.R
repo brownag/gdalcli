@@ -23,6 +23,7 @@
 #' @param add_alpha Adds an alpha band to the output dataset. (Logical)
 #' @param add_mask Adds a mask band to the output dataset. (Logical)
 #' @param algorithm Algorithm to apply. Choices: "floodfill", "twopasses" (Default: `floodfill`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -45,7 +46,8 @@ gdal_raster_clean_collar <- function(input,
   pixel_distance = NULL,
   add_alpha = FALSE,
   add_mask = FALSE,
-  algorithm = NULL) {
+  algorithm = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -73,7 +75,7 @@ gdal_raster_clean_collar <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- list(dataset = list(by_default = FALSE, if_any_of = "update"))
   .update_intent <- infer_update_intent("gdal_raster_clean_collar", merged_args, .update_intent_mapping)
 

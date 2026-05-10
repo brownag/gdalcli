@@ -14,6 +14,7 @@
 #' @param recursive Synchronize recursively (Logical)
 #' @param strategy Synchronization strategy. Choices: "timestamp", "ETag", "overwrite" (Default: `timestamp`)
 #' @param num_threads Number of jobs (or ALL_CPUS)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -29,7 +30,8 @@ gdal_vsi_sync <- function(source,
   destination,
   recursive = FALSE,
   strategy = NULL,
-  num_threads = NULL) {
+  num_threads = NULL,
+  ...) {
   new_args <- list()
   if (!missing(source)) new_args[["source"]] <- source
   if (!missing(destination)) new_args[["destination"]] <- destination
@@ -48,7 +50,7 @@ gdal_vsi_sync <- function(source,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_sync", merged_args, .update_intent_mapping)
 

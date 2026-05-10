@@ -25,7 +25,8 @@ gdal_raster_reproject(
   add_alpha = FALSE,
   warp_option = NULL,
   transform_option = NULL,
-  error_threshold = NULL
+  error_threshold = NULL,
+  ...
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ gdal_raster_reproject(
 \item{transform_option}{Transform option(s) (Character vector). Format: \verb{<NAME>=<VALUE>} (Advanced)}
 
 \item{error_threshold}{Error threshold (Advanced)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

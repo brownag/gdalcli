@@ -11,6 +11,7 @@
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_driver_pdf_list-layers.html} for detailed GDAL documentation.
 #' @param input Input raster or vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param output_format Output format. Choices: "json", "text" (Default: `json`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
@@ -22,7 +23,8 @@
 #' }
 #' @export
 gdal_driver_pdf_list_layers <- function(input,
-  output_format = NULL) {
+  output_format = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output_format)) new_args[["output_format"]] <- output_format
@@ -38,7 +40,7 @@ gdal_driver_pdf_list_layers <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_driver_pdf_list_layers", merged_args, .update_intent_mapping)
 

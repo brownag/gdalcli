@@ -22,6 +22,7 @@
 #' @param yscale Ratio of vertical units to horizontal Y axis units. Minimum: `0`
 #' @param gradient_alg Algorithm used to compute terrain gradient. Choices: "Horn", "ZevenbergenThorne" (Default: `Horn`)
 #' @param no_edges Do not try to interpolate values at dataset edges or close to nodata values (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -43,7 +44,8 @@ gdal_raster_slope <- function(input,
   xscale = NULL,
   yscale = NULL,
   gradient_alg = NULL,
-  no_edges = FALSE) {
+  no_edges = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -70,7 +72,7 @@ gdal_raster_slope <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_slope", merged_args, .update_intent_mapping)
 

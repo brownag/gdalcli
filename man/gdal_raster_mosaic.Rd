@@ -17,7 +17,8 @@ gdal_raster_mosaic(
   src_nodata = NULL,
   dst_nodata = NULL,
   hide_nodata = FALSE,
-  add_alpha = FALSE
+  add_alpha = FALSE,
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ gdal_raster_mosaic(
 \item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
 
 \item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
