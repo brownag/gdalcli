@@ -99,8 +99,7 @@ gdal_vector_grid_invdist(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using weighted inverse distance
-interpolation.
+Create a regular grid from scattered points using weighted inverse distance interpolation.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_invdist.html} for detailed GDAL documentation.
 }

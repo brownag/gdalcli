@@ -90,8 +90,7 @@ gdal_vector_grid_maximum(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using the maximum value in the
-search ellipse.
+Create a regular grid from scattered points using the maximum value in the search ellipse.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_maximum.html} for detailed GDAL documentation.
 }

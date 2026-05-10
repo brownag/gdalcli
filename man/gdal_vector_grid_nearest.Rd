@@ -81,8 +81,7 @@ gdal_vector_grid_nearest(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using nearest neighbor
-interpolation.
+Create a regular grid from scattered points using nearest neighbor interpolation.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_nearest.html} for detailed GDAL documentation.
 }

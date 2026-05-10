@@ -90,8 +90,7 @@ gdal_vector_grid_count(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using the number of points in the
-search ellipse.
+Create a regular grid from scattered points using the number of points in the search ellipse.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_count.html} for detailed GDAL documentation.
 }

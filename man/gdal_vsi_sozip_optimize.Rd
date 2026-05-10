@@ -47,14 +47,14 @@ job <- gdal_vsi_sozip_optimize()
 }
 }
 \seealso{
-Other gdal_vsi_utilities: 
-\code{\link{gdal_vsi_copy}()},
-\code{\link{gdal_vsi_delete}()},
-\code{\link{gdal_vsi_list}()},
-\code{\link{gdal_vsi_move}()},
-\code{\link{gdal_vsi_sozip_create}()},
-\code{\link{gdal_vsi_sozip_list}()},
-\code{\link{gdal_vsi_sozip_validate}()},
-\code{\link{gdal_vsi_sync}()}
+Other gdal_vsi_utilities:
+\code{\link[=gdal_vsi_copy]{gdal_vsi_copy()}},
+\code{\link[=gdal_vsi_delete]{gdal_vsi_delete()}},
+\code{\link[=gdal_vsi_list]{gdal_vsi_list()}},
+\code{\link[=gdal_vsi_move]{gdal_vsi_move()}},
+\code{\link[=gdal_vsi_sozip_create]{gdal_vsi_sozip_create()}},
+\code{\link[=gdal_vsi_sozip_list]{gdal_vsi_sozip_list()}},
+\code{\link[=gdal_vsi_sozip_validate]{gdal_vsi_sozip_validate()}},
+\code{\link[=gdal_vsi_sync]{gdal_vsi_sync()}}
 }
 \concept{gdal_vsi_utilities}

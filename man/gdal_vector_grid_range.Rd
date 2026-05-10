@@ -90,8 +90,7 @@ gdal_vector_grid_range(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using the difference between the
-minimum and maximum values in the search ellipse.
+Create a regular grid from scattered points using the difference between the minimum and maximum values in the search ellipse.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_range.html} for detailed GDAL documentation.
 }

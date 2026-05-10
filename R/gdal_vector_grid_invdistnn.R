@@ -6,8 +6,7 @@
 
 #' @title invdistnn: Create a regular grid from scattered points using weighted inverse distance...
 #' @description
-#' Create a regular grid from scattered points using weighted inverse distance
-#' interpolation nearest neighbour.
+#' Create a regular grid from scattered points using weighted inverse distance interpolation nearest neighbour.
 #' 
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_invdistnn.html} for detailed GDAL documentation.
 #' @param input Input vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline

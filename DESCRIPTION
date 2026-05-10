@@ -1,6 +1,6 @@
 Package: gdalcli
 Title: Frontend for the GDAL (>= 3.11) CLI
-Version: 0.7.0
+Version: 0.7.0-3.11.4
 Authors@R:
     person("Andrew", "Brown", role = c("aut", "cre"), 
            email = "brown.andrewg@gmail.com",
@@ -22,7 +22,6 @@ Description: An auto-generated R wrapper for the GDAL CLI
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Depends:
     R (>= 4.1)
 Imports:
@@ -39,8 +38,9 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-SystemRequirements: GDAL (>= 3.11)
+SystemRequirements: GDAL (>= 3.11.4)
 URL: https://github.com/brownag/gdalcli
 BugReports: https://github.com/brownag/gdalcli/issues
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

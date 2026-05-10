@@ -6,8 +6,7 @@
 
 #' @title average: Create a regular grid from scattered points using moving average interpolation
 #' @description
-#' Create a regular grid from scattered points using moving average
-#' interpolation.
+#' Create a regular grid from scattered points using moving average interpolation.
 #' 
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_average.html} for detailed GDAL documentation.
 #' @param input Input vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline

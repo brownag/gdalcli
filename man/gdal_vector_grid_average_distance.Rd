@@ -90,9 +90,7 @@ gdal_vector_grid_average_distance(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using the average distance
-between the grid node (center of the search ellipse) and all of the data
-points in the search ellipse.
+Create a regular grid from scattered points using the average distance between the grid node (center of the search ellipse) and all of the data points in the search ellipse.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_average-distance.html} for detailed GDAL documentation.
 }

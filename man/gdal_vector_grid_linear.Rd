@@ -72,8 +72,7 @@ gdal_vector_grid_linear(
 A \link{gdal_job} object.
 }
 \description{
-Create a regular grid from scattered points using linear/barycentric
-interpolation.
+Create a regular grid from scattered points using linear/barycentric interpolation.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_linear.html} for detailed GDAL documentation.
 }

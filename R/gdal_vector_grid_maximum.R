@@ -6,8 +6,7 @@
 
 #' @title maximum: Create a regular grid from scattered points using the maximum value in the...
 #' @description
-#' Create a regular grid from scattered points using the maximum value in the
-#' search ellipse.
+#' Create a regular grid from scattered points using the maximum value in the search ellipse.
 #' 
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_grid_maximum.html} for detailed GDAL documentation.
 #' @param input Input vector dataset (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
