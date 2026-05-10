@@ -240,6 +240,31 @@ auth <- gdal_auth_gcs()  # GOOGLE_APPLICATION_CREDENTIALS
 
 # Add to job
 job |> gdal_with_env(auth) |> gdal_run()
+
+## GDAL Version Compatibility
+GDAL 3.13.0+ introduced parameter naming standardization. Known changes include:
+- `dst_crs` → `output_crs` (reproject and related CRS output functions)
+- `dataset` → `input` (functions that previously used `dataset` parameter)
+
+GDAL's API continues to evolve; consult GDAL release notes for version-specific parameter changes.
+
+Use `gdal_check_version()` for version-aware code:
+
+```r
+# Example: Reproject function (dst_crs → output_crs)
+if (gdal_check_version("3.13", op = ">=")) {
+  job <- gdal_raster_reproject(input = "in.tif", output_crs = "EPSG:4326")
+} else {
+  job <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:4326")
+}
+
+# Example: Overview function (dataset → input)
+if (gdal_check_version("3.13", op = ">=")) {
+  job <- gdal_raster_overview_add(input = "in.tif", levels = c(2, 4, 8))
+} else {
+  job <- gdal_raster_overview_add(dataset = "in.tif", levels = c(2, 4, 8))
+}
+```
 ```
 
 ### Programmatic Command Invocation

@@ -92,9 +92,10 @@ gdal_job_run(job)
 
 
 ``` r
+# GDAL 3.13+: use output_crs; GDAL 3.11-3.12: use dst_crs
 pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
-  dst_crs = "EPSG:32632"
+  output_crs = "EPSG:32632"  # Use dst_crs for GDAL <3.13
 ) |>
   gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"), output_format = "COG")
