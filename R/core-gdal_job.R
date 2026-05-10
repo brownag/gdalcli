@@ -59,6 +59,8 @@
 #' @param arg_mapping A named list mapping argument names to their validation rules
 #' (min_count, max_count). Used internally for argument validation. Default
 #' `NULL`.
+#' @param update_intent Character string specifying the update intent: "SAFE", "MUTATIVE", or "DESTRUCTIVE".
+#' Default "SAFE".
 #'
 #' @return
 #' An S3 object of class `gdal_job`.
@@ -91,7 +93,8 @@ new_gdal_job <- function(command_path,
                          stream_in = NULL,
                          stream_out_format = NULL,
                          pipeline = NULL,
-                         arg_mapping = NULL) {
+                         arg_mapping = NULL,
+                         update_intent = "SAFE") {
   # Validate command_path
   if (!is.character(command_path)) {
     rlang::abort("command_path must be a character vector.")
@@ -117,7 +120,8 @@ new_gdal_job <- function(command_path,
     stream_in = stream_in,
     stream_out_format = stream_out_format,
     pipeline = pipeline,
-    arg_mapping = arg_mapping
+    arg_mapping = arg_mapping,
+    update_intent = update_intent
   )
 
   class(job) <- c("gdal_job", "list")

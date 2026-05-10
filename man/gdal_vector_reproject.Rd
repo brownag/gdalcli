@@ -60,48 +60,56 @@ gdal_vector_reproject(
 A \link{gdal_job} object.
 }
 \description{
-gdal vector pipeline can be used to process a vector dataset and perform various processing steps.
+gdal vector pipeline can be used to process a vector dataset and perform
+various processing steps that accept vector and generate vector. For
+pipelines mixing raster and vector, consult gdal_pipeline. Most steps proceed
+in on-demand evaluation of features, unless otherwise stated in their
+documentation, without "materializing" the resulting dataset of the operation
+of each step. It may be desirable sometimes for performance purposes to
+proceed to materializing an intermediate dataset to disk using
+gdal_vector_materialize.
 
 See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_reproject.
-# See GDAL documentation: https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html
 job <- gdal_vector_reproject()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vector_utilities:
-\code{\link[=gdal_vector]{gdal_vector()}},
-\code{\link[=gdal_vector_clip]{gdal_vector_clip()}},
-\code{\link[=gdal_vector_concat]{gdal_vector_concat()}},
-\code{\link[=gdal_vector_convert]{gdal_vector_convert()}},
-\code{\link[=gdal_vector_edit]{gdal_vector_edit()}},
-\code{\link[=gdal_vector_filter]{gdal_vector_filter()}},
-\code{\link[=gdal_vector_geom_buffer]{gdal_vector_geom_buffer()}},
-\code{\link[=gdal_vector_geom_explode_collections]{gdal_vector_geom_explode_collections()}},
-\code{\link[=gdal_vector_geom_make_valid]{gdal_vector_geom_make_valid()}},
-\code{\link[=gdal_vector_geom_segmentize]{gdal_vector_geom_segmentize()}},
-\code{\link[=gdal_vector_geom_set_type]{gdal_vector_geom_set_type()}},
-\code{\link[=gdal_vector_geom_simplify]{gdal_vector_geom_simplify()}},
-\code{\link[=gdal_vector_geom_swap_xy]{gdal_vector_geom_swap_xy()}},
-\code{\link[=gdal_vector_grid_average]{gdal_vector_grid_average()}},
-\code{\link[=gdal_vector_grid_average_distance]{gdal_vector_grid_average_distance()}},
-\code{\link[=gdal_vector_grid_average_distance_points]{gdal_vector_grid_average_distance_points()}},
-\code{\link[=gdal_vector_grid_count]{gdal_vector_grid_count()}},
-\code{\link[=gdal_vector_grid_invdist]{gdal_vector_grid_invdist()}},
-\code{\link[=gdal_vector_grid_invdistnn]{gdal_vector_grid_invdistnn()}},
-\code{\link[=gdal_vector_grid_linear]{gdal_vector_grid_linear()}},
-\code{\link[=gdal_vector_grid_maximum]{gdal_vector_grid_maximum()}},
-\code{\link[=gdal_vector_grid_minimum]{gdal_vector_grid_minimum()}},
-\code{\link[=gdal_vector_grid_nearest]{gdal_vector_grid_nearest()}},
-\code{\link[=gdal_vector_grid_range]{gdal_vector_grid_range()}},
-\code{\link[=gdal_vector_info]{gdal_vector_info()}},
-\code{\link[=gdal_vector_pipeline]{gdal_vector_pipeline()}},
-\code{\link[=gdal_vector_rasterize]{gdal_vector_rasterize()}},
-\code{\link[=gdal_vector_select]{gdal_vector_select()}},
-\code{\link[=gdal_vector_sql]{gdal_vector_sql()}}
+Other gdal_vector_utilities: 
+\code{\link{gdal_vector}()},
+\code{\link{gdal_vector_clip}()},
+\code{\link{gdal_vector_concat}()},
+\code{\link{gdal_vector_convert}()},
+\code{\link{gdal_vector_edit}()},
+\code{\link{gdal_vector_filter}()},
+\code{\link{gdal_vector_geom_buffer}()},
+\code{\link{gdal_vector_geom_explode_collections}()},
+\code{\link{gdal_vector_geom_make_valid}()},
+\code{\link{gdal_vector_geom_segmentize}()},
+\code{\link{gdal_vector_geom_set_type}()},
+\code{\link{gdal_vector_geom_simplify}()},
+\code{\link{gdal_vector_geom_swap_xy}()},
+\code{\link{gdal_vector_grid_average}()},
+\code{\link{gdal_vector_grid_average_distance}()},
+\code{\link{gdal_vector_grid_average_distance_points}()},
+\code{\link{gdal_vector_grid_count}()},
+\code{\link{gdal_vector_grid_invdist}()},
+\code{\link{gdal_vector_grid_invdistnn}()},
+\code{\link{gdal_vector_grid_linear}()},
+\code{\link{gdal_vector_grid_maximum}()},
+\code{\link{gdal_vector_grid_minimum}()},
+\code{\link{gdal_vector_grid_nearest}()},
+\code{\link{gdal_vector_grid_range}()},
+\code{\link{gdal_vector_info}()},
+\code{\link{gdal_vector_pipeline}()},
+\code{\link{gdal_vector_rasterize}()},
+\code{\link{gdal_vector_select}()},
+\code{\link{gdal_vector_sql}()}
 }
 \concept{gdal_vector_utilities}

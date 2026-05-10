@@ -1,0 +1,83 @@
+{
+  "comment": "RFC 104 open_for_update intent mappings for GDAL algorithms. Defines when datasets are opened for in-place update vs creation. Mirrors the SetOpenForUpdateIfAnyOf/UnlessAnyOf() calls in GDAL algorithm implementations.",
+  
+  "_comment_arg_structure": {
+    "algorithm_name": {
+      "arg_name": {
+        "by_default": "boolean - whether dataset is opened for update by default",
+        "if_any_of": "array - conditions (arg names) that enable update intent",
+        "unless_any_of": "array - conditions (arg names) that disable update intent"
+      }
+    }
+  },
+
+  "gdal_raster_edit": {
+    "dataset": {
+      "by_default": true,
+      "unless_any_of": ["auxiliary"]
+    }
+  },
+
+  "gdal_raster_overview_add": {
+    "dataset": {
+      "by_default": true,
+      "unless_any_of": ["external"]
+    }
+  },
+
+  "gdal_raster_overview_delete": {
+    "dataset": {
+      "by_default": true,
+      "unless_any_of": ["external"]
+    }
+  },
+
+  "gdal_raster_overview_refresh": {
+    "dataset": {
+      "by_default": true,
+      "unless_any_of": ["external"]
+    }
+  },
+
+  "gdal_raster_clean_collar": {
+    "dataset": {
+      "by_default": false,
+      "if_any_of": ["update"]
+    }
+  },
+
+  "gdal_vector_edit": {
+    "dataset": {
+      "by_default": false,
+      "if_any_of": ["update"]
+    }
+  },
+
+  "_vector_algorithms": {
+    "comment": "Vector algorithms with output_dataset argument that supports update intent",
+    "applies_to": [
+      "gdal_vector_convert",
+      "gdal_vector_append",
+      "gdal_vector_translate",
+      "gdal_vector_info",
+      "gdal_vector_rasterize",
+      "gdal_vector_polygonize"
+    ],
+    "output_dataset": {
+      "by_default": false,
+      "if_any_of": ["update", "append", "overwrite-layer", "add"]
+    }
+  },
+
+  "_raster_pipeline": {
+    "comment": "gdal_raster_pipeline step output datasets",
+    "comment_dynamic": "open_for_update conditions are dynamically built based on available arguments in each pipeline step",
+    "possible_triggers": ["update", "overwrite", "append", "upsert", "overwrite-layer", "add"]
+  },
+
+  "_vector_pipeline": {
+    "comment": "gdal_vector_pipeline step output datasets", 
+    "comment_dynamic": "open_for_update conditions are dynamically built based on available arguments in each pipeline step",
+    "possible_triggers": ["update", "append", "overwrite-layer", "upsert", "add"]
+  }
+}
