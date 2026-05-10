@@ -43,7 +43,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_list.html} for detai
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_list.
-# See GDAL documentation: https://gdal.org/programs/gdal-vsi-list.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_vsi_list.html
 job <- gdal_vsi_list()
 # gdal_job_run(job)
 }

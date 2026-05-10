@@ -13,7 +13,8 @@ new_gdal_job(
   stream_in = NULL,
   stream_out_format = NULL,
   pipeline = NULL,
-  arg_mapping = NULL
+  arg_mapping = NULL,
+  update_intent = "SAFE"
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ this job, or \code{NULL}. Default \code{NULL}.}
 \item{arg_mapping}{A named list mapping argument names to their validation rules
 (min_count, max_count). Used internally for argument validation. Default
 \code{NULL}.}
+
+\item{update_intent}{Character string specifying the update intent: "SAFE", "MUTATIVE", or "DESTRUCTIVE".
+Default "SAFE".}
 }
 \value{
 An S3 object of class \code{gdal_job}.

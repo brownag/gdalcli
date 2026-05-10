@@ -1,3 +1,19 @@
+# ====== Version-Aware Helper Functions for GDAL 3.13+ Compatibility ======
+# GDAL 3.13.0 renamed --dst-crs to --output-crs (and similar for dst-* params)
+# These helpers ensure tests work with both 3.11/3.12 (dst_crs) and 3.13+ (output_crs)
+
+.make_raster_reproject_job <- function(input, crs, output = NULL) {
+  if (is.null(output)) output <- tempfile(fileext = ".tif")
+  
+  if (gdal_check_version("3.13", op = ">=")) {
+    gdal_raster_reproject(input = input, output_crs = crs, output = output)
+  } else {
+    gdal_raster_reproject(input = input, dst_crs = crs, output = output)
+  }
+}
+
+# ========================================================================
+
 test_that("step mappings are loaded at package startup", {
   # Mappings should be initialized in environment by .onLoad
   expect_false(is.null(.gdalcli_env$step_mappings))
@@ -57,10 +73,7 @@ test_that(".get_step_mapping returns operation name for unknown modules", {
 
 test_that("step mappings are used correctly in pipeline building", {
   # Create a simple raster pipeline with multiple operations
-  pipeline <- gdal_raster_reproject(
-    input = "test.tif",
-    dst_crs = "EPSG:4326"
-  ) |>
+  pipeline <- .make_raster_reproject_job("test.tif", "EPSG:4326") |>
     gdal_raster_convert(output = "output.tif")
 
   # Build the native pipeline string

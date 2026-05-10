@@ -74,7 +74,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html} f
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_reproject.
-# See GDAL documentation: https://gdal.org/programs/gdal-vector-reproject.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_vector_reproject.html
 job <- gdal_vector_reproject()
 # gdal_job_run(job)
 }

@@ -43,7 +43,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_convert.html} for
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_convert.
-# See GDAL documentation: https://gdal.org/programs/gdal-raster-convert.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_raster_convert.html
 job <- gdal_raster_convert()
 # gdal_job_run(job)
 }

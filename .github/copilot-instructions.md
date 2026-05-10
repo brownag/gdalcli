@@ -33,20 +33,14 @@ UNDER NO CIRCUMSTANCES SHOULD YOU EVER PUSH TO A REMOTE GIT REPOSITORY
 ### GDAL Version Conflicts and API Evolution
 
 **GDAL 3.12+ Native Commands:**
-- GDAL 3.12.0+ introduced native `gdal pipeline` command
-- This conflicts with gdalcli's original `gdal_pipeline()` convenience wrapper function
-- **Resolution**: Renamed function to `gdal_compose()`, marked deprecated for 0.5.x removal
-- **Rationale**: 
-  - Piping with `|>` is more idiomatic R for composition
-  - Explicit type specification (`gdal_raster_pipeline()` vs `gdal_vector_pipeline()`) is clearer than type auto-detection
-  - Function added minimal value over direct function calls
-  - Users can still pass lists directly: `gdal_raster_pipeline(jobs = list(j1, j2, j3))`
+- GDAL 3.12.0+ introduced native `gdal pipeline` command, available as auto-generated `gdal_pipeline()` function
+- Earlier versions of gdalcli had a convenience wrapper `gdal_compose()` (removed in 0.7.0)
+- **Recommended approach**: Use pipe operator (`|>`) for composable, idiomatic R pipelines
+- **Alternative**: Use explicit type specification with `gdal_raster_pipeline()` or `gdal_vector_pipeline()`
 
-**Deprecated Functions:**
-- `gdal_compose()` - Deprecated as of 0.4.x, removal planned for 0.5.x
-  - Issues warning via `.Deprecated()` on use
-  - Docs recommend pipe approach instead
-  - Will remove unless real-world use cases emerge
+**Deprecated Features (0.7.0+):**
+- `gdal_compose()` function - removed (use pipe operator instead)
+- Backend `"auto"` mode - specify explicit backend
 
 ## CI/CD Workflows
 
@@ -246,7 +240,71 @@ auth <- gdal_auth_gcs()  # GOOGLE_APPLICATION_CREDENTIALS
 
 # Add to job
 job |> gdal_with_env(auth) |> gdal_run()
+
+## GDAL Version Compatibility
+GDAL 3.13.0+ introduced parameter naming standardization. Known changes include:
+- `dst_crs` → `output_crs` (reproject and related CRS output functions)
+- `dataset` → `input` (functions that previously used `dataset` parameter)
+
+GDAL's API continues to evolve; consult GDAL release notes for version-specific parameter changes.
+
+Use `gdal_check_version()` for version-aware code:
+
+```r
+# Example: Reproject function (dst_crs → output_crs)
+if (gdal_check_version("3.13", op = ">=")) {
+  job <- gdal_raster_reproject(input = "in.tif", output_crs = "EPSG:4326")
+} else {
+  job <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:4326")
+}
+
+# Example: Overview function (dataset → input)
+if (gdal_check_version("3.13", op = ">=")) {
+  job <- gdal_raster_overview_add(input = "in.tif", levels = c(2, 4, 8))
+} else {
+  job <- gdal_raster_overview_add(dataset = "in.tif", levels = c(2, 4, 8))
+}
 ```
+```
+
+### Programmatic Command Invocation
+
+`gdal_call()` enables dynamic command invocation by name or function reference, supporting metaprogramming and serialization patterns:
+
+```r
+# Dynamic command selection
+cmd_name <- paste0("gdal_", input_type, "_", operation)
+job <- gdal_call(cmd_name, list(input = "in.tif", output = "out.tif"))
+
+# With modifiers
+job <- gdal_call(
+  "gdal_raster_convert",
+  list(input = "in.tif", output = "out.tif"),
+  modifiers = list(
+    function(x) gdal_with_co(x, "COMPRESS=DEFLATE"),
+    function(x) gdal_with_config(x, "GDAL_CACHEMAX=512")
+  )
+) |>
+  gdal_job_run()
+
+# Batch processing
+commands <- list(
+  list("gdal_raster_clip", list(input = "a.tif", output = "a_clipped.tif")),
+  list("gdal_raster_clip", list(input = "b.tif", output = "b_clipped.tif"))
+)
+results <- lapply(commands, function(x) {
+  gdal_call(x[[1]], x[[2]]) |> gdal_job_run()
+})
+
+# Discover available commands
+all_commands <- gdal_list_callable_commands()  # All wrapped commands
+raster_only <- gdal_list_callable_commands(type = "raster")  # Type filter
+cmd_details <- gdal_list_callable_commands(simplify = FALSE)  # Include metadata
+```
+
+**Key Functions:**
+- `gdal_call(what, args = list(), modifiers = NULL)` — Invoke command by name or reference with optional modifiers
+- `gdal_list_callable_commands(type = NULL, simplify = TRUE)` — Discover available wrapped GDAL commands; filter by type (raster/vector/vsi/driver/mdim/pipeline)
 
 ### Package Options
 

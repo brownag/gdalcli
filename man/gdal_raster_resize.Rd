@@ -46,7 +46,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_resize.html} for 
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_resize.
-# See GDAL documentation: https://gdal.org/programs/gdal-raster-resize.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_raster_resize.html
 job <- gdal_raster_resize()
 # gdal_job_run(job)
 }

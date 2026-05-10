@@ -62,7 +62,10 @@ Flow:
 `.serialize_gdal_job()` converts `gdal_job` to CLI argument vector:
 
 ```r
+# GDAL 3.11-3.12
 job <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:4326")
+# GDAL 3.13+
+job <- gdal_raster_reproject(input = "in.tif", output_crs = "EPSG:4326")
 args <- .serialize_gdal_job(job)
 # → c("raster", "reproject", "--dst-crs", "EPSG:4326", "in.tif")
 ```

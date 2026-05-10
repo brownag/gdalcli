@@ -26,7 +26,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_copy.html} for detai
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_copy.
-# See GDAL documentation: https://gdal.org/programs/gdal-vsi-copy.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_vsi_copy.html
 job <- gdal_vsi_copy()
 # gdal_job_run(job)
 }

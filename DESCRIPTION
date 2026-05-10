@@ -1,6 +1,6 @@
 Package: gdalcli
 Title: Frontend for the GDAL (>= 3.11) CLI
-Version: 0.6.2
+Version: 0.7.0
 Authors@R:
     person("Andrew", "Brown", role = c("aut", "cre"), 
            email = "brown.andrewg@gmail.com",
@@ -19,7 +19,7 @@ Description: An auto-generated R wrapper for the GDAL CLI
     to pin a specific version of the GDAL CLI. This package includes auto-generated wrapper
     functions and documentation from GDAL (Copyright 1998-2026 Frank Warmerdam, Even Rouault,
     and others). See COPYRIGHTS file for details.
-License: MIT + file LICENSE + file COPYRIGHTS
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

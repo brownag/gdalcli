@@ -34,7 +34,8 @@ See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sync.html} for detai
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_sync.
-# See GDAL documentation: https://gdal.org/programs/gdal-vsi-sync.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_vsi_sync.html
 job <- gdal_vsi_sync()
 # gdal_job_run(job)
 }
