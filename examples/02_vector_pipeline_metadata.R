@@ -31,7 +31,7 @@ cat("   Output directory:", output_dir, "\n\n")
 pipeline <- gdal_vector_reproject(
   input = sample_vector,
   output = output_vector,
-  dst_crs = "EPSG:3857"  # Web Mercator
+  output_crs = "EPSG:3857"  # Web Mercator
 ) |>
   gdal_vector_convert(
     output = file.path(output_dir, "final_mapunits.gpkg"),

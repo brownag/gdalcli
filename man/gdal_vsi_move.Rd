@@ -4,12 +4,14 @@
 \alias{gdal_vsi_move}
 \title{move: Move/rename a file/directory located on GDAL Virtual System Interface (VSI)}
 \usage{
-gdal_vsi_move(source, destination)
+gdal_vsi_move(source, destination, ...)
 }
 \arguments{
 \item{source}{Source file or directory name (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{destination}{Destination file or directory name (required)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

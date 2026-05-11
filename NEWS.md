@@ -1,3 +1,14 @@
+# gdalcli 0.7.1 (2026-05-10)
+
+- All generated functions gain an ellipsis and support parameter synonyms (e.g., `format`/`of` for `output_format`)
+
+# gdalcli 0.7.0 (2026-05-09)
+
+- Added update intent feature for pipeline classification. Now code generation auto-detects commands that open files for update (e.g., `gdal_raster_edit`, `gdal_vector_edit`) via `GDAL_INTENT_MAPPINGS.json` with customizable overrides
+- Added `gdal_call()` for dynamic/programmatic GDAL command invocation by name or function reference, enabling metaprogramming, serialization, and boilerplate reduction for repetitive command patterns. Includes `gdal_list_callable_commands()` for command discovery with type filtering
+- Removed `gdal_compose()` convenience function (deprecated since 0.4.x). Use pipe operator (`|>`) instead: `job1 |> job2 |> job3 |> gdal_job_run()`
+- Deprecated backend `"auto"` mode. Specify explicit backend with `options(gdalcli.backend = "processx")` or `"gdalraster"`
+
 # gdalcli 0.6.0 (2026-04-15)
 
 - Authentication methods no longer scan for patterns of related environment variables, only explicitly-set credentials via `gdal_with_env()` are used

@@ -79,7 +79,11 @@ test_that("checkpoint detects pipeline changes", {
   checkpoint_state <- .save_checkpoint(pipeline1, checkpoint_dir, 1, NULL)
 
   # Try to resume with a different pipeline
-  job2 <- gdal_raster_reproject(input = "test.tif", dst_crs = "EPSG:4326")
+  if (gdal_check_version("3.12.2", op = ">=")) {
+    job2 <- gdal_raster_reproject(input = "test.tif", output_crs = "EPSG:4326")
+  } else {
+    job2 <- gdal_raster_reproject(input = "test.tif", dst_crs = "EPSG:4326")
+  }
   pipeline2 <- new_gdal_pipeline(list(job2))
 
   # Should detect mismatch
@@ -175,7 +179,11 @@ test_that("multiple checkpoints can be saved sequentially", {
 
 test_that("pipeline with checkpoint parameter can be created", {
   job1 <- gdal_raster_info(input = "test.tif")
-  job2 <- gdal_raster_reproject(input = "test.tif", dst_crs = "EPSG:4326")
+  if (gdal_check_version("3.12.2", op = ">=")) {
+    job2 <- gdal_raster_reproject(input = "test.tif", output_crs = "EPSG:4326")
+  } else {
+    job2 <- gdal_raster_reproject(input = "test.tif", dst_crs = "EPSG:4326")
+  }
   pipeline <- new_gdal_pipeline(list(job1, job2))
 
   expect_true(inherits(pipeline, "gdal_pipeline"))
@@ -219,7 +227,11 @@ test_that("checkpoint preserves all metadata fields", {
   on.exit(unlink(checkpoint_dir, recursive = TRUE))
 
   job1 <- gdal_raster_info(input = "input.tif")
-  job2 <- gdal_raster_reproject(input = "input.tif", dst_crs = "EPSG:4326")
+  if (gdal_check_version("3.12.2", op = ">=")) {
+    job2 <- gdal_raster_reproject(input = "input.tif", output_crs = "EPSG:4326")
+  } else {
+    job2 <- gdal_raster_reproject(input = "input.tif", dst_crs = "EPSG:4326")
+  }
   pipeline <- new_gdal_pipeline(list(job1, job2))
 
   # Save checkpoint
@@ -247,10 +259,17 @@ test_that("checkpoint supports pipeline with multiple operations", {
   on.exit(unlink(checkpoint_dir, recursive = TRUE))
 
   # Create a multi-step pipeline
-  job1 <- gdal_raster_reproject(
-    input = "input.tif",
-    dst_crs = "EPSG:4326"
-  )
+  if (gdal_check_version("3.12.2", op = ">=")) {
+    job1 <- gdal_raster_reproject(
+      input = "input.tif",
+      output_crs = "EPSG:4326"
+    )
+  } else {
+    job1 <- gdal_raster_reproject(
+      input = "input.tif",
+      dst_crs = "EPSG:4326"
+    )
+  }
   job2 <- gdal_raster_clip(
     input = "input.tif",
     bbox = c(0, 0, 10, 10)

@@ -17,7 +17,8 @@ gdal_mdim_convert(
   group = NULL,
   subset = NULL,
   scale_axes = NULL,
-  strict = FALSE
+  strict = FALSE,
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ gdal_mdim_convert(
 \item{scale_axes}{Applies a integral scale factor to one or several dimensions (Character vector). Format: \code{SCALEAXES-SPEC}}
 
 \item{strict}{Turn warnings into failures. (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

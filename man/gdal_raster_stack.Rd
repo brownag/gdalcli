@@ -20,7 +20,8 @@ gdal_raster_stack(
   bbox = NULL,
   src_nodata = NULL,
   dst_nodata = NULL,
-  hide_nodata = FALSE
+  hide_nodata = FALSE,
+  ...
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ gdal_raster_stack(
 \item{dst_nodata}{Set nodata values at the destination band level.. \code{1} to \code{2147483647} value(s)}
 
 \item{hide_nodata}{Makes the destination band not report the NoData. (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

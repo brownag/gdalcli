@@ -16,7 +16,8 @@ gdal_raster_sieve(
   mask = NULL,
   band = NULL,
   size_threshold = NULL,
-  connect_diagonal_pixels = FALSE
+  connect_diagonal_pixels = FALSE,
+  ...
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ gdal_raster_sieve(
 \item{size_threshold}{Minimum size of polygons to keep (Integer) (Default: \code{2})}
 
 \item{connect_diagonal_pixels}{Consider diagonal pixels as connected (Logical) (Default: \code{false})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

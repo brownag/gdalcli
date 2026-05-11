@@ -20,7 +20,8 @@ gdal_raster_scale(
   dst_min = NULL,
   dst_max = NULL,
   exponent = NULL,
-  no_clip = FALSE
+  no_clip = FALSE,
+  ...
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ gdal_raster_scale(
 \item{exponent}{Exponent to apply non-linear scaling with a power function}
 
 \item{no_clip}{Do not clip input values to [srcmin, srcmax] (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

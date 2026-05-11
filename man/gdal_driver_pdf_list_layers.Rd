@@ -4,12 +4,14 @@
 \alias{gdal_driver_pdf_list_layers}
 \title{list-layers: List layers of a PDF dataset}
 \usage{
-gdal_driver_pdf_list_layers(input, output_format = NULL)
+gdal_driver_pdf_list_layers(input, output_format = NULL, ...)
 }
 \arguments{
 \item{input}{Input raster or vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{output_format}{Output format. Choices: "json", "text" (Default: \code{json})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

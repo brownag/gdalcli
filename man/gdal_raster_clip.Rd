@@ -24,7 +24,8 @@ gdal_raster_clip(
   like_where = NULL,
   only_bbox = FALSE,
   allow_bbox_outside_source = FALSE,
-  add_alpha = FALSE
+  add_alpha = FALSE,
+  ...
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ gdal_raster_clip(
 \item{allow_bbox_outside_source}{Allow clipping box to include pixels outside input dataset (Logical)}
 
 \item{add_alpha}{Adds an alpha mask band to the destination when the source raster have none. (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

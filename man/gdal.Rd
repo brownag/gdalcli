@@ -4,12 +4,14 @@
 \alias{gdal}
 \title{Main gdal entry point}
 \usage{
-gdal(x = NULL, drivers = FALSE)
+gdal(x = NULL, drivers = FALSE, ...)
 }
 \arguments{
 \item{x}{A filename (for 'gdal info'), a pipeline string (for 'gdal pipeline'), a command vector, or a gdal_job object from a piped operation}
 
 \item{drivers}{Display driver list as JSON document (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -17,12 +19,13 @@ A \link{gdal_job} object.
 \description{
 Main "gdal" entry point.
 
-See \url{https://gdal.org/en/release-3.12/programs/gdal.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal.html
 job <- gdal()
 # gdal_job_run(job)
 }

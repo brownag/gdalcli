@@ -29,7 +29,8 @@ gdal_raster_footprint(
   max_points = NULL,
   location_field = NULL,
   no_location_field = FALSE,
-  absolute_path = FALSE
+  absolute_path = FALSE,
+  ...
 )
 }
 \arguments{
@@ -82,6 +83,8 @@ gdal_raster_footprint(
 \item{no_location_field}{Disable creating a field with the path of the input dataset (Logical)}
 
 \item{absolute_path}{Whether the path to the input dataset should be stored as an absolute path (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

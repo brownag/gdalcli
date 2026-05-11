@@ -494,8 +494,10 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
     
     for (i in seq_along(lines)) {
       # Check if this line matches "Description" with RST underline on next line
-      if (grepl("^Description\\s*$", lines[i], ignore.case = TRUE)) {
-        if (i < length(lines) && grepl("^-+\\s*$", lines[i + 1])) {
+      desc_match <- .ensure_scalar_logical(grepl("^Description\\s*$", lines[i], ignore.case = TRUE), FALSE)
+      if (desc_match) {
+        underline_check <- if (i < length(lines)) .ensure_scalar_logical(grepl("^-+\\s*$", lines[i + 1]), FALSE) else FALSE
+        if (underline_check) {
           # Found the Description section
           # Start collecting from line i+2 (after the underline)
           start_idx <- i + 2
@@ -505,7 +507,9 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
             line <- lines[j]
             
             # Stop if we hit RST directives or code blocks
-            if (grepl("^\\s*\\.\\.\\s+", line) || grepl("^\\s*::", line)) {
+            is_directive <- .ensure_scalar_logical(grepl("^\\s*\\.\\.\\s+", line), FALSE) || 
+                           .ensure_scalar_logical(grepl("^\\s*::", line), FALSE)
+            if (is_directive) {
               break
             }
             
@@ -514,11 +518,11 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
             if (j < length(lines)) {
               next_line <- lines[j + 1]
               # Check if current line looks like a section heading (not blank) and next line is an underline
-              current_is_heading <- nzchar(trimws(line)) && grepl("^[A-Za-z]", line)
+              current_is_heading <- .ensure_scalar_logical(nzchar(trimws(line)), FALSE) && .ensure_scalar_logical(grepl("^[A-Za-z]", line), FALSE)
               # Check for RST underline characters (need at least 3)
               # Characters can be: + - * = ~ ` ^ _ #
               # Need to put - at the end or escape it to avoid character range issues
-              next_is_underline <- grepl("^[+*=~`^_#-]{3,}\\s*$", next_line)
+              next_is_underline <- .ensure_scalar_logical(grepl("^[+*=~`^_#-]{3,}\\s*$", next_line), FALSE)
               
               if (current_is_heading && next_is_underline) {
                 # This is a new section heading, stop collecting
@@ -527,7 +531,8 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
             }
             
             # Skip empty lines at the beginning
-            if (length(description_lines) == 0 && !nzchar(trimws(line))) {
+            line_nonempty <- .ensure_scalar_logical(nzchar(trimws(line)), FALSE)
+            if (length(description_lines) == 0 && !line_nonempty) {
               next
             }
             
@@ -543,10 +548,12 @@ fetch_examples_from_rst <- function(command_name, timeout = 10, verbose = FALSE,
     if (length(description_lines) == 0) {
       # Fallback: try to get the summary from "only:: html" block
       for (i in seq_along(lines)) {
-        if (grepl("^\\s*\\.\\. only::\\s+html\\s*$", lines[i])) {
+        only_html_match <- .ensure_scalar_logical(grepl("^\\s*\\.\\. only::\\s+html\\s*$", lines[i]), FALSE)
+        if (only_html_match) {
           # Next non-empty line should be the summary
           for (j in (i + 1):length(lines)) {
-            if (nzchar(trimws(lines[j]))) {
+            line_nonempty <- .ensure_scalar_logical(nzchar(trimws(lines[j])), FALSE)
+            if (line_nonempty) {
               return(trimws(lines[j]))
             }
           }
@@ -651,7 +658,7 @@ parse_cli_command <- function(cli_command) {
 
   # Extract command parts (start with gdal, continue until we hit a flag or file)
   i <- 1
-  while (i <= length(tokens) && !grepl("^-", tokens[i])) {
+  while (i <= length(tokens) && !.ensure_scalar_logical(grepl("^-", tokens[i]), FALSE)) {
     if (is_filename(tokens[i])) {
       break
     }
@@ -762,7 +769,9 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
     for (r_name in names(arg_mapping)) {
       mapping_entry <- arg_mapping[[r_name]]
       max_count <- if (!is.null(mapping_entry$max_count)) mapping_entry$max_count else 1
-      is_pos <- if (!is.null(mapping_entry$is_positional) && !is.na(mapping_entry$is_positional)) mapping_entry$is_positional else FALSE
+      # Safe extraction for is_positional (might be vector in some GDAL specs)
+      is_positional_val <- .ensure_scalar_logical(mapping_entry$is_positional, FALSE)
+      is_pos <- is_positional_val
       
       param_metadata[[r_name]] <- list(gdal_name = r_name, max_count = max_count, is_positional = is_pos)
       
@@ -805,7 +814,9 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
           r_name <- gsub("-", "_", gdal_short)
         }
         
-        max_count <- if (!is.null(arg$max_count) && !is.na(arg$max_count)) arg$max_count else 1
+        # Safe extraction for max_count (might be vector in some GDAL specs)
+        max_count_val <- .ensure_scalar_numeric(arg$max_count, 1)
+        max_count <- max_count_val
         param_metadata[[r_name]] <- list(gdal_name = gdal_name, max_count = max_count)
         positional_param_names <- c(positional_param_names, r_name)
       }
@@ -825,7 +836,8 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
       first_param_max_count <- param_metadata[[first_param]]$max_count
       
       # If first parameter accepts multiple values, combine all but last arg into a vector
-      if (!is.null(first_param_max_count) && !is.na(first_param_max_count) && first_param_max_count > 1) {
+      first_param_max_count_scalar <- .ensure_scalar_numeric(first_param_max_count, 1)
+      if (first_param_max_count_scalar > 1) {
         # All args except the last go to the first parameter as a vector
         input_files <- parsed_cli$positional_args[-length(parsed_cli$positional_args)]
         output_file <- parsed_cli$positional_args[length(parsed_cli$positional_args)]
@@ -869,8 +881,11 @@ convert_cli_to_r_example <- function(parsed_cli, r_function_name, input_args = N
         
         # Check if this is a composite argument
         param_meta <- if (!is.null(arg_mapping[[arg_name]])) arg_mapping[[arg_name]] else NULL
-        max_count <- if (!is.null(param_meta) && !is.null(param_meta$max_count) && !is.na(param_meta$max_count)) param_meta$max_count else 1
-        min_count <- if (!is.null(param_meta) && !is.null(param_meta$min_count) && !is.na(param_meta$min_count)) param_meta$min_count else 0
+        # Safe extraction for max_count and min_count (might be vectors)
+        max_count_val <- .ensure_scalar_numeric(param_meta$max_count, 1)
+        max_count <- max_count_val
+        min_count_val <- .ensure_scalar_numeric(param_meta$min_count, 0)
+        min_count <- min_count_val
         
         # Detect composite: fixed-count with commas
         is_composite <- (max_count == min_count && max_count > 1 && grepl(",", val))
@@ -1309,7 +1324,6 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
   if (!is.logical(verbose)) verbose <- FALSE
 
 
-
   # Construct version-aware base path for URL normalization
   # Use release-X.Y format (major.minor only, no patch)
   # GDAL docs don't change for patch versions
@@ -1319,10 +1333,12 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     "stable"
   }
 
+
   # Use provided URL from GDAL JSON, or construct one if not provided
   if (is.null(url) || !nzchar(url)) {
     url <- construct_doc_url(full_path, gdal_version = gdal_version)
   }
+
 
   # Normalize URL: ensure it includes /en/{version}/ path if not present
   # GDAL JSON URLs may be like https://gdal.org/programs/... or https://gdal.org/en/stable/programs/...
@@ -1330,6 +1346,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
   if (!grepl(version_pattern, url)) {
     url <- gsub("https://gdal.org/", sprintf("https://gdal.org/en/%s/", version_path), url)
   }
+
 
   # For driver commands that may have driver-specific URLs, try /programs/ variant first
   # This handles cases like gdal_driver_gpkg_repack which should use /programs/gdal_driver_gpkg_repack.html
@@ -1351,6 +1368,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
       primary_url <- programs_url
     }
   }
+
 
   # Check cache first (if available) - only for primary URL
   if (!is.null(cache)) {
@@ -1377,6 +1395,7 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
   if (verbose) {
     cat(sprintf("  [*] Fetching RST data: %s\n", command_name_for_rst))
   }
+  
 
   # Try to load RST file directly
   rst_file <- NULL
@@ -1386,42 +1405,91 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     
     if (file.exists(local_rst_file)) {
       rst_file <- local_rst_file
+    } else {
     }
+  } else {
   }
+  
   
   # If we found an RST file, extract both description and examples
   if (!is.null(rst_file)) {
     tryCatch(
       {
-        lines <- readLines(rst_file, warn = FALSE)
-        rst_content <- paste(lines, collapse = "\n")
-        
-        # Extract description
-        description <- .extract_description_from_rst(rst_content)
-        if (nzchar(description)) {
-          result$description <- description
+        tryCatch({
+          lines <- readLines(rst_file, warn = FALSE)
+          rst_content <- paste(lines, collapse = "\n")
+          
+          # Extract description
+          tryCatch({
+            description <- .extract_description_from_rst(rst_content)
+            # Ensure description is a scalar character
+            if (!is.character(description)) {
+              description <- ""
+            } else if (length(description) > 0) {
+              description <- as.character(description[1])
+            } else {
+              description <- ""
+            }
+            
+            if (nzchar(description)) {
+              result$description <- description
+              if (verbose) {
+                cat(sprintf("  [OK] Extracted description (%d chars)\n", nchar(description)))
+              }
+            }
+          }, error = function(e) {
+            if (verbose) {
+              cat(sprintf("  [WARN] Failed to extract description: %s\n", e$message))
+            }
+          })
+          
+          # Extract examples
+          tryCatch({
+            examples <- .extract_examples_from_rst(rst_content)
+            # Ensure examples is a character vector
+            if (!is.character(examples)) {
+              examples <- character(0)
+            }
+            
+            if (length(examples) > 0) {
+              result$examples <- examples
+              if (verbose) {
+                cat(sprintf("  [OK] Found %d examples in RST\n", length(examples)))
+              }
+            }
+          }, error = function(e) {
+            if (verbose) {
+              cat(sprintf("  [WARN] Failed to extract examples: %s\n", e$message))
+            }
+          })
+          
+          # Mark as successful if either description or examples were found
+          tryCatch({
+            # Check description - be careful with NA values
+            desc_ok <- FALSE
+            if (is.character(result$description) && length(result$description) > 0) {
+              # result$description[1] should be a scalar character
+              desc_val <- result$description[1]
+              desc_ok <- !is.na(desc_val) && nzchar(desc_val)
+            }
+            
+            if (desc_ok) {
+              result$status <- 200
+              result$source <- "rst"
+            } else if (length(result$examples) > 0) {
+              result$status <- 200
+              result$source <- "rst"
+            }
+          }, error = function(e) {
+            if (verbose) {
+              cat(sprintf("  [WARN] Failed to mark success: %s\n", e$message))
+            }
+          })
+        }, error = function(e) {
           if (verbose) {
-            cat(sprintf("  [OK] Extracted description (%d chars)\n", nchar(description)))
+            cat(sprintf("  [WARN] Error processing RST file %s: %s\n", rst_file, e$message))
           }
-        }
-        
-        # Extract examples
-        examples <- .extract_examples_from_rst(rst_content)
-        if (length(examples) > 0) {
-          result$examples <- examples
-          if (verbose) {
-            cat(sprintf("  [OK] Found %d examples in RST\n", length(examples)))
-          }
-        }
-        
-        # Mark as successful if either description or examples were found
-        if (!is.na(result$description) && nzchar(result$description)) {
-          result$status <- 200
-          result$source <- "rst"
-        } else if (length(examples) > 0) {
-          result$status <- 200
-          result$source <- "rst"
-        }
+        })
       },
       error = function(e) {
         if (verbose) {
@@ -1431,13 +1499,13 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     )
   }
   
+  
   # Cache the result if we found anything
-  if (!is.null(cache) && result$status == 200) {
+  if (!is.null(cache) && !is.na(result$status) && result$status == 200) {
     cache$set(primary_url, result)
     return(result)
   }
   
-  # If RST didn't provide useful data, set status to 404
   if (is.na(result$status)) {
     if (verbose) {
       cat(sprintf("  [WARN] No RST data found for %s\n", command_name_for_rst))
@@ -1450,6 +1518,39 @@ fetch_enriched_docs <- function(full_path, cache = NULL, verbose = FALSE, url = 
     cache$set(primary_url, result)
   }
   return(result)
+}
+
+
+# ============================================================================
+# Helper Functions - Safe Scalar Extraction
+# ============================================================================
+
+#' Safe scalar extraction helpers for handling vector-valued metadata fields from GDAL JSON API specs
+#' These ensure that metadata fields that should be scalars are treated as such, even if the
+#' JSON spec contains vectors (which can happen with inconsistent GDAL API specifications).
+#' 
+.ensure_scalar_logical <- function(value, default = FALSE) {
+  if (is.null(value)) return(default)
+  if (length(value) == 0) return(default)
+  if (!is.logical(value)) return(default)
+  if (is.na(value[1])) return(default)
+  return(value[1])
+}
+
+.ensure_scalar_numeric <- function(value, default = 0) {
+  if (is.null(value)) return(default)
+  if (length(value) == 0) return(default)
+  if (!is.numeric(value)) return(default)
+  if (is.na(value[1])) return(default)
+  return(as.numeric(value[1]))
+}
+
+.ensure_scalar_character <- function(value, default = "") {
+  if (is.null(value)) return(default)
+  if (length(value) == 0) return(default)
+  if (!is.character(value)) return(default)
+  if (is.na(value[1])) return(default)
+  return(as.character(value[1]))
 }
 
 
@@ -1581,7 +1682,7 @@ crawl_gdal_api <- function(command_path = c("gdal")) {
 #'
 #' @return A string containing the complete R function code (including roxygen).
 #'
-generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_version = NULL, repo_dir = NULL) {
+generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_version = NULL, repo_dir = NULL, intent_mappings = list()) {
   # Ensure verbose is a logical
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
@@ -1596,6 +1697,10 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
   # Replace hyphens with underscores for valid R function names
   func_name <- paste(gsub("-", "_", full_path), collapse = "_")
 
+  # Get intent mapping for this command (e.g., "gdal_rasterize")
+  intent_mapping <- intent_mappings[[func_name]]
+  global_rules <- if (is.null(intent_mappings$global_rules)) list() else intent_mappings$global_rules
+
   # Check if this is a pipeline function
   is_pipeline <- func_name %in% c("gdal_raster_pipeline", "gdal_vector_pipeline")
 
@@ -1603,19 +1708,26 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
   is_base_gdal <- identical(full_path, c("gdal"))
 
   # Generate R function signature
-  r_args <- generate_r_arguments(input_args, input_output_args)
+  tryCatch({
+    r_args <- generate_r_arguments(input_args, input_output_args)
+  }, error = function(e) {
+    stop(sprintf("Error in generate_r_arguments for %s: %s\n  input_args length: %d, input_output_args length: %d", 
+      func_name, conditionMessage(e), length(input_args), length(input_output_args)))
+  })
+  
   if (is_pipeline) {
     # For pipeline functions, add jobs parameter first
-    args_signature <- paste(c("jobs = NULL", r_args$signature), collapse = ",\n  ")
+    args_signature <- paste(c("jobs = NULL", r_args$signature, "..."), collapse = ",\n  ")
   } else if (is_base_gdal) {
     # For base gdal function, support shortcuts: gdal(filename), gdal(pipeline), gdal(command_vector)
-    args_signature <- paste(c("x = NULL", r_args$signature), collapse = ",\n  ")
+    args_signature <- paste(c("x = NULL", r_args$signature, "..."), collapse = ",\n  ")
   } else {
     # For regular functions, the first positional argument accepts either:
     # - A gdal_job object (piped from previous operation)
     # - The actual data (e.g., input filename, dataset)
     # Detection happens in the function body via inherits(first_arg, "gdal_job")
-    args_signature <- paste(r_args$signature, collapse = ",\n  ")
+    # Include ... to capture parameter aliases and version-specific parameter names
+    args_signature <- paste(c(r_args$signature, "..."), collapse = ",\n  ")
   }
 
   # Attempt to fetch enriched documentation
@@ -1625,22 +1737,44 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
   if (!is.null(cache)) {
     # Extract the url from the endpoint JSON if available
     endpoint_url <- if (is.null(endpoint$url)) NULL else endpoint$url
-    enriched_docs <- fetch_enriched_docs(full_path, cache = cache, verbose = verbose, url = endpoint_url, command_name = command_name, gdal_version = gdal_version, repo_dir = repo_dir)
+    enriched_docs <- tryCatch({
+      fetch_enriched_docs(full_path, cache = cache, verbose = verbose, url = endpoint_url, command_name = command_name, gdal_version = gdal_version, repo_dir = repo_dir)
+    }, error = function(e) {
+      if (verbose) {
+        cat(sprintf("[WARN] Failed to fetch enriched docs for %s: %s\n", func_name, conditionMessage(e)))
+      }
+      # Return empty enriched docs structure to allow function generation to continue
+      list(
+        status = NA_integer_,
+        description = NA_character_,
+        param_details = list(),
+        examples = character(0),
+        raw_html = NA
+      )
+    })
   }
 
   # Generate roxygen documentation with enrichment
   roxygen_doc <- tryCatch({
     # Pass gdal_version to generate_roxygen_doc for version-aware URLs
-    generate_roxygen_doc(func_name, description, r_args$arg_names, enriched_docs, family, input_args, input_output_args, full_path, is_base_gdal, r_args$arg_mapping, cache, command_name, verbose = verbose, gdal_version = gdal_version)
+    generate_roxygen_doc(func_name, description, r_args$arg_names, enriched_docs, family, input_args, input_output_args, full_path, is_base_gdal, r_args$arg_mapping, cache, command_name, verbose = verbose, gdal_version = gdal_version, intent_mapping = intent_mapping, global_rules = global_rules)
   }, error = function(e) {
     cat(sprintf("\n[ERROR] roxygen_doc generation failed for %s:\n", func_name))
     cat(sprintf("  Message: %s\n", conditionMessage(e)))
-    cat(sprintf("  Call: %s\n", paste(deparse(e$call), collapse = "\n")))
+    if (!is.null(e$call)) {
+      cat(sprintf("  Call: %s\n", paste(deparse(e$call), collapse = "\n")))
+    }
     stop(e)
   })
+  
 
   # Generate function body
-  func_body <- generate_function_body(full_path, input_args, input_output_args, r_args$arg_names, r_args$arg_mapping, is_pipeline, is_base_gdal)
+  func_body <- tryCatch({
+    generate_function_body(func_name, full_path, input_args, input_output_args, r_args$arg_names, r_args$arg_mapping, is_pipeline, is_base_gdal, intent_mapping = intent_mapping, global_rules = global_rules)
+  }, error = function(e) {
+    cat(sprintf("\n[ERROR] function_body generation failed for %s:\n", func_name))
+    stop(e)
+  })
 
   # Header comment with version metadata
   header_lines <- c(
@@ -1653,8 +1787,7 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
   if (!is.null(gdal_version)) {
     header_lines <- c(
       header_lines,
-      sprintf("# Generated for GDAL %s", gdal_version$full),
-      sprintf("# Generation date: %s", Sys.Date())
+      sprintf("# Generated for GDAL %s", gdal_version$full)
     )
   }
 
@@ -1675,7 +1808,6 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
 
   function_code
 }
-
 
 #' Generate R function arguments from GDAL input_arguments and input_output_arguments specification.
 #'
@@ -1705,6 +1837,22 @@ generate_r_arguments <- function(input_args, input_output_args) {
   } else {
     in_list <- list()
   }
+  
+  # DEBUG: Check for problematic structures in first few args
+  if (length(in_list) > 0) {
+    for (debug_i in seq_len(min(5, length(in_list)))) {
+      debug_arg <- in_list[[debug_i]]
+      if (is.list(debug_arg)) {
+        debug_name <- if (is.null(debug_arg$name)) "[no-name]" else debug_arg$name
+        for (debug_field in names(debug_arg)) {
+          debug_val <- debug_arg[[debug_field]]
+          if (is.list(debug_val) && !(debug_field %in% c("choices", "input_flags", "dataset_type", "metadata"))) {
+            cat("[DEBUG] Arg", debug_i, "(", debug_name, ") has unexpected list field:", debug_field, "=", length(debug_val), "items\n")
+          }
+        }
+      }
+    }
+  }
 
   # Extract input-like parameters from input_args and move them to the front
   # GDAL's spec mixes input parameters with option parameters in input_arguments
@@ -1727,8 +1875,10 @@ generate_r_arguments <- function(input_args, input_output_args) {
     
     # Classify based on name
     # Match exactly: "input", "inputs", "source", "dataset" (no suffixes like "_format")
-    is_input <- grepl("^(input|inputs|source|dataset)$", param_name, ignore.case = TRUE) && !grepl("output", param_name, ignore.case = TRUE)
-    is_output <- grepl("^(output|destination|target)$", param_name, ignore.case = TRUE) && !grepl("input", param_name, ignore.case = TRUE)
+    is_input <- .ensure_scalar_logical(grepl("^(input|inputs|source|dataset)$", param_name, ignore.case = TRUE), FALSE) && 
+                !.ensure_scalar_logical(grepl("output", param_name, ignore.case = TRUE), FALSE)
+    is_output <- .ensure_scalar_logical(grepl("^(output|destination|target)$", param_name, ignore.case = TRUE), FALSE) && 
+                 !.ensure_scalar_logical(grepl("input", param_name, ignore.case = TRUE), FALSE)
     
     if (is_input) {
       input_params[[length(input_params) + 1]] <- param
@@ -1750,8 +1900,10 @@ generate_r_arguments <- function(input_args, input_output_args) {
     
     # Classify based on name
     # Match exactly: "input", "inputs", "source", "dataset" (no suffixes like "_format")
-    is_input <- grepl("^(input|inputs|source|dataset)$", param_name, ignore.case = TRUE) && !grepl("output", param_name, ignore.case = TRUE)
-    is_output <- grepl("^(output|destination|target)$", param_name, ignore.case = TRUE) && !grepl("input", param_name, ignore.case = TRUE)
+    is_input <- .ensure_scalar_logical(grepl("^(input|inputs|source|dataset)$", param_name, ignore.case = TRUE), FALSE) && 
+                !.ensure_scalar_logical(grepl("output", param_name, ignore.case = TRUE), FALSE)
+    is_output <- .ensure_scalar_logical(grepl("^(output|destination|target)$", param_name, ignore.case = TRUE), FALSE) && 
+                 !.ensure_scalar_logical(grepl("input", param_name, ignore.case = TRUE), FALSE)
     
     if (is_input) {
       # Parameters classified as "input" are positional (will come first in sig)
@@ -1781,7 +1933,11 @@ generate_r_arguments <- function(input_args, input_output_args) {
     arg <- args_list[[i]]
     # Skip non-list arguments (atomic vectors from GDAL metadata)
     if (!is.list(arg)) return(FALSE)
-    is_req <- ifelse(is.null(arg$required), FALSE, arg$required)
+    
+    # Use safe scalar extraction
+    is_req <- .ensure_scalar_logical(arg$required, FALSE)
+    
+    # Handle NA values
     if (is.na(is_req)) FALSE else is_req
   })
   
@@ -1791,8 +1947,14 @@ generate_r_arguments <- function(input_args, input_output_args) {
   # We'll handle this by making optional inputs still come before required outputs.
   
   # Find the positions of input/output params in args_list
-  arg_names_list <- sapply(args_list, function(p) 
-    if(is.null(p$name)) "" else as.character(p$name))
+  arg_names_list <- sapply(args_list, function(p) {
+    name_val <- p$name
+    # Handle list-valued name field (shouldn't happen but be safe)
+    if (is.list(name_val) && length(name_val) > 0) {
+      name_val <- name_val[[1]]
+    }
+    if (is.null(name_val)) "" else as.character(name_val)[1]
+  }, USE.NAMES = FALSE)
   
   input_indices <- which(grepl("^(input|inputs|source|dataset)($|[_-])", arg_names_list, ignore.case = TRUE) & !grepl("output", arg_names_list, ignore.case = TRUE))
   output_indices <- which(grepl("^(output|destination|target)($|[_-])", arg_names_list, ignore.case = TRUE) & !grepl("input", arg_names_list, ignore.case = TRUE))
@@ -1840,17 +2002,24 @@ generate_r_arguments <- function(input_args, input_output_args) {
     if (grepl("^[0-9]", r_name)) {
       r_name <- paste0("X", r_name)
     }
-    arg_type <- ifelse(is.null(arg$type), "string", arg$type)
-    min_count <- ifelse(is.null(arg$min_count), 0, arg$min_count)
-    max_count <- ifelse(is.null(arg$max_count), 1, arg$max_count)
+    arg_type <- .ensure_scalar_character(arg$type, "string")
+    min_count <- .ensure_scalar_numeric(arg$min_count, 0)
+    max_count <- .ensure_scalar_numeric(arg$max_count, 1)
+    
+    # Extract default value and ensure it's a scalar (not a list)
     default_val <- arg$default
+    if (is.list(default_val) && length(default_val) > 0) {
+      default_val <- default_val[[1]]
+    } else if (is.list(default_val)) {
+      default_val <- NULL
+    }
 
     # Determine R type and default
-    is_required <- ifelse(is.null(arg$required), FALSE, arg$required)
+    is_required <- .ensure_scalar_logical(arg$required, FALSE)
     
     # Detect if this is a positional parameter
     # Parameters from input_output_arguments are always positional
-    is_positional <- ifelse(is.null(arg$.is_positional), FALSE, arg$.is_positional)
+    is_positional <- .ensure_scalar_logical(arg$.is_positional, FALSE)
     
     if (is_required) {
       # Required argument (no default)
@@ -2002,8 +2171,10 @@ should_suppress_range <- function(min_val, max_val, range_type = "value") {
 #' @param is_base_gdal Logical indicating if this is the base gdal function.
 #' @param cache Documentation cache object (optional).
 #' @param command_name Character string with the GDAL command name (optional).
+#' @param intent_mapping List containing update intent rules for this command.
+#' @param global_rules List of global update intent rules.
 #'
-generate_roxygen_doc <- function(func_name, description, arg_names, enriched_docs = NULL, family = NULL, input_args = NULL, input_output_args = NULL, full_path = NULL, is_base_gdal = FALSE, arg_mapping = NULL, cache = NULL, command_name = NULL, verbose = FALSE, gdal_version = NULL) {
+generate_roxygen_doc <- function(func_name, description, arg_names, enriched_docs = NULL, family = NULL, input_args = NULL, input_output_args = NULL, full_path = NULL, is_base_gdal = FALSE, arg_mapping = NULL, cache = NULL, command_name = NULL, verbose = FALSE, gdal_version = NULL, intent_mapping = NULL, global_rules = list()) {
   # Ensure verbose is a logical
   if (is.null(verbose)) verbose <- FALSE
   if (!is.logical(verbose)) verbose <- FALSE
@@ -2076,38 +2247,69 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
   
   doc <- sprintf("#' @title %s\n", title)
 
+  # Add Intent Section if applicable
+  if (!is.null(intent_mapping) && is.list(intent_mapping)) {
+    if (isTRUE(intent_mapping$opens_for_update)) {
+      doc <- paste0(doc, "#' @note **Open for Update**: This command modifies the input dataset by default.\n")
+    }
+  }
+
   # Use enriched description if available, otherwise try cached description, otherwise use API description
   enriched_desc <- NA_character_
   
-  # First try enriched_docs from fetch (more detailed HTML description)
-  if (!is.null(enriched_docs) && !is.na(enriched_docs$description) && nzchar(enriched_docs$description)) {
-    enriched_desc <- enriched_docs$description
-  }
-  
-  # If not found via fetch, try persistent cache (CSV)
-  if ((is.na(enriched_desc) || !nzchar(enriched_desc)) && !is.null(cache)) {
-    cached_desc <- cache$get_description(full_path)
-    if (!is.na(cached_desc) && nzchar(cached_desc)) {
-      enriched_desc <- cached_desc
+  tryCatch({
+    # First try enriched_docs from fetch (more detailed HTML description)
+    if (!is.null(enriched_docs) && 
+        is.list(enriched_docs) &&
+        !is.null(enriched_docs$description)) {
+      ed <- enriched_docs$description
+      if (is.character(ed) && 
+          length(ed) > 0 &&
+          !is.na(ed[1]) && 
+          nzchar(ed[1])) {
+        enriched_desc <- ed[1]
+      }
     }
-  }
-  
-  # If no enriched description, use the GDAL JSON API description (always available)
-  if (is.na(enriched_desc) || !nzchar(enriched_desc)) {
-    enriched_desc <- description
-  }
+    
+    # If not found via fetch, try persistent cache (CSV)
+    if (is.na(enriched_desc) && !is.null(cache)) {
+      cached_desc <- cache$get_description(full_path)
+      if (is.character(cached_desc) && 
+          length(cached_desc) > 0 &&
+          !is.na(cached_desc[1]) && 
+          nzchar(cached_desc[1])) {
+        enriched_desc <- cached_desc[1]
+      }
+    }
+    
+    # If no enriched description, use the GDAL JSON API description (always available)
+    if (is.na(enriched_desc)) {
+      enriched_desc <- description
+    }
+  }, error = function(e) {
+    # Fallback to API description on any error
+    enriched_desc <<- description
+    if (verbose) {
+      cat(sprintf("  [WARN] Error enriching description for %s: %s\n", func_name, e$message))
+    }
+  })
 
   if (is.character(enriched_desc) && length(enriched_desc) > 0 &&
       !is.na(enriched_desc[1]) && nzchar(enriched_desc[1])) {
     # Wrap command name in backticks for code formatting
-    desc_with_backticks <- wrap_command_in_backticks(enriched_desc[1], command_name)
+    desc_with_backticks <- tryCatch({
+      wrap_command_in_backticks(enriched_desc[1], command_name)
+    }, error = function(e) {
+      enriched_desc[1]  # Fallback to unwrapped description
+    })
+    
     # Escape special roxygen2 markup characters in description
     escaped_desc <- desc_with_backticks
-    if (is.character(escaped_desc) && length(escaped_desc) > 0 && nzchar(escaped_desc)) {
+    if (is.character(escaped_desc) && length(escaped_desc) > 0 && nzchar(escaped_desc[1])) {
       tryCatch({
         # Add line tracking for debugging
         if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub { on desc for %s\n", func_name))
-        escaped_desc <- safe_gsub("\\{", "\\\\{", escaped_desc, func_name = func_name, linenum = 1224)  # Escape {
+        escaped_desc <- safe_gsub("\\{", "\\\\{", escaped_desc[1], func_name = func_name, linenum = 1224)  # Escape {
         if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub } on desc for %s\n", func_name))
         escaped_desc <- safe_gsub("\\}", "\\\\}", escaped_desc, func_name = func_name, linenum = 1225)  # Escape }
         # Escape square brackets to prevent roxygen from interpreting RST citations as links
@@ -2116,7 +2318,10 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
         if (Sys.getenv("DEBUG_GSUB") == "true") cat(sprintf("[DEBUG] About to gsub ] on desc for %s\n", func_name))
         escaped_desc <- safe_gsub("\\]", "\\\\]", escaped_desc, func_name = func_name, linenum = 1227)  # Escape ]
       }, error = function(e) {
-        stop(sprintf("Error escaping description for %s: %s", func_name, e$message))
+        if (verbose) {
+          cat(sprintf("  [WARN] Error escaping description for %s: %s\n", func_name, e$message))
+        }
+        escaped_desc <<- enriched_desc[1]  # Use unescaped version
       })
     }
     formatted_desc <- format_roxygen_text(escaped_desc)
@@ -2214,7 +2419,18 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       }
       
       # Add type information
-      arg_type <- ifelse(is.null(arg_meta$type), "unknown", arg_meta$type)
+      # Use safe character accessor to handle vector-valued type fields
+      arg_type <- if (is.null(arg_meta$type)) {
+        "unknown"
+      } else if (is.character(arg_meta$type)) {
+        if (length(arg_meta$type) > 0 && !is.na(arg_meta$type[1])) {
+          as.character(arg_meta$type[1])
+        } else {
+          "unknown"
+        }
+      } else {
+        "unknown"
+      }
       if (arg_type == "boolean") {
         param_desc <- paste0(param_desc, " (Logical)")
       } else if (arg_type == "integer") {
@@ -2253,9 +2469,15 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       
       # Add default value if available (skip NA as it's not a real default)
       if (!is.null(arg_meta$default)) {
+        default_val <- arg_meta$default
+        # If default is a list, extract the first element
+        if (is.list(default_val) && length(default_val) > 0) {
+          default_val <- default_val[[1]]
+        } else if (is.list(default_val)) {
+          default_val <- NULL
+        }
         # Skip if the default is NA (not a real/meaningful default)
-        if (!isTRUE(is.na(arg_meta$default))) {
-          default_val <- arg_meta$default
+        if (!isTRUE(is.na(default_val))) {
           if (is.logical(default_val)) {
             default_val <- tolower(as.character(default_val))
           }
@@ -2312,6 +2534,9 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
       doc <- paste0(doc, sprintf("#' @param %s %s\n", arg_name, param_desc))
     }
   }
+
+  # Add documentation for ... parameter (parameter aliases and synonyms)
+  doc <- paste0(doc, "#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.\n")
 
   doc <- paste0(doc, sprintf("#' @return A [gdal_job] object.\n"))
 
@@ -2444,7 +2669,8 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     doc_url <- construct_doc_url(full_path, gdal_version = gdal_version)
     doc <- paste0(doc, "#' \\dontrun{\n")
     doc <- paste0(doc, sprintf("#' # TODO: No examples available for %s.\n", func_name))
-    doc <- paste0(doc, sprintf("#' # See GDAL documentation: %s\n", doc_url))
+    doc <- paste0(doc, "#' # See GDAL documentation at:\n")
+    doc <- paste0(doc, sprintf("#' %s\n", doc_url))
     doc <- paste0(doc, sprintf("#' job <- %s()\n", func_name))
     doc <- paste0(doc, "#' # gdal_job_run(job)\n")
     doc <- paste0(doc, "#' }\n")
@@ -2454,9 +2680,70 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
 }
 
 
+
+#' Infer command intent for a GDAL job.
+#'
+#' This is the core engine for intent inference. It maps commands to a
+#' tiered risk model:
+#' 1. IN_PLACE (Highest Risk): Modifies existing data without creating a copy.
+#' 2. OVERWRITE (High Risk): Replaces existing output files.
+#' 3. SAFE (Moderate Risk): Normal pipeline operations with distinct inputs/outputs.
+#' 4. READ_ONLY (Lowest Risk): Non-mutating analysis operations.
+#'
+#' @param func_name Name of the R function being generated.
+#' @param merged_args List of arguments to the function call.
+#' @param intent_mapping The mapping entry from GDAL_INTENT_MAPPINGS.json.
+#'
+#' @return The inferred intent (IN_PLACE, OVERWRITE, SAFE, or READ_ONLY).
+#' Infer update intent for a GDAL job.
+#'
+#' @description
+#' Determines whether a GDAL command should open a dataset for in-place update
+#' vs. creation based on:
+#' - Algorithm-specific intent mappings (from GDAL_INTENT_MAPPINGS.json)
+#' - User-provided arguments (e.g., "update", "overwrite")
+#'
+#' @param func_name Character. Name of the GDAL function
+#' @param merged_args List. Merged arguments passed to the function
+#' @param update_intent_mapping List. Per-algorithm update intent mapping
+#'
+#' @return List with `opens_for_update` boolean field
+#'
+#' @details
+#' This function implements RFC 104 open_for_update semantics to help classify
+#' pipeline steps correctly. It supports both by_default rules and conditional
+#' overrides via if_any_of/unless_any_of argument lists.
+#'
+#' @keywords internal
+#' @export
+infer_update_intent <- function(func_name, merged_args, update_intent_mapping = NULL) {
+  # Default: do not open for update
+  opens_for_update <- FALSE
+  
+  if (!is.null(update_intent_mapping) && isTRUE(update_intent_mapping$by_default)) {
+    opens_for_update <- TRUE
+  }
+
+  # Check if_any_of triggers
+  if (!is.null(update_intent_mapping$if_any_of)) {
+    if (any(names(merged_args) %in% update_intent_mapping$if_any_of)) {
+      opens_for_update <- TRUE
+    }
+  }
+  
+  # Check unless_any_of exclusions
+  if (!is.null(update_intent_mapping$unless_any_of)) {
+    if (any(names(merged_args) %in% update_intent_mapping$unless_any_of)) {
+      opens_for_update <- FALSE
+    }
+  }
+  
+  return(list(opens_for_update = opens_for_update))
+}
+
 #' Generate the function body for an auto-generated GDAL wrapper.
 #'
-generate_function_body <- function(full_path, input_args, input_output_args, arg_names, arg_mapping, is_pipeline = FALSE, is_base_gdal = FALSE) {
+generate_function_body <- function(func_name, full_path, input_args, input_output_args, arg_names, arg_mapping, is_pipeline = FALSE, is_base_gdal = FALSE, intent_mapping = NULL, global_rules = list()) {
   # Ensure full_path is a character vector
   if (!is.character(full_path)) {
     full_path <- as.character(full_path)
@@ -2479,7 +2766,7 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
 
   if (is_pipeline) {
     # Special handling for pipeline functions
-    body_lines <- c(body_lines, "  # If jobs is provided, build pipeline string from job sequence")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  if (!is.null(jobs)) {")
     body_lines <- c(body_lines, "    if (!is.list(jobs) && !is.vector(jobs)) {")
     body_lines <- c(body_lines, "      rlang::abort('jobs must be a list or vector of gdal_job objects')")
@@ -2492,7 +2779,7 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     body_lines <- c(body_lines, "    pipeline <- .build_pipeline_from_jobs(jobs)")
     body_lines <- c(body_lines, "  }")
     body_lines <- c(body_lines, "")
-    body_lines <- c(body_lines, "  # Collect arguments")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  args <- list()")
 
     if (length(arg_names) > 0) {
@@ -2505,7 +2792,7 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     }
   } else if (is_base_gdal) {
     # Special handling for base gdal function with shortcuts
-    body_lines <- c(body_lines, "  # Handle shortcuts for base gdal function")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  if (!is.null(x)) {")
     body_lines <- c(body_lines, "    # Check if x is a piped gdal_job")
     body_lines <- c(body_lines, "    if (inherits(x, 'gdal_job')) {")
@@ -2539,21 +2826,21 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     }
 
     body_lines <- c(body_lines, "      ))")
-    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = x$command_path, arguments = merged_args))")
+    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = x$command_path, arguments = merged_args, update_intent = x$update_intent))")
     body_lines <- c(body_lines, "    }")
     body_lines <- c(body_lines, "    ")
     body_lines <- c(body_lines, "    # Handle shortcut: filename -> gdal info filename")
     body_lines <- c(body_lines, "    if (is.character(x) && length(x) == 1 && !grepl('\\\\s', x)) {")
     body_lines <- c(body_lines, "      # Single string without spaces - treat as filename for gdal info")
     body_lines <- c(body_lines, "      merged_args <- list(input = x)")
-    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = c('info'), arguments = merged_args))")
+    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = c('info'), arguments = merged_args, update_intent = \"SAFE\"))")
     body_lines <- c(body_lines, "    }")
     body_lines <- c(body_lines, "    ")
     body_lines <- c(body_lines, "    # Handle shortcut: pipeline string -> gdal pipeline")
     body_lines <- c(body_lines, "    if (is.character(x) && length(x) == 1 && grepl('!', x)) {")
     body_lines <- c(body_lines, "      # Contains ! - treat as pipeline")
     body_lines <- c(body_lines, "      merged_args <- list(pipeline = x)")
-    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = c('pipeline'), arguments = merged_args))")
+    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = c('pipeline'), arguments = merged_args, update_intent = \"SAFE\"))")
     body_lines <- c(body_lines, "    }")
     body_lines <- c(body_lines, "    ")
     body_lines <- c(body_lines, "    # Handle shortcut: command vector -> execute as gdal command")
@@ -2590,14 +2877,14 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     body_lines <- c(body_lines, "          }")
     body_lines <- c(body_lines, "        }")
     body_lines <- c(body_lines, "      }")
-    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = command_path, arguments = merged_args))")
+    body_lines <- c(body_lines, "      return(new_gdal_job(command_path = command_path, arguments = merged_args, update_intent = \"SAFE\"))")
     body_lines <- c(body_lines, "    }")
     body_lines <- c(body_lines, "    ")
     body_lines <- c(body_lines, "    # Invalid x argument")
     body_lines <- c(body_lines, "    rlang::abort('x must be a filename string, pipeline string, command vector, or gdal_job object')")
     body_lines <- c(body_lines, "  }")
     body_lines <- c(body_lines, "  ")
-    body_lines <- c(body_lines, "  # No shortcut - handle as regular command")
+    body_lines <- c(body_lines, "")
     body_lines <- c(body_lines, "  merged_args <- list()")
 
     if (length(arg_names) > 0) {
@@ -2608,6 +2895,9 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
         )
       }
     }
+    
+    # Process ... arguments for base_gdal functions
+    body_lines <- c(body_lines, "  merged_args <- .merge_alias_parameters(list(...), merged_args)")
   } else {
     # Handle first argument: can be either a gdal_job (piped) or actual data (fresh call)
     # Check if first argument exists and is a gdal_job
@@ -2628,7 +2918,7 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
     # Handle the new pattern: first argument can be gdal_job OR data
     if (!is.null(first_arg_name)) {
       body_lines <- c(body_lines, "")
-      body_lines <- c(body_lines, sprintf("  # Check if first argument is a piped gdal_job or actual data"))
+      body_lines <- c(body_lines, "")
       body_lines <- c(body_lines, sprintf("  if (!missing(%s) && inherits(%s, 'gdal_job')) {", first_arg_name, first_arg_name))
       body_lines <- c(body_lines, sprintf("    # First argument is a piped job - extend the pipeline"))
       body_lines <- c(body_lines, sprintf("    # Remove first_arg from new_args since it's the job, not data"))
@@ -2638,13 +2928,39 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
       body_lines <- c(body_lines, sprintf("    return(extend_gdal_pipeline(piped_job, %s, new_args))", path_json))
       body_lines <- c(body_lines, "  }")
       body_lines <- c(body_lines, "")
-      body_lines <- c(body_lines, sprintf("  # First argument is actual data or missing - create new job"))
-      body_lines <- c(body_lines, sprintf("  merged_args <- new_args"))
+      body_lines <- c(body_lines, "")
+      body_lines <- c(body_lines, sprintf("  merged_args <- .merge_alias_parameters(list(...), new_args)"))
     } else {
-      # No arguments at all
-      body_lines <- c(body_lines, "  merged_args <- new_args")
+      # No arguments at all - still process ... for alias parameters
+      body_lines <- c(body_lines, "  merged_args <- .merge_alias_parameters(list(...), new_args)")
     }
   }
+
+  # Calculate update intent
+  
+  if (is_pipeline || is_base_gdal) {
+    # Pipelines and base gdal are generally SAFE by themselves (unless they contain mutative jobs)
+    # For now, mark as SAFE and let the runner handle nested intent if we implement it later
+    body_lines <- c(body_lines, "  .update_intent <- \"SAFE\"")
+  } else {
+    # Embed the specific intent mapping directly into the generated R function
+    intent_mapping_str <- if (!is.null(intent_mapping)) {
+        # Check if list is not empty to avoid subscript issues
+        if (length(intent_mapping) > 0) {
+            mapping_pairs <- sapply(names(intent_mapping), function(name) {
+                paste0(name, " = ", deparse(intent_mapping[[name]]))
+            })
+            paste0("list(", paste(mapping_pairs, collapse = ", "), ")")
+        } else {
+            "list()"
+        }
+    } else {
+        "NULL"
+    }
+    body_lines <- c(body_lines, sprintf("  .update_intent_mapping <- %s", intent_mapping_str))
+    body_lines <- c(body_lines, sprintf("  .update_intent <- infer_update_intent(\"%s\", merged_args, .update_intent_mapping)", func_name))
+  }
+
 
   # Create gdal_job object
   body_lines <- c(body_lines, "")
@@ -2671,14 +2987,16 @@ generate_function_body <- function(full_path, input_args, input_output_args, arg
   }
   
   if (is_pipeline) {
+    # Process ... arguments for pipeline functions too
+    body_lines <- c(body_lines, "  args <- .merge_alias_parameters(list(...), args)")
     body_lines <- c(
       body_lines,
-      sprintf("  new_gdal_job(command_path = %s, arguments = args, arg_mapping = .arg_mapping)", path_json)
+      sprintf("  new_gdal_job(command_path = %s, arguments = args, arg_mapping = .arg_mapping, update_intent = .update_intent)", path_json)
     )
   } else {
     body_lines <- c(
       body_lines,
-      sprintf("  new_gdal_job(command_path = %s, arguments = merged_args, arg_mapping = .arg_mapping)", path_json)
+      sprintf("  new_gdal_job(command_path = %s, arguments = merged_args, arg_mapping = .arg_mapping, update_intent = .update_intent)", path_json)
     )
   }
 
@@ -2990,6 +3308,17 @@ main <- function() {
   doc_cache <- create_doc_cache(".gdal_doc_cache", gdal_version = gdal_version)
   cat("(RST enrichment enabled for examples)\n\n")
 
+  # Load update intent mappings
+  cat("Loading update intent mappings...\n")
+  intent_mappings_file <- "inst/GDAL_INTENT_MAPPINGS.json"
+  intent_mappings <- if (file.exists(intent_mappings_file)) {
+    # Disable dataframe simplification to keep rules as lists
+    yyjsonr::read_json_file(intent_mappings_file, opts = list(obj_of_arrs_to_df = FALSE, arr_of_objs_to_df = FALSE))
+  } else {
+    list()
+  }
+  cat(sprintf("[OK] Loaded intent mappings for %d commands\n\n", max(0, length(intent_mappings) - 1)))
+
   generated_files <- character()
   failed_count <- 0
 
@@ -3003,7 +3332,7 @@ main <- function() {
           cat(sprintf("  [DEBUG] Generating %s...\n", func_name))
         }
         # Pass gdal_version and repo_path for version-aware URLs and local GDAL repo
-        function_code <- generate_function(endpoint, cache = doc_cache, verbose = TRUE, gdal_version = gdal_version, repo_dir = repo_path)
+        function_code <- generate_function(endpoint, cache = doc_cache, verbose = TRUE, gdal_version = gdal_version, repo_dir = repo_path, intent_mappings = intent_mappings)
         if (func_name %in% c("gdal", "gdal_raster", "gdal_vector", "gdal_mdim")) {
           cat(sprintf("  [DEBUG] Writing %s...\n", func_name))
         }
@@ -3016,6 +3345,20 @@ main <- function() {
         error_class <- class(e)[1]
         error_info <- sprintf("[%s] %s", error_class, error_msg)
         cat(sprintf("  [FAILED] %s: %s\n", func_name, error_info))
+        # Add detailed traceback for debugging
+        if (Sys.getenv("DEBUG_REGEN") == "true" || func_name %in% c("gdal_vector_geom_buffer", "gdal_vsi_sozip_create")) {
+          cat(sprintf("\n[TRACEBACK] %s:\n", func_name))
+          # Get the call stack
+          calls <- sys.calls()
+          for (i in seq_along(calls)) {
+            call_str <- deparse(calls[[i]])
+            if (length(call_str) > 1) {
+              call_str <- paste(call_str[1], "...")
+            }
+            cat(sprintf("  %d: %s\n", i, call_str))
+          }
+          cat("\n")
+        }
         failed_count <<- failed_count + 1
       }
     )
@@ -3049,4 +3392,3 @@ main <- function() {
 if (!interactive()) {
   main()
 }
-warnings()

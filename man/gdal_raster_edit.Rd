@@ -16,7 +16,8 @@ gdal_raster_edit(
   gcp = NULL,
   stats = FALSE,
   approx_stats = FALSE,
-  hist = FALSE
+  hist = FALSE,
+  ...
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ gdal_raster_edit(
 \item{approx_stats}{Compute statistics, using a subset of pixels (Logical)}
 
 \item{hist}{Compute histogram (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

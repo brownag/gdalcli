@@ -41,7 +41,8 @@ gdal_raster_tile(
   url = NULL,
   title = NULL,
   copyright = NULL,
-  mapml_template = NULL
+  mapml_template = NULL,
+  ...
 )
 }
 \arguments{
@@ -118,6 +119,8 @@ gdal_raster_tile(
 \item{copyright}{Copyright for the map (Publication)}
 
 \item{mapml_template}{Filename of a template mapml file where variables will be substituted (Publication)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

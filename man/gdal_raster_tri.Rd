@@ -15,7 +15,8 @@ gdal_raster_tri(
   append = FALSE,
   band = NULL,
   algorithm = NULL,
-  no_edges = FALSE
+  no_edges = FALSE,
+  ...
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ gdal_raster_tri(
 \item{algorithm}{Algorithm to compute TRI. Choices: "Riley", "Wilson" (Default: \code{Riley})}
 
 \item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

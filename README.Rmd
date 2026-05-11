@@ -98,7 +98,7 @@ gdal_job_run(job)
 ```{r}
 pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
-  dst_crs = "EPSG:32632"
+  output_crs = "EPSG:32632"  # Use dst_crs for GDAL <3.13
 ) |>
   gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"), output_format = "COG")
@@ -161,7 +161,7 @@ gdal_job_run(vector_job)
 # Simple processing pipeline: reproject and convert
 processing_pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
-  dst_crs = "EPSG:32632"
+  output_crs = "EPSG:32632"  # Use dst_crs for GDAL <3.13
 ) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"))
 
@@ -221,7 +221,7 @@ Persist pipelines as JSON for sharing and version control. gdalcli supports thre
 # Create a multi-step processing pipeline
 pipeline <- gdal_raster_reproject(
   input = system.file("extdata/sample_clay_content.tif", package = "gdalcli"),
-  dst_crs = "EPSG:32632"
+  output_crs = "EPSG:32632"  # Use dst_crs for GDAL <3.13
 ) |>
   gdal_raster_scale(src_min = 0, src_max = 100, dst_min = 0, dst_max = 255) |>
   gdal_raster_convert(output = tempfile(fileext = ".tif"), output_format = "COG")

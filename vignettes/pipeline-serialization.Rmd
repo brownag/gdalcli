@@ -57,7 +57,7 @@ library(gdalcli)
 # Create a processing pipeline
 pipeline <- gdal_raster_reproject(
   input = "input.tif",
-  dst_crs = "EPSG:32618"
+  output_crs = "EPSG:32618"
 ) |>
   gdal_raster_scale(src_min = 0, src_max = 255)
 
@@ -147,7 +147,7 @@ The pure GDALG format is the minimal, RFC 104-compliant specification. Use this 
 # Convert an existing pipeline to GDALG
 pipeline <- gdal_raster_reproject(
   input = "input.tif",
-  dst_crs = "EPSG:32618"
+  output_crs = "EPSG:32618"
 )
 
 gdalg <- as_gdalg(pipeline)
@@ -255,7 +255,7 @@ The hybrid format enables perfect round-trip preservation:
 # Original pipeline
 original <- gdal_raster_reproject(
   input = "input.tif",
-  dst_crs = "EPSG:32618"
+  output_crs = "EPSG:32618"
 )
 
 # Save to hybrid format

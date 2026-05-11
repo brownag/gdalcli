@@ -31,7 +31,7 @@ cat("   Output directory:", output_dir, "\n\n")
 pipeline <- gdal_raster_reproject(
   input = sample_raster,
   output = file.path(output_dir, "reprojected.tif"),
-  dst_crs = "EPSG:32618"  # UTM Zone 18N
+  output_crs = "EPSG:32618"  # UTM Zone 18N
 ) |>
   gdal_raster_scale(
     src_min = 0,

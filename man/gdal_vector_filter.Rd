@@ -23,7 +23,8 @@ gdal_vector_filter(
   skip_errors = FALSE,
   active_layer = NULL,
   bbox = NULL,
-  where = NULL
+  where = NULL,
+  ...
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ gdal_vector_filter(
 \item{bbox}{Bounding box as xmin,ymin,xmax,ymax. Exactly \code{4} value(s)}
 
 \item{where}{Attribute query in a restricted form of the queries used in the SQL WHERE statement. Format: \verb{<WHERE>|@<filename>}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -17,7 +17,8 @@ gdal_raster_fill_nodata(
   max_distance = NULL,
   smoothing_iterations = NULL,
   mask = NULL,
-  strategy = NULL
+  strategy = NULL,
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ gdal_raster_fill_nodata(
 \item{mask}{Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path)}
 
 \item{strategy}{By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: "invdist", "nearest" (Default: \code{invdist})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

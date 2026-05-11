@@ -20,7 +20,8 @@ gdal_raster_polygonize(
   append = FALSE,
   band = NULL,
   attribute_name = NULL,
-  connect_diagonal_pixels = FALSE
+  connect_diagonal_pixels = FALSE,
+  ...
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ gdal_raster_polygonize(
 \item{attribute_name}{Name of the field with the pixel value (Default: \code{DN})}
 
 \item{connect_diagonal_pixels}{Consider diagonal pixels as connected (Logical) (Default: \code{false})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

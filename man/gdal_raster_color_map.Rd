@@ -16,7 +16,8 @@ gdal_raster_color_map(
   band = NULL,
   color_map = NULL,
   add_alpha = FALSE,
-  color_selection = NULL
+  color_selection = NULL,
+  ...
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ gdal_raster_color_map(
 \item{add_alpha}{Adds an alpha mask band to the destination. (Logical)}
 
 \item{color_selection}{How to compute output colors from input values. Choices: "interpolate", "exact", "nearest" (Default: \code{interpolate})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

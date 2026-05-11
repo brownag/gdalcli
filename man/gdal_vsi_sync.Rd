@@ -9,7 +9,8 @@ gdal_vsi_sync(
   destination,
   recursive = FALSE,
   strategy = NULL,
-  num_threads = NULL
+  num_threads = NULL,
+  ...
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ gdal_vsi_sync(
 \item{strategy}{Synchronization strategy. Choices: "timestamp", "ETag", "overwrite" (Default: \code{timestamp})}
 
 \item{num_threads}{Number of jobs (or ALL_CPUS)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -29,25 +32,26 @@ A \link{gdal_job} object.
 \description{
 \verb{gdal vsi sync} synchronize files and directories located on virtual_file_systems. This is an analog to the UNIX rsync command. In the current implementation, rsync would be more efficient for local file copying, but gdal vsi sync main interest is when the source or target is a remote file system like /vsis3/ or /vsigs/, in which case it can take into account the timestamps of the files (or optionally the ETag/MD5Sum) to avoid unneeded copy operations. This is implemented efficiently for: - local filesystem <--> remote filesystem. - remote filesystem <--> remote filesystem, where the source and target remote filesystems are the same and one of /vsis3/, /vsigs/ or /vsiaz/. Or when the target is /vsiaz/ and the source is /vsis3/, /vsigs/, /vsiadls/ or /vsicurl/ Similarly to rsync behavior, if the source filename ends with a slash, it means that the content of the directory must be copied, but not the directory name. For example, assuming \verb{/home/even/foo} contains a file \code{bar}, \verb{gdal vsi sync -r /home/even/foo/ /mnt/media} will create a \verb{/mnt/media/bar} file. Whereas \verb{gdal vsi sync -r /home/even/foo /mnt/media} will create a \verb{/mnt/media/foo} directory which contains a \code{bar} file. This is implemented by :cppVSISync.
 
-See \url{https://gdal.org/en/release-3.12/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sync.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_sync.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_vsi_sync.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.11/programs/gdal_vsi_sync.html
 job <- gdal_vsi_sync()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vsi_utilities:
-\code{\link[=gdal_vsi_copy]{gdal_vsi_copy()}},
-\code{\link[=gdal_vsi_delete]{gdal_vsi_delete()}},
-\code{\link[=gdal_vsi_list]{gdal_vsi_list()}},
-\code{\link[=gdal_vsi_move]{gdal_vsi_move()}},
-\code{\link[=gdal_vsi_sozip_create]{gdal_vsi_sozip_create()}},
-\code{\link[=gdal_vsi_sozip_list]{gdal_vsi_sozip_list()}},
-\code{\link[=gdal_vsi_sozip_optimize]{gdal_vsi_sozip_optimize()}},
-\code{\link[=gdal_vsi_sozip_validate]{gdal_vsi_sozip_validate()}}
+Other gdal_vsi_utilities: 
+\code{\link{gdal_vsi_copy}()},
+\code{\link{gdal_vsi_delete}()},
+\code{\link{gdal_vsi_list}()},
+\code{\link{gdal_vsi_move}()},
+\code{\link{gdal_vsi_sozip_create}()},
+\code{\link{gdal_vsi_sozip_list}()},
+\code{\link{gdal_vsi_sozip_optimize}()},
+\code{\link{gdal_vsi_sozip_validate}()}
 }
 \concept{gdal_vsi_utilities}
