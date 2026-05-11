@@ -23,7 +23,8 @@ gdal_vector_check_coverage(
   skip_errors = FALSE,
   include_valid = FALSE,
   geometry_field = NULL,
-  maximum_gap_width = NULL
+  maximum_gap_width = NULL,
+  ...
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ gdal_vector_check_coverage(
 \item{geometry_field}{Name of geometry field to check}
 
 \item{maximum_gap_width}{Maximum width of a gap to be flagged. Minimum: \code{0}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -76,7 +79,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_vector_check-coverage.ht
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_check_coverage.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_vector_check-coverage.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_vector_check-coverage.html
 job <- gdal_vector_check_coverage()
 # gdal_job_run(job)
 }

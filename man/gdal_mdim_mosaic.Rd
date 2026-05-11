@@ -12,7 +12,8 @@ gdal_mdim_mosaic(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  array = NULL
+  array = NULL,
+  ...
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ gdal_mdim_mosaic(
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{array}{Name of array(s) to mosaic. (Character vector)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

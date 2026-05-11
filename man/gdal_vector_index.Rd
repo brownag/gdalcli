@@ -27,7 +27,8 @@ gdal_vector_index(
   dst_crs = NULL,
   metadata = NULL,
   accept_different_crs = FALSE,
-  accept_different_schemas = FALSE
+  accept_different_schemas = FALSE,
+  ...
 )
 }
 \arguments{
@@ -76,6 +77,8 @@ gdal_vector_index(
 \item{accept_different_crs}{Whether layers with different CRS are accepted (Logical)}
 
 \item{accept_different_schemas}{Whether layers with different schemas are accepted (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

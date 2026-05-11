@@ -15,7 +15,8 @@ gdal_raster_blend(
   overwrite = FALSE,
   append = FALSE,
   operator = NULL,
-  opacity = NULL
+  opacity = NULL,
+  ...
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ gdal_raster_blend(
 \item{operator}{Composition operator. Choices: "src-over", "hsv-value" (Default: \code{src-over})}
 
 \item{opacity}{Opacity percentage to apply to the overlay dataset (0=fully transparent, 100=full use of overlay opacity) (Integer) (Default: \code{100}). Range: (\code{0} to \code{100})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -52,7 +55,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_raster_blend.html} for d
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_blend.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_raster_blend.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_raster_blend.html
 job <- gdal_raster_blend()
 # gdal_job_run(job)
 }

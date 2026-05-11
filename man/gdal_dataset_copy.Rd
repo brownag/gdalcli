@@ -4,7 +4,7 @@
 \alias{gdal_dataset_copy}
 \title{copy: Copy files of a dataset}
 \usage{
-gdal_dataset_copy(source, destination, overwrite = FALSE, format = NULL)
+gdal_dataset_copy(source, destination, overwrite = FALSE, format = NULL, ...)
 }
 \arguments{
 \item{source}{Source dataset name (required). Can also be a \link{gdal_job} object to extend a pipeline}
@@ -14,6 +14,8 @@ gdal_dataset_copy(source, destination, overwrite = FALSE, format = NULL)
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{format}{Dataset format (Advanced)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -26,7 +28,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_dataset_copy.html} for d
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_dataset_copy.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_dataset_copy.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_dataset_copy.html
 job <- gdal_dataset_copy()
 # gdal_job_run(job)
 }

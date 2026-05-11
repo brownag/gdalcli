@@ -29,7 +29,8 @@ gdal_vector_layer_algebra(
   method_prefix = NULL,
   method_field = NULL,
   no_method_field = FALSE,
-  all_method_field = FALSE
+  all_method_field = FALSE,
+  ...
 )
 }
 \arguments{
@@ -82,6 +83,8 @@ gdal_vector_layer_algebra(
 \item{no_method_field}{Do not add any method field to output layer (Logical) (Advanced)}
 
 \item{all_method_field}{Add all method fields to output layer (Logical) (Advanced)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -94,7 +97,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_vector_layer-algebra.htm
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_layer_algebra.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_vector_layer-algebra.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_vector_layer-algebra.html
 job <- gdal_vector_layer_algebra()
 # gdal_job_run(job)
 }

@@ -19,13 +19,13 @@ A \link{gdal_job} object.
 \description{
 Main "gdal" entry point.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal.
 # See GDAL documentation at:
-https://gdal.org/en/release-3.11/programs/gdal.html
+https://gdal.org/en/release-3.12/programs/gdal.html
 job <- gdal()
 # gdal_job_run(job)
 }

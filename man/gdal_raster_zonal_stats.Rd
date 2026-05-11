@@ -30,7 +30,8 @@ gdal_raster_zonal_stats(
   pixels = NULL,
   include_field = NULL,
   strategy = NULL,
-  chunk_size = NULL
+  chunk_size = NULL,
+  ...
 )
 }
 \arguments{
@@ -85,6 +86,8 @@ gdal_raster_zonal_stats(
 \item{strategy}{For polygon zones, whether to iterate over input features or raster chunks. Choices: "feature", "raster" (Default: \code{feature})}
 
 \item{chunk_size}{Maximum size of raster chunks read into memory (Default: \verb{5\%})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -97,7 +100,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_raster_zonal-stats.html}
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_zonal_stats.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_raster_zonal-stats.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_raster_zonal-stats.html
 job <- gdal_raster_zonal_stats()
 # gdal_job_run(job)
 }

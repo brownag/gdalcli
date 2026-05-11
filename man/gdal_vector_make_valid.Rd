@@ -24,7 +24,8 @@ gdal_vector_make_valid(
   active_layer = NULL,
   active_geometry = NULL,
   method = NULL,
-  keep_lower_dim = FALSE
+  keep_lower_dim = FALSE,
+  ...
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ gdal_vector_make_valid(
 \item{method}{Algorithm to use when repairing invalid geometries.. Choices: "linework", "structure" (Default: \code{linework})}
 
 \item{keep_lower_dim}{Keep components of lower dimension after MakeValid() (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

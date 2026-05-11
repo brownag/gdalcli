@@ -15,7 +15,8 @@ gdal_raster_update(
   warp_option = NULL,
   transform_option = NULL,
   error_threshold = NULL,
-  no_update_overviews = FALSE
+  no_update_overviews = FALSE,
+  ...
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ gdal_raster_update(
 \item{error_threshold}{Error threshold. Minimum: \code{0} (Advanced)}
 
 \item{no_update_overviews}{Do not update existing overviews (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -52,7 +55,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_raster_update.html} for 
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_update.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_raster_update.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_raster_update.html
 job <- gdal_raster_update()
 # gdal_job_run(job)
 }

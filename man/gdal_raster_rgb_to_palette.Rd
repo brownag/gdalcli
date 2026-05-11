@@ -14,7 +14,8 @@ gdal_raster_rgb_to_palette(
   overwrite = FALSE,
   append = FALSE,
   color_count = NULL,
-  color_map = NULL
+  color_map = NULL,
+  ...
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ gdal_raster_rgb_to_palette(
 \item{color_count}{Select the number of colors in the generated color table (Integer) (Default: \code{256}). Range: (\code{2} to \code{256})}
 
 \item{color_map}{Color map filename}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

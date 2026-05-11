@@ -22,7 +22,8 @@ gdal_raster_as_features(
   geometry_type = NULL,
   skip_nodata = FALSE,
   include_xy = FALSE,
-  include_row_col = FALSE
+  include_row_col = FALSE,
+  ...
 )
 }
 \arguments{
@@ -61,6 +62,8 @@ gdal_raster_as_features(
 \item{include_xy}{Include fields for cell center coordinates (Logical)}
 
 \item{include_row_col}{Include columns for row and column (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -73,7 +76,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_raster_as-features.html}
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_as_features.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_raster_as-features.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_raster_as-features.html
 job <- gdal_raster_as_features()
 # gdal_job_run(job)
 }

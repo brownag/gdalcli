@@ -20,7 +20,8 @@ gdal_vector_partition(
   feature_limit = NULL,
   max_file_size = NULL,
   omit_partitioned_field = FALSE,
-  skip_errors = FALSE
+  skip_errors = FALSE,
+  ...
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ gdal_vector_partition(
 \item{omit_partitioned_field}{Whether to omit partitioned fields from target layer definition (Logical)}
 
 \item{skip_errors}{Skip errors when writing features (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

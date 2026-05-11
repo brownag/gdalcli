@@ -17,20 +17,21 @@ A \link{gdal_job} object.
 \description{
 Entry point for multidimensional commands
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_mdim.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_mdim.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_mdim.
 # See GDAL documentation at:
-https://gdal.org/en/release-3.11/programs/gdal_mdim.html
+https://gdal.org/en/release-3.12/programs/gdal_mdim.html
 job <- gdal_mdim()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_mdim_utilities: 
-\code{\link{gdal_mdim_convert}()},
-\code{\link{gdal_mdim_info}()}
+Other gdal_mdim_utilities:
+\code{\link[=gdal_mdim_convert]{gdal_mdim_convert()}},
+\code{\link[=gdal_mdim_info]{gdal_mdim_info()}},
+\code{\link[=gdal_mdim_mosaic]{gdal_mdim_mosaic()}}
 }
 \concept{gdal_mdim_utilities}

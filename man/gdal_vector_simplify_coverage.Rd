@@ -23,7 +23,8 @@ gdal_vector_simplify_coverage(
   upsert = FALSE,
   skip_errors = FALSE,
   active_layer = NULL,
-  preserve_boundary = FALSE
+  preserve_boundary = FALSE,
+  ...
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ gdal_vector_simplify_coverage(
 \item{active_layer}{Set active layer (if not specified, all)}
 
 \item{preserve_boundary}{Whether the exterior boundary should be preserved. (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -13,7 +13,8 @@ gdal_raster_nodata_to_alpha(
   creation_option = NULL,
   overwrite = FALSE,
   append = FALSE,
-  nodata = NULL
+  nodata = NULL,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gdal_raster_nodata_to_alpha(
 \item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
 
 \item{nodata}{Override nodata value of input band(s) (numeric value, 'nan', 'inf', '-inf')}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

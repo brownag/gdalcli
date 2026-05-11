@@ -23,7 +23,8 @@ gdal_vector_check_geometry(
   skip_errors = FALSE,
   include_field = NULL,
   include_valid = FALSE,
-  geometry_field = NULL
+  geometry_field = NULL,
+  ...
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ gdal_vector_check_geometry(
 \item{include_valid}{Include valid inputs in output, with empty geometry (Logical)}
 
 \item{geometry_field}{Name of geometry field to check}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -76,7 +79,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_vector_check-geometry.ht
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_check_geometry.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_vector_check-geometry.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_vector_check-geometry.html
 job <- gdal_vector_check_geometry()
 # gdal_job_run(job)
 }

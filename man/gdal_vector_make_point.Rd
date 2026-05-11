@@ -25,7 +25,8 @@ gdal_vector_make_point(
   skip_errors = FALSE,
   z = NULL,
   m = NULL,
-  dst_crs = NULL
+  dst_crs = NULL,
+  ...
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ gdal_vector_make_point(
 \item{m}{Optional field from which M coordinate should be read}
 
 \item{dst_crs}{Destination CRS}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -82,7 +85,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_vector_make-point.html} 
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_make_point.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_vector_make-point.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_vector_make-point.html
 job <- gdal_vector_make_point()
 # gdal_job_run(job)
 }

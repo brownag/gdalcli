@@ -19,7 +19,8 @@ gdal_raster_proximity(
   distance_units = NULL,
   max_distance = NULL,
   fixed_value = NULL,
-  nodata = NULL
+  nodata = NULL,
+  ...
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ gdal_raster_proximity(
 \item{fixed_value}{Fixed value for the pixels that are beyond the maximum distance (instead of the actual distance) (Default: \code{0}). Minimum: \code{0}}
 
 \item{nodata}{Specify a nodata value to use for pixels that are beyond the maximum distance}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

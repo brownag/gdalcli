@@ -24,7 +24,8 @@ gdal_vector_clean_coverage(
   active_layer = NULL,
   snapping_distance = NULL,
   merge_strategy = NULL,
-  maximum_gap_width = NULL
+  maximum_gap_width = NULL,
+  ...
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ gdal_vector_clean_coverage(
 \item{merge_strategy}{Algorithm to assign overlaps to neighboring polygons. Choices: "longest-border", "max-area", "min-area", "min-index"}
 
 \item{maximum_gap_width}{Maximum width of a gap to be closed. Minimum: \code{0}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -79,7 +82,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_vector_clean-coverage.ht
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_clean_coverage.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_vector_clean-coverage.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_vector_clean-coverage.html
 job <- gdal_vector_clean_coverage()
 # gdal_job_run(job)
 }

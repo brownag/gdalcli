@@ -12,7 +12,8 @@ gdal_raster_overview_refresh(
   levels = NULL,
   bbox = NULL,
   like = NULL,
-  use_source_timestamp = FALSE
+  use_source_timestamp = FALSE,
+  ...
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ gdal_raster_overview_refresh(
 \item{like}{Use extent of dataset(s) (Character vector)}
 
 \item{use_source_timestamp}{Use timestamp of VRT or GTI sources as refresh criterion (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -43,7 +46,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_raster_overview_refresh.
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_overview_refresh.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_raster_overview_refresh.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_raster_overview_refresh.html
 job <- gdal_raster_overview_refresh()
 # gdal_job_run(job)
 }

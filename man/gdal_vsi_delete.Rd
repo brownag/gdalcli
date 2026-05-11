@@ -19,26 +19,26 @@ A \link{gdal_job} object.
 \description{
 \verb{gdal vsi delete} delete files and directories located on virtual_file_systems. This is the equivalent of the UNIX \code{rm} command, and \verb{gdal vsi rm} is an alias for \verb{gdal vsi delete}.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_delete.
 # See GDAL documentation at:
-https://gdal.org/en/release-3.11/programs/gdal_vsi_delete.html
+https://gdal.org/en/release-3.12/programs/gdal_vsi_delete.html
 job <- gdal_vsi_delete()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vsi_utilities: 
-\code{\link{gdal_vsi_copy}()},
-\code{\link{gdal_vsi_list}()},
-\code{\link{gdal_vsi_move}()},
-\code{\link{gdal_vsi_sozip_create}()},
-\code{\link{gdal_vsi_sozip_list}()},
-\code{\link{gdal_vsi_sozip_optimize}()},
-\code{\link{gdal_vsi_sozip_validate}()},
-\code{\link{gdal_vsi_sync}()}
+Other gdal_vsi_utilities:
+\code{\link[=gdal_vsi_copy]{gdal_vsi_copy()}},
+\code{\link[=gdal_vsi_list]{gdal_vsi_list()}},
+\code{\link[=gdal_vsi_move]{gdal_vsi_move()}},
+\code{\link[=gdal_vsi_sozip_create]{gdal_vsi_sozip_create()}},
+\code{\link[=gdal_vsi_sozip_list]{gdal_vsi_sozip_list()}},
+\code{\link[=gdal_vsi_sozip_optimize]{gdal_vsi_sozip_optimize()}},
+\code{\link[=gdal_vsi_sozip_validate]{gdal_vsi_sozip_validate()}},
+\code{\link[=gdal_vsi_sync]{gdal_vsi_sync()}}
 }
 \concept{gdal_vsi_utilities}

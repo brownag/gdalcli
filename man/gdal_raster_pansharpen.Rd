@@ -19,7 +19,8 @@ gdal_raster_pansharpen(
   nodata = NULL,
   bit_depth = NULL,
   spatial_extent_adjustment = NULL,
-  num_threads = NULL
+  num_threads = NULL,
+  ...
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ gdal_raster_pansharpen(
 \item{spatial_extent_adjustment}{Select behavior when bands have not the same extent. Choices: "union", "intersection", "none", "none-without-warning" (Default: \code{union})}
 
 \item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{ALL_CPUS})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
@@ -64,7 +67,8 @@ See \url{https://gdal.org/en/release-3.12/programs/gdal_raster_pansharpen.html} 
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_pansharpen.
-# See GDAL documentation: https://gdal.org/en/release-3.12/programs/gdal_raster_pansharpen.html
+# See GDAL documentation at:
+https://gdal.org/en/release-3.12/programs/gdal_raster_pansharpen.html
 job <- gdal_raster_pansharpen()
 # gdal_job_run(job)
 }

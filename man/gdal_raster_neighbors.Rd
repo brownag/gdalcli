@@ -18,7 +18,8 @@ gdal_raster_neighbors(
   band = NULL,
   method = NULL,
   size = NULL,
-  nodata = NULL
+  nodata = NULL,
+  ...
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ gdal_raster_neighbors(
 \item{size}{Neighborhood size (Integer). Range: (\code{3} to \code{99})}
 
 \item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

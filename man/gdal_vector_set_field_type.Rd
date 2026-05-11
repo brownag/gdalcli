@@ -24,7 +24,8 @@ gdal_vector_set_field_type(
   append = FALSE,
   upsert = FALSE,
   skip_errors = FALSE,
-  active_layer = NULL
+  active_layer = NULL,
+  ...
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ gdal_vector_set_field_type(
 \item{skip_errors}{Skip errors when writing features (Logical)}
 
 \item{active_layer}{Set active layer (if not specified, all)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

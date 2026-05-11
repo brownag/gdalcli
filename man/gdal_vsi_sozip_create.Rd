@@ -14,7 +14,6 @@ gdal_vsi_sozip_create(
   sozip_chunk_size = NULL,
   sozip_min_file_size = NULL,
   content_type = NULL,
-  stdout = FALSE,
   ...
 )
 }
@@ -37,8 +36,6 @@ gdal_vsi_sozip_create(
 
 \item{content_type}{Store the Content-Type of the file being added.}
 
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
-
 \item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
@@ -47,26 +44,26 @@ A \link{gdal_job} object.
 \description{
 Create a Seek-optimized ZIP (SOZIP) file.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_create.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.12/programs/gdal_vsi_sozip_create.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vsi_sozip_create.
 # See GDAL documentation at:
-https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_create.html
+https://gdal.org/en/release-3.12/programs/gdal_vsi_sozip_create.html
 job <- gdal_vsi_sozip_create()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vsi_utilities: 
-\code{\link{gdal_vsi_copy}()},
-\code{\link{gdal_vsi_delete}()},
-\code{\link{gdal_vsi_list}()},
-\code{\link{gdal_vsi_move}()},
-\code{\link{gdal_vsi_sozip_list}()},
-\code{\link{gdal_vsi_sozip_optimize}()},
-\code{\link{gdal_vsi_sozip_validate}()},
-\code{\link{gdal_vsi_sync}()}
+Other gdal_vsi_utilities:
+\code{\link[=gdal_vsi_copy]{gdal_vsi_copy()}},
+\code{\link[=gdal_vsi_delete]{gdal_vsi_delete()}},
+\code{\link[=gdal_vsi_list]{gdal_vsi_list()}},
+\code{\link[=gdal_vsi_move]{gdal_vsi_move()}},
+\code{\link[=gdal_vsi_sozip_list]{gdal_vsi_sozip_list()}},
+\code{\link[=gdal_vsi_sozip_optimize]{gdal_vsi_sozip_optimize()}},
+\code{\link[=gdal_vsi_sozip_validate]{gdal_vsi_sozip_validate()}},
+\code{\link[=gdal_vsi_sync]{gdal_vsi_sync()}}
 }
 \concept{gdal_vsi_utilities}
