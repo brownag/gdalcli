@@ -267,7 +267,7 @@ gdal_capabilities <- function() {
       current = version,
       is_3_11 = gdal_check_version("3.11", op = ">="),
       is_3_12 = gdal_check_version("3.12", op = ">="),
-      is_3_13 = gdal_check_version("3.13", op = ">=")
+      is_3_13 = gdal_check_version("3.12.2", op = ">=")
     ),
     features = list(
       explicit_args = .gdal_has_feature("explicit_args"),

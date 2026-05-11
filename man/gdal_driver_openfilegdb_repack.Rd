@@ -4,10 +4,12 @@
 \alias{gdal_driver_openfilegdb_repack}
 \title{repack: Repack a FileGeoDatabase dataset}
 \usage{
-gdal_driver_openfilegdb_repack(dataset)
+gdal_driver_openfilegdb_repack(dataset, ...)
 }
 \arguments{
 \item{dataset}{FileGeoDatabase dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

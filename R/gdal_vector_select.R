@@ -26,6 +26,7 @@
 #' @param active_layer Set active layer (if not specified, all)
 #' @param exclude Exclude specified fields (Logical)
 #' @param ignore_missing_fields Ignore missing fields (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -53,7 +54,8 @@ gdal_vector_select <- function(input,
   append = FALSE,
   active_layer = NULL,
   exclude = FALSE,
-  ignore_missing_fields = FALSE) {
+  ignore_missing_fields = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -84,7 +86,7 @@ gdal_vector_select <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_select", merged_args, .update_intent_mapping)
 

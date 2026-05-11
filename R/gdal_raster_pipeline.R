@@ -18,6 +18,7 @@
 #' @param pipeline Pipeline string (ignored if jobs is provided)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -37,7 +38,8 @@ gdal_raster_pipeline <- function(jobs = NULL,
   open_option = NULL,
   pipeline = NULL,
   creation_option = NULL,
-  overwrite = FALSE) {
+  overwrite = FALSE,
+  ...) {
 
   if (!is.null(jobs)) {
     if (!is.list(jobs) && !is.vector(jobs)) {
@@ -74,6 +76,7 @@ gdal_raster_pipeline <- function(jobs = NULL,
     overwrite = list(min_count = 0, max_count = 1)
   )
 
+  args <- .merge_alias_parameters(list(...), args)
   new_gdal_job(command_path = c("raster", "pipeline"), arguments = args, arg_mapping = .arg_mapping, update_intent = .update_intent)
 }
 

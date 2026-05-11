@@ -55,17 +55,10 @@ The hybrid format is the default and recommended choice for most gdalcli workflo
 library(gdalcli)
 
 # Create a processing pipeline
-if (gdal_check_version("3.13", op = ">=")) {
-  pipeline <- gdal_raster_reproject(
-    input = "input.tif",
-    output_crs = "EPSG:32618"
-  )
-} else {
-  pipeline <- gdal_raster_reproject(
-    input = "input.tif",
-    dst_crs = "EPSG:32618"
-  )
-} |>
+pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  output_crs = "EPSG:32618"
+) |>
   gdal_raster_scale(src_min = 0, src_max = 255)
 
 # Create a temporary file for demonstration
@@ -152,17 +145,10 @@ The pure GDALG format is the minimal, RFC 104-compliant specification. Use this 
 
 ```{r pure-gdalg-create}
 # Convert an existing pipeline to GDALG
-if (gdal_check_version("3.13", op = ">=")) {
-  pipeline <- gdal_raster_reproject(
-    input = "input.tif",
-    output_crs = "EPSG:32618"
-  )
-} else {
-  pipeline <- gdal_raster_reproject(
-    input = "input.tif",
-    dst_crs = "EPSG:32618"
-  )
-}
+pipeline <- gdal_raster_reproject(
+  input = "input.tif",
+  output_crs = "EPSG:32618"
+)
 
 gdalg <- as_gdalg(pipeline)
 ```
@@ -267,17 +253,10 @@ The hybrid format enables perfect round-trip preservation:
 
 ```{r round-trip, eval=FALSE}
 # Original pipeline
-if (gdal_check_version("3.13", op = ">=")) {
-  original <- gdal_raster_reproject(
-    input = "input.tif",
-    output_crs = "EPSG:32618"
-  )
-} else {
-  original <- gdal_raster_reproject(
-    input = "input.tif",
-    dst_crs = "EPSG:32618"
-  )
-}
+original <- gdal_raster_reproject(
+  input = "input.tif",
+  output_crs = "EPSG:32618"
+)
 
 # Save to hybrid format
 gdal_save_pipeline(original, "workflow.gdalcli.json")

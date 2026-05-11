@@ -12,7 +12,8 @@ gdal_vsi_list(
   depth = NULL,
   absolute_path = FALSE,
   tree = FALSE,
-  stdout = FALSE
+  stdout = FALSE,
+  ...
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ gdal_vsi_list(
 \item{tree}{Use a hierarchical presentation for JSON output (Logical)}
 
 \item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

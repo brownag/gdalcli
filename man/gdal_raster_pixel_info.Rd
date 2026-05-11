@@ -13,7 +13,8 @@ gdal_raster_pixel_info(
   overview = NULL,
   position = NULL,
   position_crs = NULL,
-  resampling = NULL
+  resampling = NULL,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gdal_raster_pixel_info(
 \item{position_crs}{CRS of position (Default: \code{pixel})}
 
 \item{resampling}{Resampling algorithm for interpolation. Choices: "nearest", "bilinear", "cubic", "cubicspline" (Default: \code{nearest})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

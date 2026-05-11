@@ -28,6 +28,7 @@
 #' @param no_mask Suppress mask band information (Logical) (Esoteric)
 #' @param subdataset Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: `1` (Esoteric)
 #' @param stdout Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -55,7 +56,8 @@ gdal_raster_info <- function(input,
   no_nodata = FALSE,
   no_mask = FALSE,
   subdataset = NULL,
-  stdout = FALSE) {
+  stdout = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -88,7 +90,7 @@ gdal_raster_info <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_info", merged_args, .update_intent_mapping)
 

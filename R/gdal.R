@@ -11,6 +11,7 @@
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal.html} for detailed GDAL documentation.
 #' @param x A filename (for 'gdal info'), a pipeline string (for 'gdal pipeline'), a command vector, or a gdal_job object from a piped operation
 #' @param drivers Display driver list as JSON document (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_utilities
 #' @examples
@@ -23,7 +24,8 @@
 #' }
 #' @export
 gdal <- function(x = NULL,
-  drivers = FALSE) {
+  drivers = FALSE,
+  ...) {
 
   if (!is.null(x)) {
     # Check if x is a piped gdal_job
@@ -93,6 +95,7 @@ gdal <- function(x = NULL,
 
   merged_args <- list()
   if (!missing(drivers)) merged_args[["drivers"]] <- drivers
+  merged_args <- .merge_alias_parameters(list(...), merged_args)
   .update_intent <- "SAFE"
 
   .arg_mapping <- list(

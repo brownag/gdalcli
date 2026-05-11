@@ -20,6 +20,7 @@
 #' @param smoothing_iterations The number of 3x3 average filter smoothing iterations to run after the interpolation to dampen artifacts. The default is zero smoothing iterations. (Integer). Format: `SMOOTHING_ITERATIONS` (Default: `0`)
 #' @param mask Use the first band of the specified file as a validity mask (zero is invalid, non-zero is valid). (Dataset path)
 #' @param strategy By default, pixels are interpolated using an inverse distance weighting (invdist). It is also possible to choose a nearest neighbour (nearest) strategy.. Choices: "invdist", "nearest" (Default: `invdist`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -40,7 +41,8 @@ gdal_raster_fill_nodata <- function(input,
   max_distance = NULL,
   smoothing_iterations = NULL,
   mask = NULL,
-  strategy = NULL) {
+  strategy = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -65,7 +67,7 @@ gdal_raster_fill_nodata <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_fill_nodata", merged_args, .update_intent_mapping)
 

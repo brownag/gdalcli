@@ -1717,16 +1717,17 @@ generate_function <- function(endpoint, cache = NULL, verbose = FALSE, gdal_vers
   
   if (is_pipeline) {
     # For pipeline functions, add jobs parameter first
-    args_signature <- paste(c("jobs = NULL", r_args$signature), collapse = ",\n  ")
+    args_signature <- paste(c("jobs = NULL", r_args$signature, "..."), collapse = ",\n  ")
   } else if (is_base_gdal) {
     # For base gdal function, support shortcuts: gdal(filename), gdal(pipeline), gdal(command_vector)
-    args_signature <- paste(c("x = NULL", r_args$signature), collapse = ",\n  ")
+    args_signature <- paste(c("x = NULL", r_args$signature, "..."), collapse = ",\n  ")
   } else {
     # For regular functions, the first positional argument accepts either:
     # - A gdal_job object (piped from previous operation)
     # - The actual data (e.g., input filename, dataset)
     # Detection happens in the function body via inherits(first_arg, "gdal_job")
-    args_signature <- paste(r_args$signature, collapse = ",\n  ")
+    # Include ... to capture parameter aliases and version-specific parameter names
+    args_signature <- paste(c(r_args$signature, "..."), collapse = ",\n  ")
   }
 
   # Attempt to fetch enriched documentation
@@ -2534,6 +2535,9 @@ generate_roxygen_doc <- function(func_name, description, arg_names, enriched_doc
     }
   }
 
+  # Add documentation for ... parameter (parameter aliases and synonyms)
+  doc <- paste0(doc, "#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.\n")
+
   doc <- paste0(doc, sprintf("#' @return A [gdal_job] object.\n"))
 
   # Add family tag if provided
@@ -2891,6 +2895,9 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
         )
       }
     }
+    
+    # Process ... arguments for base_gdal functions
+    body_lines <- c(body_lines, "  merged_args <- .merge_alias_parameters(list(...), merged_args)")
   } else {
     # Handle first argument: can be either a gdal_job (piped) or actual data (fresh call)
     # Check if first argument exists and is a gdal_job
@@ -2922,10 +2929,10 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
       body_lines <- c(body_lines, "  }")
       body_lines <- c(body_lines, "")
       body_lines <- c(body_lines, "")
-      body_lines <- c(body_lines, sprintf("  merged_args <- new_args"))
+      body_lines <- c(body_lines, sprintf("  merged_args <- .merge_alias_parameters(list(...), new_args)"))
     } else {
-      # No arguments at all
-      body_lines <- c(body_lines, "  merged_args <- new_args")
+      # No arguments at all - still process ... for alias parameters
+      body_lines <- c(body_lines, "  merged_args <- .merge_alias_parameters(list(...), new_args)")
     }
   }
 
@@ -2980,6 +2987,8 @@ generate_function_body <- function(func_name, full_path, input_args, input_outpu
   }
   
   if (is_pipeline) {
+    # Process ... arguments for pipeline functions too
+    body_lines <- c(body_lines, "  args <- .merge_alias_parameters(list(...), args)")
     body_lines <- c(
       body_lines,
       sprintf("  new_gdal_job(command_path = %s, arguments = args, arg_mapping = .arg_mapping, update_intent = .update_intent)", path_json)

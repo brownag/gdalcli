@@ -24,7 +24,8 @@ gdal_vector_edit(
   metadata = NULL,
   unset_metadata = NULL,
   layer_metadata = NULL,
-  unset_layer_metadata = NULL
+  unset_layer_metadata = NULL,
+  ...
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ gdal_vector_edit(
 \item{layer_metadata}{Add/update layer metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
 \item{unset_layer_metadata}{Remove layer metadata item (Character vector). Format: \code{KEY}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -10,6 +10,7 @@
 #' 
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_list.html} for detailed GDAL documentation.
 #' @param input Input ZIP filename (required). Can also be a [gdal_job] object to extend a pipeline
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -21,7 +22,8 @@
 #' # gdal_job_run(job)
 #' }
 #' @export
-gdal_vsi_sozip_list <- function(input) {
+gdal_vsi_sozip_list <- function(input,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
 
@@ -36,7 +38,7 @@ gdal_vsi_sozip_list <- function(input) {
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_sozip_list", merged_args, .update_intent_mapping)
 

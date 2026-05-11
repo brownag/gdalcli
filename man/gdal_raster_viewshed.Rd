@@ -23,7 +23,8 @@ gdal_raster_viewshed(
   out_of_range_value = NULL,
   dst_nodata = NULL,
   observer_spacing = NULL,
-  num_threads = NULL
+  num_threads = NULL,
+  ...
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ gdal_raster_viewshed(
 \item{observer_spacing}{Cell Spacing between observers (Integer) (Default: \code{10}). Minimum: \code{1}}
 
 \item{num_threads}{Number of jobs (or ALL_CPUS) (Default: \code{3})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

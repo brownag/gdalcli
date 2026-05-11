@@ -4,12 +4,14 @@
 \alias{gdal_vsi_sozip_validate}
 \title{validate: Validate a ZIP file, possibly using SOZIP optimization}
 \usage{
-gdal_vsi_sozip_validate(input, stdout = FALSE)
+gdal_vsi_sozip_validate(input, stdout = FALSE, ...)
 }
 \arguments{
 \item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

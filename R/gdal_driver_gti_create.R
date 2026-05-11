@@ -36,6 +36,7 @@
 #' @param color_interpretation Color interpretation(s) of the bands of the virtual mosaic (Character vector). Choices: "red", "green", "blue", "alpha", "gray", ...
 #' @param mask Defines that the virtual mosaic has a mask band (Logical)
 #' @param fetch_metadata Fetch a metadata item from source rasters and write it as a field in the index. (Character vector). Format: `<gdal-metadata-name>,<field-name>,<field-type>`
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_driver_utilities
 #' @examples
@@ -72,7 +73,8 @@ gdal_driver_gti_create <- function(input,
   nodata = NULL,
   color_interpretation = NULL,
   mask = FALSE,
-  fetch_metadata = NULL) {
+  fetch_metadata = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output)) new_args[["output"]] <- output
@@ -113,7 +115,7 @@ gdal_driver_gti_create <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_driver_gti_create", merged_args, .update_intent_mapping)
 

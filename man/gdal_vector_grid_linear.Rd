@@ -24,7 +24,8 @@ gdal_vector_grid_linear(
   zoffset = NULL,
   zmultiply = NULL,
   radius = NULL,
-  nodata = NULL
+  nodata = NULL,
+  ...
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ gdal_vector_grid_linear(
 \item{radius}{Radius of the search circle (Default: \code{Inf})}
 
 \item{nodata}{Target nodata value (Default: \code{0})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -20,7 +20,8 @@ gdal_vector_geom_segmentize(
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  active_geometry = NULL
+  active_geometry = NULL,
+  ...
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ gdal_vector_geom_segmentize(
 \item{active_layer}{Set active layer (if not specified, all)}
 
 \item{active_geometry}{Geometry field name to which to restrict the processing (if not specified, all)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

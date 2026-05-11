@@ -242,30 +242,73 @@ auth <- gdal_auth_gcs()  # GOOGLE_APPLICATION_CREDENTIALS
 job |> gdal_with_env(auth) |> gdal_run()
 
 ## GDAL Version Compatibility
-GDAL 3.13.0+ introduced parameter naming standardization. Known changes include:
-- `dst_crs` → `output_crs` (reproject and related CRS output functions)
-- `dataset` → `input` (functions that previously used `dataset` parameter)
 
-GDAL's API continues to evolve; consult GDAL release notes for version-specific parameter changes.
+### Cross-Version Support
+gdalcli 0.7.1+ provides **automatic, transparent compatibility** across GDAL versions 3.11.4 through 3.13+.
 
-Use `gdal_check_version()` for version-aware code:
+**RFC 104 Parameter Standardization** introduced parameter naming changes starting in GDAL 3.12.0:
+- CRS parameters: `dst_crs` → `output_crs`, `src_crs` → `input_crs`
+- Dataset parameters: `dataset` → `input`
+- Override parameters: `a_srs` → `override_crs` (for CRS override without reprojection)
+- Legacy aliases: `s_srs` (old gdal_translate), `t_srs` (old gdalwarp) automatically converted
+- Backward compatibility: Old names accepted throughout the CLI
+
+### How It Works
+All 83 auto-generated functions use **version-aware parameter alias routing** internally:
+- Code detects the installed GDAL version at runtime
+- Parameters are automatically mapped to the correct names for that version (GDAL 3.12+: use new names; older: use old names)
+- Users can pass either old (`dst_crs`) or new (`output_crs`) parameter names
+- System automatically selects correct name for installed GDAL version
+
+**Complete parameter alias support** (RFC 104):
+- `dst_crs`, `t_srs` → `output_crs` (standardized in GDAL 3.12.0+)
+- `src_crs`, `s_srs` → `input_crs` (standardized in GDAL 3.12.0+)
+- `a_srs` → `override_crs` (standardized in GDAL 3.12.0+)
+- `dataset` → `input` (standardized in GDAL 3.12.0+)
+
+### Using Version-Specific Parameters
+For code that needs to explicitly handle GDAL version differences, use `gdal_check_version()`:
 
 ```r
-# Example: Reproject function (dst_crs → output_crs)
-if (gdal_check_version("3.13", op = ">=")) {
+# Example: Using either old or new parameter names (both work)
+# On GDAL 3.12+: uses output_crs, on older: uses dst_crs
+job <- gdal_raster_reproject(input = "in.tif", output_crs = "EPSG:4326")
+job <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:4326")  # Also works!
+
+# Example: Legacy parameter names (e.g., from old gdal_translate/gdalwarp scripts)
+job <- gdal_raster_reproject(input = "in.tif", t_srs = "EPSG:4326")  # Old gdalwarp name
+job <- gdal_vector_reproject(input = "in.gpkg", s_srs = "EPSG:4326")  # Old source CRS name
+
+# Example: Explicit version checks for complex logic
+if (gdal_check_version("3.12", op = ">=")) {
   job <- gdal_raster_reproject(input = "in.tif", output_crs = "EPSG:4326")
 } else {
   job <- gdal_raster_reproject(input = "in.tif", dst_crs = "EPSG:4326")
 }
+```
 
-# Example: Overview function (dataset → input)
-if (gdal_check_version("3.13", op = ">=")) {
-  job <- gdal_raster_overview_add(input = "in.tif", levels = c(2, 4, 8))
-} else {
-  job <- gdal_raster_overview_add(dataset = "in.tif", levels = c(2, 4, 8))
-}
+### Parameter Synonyms
+
+Beyond version-aware aliases, gdalcli supports **parameter synonyms** — alternative names for the same parameter that are always valid. This provides flexibility when migrating code or using familiar parameter names:
+
+```r
+# Example: output_format synonyms (all equivalent)
+job <- gdal_raster_convert(input = "in.tif", output = "out.tif", output_format = "COG")
+job <- gdal_raster_convert(input = "in.tif", output = "out.tif", format = "COG")  # Shorter alias
+job <- gdal_raster_convert(input = "in.tif", output = "out.tif", of = "COG")  # Common abbreviation
+
+# Example: input_layer synonyms (all equivalent)
+job <- gdal_vector_convert(input = "in.gpkg", output = "out.gpkg", input_layer = "my_layer")
+job <- gdal_vector_convert(input = "in.gpkg", output = "out.gpkg", layer = "my_layer")  # Shorter
+job <- gdal_vector_convert(input = "in.gpkg", output = "out.gpkg", input-layer = "my_layer")  # Dash variant
 ```
-```
+
+All synonyms are automatically normalized to their canonical parameter names, ensuring compatibility across different coding styles and legacy scripts.
+
+### Recommended Approach
+**In most cases, just use the modern parameter names** (`output_crs`, `input_crs`, `input`, `override_crs`) — gdalcli's version routing handles the rest automatically regardless of installed GDAL version. The system works seamlessly whether users are on GDAL 3.11.4, 3.12.0, 3.13.0, or newer.
+
+For parameter synonyms, use whichever name you find most readable or natural — all alternatives work identically. The system normalizes them behind the scenes.
 
 ### Programmatic Command Invocation
 

@@ -23,7 +23,8 @@ gdal_raster_info(
   no_nodata = FALSE,
   no_mask = FALSE,
   subdataset = NULL,
-  stdout = FALSE
+  stdout = FALSE,
+  ...
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ gdal_raster_info(
 \item{subdataset}{Use subdataset of specified index (starting at 1), instead of the source dataset itself (Integer). Minimum: \code{1} (Esoteric)}
 
 \item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

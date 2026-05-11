@@ -24,6 +24,7 @@
 #' @param dst_max Maximum value of the destination range
 #' @param exponent Exponent to apply non-linear scaling with a power function
 #' @param no_clip Do not clip input values to \[srcmin, srcmax\] (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -48,7 +49,8 @@ gdal_raster_scale <- function(input,
   dst_min = NULL,
   dst_max = NULL,
   exponent = NULL,
-  no_clip = FALSE) {
+  no_clip = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -77,7 +79,7 @@ gdal_raster_scale <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_scale", merged_args, .update_intent_mapping)
 

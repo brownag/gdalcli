@@ -28,7 +28,8 @@ gdal_vector_geom_set_type(
   linear = FALSE,
   curve = FALSE,
   dim = NULL,
-  skip = FALSE
+  skip = FALSE,
+  ...
 )
 }
 \arguments{
@@ -79,6 +80,8 @@ gdal_vector_geom_set_type(
 \item{dim}{Force geometries to the specified dimension. Choices: "XY", "XYZ", "XYM", "XYZM"}
 
 \item{skip}{Skip feature when change of feature geometry type failed (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

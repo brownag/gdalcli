@@ -4,7 +4,7 @@
 \alias{gdal_raster_overview_delete}
 \title{delete: Deleting overviews}
 \usage{
-gdal_raster_overview_delete(dataset, open_option = NULL, external = FALSE)
+gdal_raster_overview_delete(dataset, open_option = NULL, external = FALSE, ...)
 }
 \arguments{
 \item{dataset}{Dataset (to be updated in-place, unless --read-only) (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
@@ -12,6 +12,8 @@ gdal_raster_overview_delete(dataset, open_option = NULL, external = FALSE)
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{external}{Delete external overviews (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

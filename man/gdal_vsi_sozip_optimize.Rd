@@ -11,7 +11,8 @@ gdal_vsi_sozip_optimize(
   enable_sozip = NULL,
   sozip_chunk_size = NULL,
   sozip_min_file_size = NULL,
-  stdout = FALSE
+  stdout = FALSE,
+  ...
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ gdal_vsi_sozip_optimize(
 \item{sozip_min_file_size}{Minimum file size to decide if a file should be seek-optimized. Format: \verb{value in bytes or with K/M/G suffix} (Default: \verb{1 MB})}
 
 \item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -17,6 +17,7 @@
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>` (Advanced)
 #' @param creation_option Creation option (Character vector). Format: `<KEY>=<VALUE>`
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -34,7 +35,8 @@ gdal_raster_unscale <- function(input,
   output_data_type = NULL,
   open_option = NULL,
   creation_option = NULL,
-  overwrite = FALSE) {
+  overwrite = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -56,7 +58,7 @@ gdal_raster_unscale <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_unscale", merged_args, .update_intent_mapping)
 

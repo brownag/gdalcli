@@ -13,7 +13,8 @@ gdal_raster_tpi(
   creation_option = NULL,
   overwrite = FALSE,
   band = NULL,
-  no_edges = FALSE
+  no_edges = FALSE,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gdal_raster_tpi(
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
 \item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

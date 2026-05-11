@@ -13,7 +13,8 @@ gdal_mdim_info(
   limit = NULL,
   array_option = NULL,
   stats = FALSE,
-  stdout = FALSE
+  stdout = FALSE,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gdal_mdim_info(
 \item{stats}{Read and display image statistics. (Logical)}
 
 \item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

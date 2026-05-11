@@ -25,7 +25,8 @@ gdal_vector_geom_buffer(
   join_style = NULL,
   mitre_limit = NULL,
   quadrant_segments = NULL,
-  side = NULL
+  side = NULL,
+  ...
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ gdal_vector_geom_buffer(
 \item{quadrant_segments}{Number of line segments used to approximate a quarter circle. (Integer) (Default: \code{8}). Minimum: \code{1}}
 
 \item{side}{Sets whether the computed buffer should be single-sided or not.. Choices: "both", "left", "right" (Default: \code{both})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

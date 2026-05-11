@@ -31,7 +31,8 @@ gdal_driver_gti_create(
   nodata = NULL,
   color_interpretation = NULL,
   mask = FALSE,
-  fetch_metadata = NULL
+  fetch_metadata = NULL,
+  ...
 )
 }
 \arguments{
@@ -88,6 +89,8 @@ gdal_driver_gti_create(
 \item{mask}{Defines that the virtual mosaic has a mask band (Logical)}
 
 \item{fetch_metadata}{Fetch a metadata item from source rasters and write it as a field in the index. (Character vector). Format: \verb{<gdal-metadata-name>,<field-name>,<field-type>}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

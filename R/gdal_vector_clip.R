@@ -31,6 +31,7 @@
 #' @param like_sql SELECT statement to run on the 'like' dataset. Format: `SELECT-STATEMENT`
 #' @param like_layer Name of the layer of the 'like' dataset. Format: `LAYER-NAME`
 #' @param like_where WHERE SQL clause to run on the 'like' dataset. Format: `WHERE-EXPRESSION`
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -62,7 +63,8 @@ gdal_vector_clip <- function(input,
   like = NULL,
   like_sql = NULL,
   like_layer = NULL,
-  like_where = NULL) {
+  like_where = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -98,7 +100,7 @@ gdal_vector_clip <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_clip", merged_args, .update_intent_mapping)
 

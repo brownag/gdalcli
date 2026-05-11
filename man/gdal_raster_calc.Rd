@@ -13,7 +13,8 @@ gdal_raster_calc(
   creation_option = NULL,
   overwrite = FALSE,
   no_check_srs = FALSE,
-  no_check_extent = FALSE
+  no_check_extent = FALSE,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gdal_raster_calc(
 \item{no_check_srs}{Do not check consistency of input spatial reference systems (Logical)}
 
 \item{no_check_extent}{Do not check consistency of input extents (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

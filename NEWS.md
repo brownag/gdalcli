@@ -1,3 +1,7 @@
+# gdalcli 0.7.1 (2026-05-10)
+
+- All generated functions gain an ellipsis and support parameter synonyms (e.g., `format`/`of` for `output_format`)
+
 # gdalcli 0.7.0 (2026-05-09)
 
 - Added update intent feature for pipeline classification. Now code generation auto-detects commands that open files for update (e.g., `gdal_raster_edit`, `gdal_vector_edit`) via `GDAL_INTENT_MAPPINGS.json` with customizable overrides

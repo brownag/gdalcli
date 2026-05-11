@@ -28,6 +28,7 @@
 #' @param dst_nodata The value to be set for the cells in the output raster that have no data. (Integer). Range: (`0` to `255`)
 #' @param observer_spacing Cell Spacing between observers (Integer) (Default: `10`). Minimum: `1`
 #' @param num_threads Number of jobs (or ALL_CPUS) (Default: `3`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -56,7 +57,8 @@ gdal_raster_viewshed <- function(input,
   out_of_range_value = NULL,
   dst_nodata = NULL,
   observer_spacing = NULL,
-  num_threads = NULL) {
+  num_threads = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -89,7 +91,7 @@ gdal_raster_viewshed <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_viewshed", merged_args, .update_intent_mapping)
 

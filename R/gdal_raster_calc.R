@@ -18,6 +18,7 @@
 #' @param overwrite Whether overwriting existing output is allowed (Logical) (Default: `false`)
 #' @param no_check_srs Do not check consistency of input spatial reference systems (Logical)
 #' @param no_check_extent Do not check consistency of input extents (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -35,7 +36,8 @@ gdal_raster_calc <- function(input,
   creation_option = NULL,
   overwrite = FALSE,
   no_check_srs = FALSE,
-  no_check_extent = FALSE) {
+  no_check_extent = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output)) new_args[["output"]] <- output
@@ -58,7 +60,7 @@ gdal_raster_calc <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_calc", merged_args, .update_intent_mapping)
 

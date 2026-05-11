@@ -24,7 +24,8 @@ gdal_raster_index(
   location_name = NULL,
   absolute_path = FALSE,
   dst_crs = NULL,
-  metadata = NULL
+  metadata = NULL,
+  ...
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ gdal_raster_index(
 \item{dst_crs}{Destination CRS}
 
 \item{metadata}{Add dataset metadata item (Character vector). Format: \verb{<KEY>=<VALUE>}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

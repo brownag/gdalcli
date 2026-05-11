@@ -4,12 +4,14 @@
 \alias{gdal_vsi_delete}
 \title{delete: Delete files located on GDAL Virtual System Interface (VSI)}
 \usage{
-gdal_vsi_delete(filename, recursive = FALSE)
+gdal_vsi_delete(filename, recursive = FALSE, ...)
 }
 \arguments{
 \item{filename}{File or directory name to delete (required). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{recursive}{Delete directories recursively (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -32,6 +32,7 @@
 #' @param radius2 Second axis of the search ellipse
 #' @param angle Angle of search ellipse rotation in degrees (counter clockwise) (Default: `0`)
 #' @param nodata Target nodata value (Default: `0`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -65,7 +66,8 @@ gdal_vector_grid_nearest <- function(input,
   radius1 = NULL,
   radius2 = NULL,
   angle = NULL,
-  nodata = NULL) {
+  nodata = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -102,7 +104,7 @@ gdal_vector_grid_nearest <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_grid_nearest", merged_args, .update_intent_mapping)
 

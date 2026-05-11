@@ -30,7 +30,8 @@ gdal_vector_grid_count(
   min_points = NULL,
   min_points_per_quadrant = NULL,
   max_points_per_quadrant = NULL,
-  nodata = NULL
+  nodata = NULL,
+  ...
 )
 }
 \arguments{
@@ -85,6 +86,8 @@ gdal_vector_grid_count(
 \item{max_points_per_quadrant}{Maximum number of data points to use per quadrant (Integer) (Default: \code{2147483647})}
 
 \item{nodata}{Target nodata value (Default: \code{0})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

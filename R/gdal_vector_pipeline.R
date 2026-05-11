@@ -24,6 +24,7 @@
 #' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
 #' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
 #' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -48,7 +49,8 @@ gdal_vector_pipeline <- function(jobs = NULL,
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
-  append = FALSE) {
+  append = FALSE,
+  ...) {
 
   if (!is.null(jobs)) {
     if (!is.list(jobs) && !is.vector(jobs)) {
@@ -97,6 +99,7 @@ gdal_vector_pipeline <- function(jobs = NULL,
     append = list(min_count = 0, max_count = 1)
   )
 
+  args <- .merge_alias_parameters(list(...), args)
   new_gdal_job(command_path = c("vector", "pipeline"), arguments = args, arg_mapping = .arg_mapping, update_intent = .update_intent)
 }
 

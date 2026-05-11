@@ -27,7 +27,8 @@ gdal_vector_grid_nearest(
   radius1 = NULL,
   radius2 = NULL,
   angle = NULL,
-  nodata = NULL
+  nodata = NULL,
+  ...
 )
 }
 \arguments{
@@ -76,6 +77,8 @@ gdal_vector_grid_nearest(
 \item{angle}{Angle of search ellipse rotation in degrees (counter clockwise) (Default: \code{0})}
 
 \item{nodata}{Target nodata value (Default: \code{0})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
