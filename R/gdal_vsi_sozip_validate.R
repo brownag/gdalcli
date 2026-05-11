@@ -11,6 +11,7 @@
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_sozip_validate.html} for detailed GDAL documentation.
 #' @param input Input ZIP filename (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -23,7 +24,8 @@
 #' }
 #' @export
 gdal_vsi_sozip_validate <- function(input,
-  stdout = FALSE) {
+  stdout = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(stdout)) new_args[["stdout"]] <- stdout
@@ -39,7 +41,7 @@ gdal_vsi_sozip_validate <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_sozip_validate", merged_args, .update_intent_mapping)
 

@@ -4,10 +4,12 @@
 \alias{gdal_raster}
 \title{raster: Raster commands}
 \usage{
-gdal_raster(drivers = FALSE)
+gdal_raster(drivers = FALSE, ...)
 }
 \arguments{
 \item{drivers}{Display raster driver list as JSON document (Logical). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

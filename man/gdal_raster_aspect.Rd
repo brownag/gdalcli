@@ -16,7 +16,8 @@ gdal_raster_aspect(
   convention = NULL,
   gradient_alg = NULL,
   zero_for_flat = FALSE,
-  no_edges = FALSE
+  no_edges = FALSE,
+  ...
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ gdal_raster_aspect(
 \item{zero_for_flat}{Whether to output zero for flat areas (Logical)}
 
 \item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

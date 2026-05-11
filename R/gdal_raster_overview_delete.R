@@ -12,6 +12,7 @@
 #' @param dataset Dataset (to be updated in-place, unless --read-only) (Dataset path) (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param open_option Open options (Character vector). Format: `<KEY>=<VALUE>` (Advanced)
 #' @param external Delete external overviews (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -23,7 +24,8 @@
 #' @export
 gdal_raster_overview_delete <- function(dataset,
   open_option = NULL,
-  external = FALSE) {
+  external = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -40,7 +42,7 @@ gdal_raster_overview_delete <- function(dataset,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- list(dataset = list(by_default = TRUE, unless_any_of = "external"))
   .update_intent <- infer_update_intent("gdal_raster_overview_delete", merged_args, .update_intent_mapping)
 

@@ -22,6 +22,7 @@
 #' @param update Whether to open existing dataset in update mode (Logical) (Default: `false`)
 #' @param overwrite_layer Whether overwriting existing layer is allowed (Logical) (Default: `false`)
 #' @param append Whether appending to existing layer is allowed (Logical) (Default: `false`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -43,7 +44,8 @@ gdal_vector_convert <- function(input,
   overwrite = FALSE,
   update = FALSE,
   overwrite_layer = FALSE,
-  append = FALSE) {
+  append = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -70,7 +72,7 @@ gdal_vector_convert <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_convert", merged_args, .update_intent_mapping)
 

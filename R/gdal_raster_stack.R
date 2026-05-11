@@ -21,6 +21,7 @@
 #' @param src_nodata Set nodata values for input bands.. `1` to `2147483647` value(s)
 #' @param dst_nodata Set nodata values at the destination band level.. `1` to `2147483647` value(s)
 #' @param hide_nodata Makes the destination band not report the NoData. (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -41,7 +42,8 @@ gdal_raster_stack <- function(input = NULL,
   bbox = NULL,
   src_nodata = NULL,
   dst_nodata = NULL,
-  hide_nodata = FALSE) {
+  hide_nodata = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output)) new_args[["output"]] <- output
@@ -67,7 +69,7 @@ gdal_raster_stack <- function(input = NULL,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_stack", merged_args, .update_intent_mapping)
 

@@ -18,6 +18,7 @@
 #' @param array_option Option passed to GDALGroup::GetMDArrayNames() to filter reported arrays. (Character vector). Format: `<KEY>=<VALUE>`
 #' @param stats Read and display image statistics. (Logical)
 #' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_mdim_utilities
 #' @examples
@@ -35,7 +36,8 @@ gdal_mdim_info <- function(input,
   limit = NULL,
   array_option = NULL,
   stats = FALSE,
-  stdout = FALSE) {
+  stdout = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(open_option)) new_args[["open_option"]] <- open_option
@@ -58,7 +60,7 @@ gdal_mdim_info <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_mdim_info", merged_args, .update_intent_mapping)
 

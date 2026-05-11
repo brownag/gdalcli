@@ -18,7 +18,8 @@ gdal_raster_clean_collar(
   pixel_distance = NULL,
   add_alpha = FALSE,
   add_mask = FALSE,
-  algorithm = NULL
+  algorithm = NULL,
+  ...
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ gdal_raster_clean_collar(
 \item{add_mask}{Adds a mask band to the output dataset. (Logical)}
 
 \item{algorithm}{Algorithm to apply. Choices: "floodfill", "twopasses" (Default: \code{floodfill})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

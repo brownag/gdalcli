@@ -13,6 +13,7 @@
 #' @param destination Destination file or directory name (required)
 #' @param recursive Copy subdirectories recursively (Logical)
 #' @param skip_errors Skip errors (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -27,7 +28,8 @@
 gdal_vsi_copy <- function(source,
   destination,
   recursive = FALSE,
-  skip_errors = FALSE) {
+  skip_errors = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(source)) new_args[["source"]] <- source
   if (!missing(destination)) new_args[["destination"]] <- destination
@@ -45,7 +47,7 @@ gdal_vsi_copy <- function(source,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_copy", merged_args, .update_intent_mapping)
 

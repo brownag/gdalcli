@@ -25,6 +25,7 @@
 #' @param active_layer Set active layer (if not specified, all)
 #' @param bbox Bounding box as xmin,ymin,xmax,ymax. Exactly `4` value(s)
 #' @param where Attribute query in a restricted form of the queries used in the SQL WHERE statement. Format: `<WHERE>|@<filename>`
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -50,7 +51,8 @@ gdal_vector_filter <- function(input,
   append = FALSE,
   active_layer = NULL,
   bbox = NULL,
-  where = NULL) {
+  where = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -80,7 +82,7 @@ gdal_vector_filter <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_filter", merged_args, .update_intent_mapping)
 

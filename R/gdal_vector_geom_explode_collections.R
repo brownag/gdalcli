@@ -26,6 +26,7 @@
 #' @param active_geometry Geometry field name to which to restrict the processing (if not specified, all)
 #' @param geometry_type Geometry type
 #' @param skip_on_type_mismatch Skip feature when change of feature geometry type failed (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -53,7 +54,8 @@ gdal_vector_geom_explode_collections <- function(input,
   active_layer = NULL,
   active_geometry = NULL,
   geometry_type = NULL,
-  skip_on_type_mismatch = FALSE) {
+  skip_on_type_mismatch = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -84,7 +86,7 @@ gdal_vector_geom_explode_collections <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_geom_explode_collections", merged_args, .update_intent_mapping)
 

@@ -15,7 +15,8 @@ gdal_vector_info(
   where = NULL,
   dialect = NULL,
   update = FALSE,
-  stdout = FALSE
+  stdout = FALSE,
+  ...
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ gdal_vector_info(
 \item{update}{Open the dataset in update mode (Logical)}
 
 \item{stdout}{Directly output on stdout (format=text mode only). If enabled, output-string will be empty (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

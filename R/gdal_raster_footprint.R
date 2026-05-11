@@ -34,6 +34,7 @@
 #' @param location_field Name of the field where the path of the input dataset will be stored. (Default: `location`)
 #' @param no_location_field Disable creating a field with the path of the input dataset (Logical)
 #' @param absolute_path Whether the path to the input dataset should be stored as an absolute path (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -67,7 +68,8 @@ gdal_raster_footprint <- function(input,
   max_points = NULL,
   location_field = NULL,
   no_location_field = FALSE,
-  absolute_path = FALSE) {
+  absolute_path = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -106,7 +108,7 @@ gdal_raster_footprint <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_footprint", merged_args, .update_intent_mapping)
 

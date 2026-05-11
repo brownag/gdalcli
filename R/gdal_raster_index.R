@@ -29,6 +29,7 @@
 #' @param absolute_path Whether the path to the input datasets should be stored as an absolute path (Logical)
 #' @param dst_crs Destination CRS
 #' @param metadata Add dataset metadata item (Character vector). Format: `<KEY>=<VALUE>`
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -57,7 +58,8 @@ gdal_raster_index <- function(input,
   location_name = NULL,
   absolute_path = FALSE,
   dst_crs = NULL,
-  metadata = NULL) {
+  metadata = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(source_crs_field_name)) new_args[["source_crs_field_name"]] <- source_crs_field_name
@@ -91,7 +93,7 @@ gdal_raster_index <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_index", merged_args, .update_intent_mapping)
 

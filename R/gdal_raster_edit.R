@@ -19,6 +19,7 @@
 #' @param stats Compute statistics, using all pixels (Logical)
 #' @param approx_stats Compute statistics, using a subset of pixels (Logical)
 #' @param hist Compute histogram (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -37,7 +38,8 @@ gdal_raster_edit <- function(dataset,
   unset_metadata = NULL,
   stats = FALSE,
   approx_stats = FALSE,
-  hist = FALSE) {
+  hist = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(dataset)) new_args[["dataset"]] <- dataset
   if (!missing(auxiliary)) new_args[["auxiliary"]] <- auxiliary
@@ -61,7 +63,7 @@ gdal_raster_edit <- function(dataset,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- list(dataset = list(by_default = TRUE, unless_any_of = "auxiliary"))
   .update_intent <- infer_update_intent("gdal_raster_edit", merged_args, .update_intent_mapping)
 

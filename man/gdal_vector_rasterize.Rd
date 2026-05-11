@@ -33,7 +33,8 @@ gdal_vector_rasterize(
   size = NULL,
   optimization = NULL,
   update = FALSE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  ...
 )
 }
 \arguments{
@@ -94,6 +95,8 @@ gdal_vector_rasterize(
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

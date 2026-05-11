@@ -27,6 +27,7 @@
 #' @param metadata Add metadata item (Character vector). Format: `<KEY>=<VALUE>`
 #' @param copy_metadata Copy metadata from input dataset (Logical)
 #' @param copy_overviews Create same overview levels as input dataset (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_raster_utilities
 #' @examples
@@ -54,7 +55,8 @@ gdal_raster_create <- function(input = NULL,
   bbox = NULL,
   metadata = NULL,
   copy_metadata = FALSE,
-  copy_overviews = FALSE) {
+  copy_overviews = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -86,7 +88,7 @@ gdal_raster_create <- function(input = NULL,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_raster_create", merged_args, .update_intent_mapping)
 

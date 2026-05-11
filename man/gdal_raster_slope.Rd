@@ -17,7 +17,8 @@ gdal_raster_slope(
   xscale = NULL,
   yscale = NULL,
   gradient_alg = NULL,
-  no_edges = FALSE
+  no_edges = FALSE,
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ gdal_raster_slope(
 \item{gradient_alg}{Algorithm used to compute terrain gradient. Choices: "Horn", "ZevenbergenThorne" (Default: \code{Horn})}
 
 \item{no_edges}{Do not try to interpolate values at dataset edges or close to nodata values (Logical)}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

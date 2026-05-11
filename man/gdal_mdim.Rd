@@ -4,10 +4,12 @@
 \alias{gdal_mdim}
 \title{mdim: Multidimensional commands}
 \usage{
-gdal_mdim(drivers = FALSE)
+gdal_mdim(drivers = FALSE, ...)
 }
 \arguments{
 \item{drivers}{Display multidimensional driver list as JSON document (Logical). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

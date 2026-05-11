@@ -11,6 +11,7 @@
 #' See \url{https://gdal.org/en/release-3.11/programs/gdal_vsi_delete.html} for detailed GDAL documentation.
 #' @param filename File or directory name to delete (required). Can also be a [gdal_job] object to extend a pipeline
 #' @param recursive Delete directories recursively (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -23,7 +24,8 @@
 #' }
 #' @export
 gdal_vsi_delete <- function(filename,
-  recursive = FALSE) {
+  recursive = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(filename)) new_args[["filename"]] <- filename
   if (!missing(recursive)) new_args[["recursive"]] <- recursive
@@ -39,7 +41,7 @@ gdal_vsi_delete <- function(filename,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_delete", merged_args, .update_intent_mapping)
 

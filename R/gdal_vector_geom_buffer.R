@@ -30,6 +30,7 @@
 #' @param mitre_limit Mitre ratio limit (only affects mitered join style). (Default: `5`). Minimum: `0`
 #' @param quadrant_segments Number of line segments used to approximate a quarter circle. (Integer) (Default: `8`). Minimum: `1`
 #' @param side Sets whether the computed buffer should be single-sided or not.. Choices: "both", "left", "right" (Default: `both`)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vector_utilities
 #' @examples
@@ -61,7 +62,8 @@ gdal_vector_geom_buffer <- function(input,
   join_style = NULL,
   mitre_limit = NULL,
   quadrant_segments = NULL,
-  side = NULL) {
+  side = NULL,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(input_format)) new_args[["input_format"]] <- input_format
@@ -96,7 +98,7 @@ gdal_vector_geom_buffer <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vector_geom_buffer", merged_args, .update_intent_mapping)
 

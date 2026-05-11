@@ -13,7 +13,8 @@ gdal_raster_select(
   open_option = NULL,
   creation_option = NULL,
   overwrite = FALSE,
-  mask = NULL
+  mask = NULL,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ gdal_raster_select(
 \item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
 
 \item{mask}{Mask band (1-based index, 'mask', 'mask:\if{html}{\out{<band>}}' or 'none')}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

@@ -4,10 +4,12 @@
 \alias{gdal_vsi_sozip_list}
 \title{list: List content of a ZIP file, with SOZIP related information}
 \usage{
-gdal_vsi_sozip_list(input)
+gdal_vsi_sozip_list(input, ...)
 }
 \arguments{
 \item{input}{Input ZIP filename (required). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

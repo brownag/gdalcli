@@ -20,7 +20,8 @@ gdal_vector_reproject(
   overwrite_layer = FALSE,
   append = FALSE,
   active_layer = NULL,
-  src_crs = NULL
+  src_crs = NULL,
+  ...
 )
 }
 \arguments{
@@ -55,6 +56,8 @@ gdal_vector_reproject(
 \item{active_layer}{Set active layer (if not specified, all)}
 
 \item{src_crs}{Source CRS}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.

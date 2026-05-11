@@ -19,6 +19,7 @@
 #' @param sozip_min_file_size Minimum file size to decide if a file should be seek-optimized. Format: `value in bytes or with K/M/G suffix` (Default: `1 MB`)
 #' @param content_type Store the Content-Type of the file being added.
 #' @param stdout Directly output on stdout. If enabled, output-string will be empty (Logical)
+#' @param ... Parameter aliases and synonyms for backward compatibility. See `?gdal_parameter_aliases` for details.
 #' @return A [gdal_job] object.
 #' @family gdal_vsi_utilities
 #' @examples
@@ -39,7 +40,8 @@ gdal_vsi_sozip_create <- function(input,
   sozip_chunk_size = NULL,
   sozip_min_file_size = NULL,
   content_type = NULL,
-  stdout = FALSE) {
+  stdout = FALSE,
+  ...) {
   new_args <- list()
   if (!missing(input)) new_args[["input"]] <- input
   if (!missing(output)) new_args[["output"]] <- output
@@ -63,7 +65,7 @@ gdal_vsi_sozip_create <- function(input,
   }
 
 
-  merged_args <- new_args
+  merged_args <- .merge_alias_parameters(list(...), new_args)
   .update_intent_mapping <- NULL
   .update_intent <- infer_update_intent("gdal_vsi_sozip_create", merged_args, .update_intent_mapping)
 

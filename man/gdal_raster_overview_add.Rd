@@ -10,7 +10,8 @@ gdal_raster_overview_add(
   external = FALSE,
   resampling = NULL,
   levels = NULL,
-  min_size = NULL
+  min_size = NULL,
+  ...
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ gdal_raster_overview_add(
 \item{levels}{Levels / decimation factors (Integer vector). Minimum: \code{2}}
 
 \item{min_size}{Maximum width or height of the smallest overview level. (Integer). Minimum: \code{1}}
+
+\item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
