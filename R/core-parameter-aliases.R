@@ -76,6 +76,7 @@
       if (arg_name %in% names(canonical_params)) {
         canonical_name <- arg_name
         found_mapping <- TRUE
+        mapping_type <- "canonical"
       } else {
         # Look for version-aware aliases or synonyms
         for (can_name in names(canonical_params)) {
@@ -115,7 +116,7 @@
           if (is.null(result[[canonical_name]])) {
             result[[canonical_name]] <- dots[[arg_name]]
           }
-        } else {
+        } else if (mapping_type == "canonical") {
           # Already canonical
           if (is.null(result[[arg_name]])) {
             result[[arg_name]] <- dots[[arg_name]]
