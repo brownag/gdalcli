@@ -2,7 +2,7 @@
 % Please edit documentation in R/gdal_vector_pipeline.R
 \name{gdal_vector_pipeline}
 \alias{gdal_vector_pipeline}
-\title{Process a vector dataset}
+\title{Process a vector dataset applying several steps}
 \usage{
 gdal_vector_pipeline(
   jobs = NULL,
@@ -11,8 +11,10 @@ gdal_vector_pipeline(
   input_layer = NULL,
   output = NULL,
   output_format = NULL,
+  output_open_option = NULL,
   output_layer = NULL,
   open_option = NULL,
+  quiet = FALSE,
   pipeline = NULL,
   creation_option = NULL,
   layer_creation_option = NULL,
@@ -20,6 +22,8 @@ gdal_vector_pipeline(
   update = FALSE,
   overwrite_layer = FALSE,
   append = FALSE,
+  upsert = FALSE,
+  skip_errors = FALSE,
   ...
 )
 }
@@ -36,9 +40,13 @@ gdal_vector_pipeline(
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
+\item{output_open_option}{Output open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+
 \item{output_layer}{Output layer name}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+
+\item{quiet}{Quiet mode (no progress bar or warning message) (Logical) (Common)}
 
 \item{pipeline}{Pipeline string (ignored if jobs is provided)}
 
@@ -46,13 +54,17 @@ gdal_vector_pipeline(
 
 \item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output dataset is allowed (Logical) (Default: \code{false})}
 
 \item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
-\item{overwrite_layer}{Whether overwriting existing layer is allowed (Logical) (Default: \code{false})}
+\item{overwrite_layer}{Whether overwriting existing output layer is allowed (Logical) (Default: \code{false})}
 
 \item{append}{Whether appending to existing layer is allowed (Logical) (Default: \code{false})}
+
+\item{upsert}{Upsert features (implies 'append') (Logical) (Advanced)}
+
+\item{skip_errors}{Skip errors when writing features (Logical)}
 
 \item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
@@ -62,7 +74,7 @@ A \link{gdal_job} object.
 \description{
 \verb{gdal vector pipeline} can be used to process a vector dataset and perform various processing steps that accept vector and generate vector. For pipelines mixing raster and vector, consult gdal_pipeline. Most steps proceed in on-demand evaluation of features, unless otherwise stated in their documentation, without "materializing" the resulting dataset of the operation of each step. It may be desirable sometimes for performance purposes to proceed to materializing an intermediate dataset to disk using gdal_vector_materialize.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_vector_pipeline.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write"), 
@@ -72,35 +84,60 @@ job <- gdal_vector_pipeline(input = c("in.gpkg", "!", "reproject", "!", "write")
 }
 }
 \seealso{
-Other gdal_vector_utilities: 
-\code{\link{gdal_vector}()},
-\code{\link{gdal_vector_clip}()},
-\code{\link{gdal_vector_concat}()},
-\code{\link{gdal_vector_convert}()},
-\code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_filter}()},
-\code{\link{gdal_vector_geom_buffer}()},
-\code{\link{gdal_vector_geom_explode_collections}()},
-\code{\link{gdal_vector_geom_make_valid}()},
-\code{\link{gdal_vector_geom_segmentize}()},
-\code{\link{gdal_vector_geom_set_type}()},
-\code{\link{gdal_vector_geom_simplify}()},
-\code{\link{gdal_vector_geom_swap_xy}()},
-\code{\link{gdal_vector_grid_average}()},
-\code{\link{gdal_vector_grid_average_distance}()},
-\code{\link{gdal_vector_grid_average_distance_points}()},
-\code{\link{gdal_vector_grid_count}()},
-\code{\link{gdal_vector_grid_invdist}()},
-\code{\link{gdal_vector_grid_invdistnn}()},
-\code{\link{gdal_vector_grid_linear}()},
-\code{\link{gdal_vector_grid_maximum}()},
-\code{\link{gdal_vector_grid_minimum}()},
-\code{\link{gdal_vector_grid_nearest}()},
-\code{\link{gdal_vector_grid_range}()},
-\code{\link{gdal_vector_info}()},
-\code{\link{gdal_vector_rasterize}()},
-\code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_sql}()}
+Other gdal_vector_utilities:
+\code{\link[=gdal_vector]{gdal_vector()}},
+\code{\link[=gdal_vector_buffer]{gdal_vector_buffer()}},
+\code{\link[=gdal_vector_check_coverage]{gdal_vector_check_coverage()}},
+\code{\link[=gdal_vector_check_geometry]{gdal_vector_check_geometry()}},
+\code{\link[=gdal_vector_clean_coverage]{gdal_vector_clean_coverage()}},
+\code{\link[=gdal_vector_clip]{gdal_vector_clip()}},
+\code{\link[=gdal_vector_combine]{gdal_vector_combine()}},
+\code{\link[=gdal_vector_concat]{gdal_vector_concat()}},
+\code{\link[=gdal_vector_concave_hull]{gdal_vector_concave_hull()}},
+\code{\link[=gdal_vector_convert]{gdal_vector_convert()}},
+\code{\link[=gdal_vector_convex_hull]{gdal_vector_convex_hull()}},
+\code{\link[=gdal_vector_create]{gdal_vector_create()}},
+\code{\link[=gdal_vector_dissolve]{gdal_vector_dissolve()}},
+\code{\link[=gdal_vector_edit]{gdal_vector_edit()}},
+\code{\link[=gdal_vector_explode_collections]{gdal_vector_explode_collections()}},
+\code{\link[=gdal_vector_export_schema]{gdal_vector_export_schema()}},
+\code{\link[=gdal_vector_filter]{gdal_vector_filter()}},
+\code{\link[=gdal_vector_geom_buffer]{gdal_vector_geom_buffer()}},
+\code{\link[=gdal_vector_geom_explode_collections]{gdal_vector_geom_explode_collections()}},
+\code{\link[=gdal_vector_geom_make_valid]{gdal_vector_geom_make_valid()}},
+\code{\link[=gdal_vector_geom_segmentize]{gdal_vector_geom_segmentize()}},
+\code{\link[=gdal_vector_geom_set_type]{gdal_vector_geom_set_type()}},
+\code{\link[=gdal_vector_geom_simplify]{gdal_vector_geom_simplify()}},
+\code{\link[=gdal_vector_geom_swap_xy]{gdal_vector_geom_swap_xy()}},
+\code{\link[=gdal_vector_grid_average]{gdal_vector_grid_average()}},
+\code{\link[=gdal_vector_grid_average_distance]{gdal_vector_grid_average_distance()}},
+\code{\link[=gdal_vector_grid_average_distance_points]{gdal_vector_grid_average_distance_points()}},
+\code{\link[=gdal_vector_grid_count]{gdal_vector_grid_count()}},
+\code{\link[=gdal_vector_grid_invdist]{gdal_vector_grid_invdist()}},
+\code{\link[=gdal_vector_grid_invdistnn]{gdal_vector_grid_invdistnn()}},
+\code{\link[=gdal_vector_grid_linear]{gdal_vector_grid_linear()}},
+\code{\link[=gdal_vector_grid_maximum]{gdal_vector_grid_maximum()}},
+\code{\link[=gdal_vector_grid_minimum]{gdal_vector_grid_minimum()}},
+\code{\link[=gdal_vector_grid_nearest]{gdal_vector_grid_nearest()}},
+\code{\link[=gdal_vector_grid_range]{gdal_vector_grid_range()}},
+\code{\link[=gdal_vector_index]{gdal_vector_index()}},
+\code{\link[=gdal_vector_info]{gdal_vector_info()}},
+\code{\link[=gdal_vector_layer_algebra]{gdal_vector_layer_algebra()}},
+\code{\link[=gdal_vector_make_point]{gdal_vector_make_point()}},
+\code{\link[=gdal_vector_make_valid]{gdal_vector_make_valid()}},
+\code{\link[=gdal_vector_partition]{gdal_vector_partition()}},
+\code{\link[=gdal_vector_rasterize]{gdal_vector_rasterize()}},
+\code{\link[=gdal_vector_rename_layer]{gdal_vector_rename_layer()}},
+\code{\link[=gdal_vector_reproject]{gdal_vector_reproject()}},
+\code{\link[=gdal_vector_segmentize]{gdal_vector_segmentize()}},
+\code{\link[=gdal_vector_select]{gdal_vector_select()}},
+\code{\link[=gdal_vector_set_field_type]{gdal_vector_set_field_type()}},
+\code{\link[=gdal_vector_set_geom_type]{gdal_vector_set_geom_type()}},
+\code{\link[=gdal_vector_simplify]{gdal_vector_simplify()}},
+\code{\link[=gdal_vector_simplify_coverage]{gdal_vector_simplify_coverage()}},
+\code{\link[=gdal_vector_sort]{gdal_vector_sort()}},
+\code{\link[=gdal_vector_sql]{gdal_vector_sql()}},
+\code{\link[=gdal_vector_swap_xy]{gdal_vector_swap_xy()}},
+\code{\link[=gdal_vector_update]{gdal_vector_update()}}
 }
 \concept{gdal_vector_utilities}

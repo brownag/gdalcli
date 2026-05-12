@@ -10,57 +10,87 @@ gdal_raster_viewshed(
   output,
   output_format = NULL,
   target_height = NULL,
-  position,
+  output_nodata = NULL,
   open_option = NULL,
+  quiet = FALSE,
   creation_option = NULL,
   overwrite = FALSE,
+  append = FALSE,
+  position = NULL,
+  height = NULL,
+  sd_filename = NULL,
   mode = NULL,
   max_distance = NULL,
+  min_distance = NULL,
+  start_angle = NULL,
+  end_angle = NULL,
+  high_pitch = NULL,
+  low_pitch = NULL,
   curvature_coefficient = NULL,
   band = NULL,
   visible_value = NULL,
   invisible_value = NULL,
+  maybe_visible_value = NULL,
   out_of_range_value = NULL,
-  dst_nodata = NULL,
   observer_spacing = NULL,
   num_threads = NULL,
   ...
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
-\item{output_format}{Output format}
+\item{output_format}{Output format ("GDALG" allowed)}
 
 \item{target_height}{Height of the target above the DEM surface in the height unit of the DEM. (Default: \code{0})}
 
-\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>} (required). \code{2} to \code{3} value(s)}
+\item{output_nodata}{The value to be set for the cells in the output raster that have no data.. Range: (\code{0} to \code{255})}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
+\item{quiet}{Quiet mode (no progress bar or warning message) (Logical) (Common)}
+
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output dataset is allowed (Logical) (Default: \code{false})}
+
+\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
+
+\item{position}{Observer position. Format: \verb{<X,Y> or <X,Y,H>}. \code{2} to \code{3} value(s)}
+
+\item{height}{Observer height}
+
+\item{sd_filename}{Filename of standard-deviation raster (Dataset path)}
 
 \item{mode}{Sets what information the output contains.. Choices: "normal", "DEM", "ground", "cumulative" (Default: \code{normal})}
 
 \item{max_distance}{Maximum distance from observer to compute visibility. It is also used to clamp the extent of the output raster.. Minimum: \code{0}}
 
+\item{min_distance}{Mask all cells less than this distance from the observer. Must be less than 'max-distance'.. Minimum: \code{0}}
+
+\item{start_angle}{Mask all cells outside of the arc ('start-angle', 'end-angle'). Clockwise degrees from north. Also used to clamp the extent of the output raster.. Range: (\code{0} to \code{360})}
+
+\item{end_angle}{Mask all cells outside of the arc ('start-angle', 'end-angle'). Clockwise degrees from north. Also used to clamp the extent of the output raster.. Range: (\code{0} to \code{360})}
+
+\item{high_pitch}{Mark all cells out-of-range where the observable height would be higher than the 'high-pitch' angle from the observer. Degrees from horizontal - positive is up. Must be greater than 'low-pitch'.. Range: (\code{-90} to \code{90})}
+
+\item{low_pitch}{Bound observable height to be no lower than the 'low-pitch' angle from the observer. Degrees from horizontal - positive is up. Must be less than 'high-pitch'.. Range: (\code{-90} to \code{90})}
+
 \item{curvature_coefficient}{Coefficient to consider the effect of the curvature and refraction.. Minimum: \code{0}}
 
 \item{band}{Input band (1-based index) (Integer) (Default: \code{1})}
 
-\item{visible_value}{Pixel value to set for visible areas (Integer) (Default: \code{255}). Range: (\code{0} to \code{255})}
+\item{visible_value}{Pixel value to set for visible areas (Default: \code{255}). Range: (\code{0} to \code{255})}
 
-\item{invisible_value}{Pixel value to set for invisible areas (Integer) (Default: \code{0}). Range: (\code{0} to \code{255})}
+\item{invisible_value}{Pixel value to set for invisible areas (Default: \code{0}). Range: (\code{0} to \code{255})}
 
-\item{out_of_range_value}{Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Integer) (Default: \code{0}). Range: (\code{0} to \code{255})}
+\item{maybe_visible_value}{Pixel value to set for potentially visible areas (Default: \code{2}). Range: (\code{0} to \code{255})}
 
-\item{dst_nodata}{The value to be set for the cells in the output raster that have no data. (Integer). Range: (\code{0} to \code{255})}
+\item{out_of_range_value}{Pixel value to set for the cells that fall outside of the range specified by the observer location and the maximum distance (Default: \code{0})}
 
 \item{observer_spacing}{Cell Spacing between observers (Integer) (Default: \code{10}). Minimum: \code{1}}
 
@@ -74,7 +104,7 @@ A \link{gdal_job} object.
 \description{
 \verb{gdal raster viewshed} creates a binary visibility raster from one band of the input raster elevation model (DEM). The output raster will be of type Byte. Using the \code{DEM} or \code{ground} values of --mode can also create a minimum visible height raster of type Float64. It uses the method defined in [Wang2000]_ for a user defined point. This subcommand is also available as a potential step of gdal_raster_pipeline (since GDAL 3.12)
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_raster_viewshed.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif", 
@@ -84,41 +114,52 @@ job <- gdal_raster_viewshed(input = "source.tif", output = "destination.tif",
 }
 }
 \seealso{
-Other gdal_raster_utilities: 
-\code{\link{gdal_raster}()},
-\code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_calc}()},
-\code{\link{gdal_raster_clean_collar}()},
-\code{\link{gdal_raster_clip}()},
-\code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_contour}()},
-\code{\link{gdal_raster_convert}()},
-\code{\link{gdal_raster_create}()},
-\code{\link{gdal_raster_edit}()},
-\code{\link{gdal_raster_fill_nodata}()},
-\code{\link{gdal_raster_footprint}()},
-\code{\link{gdal_raster_hillshade}()},
-\code{\link{gdal_raster_index}()},
-\code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_overview_add}()},
-\code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_pipeline}()},
-\code{\link{gdal_raster_pixel_info}()},
-\code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_reclassify}()},
-\code{\link{gdal_raster_reproject}()},
-\code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_roughness}()},
-\code{\link{gdal_raster_scale}()},
-\code{\link{gdal_raster_select}()},
-\code{\link{gdal_raster_set_type}()},
-\code{\link{gdal_raster_sieve}()},
-\code{\link{gdal_raster_slope}()},
-\code{\link{gdal_raster_stack}()},
-\code{\link{gdal_raster_tile}()},
-\code{\link{gdal_raster_tpi}()},
-\code{\link{gdal_raster_tri}()},
-\code{\link{gdal_raster_unscale}()}
+Other gdal_raster_utilities:
+\code{\link[=gdal_raster]{gdal_raster()}},
+\code{\link[=gdal_raster_as_features]{gdal_raster_as_features()}},
+\code{\link[=gdal_raster_aspect]{gdal_raster_aspect()}},
+\code{\link[=gdal_raster_blend]{gdal_raster_blend()}},
+\code{\link[=gdal_raster_calc]{gdal_raster_calc()}},
+\code{\link[=gdal_raster_clean_collar]{gdal_raster_clean_collar()}},
+\code{\link[=gdal_raster_clip]{gdal_raster_clip()}},
+\code{\link[=gdal_raster_color_map]{gdal_raster_color_map()}},
+\code{\link[=gdal_raster_compare]{gdal_raster_compare()}},
+\code{\link[=gdal_raster_contour]{gdal_raster_contour()}},
+\code{\link[=gdal_raster_convert]{gdal_raster_convert()}},
+\code{\link[=gdal_raster_create]{gdal_raster_create()}},
+\code{\link[=gdal_raster_edit]{gdal_raster_edit()}},
+\code{\link[=gdal_raster_fill_nodata]{gdal_raster_fill_nodata()}},
+\code{\link[=gdal_raster_footprint]{gdal_raster_footprint()}},
+\code{\link[=gdal_raster_hillshade]{gdal_raster_hillshade()}},
+\code{\link[=gdal_raster_index]{gdal_raster_index()}},
+\code{\link[=gdal_raster_info]{gdal_raster_info()}},
+\code{\link[=gdal_raster_mosaic]{gdal_raster_mosaic()}},
+\code{\link[=gdal_raster_neighbors]{gdal_raster_neighbors()}},
+\code{\link[=gdal_raster_nodata_to_alpha]{gdal_raster_nodata_to_alpha()}},
+\code{\link[=gdal_raster_overview_add]{gdal_raster_overview_add()}},
+\code{\link[=gdal_raster_overview_delete]{gdal_raster_overview_delete()}},
+\code{\link[=gdal_raster_overview_refresh]{gdal_raster_overview_refresh()}},
+\code{\link[=gdal_raster_pansharpen]{gdal_raster_pansharpen()}},
+\code{\link[=gdal_raster_pipeline]{gdal_raster_pipeline()}},
+\code{\link[=gdal_raster_pixel_info]{gdal_raster_pixel_info()}},
+\code{\link[=gdal_raster_polygonize]{gdal_raster_polygonize()}},
+\code{\link[=gdal_raster_proximity]{gdal_raster_proximity()}},
+\code{\link[=gdal_raster_reclassify]{gdal_raster_reclassify()}},
+\code{\link[=gdal_raster_reproject]{gdal_raster_reproject()}},
+\code{\link[=gdal_raster_resize]{gdal_raster_resize()}},
+\code{\link[=gdal_raster_rgb_to_palette]{gdal_raster_rgb_to_palette()}},
+\code{\link[=gdal_raster_roughness]{gdal_raster_roughness()}},
+\code{\link[=gdal_raster_scale]{gdal_raster_scale()}},
+\code{\link[=gdal_raster_select]{gdal_raster_select()}},
+\code{\link[=gdal_raster_set_type]{gdal_raster_set_type()}},
+\code{\link[=gdal_raster_sieve]{gdal_raster_sieve()}},
+\code{\link[=gdal_raster_slope]{gdal_raster_slope()}},
+\code{\link[=gdal_raster_stack]{gdal_raster_stack()}},
+\code{\link[=gdal_raster_tile]{gdal_raster_tile()}},
+\code{\link[=gdal_raster_tpi]{gdal_raster_tpi()}},
+\code{\link[=gdal_raster_tri]{gdal_raster_tri()}},
+\code{\link[=gdal_raster_unscale]{gdal_raster_unscale()}},
+\code{\link[=gdal_raster_update]{gdal_raster_update()}},
+\code{\link[=gdal_raster_zonal_stats]{gdal_raster_zonal_stats()}}
 }
 \concept{gdal_raster_utilities}

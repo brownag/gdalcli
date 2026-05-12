@@ -8,12 +8,12 @@ gdal_mdim_info(
   input,
   open_option = NULL,
   input_format = NULL,
+  summary = FALSE,
   detailed = FALSE,
   array = NULL,
   limit = NULL,
   array_option = NULL,
   stats = FALSE,
-  stdout = FALSE,
   ...
 )
 }
@@ -23,6 +23,8 @@ gdal_mdim_info(
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
+
+\item{summary}{Report only group and array hierarchy, without detailed information on attributes or dimensions. (Logical)}
 
 \item{detailed}{Most verbose output. Report attribute data types and array values. (Logical)}
 
@@ -34,17 +36,15 @@ gdal_mdim_info(
 
 \item{stats}{Read and display image statistics. (Logical)}
 
-\item{stdout}{Directly output on stdout. If enabled, output-string will be empty (Logical)}
-
 \item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
 \value{
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal mdim info} lists various information about a GDAL supported multidimensional dataset. The following items will be reported (when known) as JSON: - The format driver used to access the file. - Hierarchy of groups - Group attributes - Arrays: * Name * Dimension name, sizes, indexing variable * Data type * Attributes * SRS * Nodata value * Units * Statistics (if requested) The following options are available:
+\verb{gdal mdim info} lists various information about a GDAL supported multidimensional dataset, and returns them on the standard output stream when used from the command line, or in the \code{output} parameter when used from the API. The following items will be reported (when known) as JSON: - The format driver used to access the file. - Hierarchy of groups - Group attributes - Arrays: * Name * Dimension name, sizes, indexing variable * Data type * Attributes * SRS * Nodata value * Units * Statistics (if requested) The following options are available:
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_mdim_info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_mdim_info.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_mdim_info(input = "netcdf-4d.nc")
@@ -53,8 +53,9 @@ job <- gdal_mdim_info(input = "netcdf-4d.nc")
 }
 }
 \seealso{
-Other gdal_mdim_utilities: 
-\code{\link{gdal_mdim}()},
-\code{\link{gdal_mdim_convert}()}
+Other gdal_mdim_utilities:
+\code{\link[=gdal_mdim]{gdal_mdim()}},
+\code{\link[=gdal_mdim_convert]{gdal_mdim_convert()}},
+\code{\link[=gdal_mdim_mosaic]{gdal_mdim_mosaic()}}
 }
 \concept{gdal_mdim_utilities}

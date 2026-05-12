@@ -17,7 +17,7 @@ A \link{gdal_job} object.
 \description{
 Runs the \code{VACUUM} SQLite3 operation on a GeoPackage dataset to recover lost space due to updates or deletions.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_driver_gpkg_repack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")
@@ -26,9 +26,12 @@ job <- gdal_driver_gpkg_repack(dataset = "my.gpkg")
 }
 }
 \seealso{
-Other gdal_driver_utilities: 
-\code{\link{gdal_driver_gti_create}()},
-\code{\link{gdal_driver_openfilegdb_repack}()},
-\code{\link{gdal_driver_pdf_list_layers}()}
+Other gdal_driver_utilities:
+\code{\link[=gdal_driver_cog_validate]{gdal_driver_cog_validate()}},
+\code{\link[=gdal_driver_gpkg_validate]{gdal_driver_gpkg_validate()}},
+\code{\link[=gdal_driver_gti_create]{gdal_driver_gti_create()}},
+\code{\link[=gdal_driver_openfilegdb_repack]{gdal_driver_openfilegdb_repack()}},
+\code{\link[=gdal_driver_pdf_list_layers]{gdal_driver_pdf_list_layers()}},
+\code{\link[=gdal_driver_rpftoc_create]{gdal_driver_rpftoc_create()}}
 }
 \concept{gdal_driver_utilities}

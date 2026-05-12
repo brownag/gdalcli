@@ -7,20 +7,21 @@
 gdal_vector_rasterize(
   input,
   input_format = NULL,
+  input_layer = NULL,
   output,
   output_format = NULL,
   target_aligned_pixels = FALSE,
   output_data_type = NULL,
+  quiet = FALSE,
   open_option = NULL,
   creation_option = NULL,
+  overwrite = FALSE,
   band = NULL,
   invert = FALSE,
   all_touched = FALSE,
   burn = NULL,
   attribute_name = NULL,
   X3d = FALSE,
-  add = FALSE,
-  layer_name = NULL,
   where = NULL,
   sql = NULL,
   dialect = NULL,
@@ -32,15 +33,17 @@ gdal_vector_rasterize(
   resolution = NULL,
   size = NULL,
   optimization = NULL,
+  add = FALSE,
   update = FALSE,
-  overwrite = FALSE,
   ...
 )
 }
 \arguments{
-\item{input}{Input vector dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input vector datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
+
+\item{input_layer}{Input layer name}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
@@ -48,11 +51,15 @@ gdal_vector_rasterize(
 
 \item{target_aligned_pixels}{(target aligned pixels) Align the coordinates of the extent of the output file to the values of the resolution (Logical)}
 
-\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ...}
+\item{output_data_type}{Output data type. Choices: "UInt8", "Int8", "UInt16", "Int16", "UInt32", ...}
+
+\item{quiet}{Quiet mode (no progress bar or warning message) (Logical) (Common)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
 
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
+
+\item{overwrite}{Whether overwriting existing output dataset is allowed (Logical) (Default: \code{false})}
 
 \item{band}{The band(s) to burn values into (1-based index) (Integer vector)}
 
@@ -65,10 +72,6 @@ gdal_vector_rasterize(
 \item{attribute_name}{Attribute name}
 
 \item{X3d}{Indicates that a burn value should be extracted from the Z values of the feature (Logical)}
-
-\item{add}{Add to existing raster (Logical) (Default: \code{false})}
-
-\item{layer_name}{Layer name}
 
 \item{where}{SQL where clause}
 
@@ -92,9 +95,9 @@ gdal_vector_rasterize(
 
 \item{optimization}{Force the algorithm used (results are identical). Choices: "AUTO", "RASTER", "VECTOR" (Default: \code{AUTO})}
 
-\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
+\item{add}{Add to existing raster (Logical) (Default: \code{false})}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{update}{Whether to open existing dataset in update mode (Logical) (Default: \code{false})}
 
 \item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
@@ -102,49 +105,74 @@ gdal_vector_rasterize(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal vector rasterize} burns vector geometries into a raster. Since GDAL 3.12, this algorithm can be part of a gdal_pipeline.
+\verb{gdal vector rasterize} burns vector geometries into a raster. By default (unless --update or --add) is specified, a new raster is created with a specified resolution (--resolution) or size (--size). Pixel values will either be set to a constant (the value 1, or some other value specified with --burn), the Z value of feature geometries (with --3d), or the value of a field specified with --attribute-name.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_vector_rasterize.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_vector_rasterize.
 # See GDAL documentation at:
-https://gdal.org/en/release-3.11/programs/gdal_vector_rasterize.html
+https://gdal.org/en/release-3.13/programs/gdal_vector_rasterize.html
 job <- gdal_vector_rasterize()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_vector_utilities: 
-\code{\link{gdal_vector}()},
-\code{\link{gdal_vector_clip}()},
-\code{\link{gdal_vector_concat}()},
-\code{\link{gdal_vector_convert}()},
-\code{\link{gdal_vector_edit}()},
-\code{\link{gdal_vector_filter}()},
-\code{\link{gdal_vector_geom_buffer}()},
-\code{\link{gdal_vector_geom_explode_collections}()},
-\code{\link{gdal_vector_geom_make_valid}()},
-\code{\link{gdal_vector_geom_segmentize}()},
-\code{\link{gdal_vector_geom_set_type}()},
-\code{\link{gdal_vector_geom_simplify}()},
-\code{\link{gdal_vector_geom_swap_xy}()},
-\code{\link{gdal_vector_grid_average}()},
-\code{\link{gdal_vector_grid_average_distance}()},
-\code{\link{gdal_vector_grid_average_distance_points}()},
-\code{\link{gdal_vector_grid_count}()},
-\code{\link{gdal_vector_grid_invdist}()},
-\code{\link{gdal_vector_grid_invdistnn}()},
-\code{\link{gdal_vector_grid_linear}()},
-\code{\link{gdal_vector_grid_maximum}()},
-\code{\link{gdal_vector_grid_minimum}()},
-\code{\link{gdal_vector_grid_nearest}()},
-\code{\link{gdal_vector_grid_range}()},
-\code{\link{gdal_vector_info}()},
-\code{\link{gdal_vector_pipeline}()},
-\code{\link{gdal_vector_reproject}()},
-\code{\link{gdal_vector_select}()},
-\code{\link{gdal_vector_sql}()}
+Other gdal_vector_utilities:
+\code{\link[=gdal_vector]{gdal_vector()}},
+\code{\link[=gdal_vector_buffer]{gdal_vector_buffer()}},
+\code{\link[=gdal_vector_check_coverage]{gdal_vector_check_coverage()}},
+\code{\link[=gdal_vector_check_geometry]{gdal_vector_check_geometry()}},
+\code{\link[=gdal_vector_clean_coverage]{gdal_vector_clean_coverage()}},
+\code{\link[=gdal_vector_clip]{gdal_vector_clip()}},
+\code{\link[=gdal_vector_combine]{gdal_vector_combine()}},
+\code{\link[=gdal_vector_concat]{gdal_vector_concat()}},
+\code{\link[=gdal_vector_concave_hull]{gdal_vector_concave_hull()}},
+\code{\link[=gdal_vector_convert]{gdal_vector_convert()}},
+\code{\link[=gdal_vector_convex_hull]{gdal_vector_convex_hull()}},
+\code{\link[=gdal_vector_create]{gdal_vector_create()}},
+\code{\link[=gdal_vector_dissolve]{gdal_vector_dissolve()}},
+\code{\link[=gdal_vector_edit]{gdal_vector_edit()}},
+\code{\link[=gdal_vector_explode_collections]{gdal_vector_explode_collections()}},
+\code{\link[=gdal_vector_export_schema]{gdal_vector_export_schema()}},
+\code{\link[=gdal_vector_filter]{gdal_vector_filter()}},
+\code{\link[=gdal_vector_geom_buffer]{gdal_vector_geom_buffer()}},
+\code{\link[=gdal_vector_geom_explode_collections]{gdal_vector_geom_explode_collections()}},
+\code{\link[=gdal_vector_geom_make_valid]{gdal_vector_geom_make_valid()}},
+\code{\link[=gdal_vector_geom_segmentize]{gdal_vector_geom_segmentize()}},
+\code{\link[=gdal_vector_geom_set_type]{gdal_vector_geom_set_type()}},
+\code{\link[=gdal_vector_geom_simplify]{gdal_vector_geom_simplify()}},
+\code{\link[=gdal_vector_geom_swap_xy]{gdal_vector_geom_swap_xy()}},
+\code{\link[=gdal_vector_grid_average]{gdal_vector_grid_average()}},
+\code{\link[=gdal_vector_grid_average_distance]{gdal_vector_grid_average_distance()}},
+\code{\link[=gdal_vector_grid_average_distance_points]{gdal_vector_grid_average_distance_points()}},
+\code{\link[=gdal_vector_grid_count]{gdal_vector_grid_count()}},
+\code{\link[=gdal_vector_grid_invdist]{gdal_vector_grid_invdist()}},
+\code{\link[=gdal_vector_grid_invdistnn]{gdal_vector_grid_invdistnn()}},
+\code{\link[=gdal_vector_grid_linear]{gdal_vector_grid_linear()}},
+\code{\link[=gdal_vector_grid_maximum]{gdal_vector_grid_maximum()}},
+\code{\link[=gdal_vector_grid_minimum]{gdal_vector_grid_minimum()}},
+\code{\link[=gdal_vector_grid_nearest]{gdal_vector_grid_nearest()}},
+\code{\link[=gdal_vector_grid_range]{gdal_vector_grid_range()}},
+\code{\link[=gdal_vector_index]{gdal_vector_index()}},
+\code{\link[=gdal_vector_info]{gdal_vector_info()}},
+\code{\link[=gdal_vector_layer_algebra]{gdal_vector_layer_algebra()}},
+\code{\link[=gdal_vector_make_point]{gdal_vector_make_point()}},
+\code{\link[=gdal_vector_make_valid]{gdal_vector_make_valid()}},
+\code{\link[=gdal_vector_partition]{gdal_vector_partition()}},
+\code{\link[=gdal_vector_pipeline]{gdal_vector_pipeline()}},
+\code{\link[=gdal_vector_rename_layer]{gdal_vector_rename_layer()}},
+\code{\link[=gdal_vector_reproject]{gdal_vector_reproject()}},
+\code{\link[=gdal_vector_segmentize]{gdal_vector_segmentize()}},
+\code{\link[=gdal_vector_select]{gdal_vector_select()}},
+\code{\link[=gdal_vector_set_field_type]{gdal_vector_set_field_type()}},
+\code{\link[=gdal_vector_set_geom_type]{gdal_vector_set_geom_type()}},
+\code{\link[=gdal_vector_simplify]{gdal_vector_simplify()}},
+\code{\link[=gdal_vector_simplify_coverage]{gdal_vector_simplify_coverage()}},
+\code{\link[=gdal_vector_sort]{gdal_vector_sort()}},
+\code{\link[=gdal_vector_sql]{gdal_vector_sql()}},
+\code{\link[=gdal_vector_swap_xy]{gdal_vector_swap_xy()}},
+\code{\link[=gdal_vector_update]{gdal_vector_update()}}
 }
 \concept{gdal_vector_utilities}

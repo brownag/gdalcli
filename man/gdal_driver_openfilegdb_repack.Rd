@@ -4,10 +4,12 @@
 \alias{gdal_driver_openfilegdb_repack}
 \title{repack: Repack a FileGeoDatabase dataset}
 \usage{
-gdal_driver_openfilegdb_repack(dataset, ...)
+gdal_driver_openfilegdb_repack(dataset, quiet = FALSE, ...)
 }
 \arguments{
 \item{dataset}{FileGeoDatabase dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{quiet}{Quiet mode (no progress bar or warning message) (Logical) (Common)}
 
 \item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
@@ -15,10 +17,9 @@ gdal_driver_openfilegdb_repack(dataset, ...)
 A \link{gdal_job} object.
 }
 \description{
-Runs the a repack operation on a FileGeodatabase dataset to recover lost
-space due to updates or deletions.
+Runs the a repack operation on a FileGeodatabase dataset to recover lost space due to updates or deletions.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_driver_openfilegdb_repack.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
@@ -27,9 +28,12 @@ job <- gdal_driver_openfilegdb_repack(dataset = "my.gdb")
 }
 }
 \seealso{
-Other gdal_driver_utilities: 
-\code{\link{gdal_driver_gpkg_repack}()},
-\code{\link{gdal_driver_gti_create}()},
-\code{\link{gdal_driver_pdf_list_layers}()}
+Other gdal_driver_utilities:
+\code{\link[=gdal_driver_cog_validate]{gdal_driver_cog_validate()}},
+\code{\link[=gdal_driver_gpkg_repack]{gdal_driver_gpkg_repack()}},
+\code{\link[=gdal_driver_gpkg_validate]{gdal_driver_gpkg_validate()}},
+\code{\link[=gdal_driver_gti_create]{gdal_driver_gti_create()}},
+\code{\link[=gdal_driver_pdf_list_layers]{gdal_driver_pdf_list_layers()}},
+\code{\link[=gdal_driver_rpftoc_create]{gdal_driver_rpftoc_create()}}
 }
 \concept{gdal_driver_utilities}

@@ -7,24 +7,44 @@
 gdal_raster_pixel_info(
   input,
   input_format = NULL,
+  input_layer = NULL,
+  output = NULL,
   output_format = NULL,
   open_option = NULL,
+  position_dataset = NULL,
+  creation_option = NULL,
+  layer_creation_option = NULL,
+  overwrite = FALSE,
   band = NULL,
   overview = NULL,
   position = NULL,
   position_crs = NULL,
   resampling = NULL,
+  promote_pixel_value_to_z = FALSE,
+  include_field = NULL,
   ...
 )
 }
 \arguments{
-\item{input}{Input raster dataset (Dataset path) (required). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets (required). Exactly \code{1} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
 
 \item{input_format}{Input formats (Character vector) (Advanced)}
 
-\item{output_format}{Output format. Choices: "geojson", "csv" (Default: \code{geojson})}
+\item{input_layer}{Input layer name (Character vector). \code{0} to \code{1} value(s)}
+
+\item{output}{Output vector dataset (Dataset path)}
+
+\item{output_format}{Output format (default is 'GeoJSON' if 'position-dataset' not specified)}
 
 \item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+
+\item{position_dataset}{Vector dataset with coordinates (Dataset path)}
+
+\item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
+
+\item{layer_creation_option}{Layer creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
+
+\item{overwrite}{Whether overwriting existing output dataset is allowed (Logical) (Default: \code{false})}
 
 \item{band}{Input band(s) (1-based index) (Integer vector)}
 
@@ -32,9 +52,13 @@ gdal_raster_pixel_info(
 
 \item{position}{Pixel position. Format: \verb{<column,line> or <X,Y>}}
 
-\item{position_crs}{CRS of position (Default: \code{pixel})}
+\item{position_crs}{CRS of position (default is 'pixel' if 'position-dataset' not specified)}
 
 \item{resampling}{Resampling algorithm for interpolation. Choices: "nearest", "bilinear", "cubic", "cubicspline" (Default: \code{nearest})}
+
+\item{promote_pixel_value_to_z}{Whether to set the pixel value as Z component of GeoJSON geometry (Logical)}
+
+\item{include_field}{Fields from coordinate dataset to include in output (special values: ALL and NONE) (Character vector) (Default: \code{ALL})}
 
 \item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
@@ -42,55 +66,66 @@ gdal_raster_pixel_info(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster pixel-info} provide a mechanism to query information about a pixel given its location in one of a variety of coordinate systems. It supports outputting either as GeoJSON or CSV. The following items will be reported (when known): - Input coordinates - Input coordinates converted to column, line - Pixel value per selected band(s), with unscaled value - For VRT files, which file(s) contribute to the pixel value. The following options are available:
+\verb{gdal raster pixel-info} provide a mechanism to query information about a pixel given its location in one of a variety of coordinate systems. The following items will be reported (when known): - Input coordinates - Input coordinates converted to column, line - Pixel value per selected band(s), with unscaled value - For VRT files, which file(s) contribute to the pixel value (only for GeoJSON output) There are 3 possible ways of providing input location(s): - from input stream, with a "X Y" pair per line, potentially followed by other text. - though the --position argument. - through a GDAL vector dataset through the --position-dataset argument. There are 2 possibilities of outputting pixel information: - either on the output stream as CSV or GeoJSON (default to GeoJSON) - or as a GDAL vector dataset whose name is specified with the --output argument. Since GDAL 3.13, this algorithm can be part of a gdal_pipeline. In that case, only reading coordinates from a GDAL vector dataset and outputting results to one is supported.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_raster_pixel-info.html} for detailed GDAL documentation.
 }
 \examples{
 \dontrun{
 # TODO: No examples available for gdal_raster_pixel_info.
 # See GDAL documentation at:
-https://gdal.org/en/release-3.11/programs/gdal_raster_pixel-info.html
+https://gdal.org/en/release-3.13/programs/gdal_raster_pixel-info.html
 job <- gdal_raster_pixel_info()
 # gdal_job_run(job)
 }
 }
 \seealso{
-Other gdal_raster_utilities: 
-\code{\link{gdal_raster}()},
-\code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_calc}()},
-\code{\link{gdal_raster_clean_collar}()},
-\code{\link{gdal_raster_clip}()},
-\code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_contour}()},
-\code{\link{gdal_raster_convert}()},
-\code{\link{gdal_raster_create}()},
-\code{\link{gdal_raster_edit}()},
-\code{\link{gdal_raster_fill_nodata}()},
-\code{\link{gdal_raster_footprint}()},
-\code{\link{gdal_raster_hillshade}()},
-\code{\link{gdal_raster_index}()},
-\code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_overview_add}()},
-\code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_pipeline}()},
-\code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_reclassify}()},
-\code{\link{gdal_raster_reproject}()},
-\code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_roughness}()},
-\code{\link{gdal_raster_scale}()},
-\code{\link{gdal_raster_select}()},
-\code{\link{gdal_raster_set_type}()},
-\code{\link{gdal_raster_sieve}()},
-\code{\link{gdal_raster_slope}()},
-\code{\link{gdal_raster_stack}()},
-\code{\link{gdal_raster_tile}()},
-\code{\link{gdal_raster_tpi}()},
-\code{\link{gdal_raster_tri}()},
-\code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_viewshed}()}
+Other gdal_raster_utilities:
+\code{\link[=gdal_raster]{gdal_raster()}},
+\code{\link[=gdal_raster_as_features]{gdal_raster_as_features()}},
+\code{\link[=gdal_raster_aspect]{gdal_raster_aspect()}},
+\code{\link[=gdal_raster_blend]{gdal_raster_blend()}},
+\code{\link[=gdal_raster_calc]{gdal_raster_calc()}},
+\code{\link[=gdal_raster_clean_collar]{gdal_raster_clean_collar()}},
+\code{\link[=gdal_raster_clip]{gdal_raster_clip()}},
+\code{\link[=gdal_raster_color_map]{gdal_raster_color_map()}},
+\code{\link[=gdal_raster_compare]{gdal_raster_compare()}},
+\code{\link[=gdal_raster_contour]{gdal_raster_contour()}},
+\code{\link[=gdal_raster_convert]{gdal_raster_convert()}},
+\code{\link[=gdal_raster_create]{gdal_raster_create()}},
+\code{\link[=gdal_raster_edit]{gdal_raster_edit()}},
+\code{\link[=gdal_raster_fill_nodata]{gdal_raster_fill_nodata()}},
+\code{\link[=gdal_raster_footprint]{gdal_raster_footprint()}},
+\code{\link[=gdal_raster_hillshade]{gdal_raster_hillshade()}},
+\code{\link[=gdal_raster_index]{gdal_raster_index()}},
+\code{\link[=gdal_raster_info]{gdal_raster_info()}},
+\code{\link[=gdal_raster_mosaic]{gdal_raster_mosaic()}},
+\code{\link[=gdal_raster_neighbors]{gdal_raster_neighbors()}},
+\code{\link[=gdal_raster_nodata_to_alpha]{gdal_raster_nodata_to_alpha()}},
+\code{\link[=gdal_raster_overview_add]{gdal_raster_overview_add()}},
+\code{\link[=gdal_raster_overview_delete]{gdal_raster_overview_delete()}},
+\code{\link[=gdal_raster_overview_refresh]{gdal_raster_overview_refresh()}},
+\code{\link[=gdal_raster_pansharpen]{gdal_raster_pansharpen()}},
+\code{\link[=gdal_raster_pipeline]{gdal_raster_pipeline()}},
+\code{\link[=gdal_raster_polygonize]{gdal_raster_polygonize()}},
+\code{\link[=gdal_raster_proximity]{gdal_raster_proximity()}},
+\code{\link[=gdal_raster_reclassify]{gdal_raster_reclassify()}},
+\code{\link[=gdal_raster_reproject]{gdal_raster_reproject()}},
+\code{\link[=gdal_raster_resize]{gdal_raster_resize()}},
+\code{\link[=gdal_raster_rgb_to_palette]{gdal_raster_rgb_to_palette()}},
+\code{\link[=gdal_raster_roughness]{gdal_raster_roughness()}},
+\code{\link[=gdal_raster_scale]{gdal_raster_scale()}},
+\code{\link[=gdal_raster_select]{gdal_raster_select()}},
+\code{\link[=gdal_raster_set_type]{gdal_raster_set_type()}},
+\code{\link[=gdal_raster_sieve]{gdal_raster_sieve()}},
+\code{\link[=gdal_raster_slope]{gdal_raster_slope()}},
+\code{\link[=gdal_raster_stack]{gdal_raster_stack()}},
+\code{\link[=gdal_raster_tile]{gdal_raster_tile()}},
+\code{\link[=gdal_raster_tpi]{gdal_raster_tpi()}},
+\code{\link[=gdal_raster_tri]{gdal_raster_tri()}},
+\code{\link[=gdal_raster_unscale]{gdal_raster_unscale()}},
+\code{\link[=gdal_raster_update]{gdal_raster_update()}},
+\code{\link[=gdal_raster_viewshed]{gdal_raster_viewshed()}},
+\code{\link[=gdal_raster_zonal_stats]{gdal_raster_zonal_stats()}}
 }
 \concept{gdal_raster_utilities}

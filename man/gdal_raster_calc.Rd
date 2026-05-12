@@ -6,35 +6,59 @@
 \usage{
 gdal_raster_calc(
   input,
+  input_format = NULL,
   output,
   output_format = NULL,
   output_data_type = NULL,
   calc,
+  open_option = NULL,
+  quiet = FALSE,
   creation_option = NULL,
   overwrite = FALSE,
-  no_check_srs = FALSE,
+  append = FALSE,
+  no_check_crs = FALSE,
   no_check_extent = FALSE,
+  propagate_nodata = FALSE,
+  dialect = NULL,
+  flatten = FALSE,
+  nodata = NULL,
   ...
 )
 }
 \arguments{
-\item{input}{Input raster datasets (Character vector). Format: \code{INPUTS} (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+\item{input}{Input raster datasets. Format: \code{INPUTS} (required). \code{1} to \code{2147483647} value(s). Can also be a \link{gdal_job} object to extend a pipeline}
+
+\item{input_format}{Input formats (Character vector) (Advanced)}
 
 \item{output}{Output raster dataset (Dataset path) (required)}
 
 \item{output_format}{Output format ("GDALG" allowed)}
 
-\item{output_data_type}{Output data type. Choices: "Byte", "Int8", "UInt16", "Int16", "UInt32", ...}
+\item{output_data_type}{Output data type. Choices: "UInt8", "Int8", "UInt16", "Int16", "UInt32", ...}
 
 \item{calc}{Expression(s) to evaluate (Character vector) (required). \code{1} to \code{2147483647} value(s)}
 
+\item{open_option}{Open options (Character vector). Format: \verb{<KEY>=<VALUE>} (Advanced)}
+
+\item{quiet}{Quiet mode (no progress bar or warning message) (Logical) (Common)}
+
 \item{creation_option}{Creation option (Character vector). Format: \verb{<KEY>=<VALUE>}}
 
-\item{overwrite}{Whether overwriting existing output is allowed (Logical) (Default: \code{false})}
+\item{overwrite}{Whether overwriting existing output dataset is allowed (Logical) (Default: \code{false})}
 
-\item{no_check_srs}{Do not check consistency of input spatial reference systems (Logical)}
+\item{append}{Append as a subdataset to existing output (Logical) (Default: \code{false})}
+
+\item{no_check_crs}{Do not check consistency of input coordinate reference systems (Logical)}
 
 \item{no_check_extent}{Do not check consistency of input extents (Logical)}
+
+\item{propagate_nodata}{Whether to set pixels to the output NoData value if any of the input pixels is NoData (Logical)}
+
+\item{dialect}{Expression dialect. Choices: "muparser", "builtin" (Default: \code{muparser})}
+
+\item{flatten}{Generate a single band output raster per expression, even if input datasets are multiband (Logical)}
+
+\item{nodata}{Assign a specified nodata value to output bands ('none', numeric value, 'nan', 'inf', '-inf')}
 
 \item{...}{Parameter aliases and synonyms for backward compatibility. See \code{?gdal_parameter_aliases} for details.}
 }
@@ -42,9 +66,9 @@ gdal_raster_calc(
 A \link{gdal_job} object.
 }
 \description{
-\verb{gdal raster calc} performs pixel-wise calculations on one or more input GDAL datasets. Calculations can be performed eagerly, writing results to a conventional raster format, or lazily, written as a set of derived bands in a VRT (Virtual Dataset) <raster.vrt>. The list of input GDAL datasets can be specified at the end of the command line or put in a text file (one input per line) for very long lists. If more than one input dataset is used, it should be prefixed with a name by which it will be referenced in the calculation, e.g. \code{A=my_data.tif}. (If a single dataset is used, it will be referred to with the variable \code{X} in formulas.) Starting with GDAL 3.12, it is also possible to use a VRT C++ pixel function <builtin_pixel_functions> (such a \code{sum}, \code{mean}, \code{min}, \code{max}) by specifying --dialect to \code{builtin}. The inputs should have the same spatial reference system and should cover the same spatial extent but are not required to have the same spatial resolution. The spatial extent check can be disabled with --no-check-extent, in which case the inputs must have the same dimensions. The spatial reference system check can be disabled with --no-check-srs. Since GDAL 3.12, this algorithm can be part of a gdal_pipeline or gdal_raster_pipeline. The following options are available:
+\verb{gdal raster calc} performs pixel-wise calculations on one or more input GDAL datasets. Calculations can be performed eagerly, writing results to a conventional raster format, or lazily, written as a set of derived bands in a VRT (Virtual Dataset) <raster.vrt>. The list of input GDAL datasets can be specified at the end of the command line or put in a text file (one input per line) for very long lists. If more than one input dataset is used, it should be prefixed with a name by which it will be referenced in the calculation, e.g. \code{A=my_data.tif}. (If a single dataset is used, it will be referred to with the variable \code{X} in formulas.) Starting with GDAL 3.12, it is also possible to use a VRT C++ pixel function <builtin_pixel_functions> (such a \code{sum}, \code{mean}, \code{min}, \code{max}) by specifying --dialect to \code{builtin}. The inputs should have the same spatial reference system and should cover the same spatial extent but are not required to have the same spatial resolution. The spatial extent check can be disabled with --no-check-extent, in which case the inputs must have the same dimensions. The spatial reference system check can be disabled with --no-check-crs. Since GDAL 3.12, this algorithm can be part of a gdal_pipeline or gdal_raster_pipeline.
 
-See \url{https://gdal.org/en/release-3.11/programs/gdal_raster_calc.html} for detailed GDAL documentation.
+See \url{https://gdal.org/en/release-3.13/programs/gdal_raster_calc.html} for detailed GDAL documentation.
 }
 \examples{
 job <- gdal_raster_calc(calc = "A+B+C")
@@ -53,41 +77,52 @@ job <- gdal_raster_calc(calc = "A+B+C")
 }
 }
 \seealso{
-Other gdal_raster_utilities: 
-\code{\link{gdal_raster}()},
-\code{\link{gdal_raster_aspect}()},
-\code{\link{gdal_raster_clean_collar}()},
-\code{\link{gdal_raster_clip}()},
-\code{\link{gdal_raster_color_map}()},
-\code{\link{gdal_raster_contour}()},
-\code{\link{gdal_raster_convert}()},
-\code{\link{gdal_raster_create}()},
-\code{\link{gdal_raster_edit}()},
-\code{\link{gdal_raster_fill_nodata}()},
-\code{\link{gdal_raster_footprint}()},
-\code{\link{gdal_raster_hillshade}()},
-\code{\link{gdal_raster_index}()},
-\code{\link{gdal_raster_info}()},
-\code{\link{gdal_raster_mosaic}()},
-\code{\link{gdal_raster_overview_add}()},
-\code{\link{gdal_raster_overview_delete}()},
-\code{\link{gdal_raster_pipeline}()},
-\code{\link{gdal_raster_pixel_info}()},
-\code{\link{gdal_raster_polygonize}()},
-\code{\link{gdal_raster_reclassify}()},
-\code{\link{gdal_raster_reproject}()},
-\code{\link{gdal_raster_resize}()},
-\code{\link{gdal_raster_roughness}()},
-\code{\link{gdal_raster_scale}()},
-\code{\link{gdal_raster_select}()},
-\code{\link{gdal_raster_set_type}()},
-\code{\link{gdal_raster_sieve}()},
-\code{\link{gdal_raster_slope}()},
-\code{\link{gdal_raster_stack}()},
-\code{\link{gdal_raster_tile}()},
-\code{\link{gdal_raster_tpi}()},
-\code{\link{gdal_raster_tri}()},
-\code{\link{gdal_raster_unscale}()},
-\code{\link{gdal_raster_viewshed}()}
+Other gdal_raster_utilities:
+\code{\link[=gdal_raster]{gdal_raster()}},
+\code{\link[=gdal_raster_as_features]{gdal_raster_as_features()}},
+\code{\link[=gdal_raster_aspect]{gdal_raster_aspect()}},
+\code{\link[=gdal_raster_blend]{gdal_raster_blend()}},
+\code{\link[=gdal_raster_clean_collar]{gdal_raster_clean_collar()}},
+\code{\link[=gdal_raster_clip]{gdal_raster_clip()}},
+\code{\link[=gdal_raster_color_map]{gdal_raster_color_map()}},
+\code{\link[=gdal_raster_compare]{gdal_raster_compare()}},
+\code{\link[=gdal_raster_contour]{gdal_raster_contour()}},
+\code{\link[=gdal_raster_convert]{gdal_raster_convert()}},
+\code{\link[=gdal_raster_create]{gdal_raster_create()}},
+\code{\link[=gdal_raster_edit]{gdal_raster_edit()}},
+\code{\link[=gdal_raster_fill_nodata]{gdal_raster_fill_nodata()}},
+\code{\link[=gdal_raster_footprint]{gdal_raster_footprint()}},
+\code{\link[=gdal_raster_hillshade]{gdal_raster_hillshade()}},
+\code{\link[=gdal_raster_index]{gdal_raster_index()}},
+\code{\link[=gdal_raster_info]{gdal_raster_info()}},
+\code{\link[=gdal_raster_mosaic]{gdal_raster_mosaic()}},
+\code{\link[=gdal_raster_neighbors]{gdal_raster_neighbors()}},
+\code{\link[=gdal_raster_nodata_to_alpha]{gdal_raster_nodata_to_alpha()}},
+\code{\link[=gdal_raster_overview_add]{gdal_raster_overview_add()}},
+\code{\link[=gdal_raster_overview_delete]{gdal_raster_overview_delete()}},
+\code{\link[=gdal_raster_overview_refresh]{gdal_raster_overview_refresh()}},
+\code{\link[=gdal_raster_pansharpen]{gdal_raster_pansharpen()}},
+\code{\link[=gdal_raster_pipeline]{gdal_raster_pipeline()}},
+\code{\link[=gdal_raster_pixel_info]{gdal_raster_pixel_info()}},
+\code{\link[=gdal_raster_polygonize]{gdal_raster_polygonize()}},
+\code{\link[=gdal_raster_proximity]{gdal_raster_proximity()}},
+\code{\link[=gdal_raster_reclassify]{gdal_raster_reclassify()}},
+\code{\link[=gdal_raster_reproject]{gdal_raster_reproject()}},
+\code{\link[=gdal_raster_resize]{gdal_raster_resize()}},
+\code{\link[=gdal_raster_rgb_to_palette]{gdal_raster_rgb_to_palette()}},
+\code{\link[=gdal_raster_roughness]{gdal_raster_roughness()}},
+\code{\link[=gdal_raster_scale]{gdal_raster_scale()}},
+\code{\link[=gdal_raster_select]{gdal_raster_select()}},
+\code{\link[=gdal_raster_set_type]{gdal_raster_set_type()}},
+\code{\link[=gdal_raster_sieve]{gdal_raster_sieve()}},
+\code{\link[=gdal_raster_slope]{gdal_raster_slope()}},
+\code{\link[=gdal_raster_stack]{gdal_raster_stack()}},
+\code{\link[=gdal_raster_tile]{gdal_raster_tile()}},
+\code{\link[=gdal_raster_tpi]{gdal_raster_tpi()}},
+\code{\link[=gdal_raster_tri]{gdal_raster_tri()}},
+\code{\link[=gdal_raster_unscale]{gdal_raster_unscale()}},
+\code{\link[=gdal_raster_update]{gdal_raster_update()}},
+\code{\link[=gdal_raster_viewshed]{gdal_raster_viewshed()}},
+\code{\link[=gdal_raster_zonal_stats]{gdal_raster_zonal_stats()}}
 }
 \concept{gdal_raster_utilities}

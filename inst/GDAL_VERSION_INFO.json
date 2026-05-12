@@ -1,0 +1,36 @@
+{
+  "generated_at": [
+    "2026-05-12 02:48:22"
+  ],
+  "gdal_version": [
+    "3.13.0"
+  ],
+  "gdal_version_parsed": {
+    "full": [
+      "3.13.0"
+    ],
+    "major": [
+      3
+    ],
+    "minor": [
+      13
+    ],
+    "patch": [
+      0
+    ]
+  },
+  "generation_date": [
+    "2026-05-12"
+  ],
+  "r_version": [
+    "4.6.0"
+  ],
+  "packages": {
+    "processx": [
+      "3.9.0"
+    ],
+    "yyjsonr": [
+      "0.1.22"
+    ]
+  }
+}
