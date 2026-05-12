@@ -494,47 +494,12 @@ jobs:
           EOF
           fi
 
-      - name: Update version info and commit release
+      - name: Commit generated files to release branch
         if: success() && github.event.inputs.dry_run == 'false'
         run: |
           GDAL_VERSION="${{ steps.validate.outputs.gdal_version }}"
-          BUILD_DATE="$(date -I)"
-          GENERATED_AT="$(date '+%Y-%m-%d %H:%M:%S')"
 
-          # Parse version components
-          MAJOR=$(echo "$GDAL_VERSION" | cut -d. -f1)
-          MINOR=$(echo "$GDAL_VERSION" | cut -d. -f2)
-          PATCH=$(echo "$GDAL_VERSION" | cut -d. -f3)
-
-          # Get R and package versions from the Docker image
-          IMAGE="ghcr.io/${{ github.repository }}:gdal-${GDAL_VERSION}-latest"
-          R_VERSION=$(docker run --rm "$IMAGE" R --version 2>/dev/null | head -1 | sed 's/R version \([0-9.]*\).*/\1/')
-          PROCESSX_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('processx')))" 2>/dev/null || echo "unknown")
-          YYJSONR_VERSION=$(docker run --rm "$IMAGE" Rscript --slave -e "cat(as.character(packageVersion('yyjsonr')))" 2>/dev/null || echo "unknown")
-
-          # Ensure inst/ directory exists
-          mkdir -p inst
-
-          cat > inst/GDAL_VERSION_INFO.json <<EOF
-          {
-            "generated_at": "$GENERATED_AT",
-            "gdal_version": "$GDAL_VERSION",
-            "gdal_version_parsed": {
-              "full": "$GDAL_VERSION",
-              "major": $MAJOR,
-              "minor": $MINOR,
-              "patch": $PATCH
-            },
-            "generation_date": "$BUILD_DATE",
-            "r_version": "$R_VERSION",
-            "packages": {
-              "processx": "$PROCESSX_VERSION",
-              "yyjsonr": "$YYJSONR_VERSION"
-            }
-          }
-          EOF
-
-          echo "Staging changes..."
+          echo "Staging generated files..."
           git add DESCRIPTION
           git add -f inst/GDAL_VERSION_INFO.json
           git add inst/GDAL_API_*.json 2>/dev/null || true
@@ -555,7 +520,6 @@ jobs:
 
           if ! git diff --cached --quiet; then
             git commit -m "Release: gdalcli for GDAL $GDAL_VERSION"
-            # Force push is safe here because we've reset branch to main and applied generated files
             git push origin ${{ steps.validate.outputs.branch_name }} --force
           else
             echo "No changes to commit"
