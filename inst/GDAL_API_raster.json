@@ -1766,7 +1766,6 @@
           "name":"output-layer",
           "type":"string",
           "description":"Output layer name",
-          "available_in_pipeline_step":false,
           "required":false,
           "category":"Base"
         },
@@ -9419,7 +9418,6 @@
           "name":"output-layer",
           "type":"string",
           "description":"Output layer name",
-          "available_in_pipeline_step":false,
           "required":false,
           "category":"Base"
         },

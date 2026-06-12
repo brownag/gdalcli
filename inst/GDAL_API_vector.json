@@ -10896,7 +10896,6 @@
               "name":"output-layer",
               "type":"string",
               "description":"Output layer name",
-              "available_in_pipeline_step":false,
               "required":false,
               "category":"Base"
             },
@@ -10955,8 +10954,8 @@
           "full_path":[
           ],
           "description":"Reproject a vector dataset.",
-          "short_url":"\/programs\/gdal_vector_pipeline.html",
-          "url":"https:\/\/gdal.org\/programs\/gdal_vector_pipeline.html",
+          "short_url":"\/programs\/gdal_vector_reproject.html",
+          "url":"https:\/\/gdal.org\/programs\/gdal_vector_reproject.html",
           "sub_algorithms":[
           ],
           "input_arguments":[
@@ -12248,7 +12247,6 @@
           "name":"output-layer",
           "type":"string",
           "description":"Output layer name",
-          "available_in_pipeline_step":false,
           "required":false,
           "category":"Base"
         },
@@ -12344,8 +12342,8 @@
         "reproject"
       ],
       "description":"Reproject a vector dataset.",
-      "short_url":"\/programs\/gdal_vector_pipeline.html",
-      "url":"https:\/\/gdal.org\/programs\/gdal_vector_pipeline.html",
+      "short_url":"\/programs\/gdal_vector_reproject.html",
+      "url":"https:\/\/gdal.org\/programs\/gdal_vector_reproject.html",
       "sub_algorithms":[
       ],
       "input_arguments":[
