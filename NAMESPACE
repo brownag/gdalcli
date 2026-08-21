@@ -255,6 +255,8 @@ export(vsiswift_url)
 export(vsitar_url)
 export(vsiwebhdfs_url)
 export(vsizip_url)
-importFrom(utils,.DollarNames)
-importFrom(utils,modifyList)
-importFrom(utils,packageVersion)
+importFrom(utils,
+  .DollarNames,
+  modifyList,
+  packageVersion
+)
